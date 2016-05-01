@@ -1,24 +1,69 @@
 module DTK::CLI
   class CommandContext
     require_relative('command_context/all')
-    require_relative('command_context/service')
-    require_relative('command_context/module')
+    ALL_CONTEXTS = [:service, :module]
+    ALL_CONTEXTS.each { |context| require_relative("command_context/#{context}") }
 
-    #include Parser
+    def initialize
+      @parser = Parser.default
+      add_command_defaults!
+      add_command_defs!
+    end
+    private :initialize 
 
     def self.determine_context
-      create_when_in_specific_context? || create_default
+      get_and_set_cache { create_when_in_specific_context? || create_default }
     end
 
-    private
+    def run(argv)
+      @parser.run(argv)
+    end
     
+    def method_missing(method, *args, &body)
+      parser_object_methods.include?(method) ? @parser.send(method, *args, &body) : super
+    end
+    
+    def respond_to?(method)
+      parser_object_methods.include?(method) or super
+    end
+    
+    private
+
+    def self.create_default
+      All.new
+#      Module.new
+    end
+
+    def parser_object_methods
+      @@parser_object_methods ||= Parser::Methods.all 
+    end
+    
+    def self.get_and_set_cache
+      # TODO: stub
+      yield
+    end
+      
     def self.create_when_in_specific_context?
       # TODO: stub 
       nil
     end
 
-    def self.create_default
-      All.new
+    # Can be ovewritten
+    def add_command_defs!
+      add_specified_command_defs!(subclass_name)
     end
+
+    def add_specified_command_defs!(context_name)
+      send("add_command_defs__#{context_name}!".to_sym)
+    end
+
+    def subclass_name
+      @subclass_name ||= self.class.to_s.split('::').last.downcase
+    end
+
+    def all_context_names
+      @@all_context_names ||= ALL_CONTEXTS
+    end
+
   end
 end
