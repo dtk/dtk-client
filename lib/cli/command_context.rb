@@ -4,7 +4,7 @@ module DTK::CLI
     require_relative('command_context/service')
     require_relative('command_context/module')
 
-    include Parser
+    #include Parser
 
     def self.determine_context
       create_when_in_specific_context? || create_default

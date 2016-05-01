@@ -1,15 +1,36 @@
 #!/usr/bin/env ruby
 require_relative('../lib/cli')
 
-class Test < DTK::CLI::CommandContext
+class Test 
+  include DTK::CLI
   def initialize
-    program_desc 'Describe your application here'
+    @parser = Parser.default
+  end
+
+  def run(argv)
+    add_command_defs!
+
+    @parser.run(argv)
+  end
+
+  def method_missing(method, *args, &body)
+    parser_object_methods.include?(method) ? @parser.send(method, *args, &body) : super
+  end
     
-    version DTK::CLI::VERSION
-    
-    subcommand_option_handling :normal
-    arguments :strict
-    
+  def respond_to?(method)
+    parser_object_methods.include?(method) or super
+  end
+
+  private
+
+  def parser_object_methods
+    @parser_object_methods ||= Parser::Methods.all 
+  end
+
+
+  def add_command_defs!
+    assert_defaults
+
     desc 'Describe some switch here'
     switch [:s,:switch]
     
