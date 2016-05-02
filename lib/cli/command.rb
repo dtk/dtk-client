@@ -16,15 +16,39 @@
 # limitations under the License.
 #
 module DTK::CLI
-  class CommandContext
-    class Module < self
-      include Command::Module
+  module Command
+    ALL_COMMANDS = [:service, :module]
+
+    module Mixin
+      def add_command(command)
+        instance_eval { mangled_method_name(command) }
+      end
+
+      module Common
+        def mangled_method_name(command)
+          "command_defs__#{command}"
+        end
+      end
+      include Common
+
+      module Class
+        include Common
+        def command_def(command, &block)
+          mangled_method_name = mangled_method_name(command)
+          class_eval { "def #{mangled_method_name}; yield" } 
+        end
+      end
 
       private
 
-      def add_command_defs!
-        add_command :module
+      def self.included(klass)
+        klass.extend(Class)
       end
+
     end
+
+    ALL_COMMANDS.each { |context| require_relative("command/#{context}") }
+
+
   end
 end

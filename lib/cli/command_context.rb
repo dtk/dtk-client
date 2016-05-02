@@ -47,8 +47,8 @@ module DTK::CLI
     private
 
     def self.create_default
-      All.new
-      # Module.new
+#      All.new
+      Module.new
     end
 
     def parser_object_methods

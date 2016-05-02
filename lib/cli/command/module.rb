@@ -16,15 +16,28 @@
 # limitations under the License.
 #
 module DTK::CLI
-  class CommandContext
-    class Module < self
-      include Command::Module
+  module Command
+    module Module 
+      include Command::Mixin
 
-      private
-
-      def add_command_defs!
-        add_command :module
+      command_def :module do
+        desc 'Commands for interacting with DTK modules'
+        command :module do |c|
+          c.desc 'Installs a DTK module'
+          c.command :install do |install|
+            install.action do |global_options, options, args|
+              # Your command logic here
+              # If you have any errors, just raise them
+              # raise "that command made no sense"
+              pp [global_options, options, args]
+              puts 'dtk module install'
+            end
+          end
+        end
       end
     end
   end
 end
+
+
+
