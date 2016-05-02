@@ -16,11 +16,8 @@
 # limitations under the License.
 #
 module DTK::CLI
-  # Top-level entry class
-  class Runner
-    def self.run(argv)
-      command_context = CommandContext.determine_context
-      command_context.run(argv)
+  class CommandContext
+    class ExecuteCommand
     end
   end
 end
