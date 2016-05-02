@@ -18,10 +18,11 @@
 module DTK::CLI
   class Context
     class Top < self
+      include Command::All
       private
 
       def add_command_defs!
-        all_context_names.each { |context_name| add_specified_command_defs!(context_name) }
+        Command.all_command_names.each { |command_name| add_command command_name }
       end
     end
   end

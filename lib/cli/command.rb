@@ -17,38 +17,26 @@
 #
 module DTK::CLI
   module Command
+    require_relative('command/mixin')
+    # mixin must be before rest
     ALL_COMMANDS = [:service, :module]
+    ALL_COMMANDS.each { |command_name| require_relative("command/#{command_name}") }
 
-    module Mixin
-      def add_command(command)
-        send(mangled_method(command))
-      end
-
-      module Common
-        def mangled_method(command)
-          "command_defs__#{command}".to_sym
-        end
-      end
-      include Common
-
-      module Class
-        include Common
-        def command_def(command, &block)
-          mangled_method = mangled_method(command)
-          class_eval { "def #{mangled_method}; block.call; end" }
-        end
-      end
-
-      private
-
-      def self.included(klass)
-        klass.extend(Class)
-      end
-
+    def self.command_module(command_name)
+      const_get command_name.to_s.capitalize
     end
 
-    ALL_COMMANDS.each { |context| require_relative("command/#{context}") }
+    def self.all_command_names
+      ALL_COMMANDS
+    end
 
+    def self.all_command_modules
+      all_command_names.map  { |command| command_module(command) }
+    end
+
+    module All
+      Command.all_command_modules.each  { |command_module| include command_module }
+    end
 
   end
 end

@@ -20,15 +20,12 @@ module DTK::CLI
     module Module 
       include Command::Mixin
 
-      def command_defs__module
+      command_def do
         desc 'Commands for interacting with DTK modules'
         command :module do |c|
           c.desc 'Installs a DTK module'
           c.command :install do |install|
             install.action do |global_options, options, args|
-              # Your command logic here
-              # If you have any errors, just raise them
-              # raise "that command made no sense"
               pp [global_options, options, args]
               puts 'dtk module install'
             end

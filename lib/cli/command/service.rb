@@ -16,30 +16,24 @@
 # limitations under the License.
 #
 module DTK::CLI
-  class Context
-    class Service < self
-    end
+  module Command
+    module Service
+      include Command::Mixin
 
-    private
-      
-    def add_command_defs__service!
-      desc 'Describe service here'
-      arg_name 'Describe arguments to service here'
-      command :service do |c|
-        c.desc 'Describe a switch to service'
-        c.switch :s
-        
-        c.desc 'Describe a flag to service'
-        c.default_value 'default'
-        c.flag :f
-        c.action do |global_options, options, args|
+      command_def do
+        desc 'Describe service here'
+        arg_name 'Describe arguments to service here'
+        command :service do |c|
+          c.desc 'Describe a switch to service'
+          c.switch :s
           
-          # Your command logic here
-          
-          # If you have any errors, just raise them
-          # raise "that command made no sense"
-          pp [global_options, options, args]
-          puts "service command ran"
+          c.desc 'Describe a flag to service'
+          c.default_value 'default'
+          c.flag :f
+          c.action do |global_options, options, args|
+            pp [global_options, options, args]
+            puts "service command ran"
+          end
         end
       end
     end
