@@ -48,7 +48,7 @@ module DTK::CLI
 
     def self.create_default
       All.new
-#      Module.new
+      # Module.new
     end
 
     def parser_object_methods
@@ -67,15 +67,15 @@ module DTK::CLI
 
     # Can be ovewritten
     def add_command_defs!
-      add_specified_command_defs!(subclass_name)
+      add_specified_command_defs!(context_name)
     end
 
     def add_specified_command_defs!(context_name)
       send("add_command_defs__#{context_name}!".to_sym)
     end
 
-    def subclass_name
-      @subclass_name ||= self.class.to_s.split('::').last.downcase
+    def context_name
+      @context_name ||= self.class.to_s.split('::').last.downcase
     end
 
     def all_context_names
