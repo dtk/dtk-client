@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 module DTK::CLI
-  class CommandContext
+  class Context
     class Module < self
       include Command::Module
 

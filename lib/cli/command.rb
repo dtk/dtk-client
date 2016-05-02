@@ -21,12 +21,12 @@ module DTK::CLI
 
     module Mixin
       def add_command(command)
-        instance_eval { mangled_method_name(command) }
+        send(mangled_method(command))
       end
 
       module Common
-        def mangled_method_name(command)
-          "command_defs__#{command}"
+        def mangled_method(command)
+          "command_defs__#{command}".to_sym
         end
       end
       include Common
@@ -34,8 +34,8 @@ module DTK::CLI
       module Class
         include Common
         def command_def(command, &block)
-          mangled_method_name = mangled_method_name(command)
-          class_eval { "def #{mangled_method_name}; yield" } 
+          mangled_method = mangled_method(command)
+          class_eval { "def #{mangled_method}; block.call; end" }
         end
       end
 

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 module DTK::CLI
-  class CommandContext
-    class All < self
+  class Context
+    class Top < self
       private
 
       def add_command_defs!

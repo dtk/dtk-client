@@ -16,10 +16,11 @@
 # limitations under the License.
 #
 module DTK::CLI
-  class CommandContext
-    require_relative('command_context/all')
+  # Object that provides the context for interpreting commands
+  class Context
+    require_relative('context/top')
     ALL_CONTEXTS = [:service, :module]
-    ALL_CONTEXTS.each { |context| require_relative("command_context/#{context}") }
+    ALL_CONTEXTS.each { |context| require_relative("context/#{context}") }
 
     def initialize
       @parser = Parser.default
@@ -47,7 +48,7 @@ module DTK::CLI
     private
 
     def self.create_default
-#      All.new
+#      Top.new
       Module.new
     end
 

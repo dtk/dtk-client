@@ -16,8 +16,9 @@
 # limitations under the License.
 #
 module DTK::CLI
-  class CommandContext
-    class ExecuteCommand
-    end
+  # Abstract class that holds classes and methods for executing commands by
+  # make calls to server and performing client side operations
+  class Execute
   end
 end
+

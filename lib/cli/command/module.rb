@@ -20,7 +20,7 @@ module DTK::CLI
     module Module 
       include Command::Mixin
 
-      command_def :module do
+      def command_defs__module
         desc 'Commands for interacting with DTK modules'
         command :module do |c|
           c.desc 'Installs a DTK module'
