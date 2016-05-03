@@ -20,31 +20,49 @@ module DTK::CLI
     module Module 
       include Command::Mixin
 
-      command_def do
-        desc 'Subcommands for interacting with DTK modules'
-        command :module do |c|
-          unless context_attributes[:module_name]
-            c.arg 'NAMESPACE/MODULE-NAME', :optional
+      ALL_SUBCOMMANDS = [:install]
+      command_def :desc => 'Subcommands for interacting with DTK modules'
+      subcommand_def :install do
+        unless context_attributes[:module_name]
+          @c.arg 'NAMESPACE/MODULE-NAME', :optional
+        end
+        @c.desc 'Install DTK module'
+        @c.command :install  do |install|
+          install.flag [:v, :version], :arg_name => 'VERSION', :desc => 'Module Version'
+          install.switch [:f], :default_value => false, :desc => 'Force Install'
+          install.action do |global_options, options, args|
+            pp [self.class, options, args, context_attributes: context_attributes]
+            puts 'dtk module install'
           end
-          c.desc 'Install DTK module'
-          c.command :install  do |install|
-            install.flag [:v, :version], :arg_name => 'VERSION', :desc => 'Module Version'
-            install.switch [:f], :default_value => false, :desc => 'Force Install'
-            install.action do |global_options, options, args|
-              pp [self.class, options, args, context_attributes: context_attributes]
-              puts 'dtk module install'
-            end
-          end
-          c.desc 'List assemblies'
-          c.command 'list-assemblies'  do |list_assemblies|
-            list_assemblies.action do |global_options, options, args|
-              pp [self.class, options, args]
-              puts 'dtk module list_assemblies'
-            end
-          end
-
         end
       end
+#      command_def do
+#        desc 'Subcommands for interacting with DTK modules'
+#        command :module do |c| 
+#          @c = c 
+#        end
+=begin        
+        unless context_attributes[:module_name]
+          @c.arg 'NAMESPACE/MODULE-NAME', :optional
+        end
+        @c.desc 'Install DTK module'
+        @c.command :install  do |install|
+          install.flag [:v, :version], :arg_name => 'VERSION', :desc => 'Module Version'
+          install.switch [:f], :default_value => false, :desc => 'Force Install'
+          install.action do |global_options, options, args|
+            pp [self.class, options, args, context_attributes: context_attributes]
+            puts 'dtk module install'
+          end
+        end
+        @c.desc 'List assemblies'
+        @c.command 'list-assemblies'  do |list_assemblies|
+          list_assemblies.action do |global_options, options, args|
+            pp [self.class, options, args]
+            puts 'dtk module list_assemblies'
+          end
+        end
+      end
+=end
     end
   end
 end

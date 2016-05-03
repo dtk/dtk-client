@@ -18,8 +18,12 @@
 module DTK::CLI
   module Command
     module Service
+    end
+  end
+end
+=begin
       include Command::Mixin
-
+      ALL_SUBCOMMANDS = []
       command_def do
         desc 'Subcommands for interacting with DTK services'
         command :service do |c|
@@ -33,3 +37,4 @@ module DTK::CLI
   end
 end
 
+=end

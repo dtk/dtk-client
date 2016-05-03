@@ -21,15 +21,15 @@ module DTK::CLI
 
       module Common
         private
-        def mangled_method(command)
-          "command_defs__#{command}".to_sym
+        def mangled_method(command_name)
+          "command_defs__#{command_name}".to_sym
         end
       end
 
       include Common
       
-      def add_command(command)
-        send(mangled_method(command))
+      def add_command(command_name)
+        send(mangled_method(command_name))
       end
 
       private
@@ -46,7 +46,45 @@ module DTK::CLI
           class_eval { define_method(mangled_method, &block) }
         end
 
+        def command_def(opts = {})
+          command_name = command_name()
+          mangled_method = mangled_method(command_name)
+          subcommands_info = all_subcommands.map do |subcommand_name|
+            {
+              :name => subcommand_name,
+              :mangled_method => mangled_subcommand_method(subcommand_name)
+            }
+          end
+pp [:outside, subcommands_info]
+          block = proc do
+            if desc = opts[:desc]
+              desc desc
+            end
+            command command_name do |c|
+              @c = c
+            end
+            subcommands_info.each do |subcommand_info|
+              send(subcommand_info[:mangled_method], subcommand_info[:name])
+            end
+          end
+
+          class_eval { define_method(mangled_method, &block) }
+        end
+
+        def subcommand_def(subcommand_name, &block)
+          mangled_subcommand_method = mangled_subcommand_method(subcommand_name)
+          class_eval { define_method(mangled_subcommand_method, &block) }
+        end
+
         private
+
+        def mangled_subcommand_method(subcommand_name)
+          "#{mangled_method(command_name)}__#{subcommand_name}".to_sym
+        end
+
+        def all_subcommands
+          self::ALL_SUBCOMMANDS
+        end
 
         def command_name
           self.to_s.split('::').last.downcase.to_sym
