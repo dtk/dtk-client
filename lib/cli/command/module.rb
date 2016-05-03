@@ -21,15 +21,26 @@ module DTK::CLI
       include Command::Mixin
 
       command_def do
-        desc 'Commands for interacting with DTK modules'
+        desc 'Subcommands for interacting with DTK modules'
         command :module do |c|
-          c.desc 'Installs a DTK module'
-          c.command :install do |install|
+          c.arg 'NAMESPACE/MODULE-NAME', :optional
+          c.desc 'Install DTK module'
+          c.command :install  do |install|
+            install.flag [:v, :version], :arg_name => 'VERSION', :desc => 'Module Version'
+            install.switch [:f], :default_value => false, :desc => 'Force Install'
             install.action do |global_options, options, args|
-              pp [global_options, options, args]
+              pp [self.class, options, args]
               puts 'dtk module install'
             end
           end
+          c.desc 'List assemblies'
+          c.command 'list-assemblies'  do |list_assemblies|
+            list_assemblies.action do |global_options, options, args|
+              pp [self.class, options, args]
+              puts 'dtk module list_assemblies'
+            end
+          end
+
         end
       end
     end

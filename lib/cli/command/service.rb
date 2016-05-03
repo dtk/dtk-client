@@ -21,15 +21,8 @@ module DTK::CLI
       include Command::Mixin
 
       command_def do
-        desc 'Describe service here'
-        arg_name 'Describe arguments to service here'
+        desc 'Subcommands for interacting with DTK services'
         command :service do |c|
-          c.desc 'Describe a switch to service'
-          c.switch :s
-          
-          c.desc 'Describe a flag to service'
-          c.default_value 'default'
-          c.flag :f
           c.action do |global_options, options, args|
             pp [global_options, options, args]
             puts "service command ran"

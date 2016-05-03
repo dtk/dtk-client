@@ -30,7 +30,7 @@ module DTK::CLI
 
     module Methods
       def self.all
-        [:arg_name, :arg_name, :command, :default_value, :desc, :flag, :switch, :run, :add_command_defaults!]
+        [:arg_name, :command, :default_value, :desc, :flag, :switch, :run, :add_command_defaults!]
       end
     end
 
