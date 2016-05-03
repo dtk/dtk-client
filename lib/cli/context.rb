@@ -25,7 +25,7 @@ module DTK::CLI
     require_relative('context/top')
 
     def initialize
-      @parser = Parser.default
+      @command_processor = Processor.default
       @context_attributes = attributes
     end
     private :initialize 
@@ -35,15 +35,15 @@ module DTK::CLI
     end
 
     def run(argv)
-      @parser.run(argv)
+      @command_processor.run(argv)
     end
     
     def method_missing(method, *args, &body)
-      parser_object_methods.include?(method) ? @parser.send(method, *args, &body) : super
+      command_processor_object_methods.include?(method) ? @command_processor.send(method, *args, &body) : super
     end
     
     def respond_to?(method)
-      parser_object_methods.include?(method) or super
+      command_processor_object_methods.include?(method) or super
     end
 
     def add_command_defaults_and_defs!
@@ -69,8 +69,8 @@ module DTK::CLI
       Top.create
     end
 
-    def parser_object_methods
-      @@parser_object_methods ||= Parser::Methods.all 
+    def command_processor_object_methods
+      @@command_processor_object_methods ||= Processor::Methods.all 
     end
     
     def self.get_and_set_cache

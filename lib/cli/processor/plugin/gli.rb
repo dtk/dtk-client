@@ -17,7 +17,7 @@
 #
 require 'gli'
 module DTK::CLI
-  class Parser
+  class Processor
     module Plugin
       class Gli
         include ::GLI::App

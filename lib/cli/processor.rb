@@ -17,12 +17,12 @@
 #
 module DTK::CLI
   # Delegation module for wrapping third party library used to do parsing
-  class Parser
+  class Processor
     module Plugin
       DEFAULT = :gli
       DEFAULT_CLASS_NAME = "#{DEFAULT.to_s.capitalize}"
       # autoload DEFAULT_CLASS_NAME.to_sym, "plugin/#{DEFAULT_PLUGIN}"
-      require_relative "parser/plugin/#{DEFAULT}"
+      require_relative "processor/plugin/#{DEFAULT}"
       def self.default_class
         const_get DEFAULT_CLASS_NAME
       end
