@@ -18,14 +18,15 @@
 module DTK::CLI
   # Object that provides the context for interpreting commands
   class Context
-    require_relative('context/top')
+    require_relative('context/attributes')
+
     ALL_CONTEXTS = [:service, :module]
     ALL_CONTEXTS.each { |context| require_relative("context/#{context}") }
+    require_relative('context/top')
 
     def initialize
       @parser = Parser.default
-      add_command_defaults!
-      add_command_defs!
+      @context_attributes = attributes
     end
     private :initialize 
 
@@ -44,13 +45,28 @@ module DTK::CLI
     def respond_to?(method)
       parser_object_methods.include?(method) or super
     end
+
+    def add_command_defaults_and_defs!
+      add_command_defaults!
+      add_command_defs!
+      self
+    end
     
     private
 
+    # The method 'create_attributes' can be ovewritten
+    def attributes
+      Attributes.new
+    end
+
+    attr_reader :context_attributes
+
+    def self.create
+      new.add_command_defaults_and_defs!
+    end
+
     def self.create_default
-      Top.new
-#      Module.new
-#      Service.new
+      Top.create
     end
 
     def parser_object_methods
@@ -65,6 +81,8 @@ module DTK::CLI
     def self.create_when_in_specific_context?
       # TODO: stub 
       nil
+      # Module.create
+      # Service.create
     end
   end
 end

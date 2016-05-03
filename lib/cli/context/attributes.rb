@@ -17,18 +17,7 @@
 #
 module DTK::CLI
   class Context
-    class Module < self
-      include Command::Module
-
-      private
-
-      def add_command_defs!
-        add_command :module
-      end
-
-      def attributes
-        super.merge(:module_name => 'foo')
-      end
+    class Attributes < ::Hash
     end
   end
 end
