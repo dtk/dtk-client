@@ -18,23 +18,10 @@
 module DTK::CLI
   module Command
     module Service
-    end
-  end
-end
-=begin
       include Command::Mixin
+
       ALL_SUBCOMMANDS = []
-      command_def do
-        desc 'Subcommands for interacting with DTK services'
-        command :service do |c|
-          c.action do |global_options, options, args|
-            pp [global_options, options, args]
-            puts "service command ran"
-          end
-        end
-      end
+      command_def :desc => 'Subcommands for interacting with DTK services'
     end
   end
 end
-
-=end

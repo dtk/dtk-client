@@ -81,7 +81,7 @@ module DTK::CLI
     def self.create_when_in_specific_context?
       # TODO: stub 
       nil
-       Module.create
+      # Module.create
       # Service.create
     end
   end
