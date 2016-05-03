@@ -40,34 +40,26 @@ module DTK::CLI
 
       module Class
         include Common
-        def command_def(command_name = nil, &block)
-          command_name ||= command_name()
-          mangled_method = mangled_method(command_name)
-          class_eval { define_method(mangled_method, &block) }
-        end
 
         def command_def(opts = {})
           command_name = command_name()
           mangled_method = mangled_method(command_name)
-          subcommands_info = all_subcommands.map do |subcommand_name|
-            {
-              :name => subcommand_name,
-              :mangled_method => mangled_subcommand_method(subcommand_name)
-            }
-          end
-pp [:outside, subcommands_info]
-          block = proc do
-            if desc = opts[:desc]
-              desc desc
-            end
-            command command_name do |c|
-              @c = c
-            end
-            subcommands_info.each do |subcommand_info|
-              send(subcommand_info[:mangled_method], subcommand_info[:name])
-            end
-          end
+          subcommand_mangled_methods = all_subcommands.map { |subcommand_name| mangled_subcommand_method(subcommand_name) }
 
+          block = proc do
+            if context_attributes[:only_context_commands]
+              subcommand_mangled_methods.each do |subcommand_mangled_method|
+                instance_eval { send(subcommand_mangled_method, self) }
+              end
+            else
+              desc opts[:desc] if opts[:desc]
+              command command_name do |c|
+                subcommand_mangled_methods.each do |subcommand_mangled_method| 
+                  instance_eval { send(subcommand_mangled_method, c) }
+                end
+              end
+            end
+          end
           class_eval { define_method(mangled_method, &block) }
         end
 
@@ -77,6 +69,7 @@ pp [:outside, subcommands_info]
         end
 
         private
+
 
         def mangled_subcommand_method(subcommand_name)
           "#{mangled_method(command_name)}__#{subcommand_name}".to_sym

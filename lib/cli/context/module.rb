@@ -27,7 +27,7 @@ module DTK::CLI
       end
 
       def attributes
-        super.merge(:module_name => 'foo')
+        super.merge(:module_name => 'foo', :only_context_commands => true)
       end
     end
   end
