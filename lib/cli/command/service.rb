@@ -20,8 +20,7 @@ module DTK::CLI
     module Service
       include Command::Mixin
 
-#      ALL_SUBCOMMANDS = ['deploy', 'deploy-target']
-      ALL_SUBCOMMANDS = ['deploy']
+      ALL_SUBCOMMANDS = ['deploy', 'deploy-target']
       command_def :desc => 'Subcommands for interacting with DTK services'
 
       subcommand_def 'deploy' do |c|
@@ -29,7 +28,7 @@ module DTK::CLI
         unless context_attributes[:module_name]
           c.arg 'NAMESPACE/MODULE-NAME', :optional
         end
-        c.desc 'Deplay a new service instance from the selected assembly'
+        c.desc 'Deploy a new service instance from the selected assembly'
         c.command :deploy  do |deploy|
           deploy.flag [:i], :arg_name =>'INSTANCE-NAME', :desc => 'If specified, name to call new service instance' 
           deploy.flag [:t], :arg_name => 'PARENT-SERVICE-INSTANCE', :desc => 'Parent Service instance into which the new assembly is deployed' 
@@ -43,6 +42,26 @@ module DTK::CLI
           end
         end
       end
+
+      subcommand_def 'deploy-target' do |c|
+        c.arg 'ASSEMBLY-NAME'
+        unless context_attributes[:module_name]
+          c.arg 'NAMESPACE/MODULE-NAME', :optional
+        end
+        c.desc 'Deploy a top level service instance that will serve as a target'
+        c.command 'deploy-target'  do |deploy|
+          deploy.flag [:i], :arg_name =>'INSTANCE-NAME', :desc => 'If specified, name to call new service instance' 
+          deploy.flag [:v], :arg_name => 'VERSION', :desc => 'Version'
+          deploy.switch ['auto-complete'], :default_value => true, :desc => 'If true, components with dependencies are automatically linked'
+          deploy.switch [:s, 'stream-results'], :default_value => true, :desc => 'If true, results are streamed as tasks progresses and completes or user enters ^C'
+          deploy.action do |global_options, options, args|
+            pp [self.class, options, args, context_attributes: context_attributes]
+            pp [self.class, options, args]
+            puts 'dtk service deploy-target'
+          end
+        end
+      end
+
     end
   end
 end
