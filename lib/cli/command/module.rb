@@ -32,8 +32,7 @@ module DTK::CLI
           install.flag [:v, :version], :arg_name => 'VERSION', :desc => 'Module Version'
           install.switch [:f], :default_value => false, :desc => 'Force Install'
           install.action do |global_options, options, args|
-            pp [self.class, options, args, context_attributes: context_attributes]
-            pp [self.class, options, args]
+            # pp [self.class, options, args, context_attributes: context_attributes]
             puts 'dtk module install'
           end
         end
@@ -43,8 +42,8 @@ module DTK::CLI
         c.desc 'List assemblies'
         c.command 'list-assemblies'  do |list_assemblies|
           list_assemblies.action do |global_options, options, args|
-            pp [self.class, options, args]
-            puts 'dtk module list_assemblies'
+             pp [self.class, options, args, context_attributes: context_attributes]
+            puts 'dtk module list-assemblies'
           end
         end
       end
