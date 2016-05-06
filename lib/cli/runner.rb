@@ -18,9 +18,22 @@
 module DTK::CLI
   # Top-level entry class
   class Runner
+    require_relative('runner/dtkn_access')
+    include ::DTK::Client
+
     def self.run(argv)
+      Configurator.check_git
+      Configurator.create_missing_client_dirs
+
+      # checks if config exists and if not prompts user with questions to create a config
+      config_exists = Configurator.check_config_exists
+
+      # check if .add_direct_access file exists, if not then add direct access and create .add_direct_access file
+      DTKNAccess.resolve_direct_access(config_exists)
+
       command_context = Context.determine_context
       command_context.run(argv)
     end
+
   end
 end

@@ -5,5 +5,6 @@ module DTK
     require_relative 'client/os_util'
     # os_util must be before configurator
     require_relative 'client/configurator'
+    require_relative 'client/configuration'
   end
 end
