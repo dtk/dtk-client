@@ -18,6 +18,7 @@
 #TODO: see where we need this; dtk_require_from_base('domain/response')
 require 'highline'
 require 'readline'
+require 'colorize'
 
 module DTK
   module Client

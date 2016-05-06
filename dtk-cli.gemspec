@@ -1,4 +1,4 @@
-require_relative 'lib/cli'
+require_relative 'lib/cli/version'
 Gem::Specification.new do |spec| 
   spec.name        = 'dtk-cli'
   spec.version     = DTK::CLI::VERSION
@@ -15,4 +15,8 @@ Gem::Specification.new do |spec|
 
   spec.executables   = spec.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
+
+  spec.add_dependency 'gli', '2.13.4'
+  spec.add_dependency 'highline', '1.7.8'
+  spec.add_dependency 'colorize', '0.7.7'
 end
