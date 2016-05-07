@@ -138,7 +138,7 @@ module DTK::Client
     
     def verbose_mode_on?
       if @@verbose_mode_on.nil?
-        if @@verbose_mode_on ||= !!Configuration.get(:verbose_rest_calls)
+        if @@verbose_mode_on ||= !!Config[:verbose_rest_calls]
           require 'ap'
         end
       end
@@ -176,7 +176,7 @@ module DTK::Client
     def get_default_rest_opts
       # In development mode we want bigger timeout allowing us to debbug on server while still
       # keeping connection alive and receivinga response
-      timeout = Configuration.get(:development_mode) ? 2000 : 150
+      timeout = Config[:development_mode] ? 2000 : 150
       {
         :timeout => timeout,
         :open_timeout => 10,

@@ -24,6 +24,10 @@ module DTK::Client
     NODE_SSH_CREDENTIALS = File.join(OsUtil.dtk_local_folder, 'ssh_credentials.yaml')
     CLIENT_CONF_HEADER = File.expand_path('configurator/config/client.conf.header', File.dirname(__FILE__))
 
+    def self.client_config_path
+      CONFIG_FILE
+    end
+
     def self.get_credentials
       cred_file = CRED_FILE
       raise DtkError, "Authorization configuration file (#{cred_file}) does not exist" unless File.exists?(cred_file)
@@ -38,10 +42,10 @@ module DTK::Client
 
     def self.check_config_exists
       exists = true
-      if !File.exists?(CONFIG_FILE)
+      if !File.exists?(client_config_path)
         puts "", "Please enter the DTK server address (example: instance.dtk.io)"
         header = File.read(CLIENT_CONF_HEADER)
-        generate_conf_file(CONFIG_FILE, [['server_host', 'Server address']], header)
+        generate_conf_file(client_config_path, [['server_host', 'Server address']], header)
         exists = false
       end
       if !File.exists?(CRED_FILE)
@@ -82,7 +86,7 @@ module DTK::Client
     def self.parse_key_value_file(file)
       # adapted from mcollective config
       ret = Hash.new
-      raise DTK::Client::DtkError,"Config file (#{file}) does not exists" unless File.exists?(file)
+      raise DtkError,"Config file (#{file}) does not exists" unless File.exists?(file)
       File.open(file).each do |line|
         # strip blank spaces, tabs etc off the end of all lines
         line.gsub!(/\s*$/, "")
