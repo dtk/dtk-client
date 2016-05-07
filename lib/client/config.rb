@@ -25,7 +25,7 @@ module DTK::Client
     include Singleton
     
     def self.[](k)
-      instance.get(k)
+      instance[k.to_s]
     end
 
     private
@@ -48,21 +48,17 @@ module DTK::Client
       merge_config_file_content_into_hash!(client_config_path) if File.exist?(client_config_path)
     end
 
-    REQUIRED_KEYS = [:server_host]
+    REQUIRED_KEYS = ['server_host']
     def validate
-      #TODO: need to check for legal values
+      # TODO: along with checking for missing keys should check for legal values
       missing_keys = REQUIRED_KEYS - keys
-      raise DtkError, "Missing config keys (#{missing_keys.join(",")}). Please check your configuration file #{Configurator.client_config_path} for required keys!" unless missing_keys.empty?
-    end
-
-    def get(name)
-      self[name.to_s]
+      unless missing_keys.empty?
+        raise Error::Usage, "Missing config keys (#{missing_keys.join(", ")}) in client config file '#{Configurator.client_config_path}"
+      end
     end
 
     def merge_config_file_content_into_hash!(path)
-x=      parse_string_content(File.read(path))
-pp x
-x
+      merge!(parse_string_content(File.read(path)))
     end
 
     # returns a hash
@@ -75,7 +71,7 @@ x
           val_string = $2
           ret.merge!(attr => parse_value_string(val_string))
         else
-          raise DtkError, "Parse error in config file '#{Configurator.client_config_path}' following line is ill-formed:\n  #{line}\n"
+          # skipping any line taht does not parse
         end
       end
       ret
@@ -83,10 +79,12 @@ x
 
     def parse_value_string(val_string)
       # strip off comment
-      ret = val_string.gsub(/#.+$/,'')
-      # remove control characters and leading blanks
-      ret = ret.gsub(/(\r|\t)/,'')
-      ret.gsub(/^[ ]+/,'')
+      val_string = val_string.gsub(/#.+$/,'')
+      # remove control characters 
+      val_string = val_string.gsub(/\t/,'')
+      # remove leading and trailing blanks
+      val_string = val_string.gsub(/^[ ]+/,'').gsub(/[ ]+$/,'')
+     convert_data_types(val_string)
     end
 
     def convert_data_types(val_string)

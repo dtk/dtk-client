@@ -47,7 +47,7 @@ module DTK
       def self.rsa_pub_key_content()
         path_to_key = self.default_rsa_pub_key_path()
         unless File.file?(path_to_key)
-          raise DtkError,"No File found at (#{path_to_key}). Path is wrong or it is necessary to generate the public rsa key (e.g., run ssh-keygen -t rsa)"
+          raise Error,"No File found at (#{path_to_key}). Path is wrong or it is necessary to generate the public rsa key (e.g., run ssh-keygen -t rsa)"
         end
 
         content = File.open(path_to_key){ |f| f.read }
@@ -74,18 +74,18 @@ module DTK
 
       def self.is_ssh_key_path_valid?(path_to_key)
         unless path_to_key.include?(".pub")
-          raise DtkError, "[ERROR] Invalid public key file path (#{path_to_key}). Please provide valid path and try again."
+          raise Error, "[ERROR] Invalid public key file path (#{path_to_key}). Please provide valid path and try again."
         end
 
         unless File.exists?(path_to_key)
-          raise DtkError, "[ERROR] Not able to find provided key (#{path_to_key}). Please provide valid path and try again."
+          raise Error, "[ERROR] Not able to find provided key (#{path_to_key}). Please provide valid path and try again."
         end
       end
 
       def self.is_ssh_key_content_valid?(rsa_pub_key)
         # checking know ssh rsa pub key content
         if(rsa_pub_key.empty? || !rsa_pub_key.include?("AAAAB3NzaC1yc2EA"))
-          raise DtkError, "[ERROR] SSH public key (#{path_to_key}) does not have valid content. Please check your key and try again."
+          raise Error, "[ERROR] SSH public key (#{path_to_key}) does not have valid content. Please check your key and try again."
         end
       end
 

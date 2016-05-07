@@ -10,5 +10,6 @@ module DTK
     require_relative 'client/ssh_util'
     require_relative 'client/session'
     require_relative 'client/config'
+    require_relative 'client/error'
   end
 end

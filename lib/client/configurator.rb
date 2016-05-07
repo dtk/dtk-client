@@ -30,9 +30,9 @@ module DTK::Client
 
     def self.get_credentials
       cred_file = CRED_FILE
-      raise DtkError, "Authorization configuration file (#{cred_file}) does not exist" unless File.exists?(cred_file)
+      raise Error, "Authorization configuration file (#{cred_file}) does not exist" unless File.exists?(cred_file)
       ret = parse_key_value_file(cred_file)
-      [:username, :password].each{ |k| raise DtkError, "cannot find #{k}" unless ret[k] }
+      [:username, :password].each{ |k| raise Error, "cannot find #{k}" unless ret[k] }
       ret
     end
 
@@ -86,7 +86,7 @@ module DTK::Client
     def self.parse_key_value_file(file)
       # adapted from mcollective config
       ret = Hash.new
-      raise DtkError,"Config file (#{file}) does not exists" unless File.exists?(file)
+      raise Error,"Config file (#{file}) does not exists" unless File.exists?(file)
       File.open(file).each do |line|
         # strip blank spaces, tabs etc off the end of all lines
         line.gsub!(/\s*$/, "")

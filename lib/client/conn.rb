@@ -96,7 +96,7 @@ module DTK::Client
       # save cookies - no need to persist them
       # DiskCacher.new.save_cookie(@cookies)
 
-      raise DtkError, "Failed to logout, and terminate session!" unless response
+      raise Error, "Failed to logout, and terminate session!" unless response
       @cookies = nil
     end
     
