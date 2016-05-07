@@ -24,6 +24,14 @@ module DTK::Client
     NODE_SSH_CREDENTIALS = File.join(OsUtil.dtk_local_folder, 'ssh_credentials.yaml')
     CLIENT_CONF_HEADER = File.expand_path('configurator/config/client.conf.header', File.dirname(__FILE__))
 
+    def self.get_credentials
+      cred_file = CRED_FILE
+      raise DtkError, "Authorization configuration file (#{cred_file}) does not exist" unless File.exists?(cred_file)
+      ret = parse_key_value_file(cred_file)
+      [:username, :password].each{ |k| raise DtkError, "cannot find #{k}" unless ret[k] }
+      ret
+    end
+
     def self.create_missing_client_dirs
       create_client_dir?(:dtk_local_folder)
     end
