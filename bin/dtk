@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
 require_relative '../lib/client'
 require_relative '../lib/cli'
-require 'dtk_common_core' 
 DTK::CLI::Runner.run(ARGV)

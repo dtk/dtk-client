@@ -15,6 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+require 'dtk_common_core' 
+
 module DTK::Client
   class Conn
     def initialize
@@ -187,14 +189,15 @@ module DTK::Client
     end
     
     def get_raw(url)
-      RestClientWrapper.get_raw(url, {}, default_rest_opts.merge(:cookies => @cookies))
+      ::DTK::Common::Response::RestClientWrapper.get_raw(url, {}, default_rest_opts.merge(:cookies => @cookies))
     end
+
     def post_raw(url, body, params = {})
-      RestClientWrapper.post_raw(url, body, default_rest_opts.merge(:cookies => @cookies).merge(params))
+      ::DTK::Common::Response::RestClientWrapper.post_raw(url, body, default_rest_opts.merge(:cookies => @cookies).merge(params))
     end
     
     def json_parse_if_needed(item)
-      RestClientWrapper.json_parse_if_needed(item)
+      ::DTK::Common::Response::RestClientWrapper.json_parse_if_needed(item)
     end
   end
 end
