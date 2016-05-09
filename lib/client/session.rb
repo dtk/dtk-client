@@ -50,12 +50,8 @@ module DTK::Client
       instance.conn.logout
     end
     
-    # opts can have key
-    #   :command_class
-    def self.post(route, body, opts = {})
-      command_class = opts[:command_class] || Class
-      conn = instance.conn
-      conn.post(command_class, conn.rest_url(route), body)
+    def self.post(route, body)
+      instance.conn.post(route, body)
     end
   end
 end

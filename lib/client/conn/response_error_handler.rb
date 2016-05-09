@@ -15,11 +15,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::CLI
-  # Abstract class that holds classes and methods for executing commands by
-  # make calls to server and performing client side operations
-  class Execute
-    require_relative('execute/account')
+module DTK; module Client
+  class Conn
+    class ResponseErrorHandler
+      def self.check_for_session_expiried(response)
+        error_code = nil
+        if response && response['errors']
+          response['errors'].each do |err|
+            error_code      = err['code']||(err['errors'] && err['errors'].first['code'])
+          end
+        end
+        (error_code == 'forbidden')
+      end
+      
+      def self.check(response)
+        Error.raise_if_error?(response)
+      end
+    end
   end
-end
-
+end; end

@@ -107,7 +107,7 @@ module DTK
         def edit(file)
           editor = ENV['EDITOR']
           if is_windows?
-            raise Client::Error, "Environment variable EDITOR needs to be set; exit dtk-shell, set variable and log back into dtk-shell." unless editor
+            raise Error, "Environment variable EDITOR needs to be set; exit dtk-shell, set variable and log back into dtk-shell." unless editor
           else
             editor = 'vim' unless editor
           end
@@ -159,7 +159,7 @@ module DTK
             when "test_module"
               test_clone_location
             else
-              raise Client::Error, "Unexpected module_type (#{module_type}) when determining module location"
+              raise Error, "Unexpected module_type (#{module_type}) when determining module location"
             end
         end
 
@@ -197,7 +197,7 @@ module DTK
               when :component_module then Config[:module_location]
               when :test_module then Config[:test_module_location]
               when :assembly_module then Config[:assembly_module_base_location]
-              else raise Client::Error, "Unexpected module_type (#{module_type}) when determining base path"
+              else raise Error, "Unexpected module_type (#{module_type}) when determining base path"
             end
 
 
