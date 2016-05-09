@@ -47,7 +47,7 @@ module DTK; module Client
       check_and_wrap_response { json_parse_if_needed(get_raw(url)) }
     end
     
-    def post(route, body = nil)
+    def post(route, body = {})
       url = rest_url(route)
       if verbose_mode_on?
         ap "POST (REST) #{url}"
@@ -90,7 +90,7 @@ module DTK; module Client
     #
     def print_warning
       creds = get_credentials
-      puts   "[WARNING] Unable to connect to server, please check you configuration."
+      puts   "[ERROR] Unable to connect to server, please check you configuration."
       puts   "========================== Configuration =========================="
       printf "%15s %s\n", "REST endpoint:", rest_url
       printf "%15s %s\n", "Username:", "#{creds[:username]}"
@@ -117,9 +117,9 @@ module DTK; module Client
     def get_rest_url_base
       protocol, port = 
         if "#{Config[:secure_connection]}" == 'true'
-          ['http', Config[:server_port].to_s]
-        else
           ['https', Config[:secure_connection_server_port].to_s]
+        else
+          ['http', Config[:server_port].to_s]
         end
       "#{protocol}://#{Config[:server_host]}:#{port}"
     end

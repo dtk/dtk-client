@@ -15,11 +15,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::CLI
-  # Abstract class that holds classes and methods for executing commands by
-  # make calls to server and performing client side operations
-  class Execute
-    require_relative('execute/account')
+module DTK
+  module CLI
+    # Abstract class that holds classes and methods for executing commands by
+    # make calls to server and performing client side operations
+    class Execute
+      require_relative('execute/account')
+      
+      private
+      
+      def self.post(*args, &body)
+        Client::Session.post(*args, &body)
+      end
+    end
   end
 end
 

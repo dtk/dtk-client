@@ -68,8 +68,8 @@ module DTK; module Client
     
     # return true/false, .add_direct_access file location and ssk key file location
     def self.check_direct_access
-      username_exists  = check_for_username_entry(client_username())
-      ssh_key_path = SSHUtil.default_rsa_pub_key_path()
+      username_exists  = check_for_username_entry(client_username)
+      ssh_key_path = SSHUtil.default_rsa_pub_key_path
       
       {:username_exists => username_exists, :file_path => DIRECT_ACCESS, :ssh_key_path => ssh_key_path}
     end
@@ -101,8 +101,8 @@ module DTK; module Client
       ret
     end
 
-    def self.add_current_user_to_direct_access()
-      username = client_username()
+    def self.add_current_user_to_direct_access
+      username = client_username
       
       File.open(DIRECT_ACCESS, 'a') do |file|
         file.puts(username)
@@ -111,12 +111,12 @@ module DTK; module Client
       true
     end
     
-    def self.client_username()
+    def self.client_username
       parse_key_value_file(CRED_FILE)[:username]
     end
 
     #
-      # Method will check if there is username entry in DIRECT_ACCESS file
+    # Method will check if there is username entry in DIRECT_ACCESS file
     #
     def self.check_for_username_entry(username)
       if File.exists?(DIRECT_ACCESS)
@@ -130,17 +130,17 @@ module DTK; module Client
       false
     end
     
-    def self.ask_catalog_credentials()
+    def self.ask_catalog_credentials
       are_there_creds = Console.confirmation_prompt("Do you have DTK catalog credentials", true)
       property_template = {}
       if are_there_creds
-        property_template = self.enter_catalog_credentials()
+        property_template = self.enter_catalog_credentials
       end
       
       property_template
     end
     
-    def self.enter_catalog_credentials()
+    def self.enter_catalog_credentials
       property_template = {}
       # needed to preserve the order for ruby 1.8.7
       # ruby 1.8 does not preserve order of insertation

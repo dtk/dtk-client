@@ -66,25 +66,26 @@ module DTK; module Client
       ret = {}
       string.each_line do |line|
         line.strip!
-        if line =~ /(^[^=]+)=(.+$)/
+        # strip off comment
+        line.gsub!(/#.+$/,'')
+        # remove control characters 
+        line.gsub!(/\t/,'')
+        # below strips blanks after and before '='
+        if line =~ /(^[^=]+)[ ]*=[ ]*(.+$)/
           attr = $1
           val_string = $2
           ret.merge!(attr => parse_value_string(val_string))
         else
-          # skipping any line taht does not parse
+          # skipping any line that does not parse
         end
       end
       ret
     end
 
     def parse_value_string(val_string)
-      # strip off comment
-      val_string = val_string.gsub(/#.+$/,'')
-      # remove control characters 
-      val_string = val_string.gsub(/\t/,'')
-      # remove leading and trailing blanks
-      val_string = val_string.gsub(/^[ ]+/,'').gsub(/[ ]+$/,'')
-     convert_data_types(val_string)
+      # remove trailing blanks
+      val_string = val_string.gsub(/[ ]+$/,'')
+      convert_data_types(val_string)
     end
 
     def convert_data_types(val_string)
@@ -94,7 +95,8 @@ module DTK; module Client
        when /^[0-9]+$/
         val_string.to_i
        when /^[0-9\.]+$/
-        val_string.to_f
+        # making sure dont do something like '10.0.0.1'.to_f
+        val_string.split('.').size == 2 ? val_string.to_f : val_string
        else 
         val_string
       end

@@ -20,11 +20,11 @@ module DTK::CLI
     module DTKNAccess
       include ::DTK::Client
       # check if .add_direct_access file exists, if not then add direct access and create .add_direct_access file
-      def self.resolve_direct_access(config_exists)
+      def self.resolve_direct_access(config_existed)
         params = Configurator.check_direct_access
         return if params[:username_exists]
         
-        OsUtil.print('Processing ...', :yellow) if config_exists
+        OsUtil.print('Processing ...', :yellow) if config_existed
         # check to see if catalog credentials are set
         conn = Session.get_connection
         response = conn.post 'account/check_catalog_credentials'

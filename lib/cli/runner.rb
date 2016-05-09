@@ -15,25 +15,41 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::CLI
-  # Top-level entry class
-  class Runner
-    require_relative('runner/dtkn_access')
-    include ::DTK::Client
-
-    def self.run(argv)
-      Configurator.check_git
-      Configurator.create_missing_client_dirs
-
-      # checks if config exists and if not prompts user with questions to create a config
-      config_exists = Configurator.check_config_exists
-
-      # check if .add_direct_access file exists, if not then add direct access and create .add_direct_access file
-      DTKNAccess.resolve_direct_access(config_exists)
-
-      command_context = Context.determine_context
-      command_context.run(argv)
+module DTK
+  module CLI
+    # Top-level entry class for dtk CLI executable
+    class Runner
+      require_relative('runner/dtkn_access')
+      include ::DTK::Client
+      
+      def self.run(argv)
+        Configurator.check_git
+        Configurator.create_missing_client_dirs
+        
+        # checks if config exists and if not prompts user with questions to create a config
+        config_existed = Configurator.check_config_exists
+        
+        exit 1 unless valid_connection?
+        
+        # check if .add_direct_access file exists, if not then add direct access and create .add_direct_access file
+        DTKNAccess.resolve_direct_access(config_existed)
+        
+        command_context = Context.determine_context
+        command_context.run(argv)
+      end
+      
+      private
+      
+      def self.valid_connection?
+        connection = Client::Session.get_connection
+        if connection.connection_error?
+          connection.print_warning
+          puts "\nDTK will now exit. Please set up your connection properly and try again."
+          false
+        else
+          true
+        end
+      end
     end
-
   end
 end
