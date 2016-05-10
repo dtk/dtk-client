@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 require 'fileutils'
-module DTK; module Client
+module DTK::Client
   module Configurator
     CONFIG_FILE   = File.join(OsUtil.dtk_local_folder, 'client.conf')
     CRED_FILE     = File.join(OsUtil.dtk_local_folder, '.connection')
@@ -183,4 +183,4 @@ module DTK; module Client
     end
 
   end
-end; end
+end

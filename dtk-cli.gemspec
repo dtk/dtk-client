@@ -1,7 +1,7 @@
 require_relative 'lib/cli/version'
 Gem::Specification.new do |spec| 
   spec.name        = 'dtk-cli'
-  spec.version     = DTK::CLI::VERSION
+  spec.version     = DTK::Client::CLI::VERSION
   spec.author      = 'Reactor8'
   spec.email       = 'support@reactor8.com'
   spec.description = %q{Command line tool to interact with a DTK Server and DTK Service Catalog.}

@@ -15,74 +15,76 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::CLI
-  # Object that provides the context for interpreting commands
-  class Context
-    require_relative('context/attributes')
-
-    ALL_CONTEXTS = [:service, :module]
-    ALL_CONTEXTS.each { |context| require_relative("context/#{context}") }
-    require_relative('context/top')
-
-    def initialize
-      @command_processor = Processor.default
-      @context_attributes = attributes
-    end
-    private :initialize 
-
-    def self.determine_context
-      get_and_set_cache { create_when_in_specific_context? || create_default }
-    end
-
-    def run(argv)
-      @command_processor.run(argv)
-    end
-    
-    def method_missing(method, *args, &body)
-      command_processor_object_methods.include?(method) ? @command_processor.send(method, *args, &body) : super
-    end
-    
-    def respond_to?(method)
-      command_processor_object_methods.include?(method) or super
-    end
-
-    def add_command_defaults_and_defs!
-      add_command_defaults!
-      add_command_defs!
-      self
-    end
-    
-    private
-
-    # The method 'create_attributes' can be ovewritten
-    def attributes
-      Attributes.new
-    end
-
-    attr_reader :context_attributes
-
-    def self.create
-      new.add_command_defaults_and_defs!
-    end
-
-    def self.create_default
-      Top.create
-    end
-
-    def command_processor_object_methods
-      @@command_processor_object_methods ||= Processor::Methods.all 
-    end
-    
-    def self.get_and_set_cache
-      # TODO: stub
-      yield
-    end
+module DTK::Client
+  module CLI
+    # Object that provides the context for interpreting commands
+    class Context
+      require_relative('context/attributes')
       
-    def self.create_when_in_specific_context?
-      # TODO: stub 
-      nil
-      # Module.create
-      # Service.create
+      ALL_CONTEXTS = [:service, :module]
+      ALL_CONTEXTS.each { |context| require_relative("context/#{context}") }
+      require_relative('context/top')
+      
+      def initialize
+        @command_processor = Processor.default
+        @context_attributes = attributes
+      end
+      private :initialize 
+      
+      def self.determine_context
+        get_and_set_cache { create_when_in_specific_context? || create_default }
+      end
+      
+      def run(argv)
+        @command_processor.run(argv)
+      end
+      
+      def method_missing(method, *args, &body)
+      command_processor_object_methods.include?(method) ? @command_processor.send(method, *args, &body) : super
+      end
+      
+      def respond_to?(method)
+        command_processor_object_methods.include?(method) or super
+      end
+      
+      def add_command_defaults_and_defs!
+        add_command_defaults!
+        add_command_defs!
+        self
+      end
+      
+      private
+      
+      # The method 'create_attributes' can be ovewritten
+      def attributes
+        Attributes.new
+      end
+      
+      attr_reader :context_attributes
+      
+      def self.create
+        new.add_command_defaults_and_defs!
+      end
+      
+      def self.create_default
+        Top.create
+      end
+      
+      def command_processor_object_methods
+        @@command_processor_object_methods ||= Processor::Methods.all 
+      end
+      
+      def self.get_and_set_cache
+        # TODO: stub
+        yield
+      end
+      
+      def self.create_when_in_specific_context?
+        # TODO: stub 
+        nil
+        # Module.create
+        # Service.create
+      end
     end
   end
 end

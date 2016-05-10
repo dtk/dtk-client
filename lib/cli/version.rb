@@ -1,6 +1,8 @@
 module DTK
-  module CLI
-  VERSION = '0.0.1'
+  module Client
+    module CLI
+      VERSION = '0.0.1'
+    end
   end
 end
 

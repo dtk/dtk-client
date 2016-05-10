@@ -15,28 +15,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::CLI
-  module Command
-    require_relative('command/mixin')
-    # mixin must be before rest
-    ALL_COMMANDS = [:service, :module]
-    ALL_COMMANDS.each { |command_name| require_relative("command/#{command_name}") }
-
-    def self.command_module(command_name)
-      const_get command_name.to_s.capitalize
+module DTK::Client
+  module CLI
+    module Command
+      require_relative('command/mixin')
+      # mixin must be before rest
+      ALL_COMMANDS = [:service, :module]
+      ALL_COMMANDS.each { |command_name| require_relative("command/#{command_name}") }
+      
+      def self.command_module(command_name)
+        const_get command_name.to_s.capitalize
+      end
+      
+      def self.all_command_names
+        ALL_COMMANDS
+      end
+      
+      def self.all_command_modules
+        all_command_names.map  { |command| command_module(command) }
+      end
+      
+      module All
+        Command.all_command_modules.each  { |command_module| include command_module }
+      end
     end
-
-    def self.all_command_names
-      ALL_COMMANDS
-    end
-
-    def self.all_command_modules
-      all_command_names.map  { |command| command_module(command) }
-    end
-
-    module All
-      Command.all_command_modules.each  { |command_module| include command_module }
-    end
-
   end
 end

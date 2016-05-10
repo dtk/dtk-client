@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK
+module DTK::Client
   module Auxiliary
     def cap_form(x)
       x.gsub('-','_').to_s.split("_").map{|t|t.capitalize}.join("")

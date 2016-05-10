@@ -17,7 +17,7 @@
 #
 require 'singleton'
 
-module DTK; module Client
+module DTK::Client
   ##
   # Singleton patern to hold configuration for dtk client.
   #
@@ -102,5 +102,5 @@ module DTK; module Client
       end
     end
   end
-end; end
+end
 

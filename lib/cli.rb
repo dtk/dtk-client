@@ -7,6 +7,5 @@ module DTK
     require_relative 'cli/command'
     # processor and command must go before context
     require_relative 'cli/context'
-    require_relative 'cli/execute'
   end
 end

@@ -15,12 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK
+module DTK::Client
   module CLI
     # Top-level entry class for dtk CLI executable
     class Runner
       require_relative('runner/dtkn_access')
-      include ::DTK::Client
       
       def self.run(argv)
         Configurator.check_git
@@ -41,7 +40,7 @@ module DTK
       private
       
       def self.valid_connection?
-        connection = Client::Session.get_connection
+        connection = Session.get_connection
         if connection.connection_error?
           connection.print_warning
           puts "\nDTK will now exit. Please set up your connection properly and try again."

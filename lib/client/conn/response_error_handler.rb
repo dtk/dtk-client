@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK; module Client
+module DTK::Client
   class Conn
     class ResponseErrorHandler
       def self.check_for_session_expiried(response)
@@ -33,4 +33,4 @@ module DTK; module Client
       end
     end
   end
-end; end
+end

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 require 'gli'
-module DTK::CLI
+module DTK::Client::CLI
   class Processor
     module Plugin
       class Gli
@@ -24,7 +24,7 @@ module DTK::CLI
 
         def add_command_defaults!
           program_desc 'DTK CLI tool'
-          version ::DTK::CLI::VERSION
+          version VERSION
           subcommand_option_handling :normal
           arguments :strict
         end

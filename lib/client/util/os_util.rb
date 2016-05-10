@@ -20,7 +20,7 @@ require 'highline'
 require 'readline'
 require 'colorize'
 
-module DTK
+module DTK::Client
   module OsUtil
 
     extend Auxiliary

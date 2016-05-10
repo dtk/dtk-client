@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK
+module DTK::Client
   module SSHUtil
     def self.read_and_validate_pub_key(path_to_pub_key)
       is_ssh_key_path_valid?(path_to_pub_key)

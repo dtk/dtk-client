@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::CLI
+module DTK::Client::CLI
   class Context
     class Module < self
       include Command::Module

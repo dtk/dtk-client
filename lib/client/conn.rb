@@ -17,7 +17,7 @@
 #
 require 'dtk_common_core' 
 
-module DTK; module Client
+module DTK::Client
   class Conn
     require_relative('conn/response_error_handler')
     def initialize
@@ -128,7 +128,7 @@ module DTK; module Client
         response = rest_method_func.call
       end
       
-      response_obj = Common::Response.new(response)
+      response_obj = ::DTK::Common::Response.new(response)
       
       # queue messages from server to be displayed later
       #TODOL put in processing of messages Shell::MessageQueue.process_response(response_obj)
@@ -149,7 +149,7 @@ module DTK; module Client
       response = post_raw rest_url('auth/login'), creds
       errors = response['errors']
       
-      if response.kind_of?(Common::Response) and not response.ok?
+      if response.kind_of?(::DTK::Common::Response) and not response.ok?
         if (errors && errors.first['code']=="pg_error")
           OsUtil.print(errors.first['message'].gsub!("403 Forbidden", "[PG_ERROR]"), :red)
           exit
@@ -191,16 +191,16 @@ module DTK; module Client
     end
     
     def get_raw(url)
-      Common::Response::RestClientWrapper.get_raw(url, {}, default_rest_opts.merge(:cookies => @cookies))
+      ::DTK::Common::Response::RestClientWrapper.get_raw(url, {}, default_rest_opts.merge(:cookies => @cookies))
     end
 
     def post_raw(url, body, params = {})
-      Common::Response::RestClientWrapper.post_raw(url, body, default_rest_opts.merge(:cookies => @cookies).merge(params))
+      ::DTK::Common::Response::RestClientWrapper.post_raw(url, body, default_rest_opts.merge(:cookies => @cookies).merge(params))
     end
     
     def json_parse_if_needed(item)
-      Common::Response::RestClientWrapper.json_parse_if_needed(item)
+      ::DTK::Common::Response::RestClientWrapper.json_parse_if_needed(item)
     end
   end
-end; end
+end
 
