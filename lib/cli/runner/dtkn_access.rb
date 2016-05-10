@@ -30,7 +30,7 @@ module DTK::Client; module CLI
         response = conn.post 'account/check_catalog_credentials'
         
         # set catalog credentails
-        if response.ok? && !response.data['catalog_credentials_set']
+        if response.ok? && !response.data(:catalog_credentials_set)
           # setting up catalog credentials
           catalog_creds = Configurator.ask_catalog_credentials
           unless catalog_creds.empty?
