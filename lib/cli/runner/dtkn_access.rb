@@ -34,9 +34,15 @@ module DTK::Client; module CLI
           # setting up catalog credentials
           catalog_creds = Configurator.ask_catalog_credentials
           unless catalog_creds.empty?
-            response = conn.post 'account/set_catalog_credentials', { :username => catalog_creds[:username], :password => catalog_creds[:password], :validate => true}
-            if errors = response['errors']
-              OsUtil.print("#{errors.first['message']} You will have to set catalog credentials manually ('dtk account set-catalog-credentials').", :yellow)
+            post_body = {
+              :username => catalog_creds[:username], 
+              :password => catalog_creds[:password], 
+              :validate => true
+            }
+            response = conn.post 'account/set_catalog_credentials', post_body 
+            unless response.ok?
+              error_message = response.error_message.gsub(/\.[ ]*$/,'')
+              OsUtil.print("#{error_message}. You will have to set catalog credentials manually ('dtk account set-catalog-credentials').", :yellow)
             end
           end
         end
@@ -44,10 +50,13 @@ module DTK::Client; module CLI
           :first_registration => true, 
           :name => "#{Session.connection_username}-client"
         }
-        response, matched_pub_key, matched_username = Execute::Account.add_key(params[:ssh_key_path], add_key_opts)
+        response = Execute::Account.add_key(params[:ssh_key_path], add_key_opts)
+        matched_pub_key = response.data(:matched_pub_key)
+        matched_username = response.data(:matched_username)
         
         if !response.ok?
-          OsUtil.print("We were not able to add access for current user. #{response.error_message}. In order to properly use dtk-shell you will have to add access manually ('dtk account add-ssh-key').\n", :yellow)
+          error_message = response.error_message.gsub(/\.[ ]*$/,'')
+          OsUtil.print("We were not able to add access for current user. #{error_message}. In order to properly use dtk-shell you will have to add access manually ('dtk account add-ssh-key').\n", :yellow)
         elsif matched_pub_key
           # message will be displayed by add key # TODO: Refactor this flow
           OsUtil.print("Provided SSH PUB key has already been added.", :yellow)

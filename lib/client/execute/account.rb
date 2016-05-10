@@ -23,7 +23,6 @@ module DTK::Client
       # opts can have keys
       #  :first_registration - Booelan (default: false)
       #  :name - (default: 'dtk-client')
-      # returns [response, match, matched_username]
       def self.add_key(path_to_key, opts = {})
         match, matched_username = nil, nil
 
@@ -31,27 +30,22 @@ module DTK::Client
           raise Error,"[ERROR] No ssh key file found at (#{path_to_key}). Path is wrong or it is necessary to generate the public rsa key (e.g., run `ssh-keygen -t rsa`)."
         end
         
-        response, key_exists_already = add_user_access(path_to_key, opts)
+        response = add_user_access(path_to_key, opts)
 
-        return [response, nil, nil] unless response.ok?
-
-        match = response.data['match']
-        matched_username = response.data['matched_username']
-
-        if response && !match
-          repo_manager_fingerprint,repo_manager_dns = response.data_ret_and_remove!(:repo_manager_fingerprint,:repo_manager_dns)
-          SSHUtil.update_ssh_known_hosts(repo_manager_dns,repo_manager_fingerprint)
-          OsUtil.print("SSH key '#{response.data["new_username"]}' added successfully!", :yellow)
+        if response.ok? and !response.data(:match)
+          repo_manager_fingerprint, repo_manager_dns = response.data_ret_and_remove!(:repo_manager_fingerprint, :repo_manager_dns)
+          SSHUtil.update_ssh_known_hosts(repo_manager_dns, repo_manager_fingerprint)
+          OsUtil.print("SSH key '#{response.data('new_username')}' added successfully!", :yellow)
         end
         
-        [response, match, matched_username]
+        response
       end
 
       private
 
       # opts can have keys
       #  :first_registration - Booelan (default: false)
-      # :name - (default: 'dtk-client')
+      #  :name - (default: 'dtk-client')
       def self.add_user_access(path_to_key, opts = {})
         first_registration = opts[:first_registration] || false
         name = opts[:name] || 'dtk-client'
