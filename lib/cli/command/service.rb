@@ -29,13 +29,13 @@ module DTK::Client; module CLI
           c.arg 'NAMESPACE/MODULE-NAME', :optional
         end
         c.desc 'Deploy a new service instance from the selected assembly'
-        c.command :deploy  do |deploy|
-          deploy.flag [:i], :arg_name =>'INSTANCE-NAME', :desc => 'If specified, name to call new service instance' 
-          deploy.flag [:t], :arg_name => 'PARENT-SERVICE-INSTANCE', :desc => 'Parent Service instance into which the new assembly is deployed' 
-          deploy.flag [:v], :arg_name => 'VERSION', :desc => 'Version'
-          deploy.switch ['auto-complete'], :default_value => true, :desc => 'If true, components with dependencies are automatically linked'
-          deploy.switch [:s, 'stream-results'], :default_value => true, :desc => 'If true, results are streamed as tasks progresses and completes or user enters ^C'
-          deploy.action do |global_options, options, args|
+        c.command :deploy  do |sc|
+          sc.flag [:i], :arg_name =>'INSTANCE-NAME', :desc => 'If specified, name to call new service instance' 
+          sc.flag [:t], :arg_name => 'PARENT-SERVICE-INSTANCE', :desc => 'Parent Service instance into which the new assembly is deployed' 
+          sc.flag [:v], :arg_name => 'VERSION', :desc => 'Version'
+          sc.switch ['auto-complete'], :default_value => true, :desc => 'If true, components with dependencies are automatically linked'
+          sc.switch [:s, 'stream-results'], :default_value => true, :desc => 'If true, results are streamed as tasks progresses and completes or user enters ^C'
+          sc.action do |global_options, options, args|
             pp [self.class, options, args, context_attributes: context_attributes]
             pp [self.class, options, args]
             puts 'dtk service deploy'
@@ -49,12 +49,12 @@ module DTK::Client; module CLI
           c.arg 'NAMESPACE/MODULE-NAME', :optional
         end
         c.desc 'Deploy a top level service instance that will serve as a target'
-        c.command 'deploy-target'  do |deploy|
-          deploy.flag [:i], :arg_name =>'INSTANCE-NAME', :desc => 'If specified, name to call new service instance' 
-          deploy.flag [:v], :arg_name => 'VERSION', :desc => 'Version'
-          deploy.switch ['auto-complete'], :default_value => true, :desc => 'If true, components with dependencies are automatically linked'
-          deploy.switch [:s, 'stream-results'], :default_value => true, :desc => 'If true, results are streamed as tasks progresses and completes or user enters ^C'
-          deploy.action do |global_options, options, args|
+        c.command 'deploy-target'  do |sc|
+          sc.flag [:i], :arg_name =>'INSTANCE-NAME', :desc => 'If specified, name to call new service instance' 
+          sc.flag [:v], :arg_name => 'VERSION', :desc => 'Version'
+          sc.switch ['auto-complete'], :default_value => true, :desc => 'If true, components with dependencies are automatically linked'
+          sc.switch [:s, 'stream-results'], :default_value => true, :desc => 'If true, results are streamed as tasks progresses and completes or user enters ^C'
+          sc.action do |global_options, options, args|
             pp [self.class, options, args, context_attributes: context_attributes]
             pp [self.class, options, args]
             puts 'dtk service deploy-target'

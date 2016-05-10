@@ -33,8 +33,7 @@ module DTK::Client
         # check if .add_direct_access file exists, if not then add direct access and create .add_direct_access file
         DTKNAccess.resolve_direct_access(config_existed)
         
-        command_context = Context.determine_context
-        command_context.run(argv)
+        Context.determine_context.run(argv)
       end
       
       private

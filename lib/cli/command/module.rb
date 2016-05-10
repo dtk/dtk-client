@@ -28,10 +28,10 @@ module DTK::Client; module CLI
           c.arg 'NAMESPACE/MODULE-NAME', :optional
         end
         c.desc 'Install DTK module'
-        c.command :install  do |install|
-          install.flag [:v, :version], :arg_name => 'VERSION', :desc => 'Module Version'
-          install.switch [:f], :default_value => false, :desc => 'Force Install'
-          install.action do |global_options, options, args|
+        c.command :install  do |sc|
+          sc.flag [:v, :version], :arg_name => 'VERSION', :desc => 'Module Version'
+          sc.switch [:f], :default_value => false, :desc => 'Force Install'
+          sc.action do |global_options, options, args|
             # pp [self.class, options, args, context_attributes: context_attributes]
             puts 'dtk module install'
           end
@@ -40,8 +40,8 @@ module DTK::Client; module CLI
 
       subcommand_def 'list-assemblies' do |c|
         c.desc 'List assemblies'
-        c.command 'list-assemblies'  do |list_assemblies|
-          list_assemblies.action do 
+        c.command 'list-assemblies'  do |sc|
+          sc.action do 
             Execute::Module.list_assemblies
           end
         end

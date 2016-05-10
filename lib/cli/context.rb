@@ -36,20 +36,22 @@ module DTK::Client
       end
       
       def run(argv)
-        @command_processor.run(argv)
+        response = @command_processor.run_and_return_command_response(argv)
+        pp [:response, response.class, response]
       end
       
       def method_missing(method, *args, &body)
-      command_processor_object_methods.include?(method) ? @command_processor.send(method, *args, &body) : super
+        command_processor_object_methods.include?(method) ? @command_processor.send(method, *args, &body) : super
       end
       
       def respond_to?(method)
         command_processor_object_methods.include?(method) or super
       end
       
-      def add_command_defaults_and_defs!
+      def add_command_defs_defaults_and_hooks!
         add_command_defaults!
         add_command_defs!
+        add_command_hooks!
         self
       end
       
@@ -63,7 +65,7 @@ module DTK::Client
       attr_reader :context_attributes
       
       def self.create
-        new.add_command_defaults_and_defs!
+        new.add_command_defs_defaults_and_hooks!
       end
       
       def self.create_default

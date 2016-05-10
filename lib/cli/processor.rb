@@ -31,7 +31,7 @@ module DTK::Client
       
       module Methods
         def self.all
-          [:arg_name, :command, :default_value, :desc, :flag, :switch, :run, :add_command_defaults!]
+          [:arg_name, :command, :default_value, :desc, :flag, :switch, :add_command_defaults!, :add_command_hooks!, :run_and_return_command_response]
         end
       end
       
@@ -43,7 +43,7 @@ module DTK::Client
         @plugin = plugin_class.new
       end
       private :initialize
-      
+
       def method_missing(method, *args, &body)
         Methods.all.include?(method) ? @plugin.send(method, *args, &body) : super
       end

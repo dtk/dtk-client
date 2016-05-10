@@ -22,6 +22,23 @@ module DTK::Client::CLI
       class Gli
         include ::GLI::App
 
+        def initialize
+          @command_response = nil
+        end
+
+        def run_and_return_command_response(argv)
+          run(argv)
+          @command_response
+        end
+
+        # add_command_hooks! works in conjunction with run
+        def add_command_hooks!
+          around do |_global_options, _command, _options, _arguments, code|
+            # It is expected that last line in code block returns response
+            @command_response =  code.call
+          end
+        end
+
         def add_command_defaults!
           program_desc 'DTK CLI tool'
           version VERSION
