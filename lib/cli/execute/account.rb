@@ -55,7 +55,7 @@ module DTK; module CLI
         first_registration = opts[:first_registration] || false
         name = opts[:name] || 'dtk-client'
 
-        rsa_pub_key = Client::SSHUtil.read_and_validate_pub_key(path_to_key)
+        rsa_pub_key = SSHUtil.read_and_validate_pub_key(path_to_key)
         
         post_body  = { 
           :rsa_pub_key        => rsa_pub_key.chomp,

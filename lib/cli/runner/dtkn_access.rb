@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::CLI
+module DTK; module CLI
   class Runner
     module DTKNAccess
       include ::DTK::Client
@@ -63,4 +63,5 @@ module DTK::CLI
       end
     end
   end
-end
+end; end
+
