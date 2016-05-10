@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client::CLI
+module DTK::Client; module CLI
   module Command
     module Service
       include Command::Mixin
@@ -64,4 +64,4 @@ module DTK::Client::CLI
 
     end
   end
-end
+end; end

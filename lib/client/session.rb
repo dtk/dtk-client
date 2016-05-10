@@ -50,8 +50,13 @@ module DTK::Client
       instance.conn.logout
     end
     
-    def self.post(route, body)
-      instance.conn.post(route, body)
+    def self.rest_post(route, post_body = {})
+      instance.conn.post(route, post_body)
     end
+
+    def self.rest_get(route, args = {})
+      instance.conn.get(route, args)
+    end
+
   end
 end

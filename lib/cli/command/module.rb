@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client::CLI
+module DTK::Client; module CLI
   module Command
     module Module 
       include Command::Mixin
@@ -41,15 +41,11 @@ module DTK::Client::CLI
       subcommand_def 'list-assemblies' do |c|
         c.desc 'List assemblies'
         c.command 'list-assemblies'  do |list_assemblies|
-          list_assemblies.action do |global_options, options, args|
-             pp [self.class, options, args, context_attributes: context_attributes]
-            puts 'dtk module list-assemblies'
+          list_assemblies.action do 
+            Execute::Module.list_assemblies
           end
         end
       end
     end
   end
-end
-
-
-
+end; end

@@ -16,21 +16,15 @@
 # limitations under the License.
 #
 module DTK::Client
-  # Abstract class that holds classes and methods for executing commands by
-  # make calls to server and performing client side operations
   class Execute
-    require_relative('execute/account')
-    require_relative('execute/module')
-    
-    private
-    
-    # delegate rest calls to Session
-    def self.rest_post(route, post_body = {})
-      Session.rest_post(route, post_body)
-    end
-    def self.rest_get(route, args = {})
-      Session.rest_get(route, args)
+    class Module < self
+      RoutePrefix = 'modules'
+
+      def self.list_assemblies
+        rest_get "#{RoutePrefix}/list_assemblies"
+      end
     end
   end
 end
+
 

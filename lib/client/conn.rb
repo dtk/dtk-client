@@ -40,33 +40,33 @@ module DTK::Client
       get_credentials[:username]
     end
     
-    def get(route)
+    def get(route, args = {})
       url = rest_url(route)
       ap "GET #{url}" if verbose_mode_on?
       
       check_and_wrap_response { json_parse_if_needed(get_raw(url)) }
     end
     
-    def post(route, body = {})
+    def post(route, post_body = {})
       url = rest_url(route)
       if verbose_mode_on?
         ap "POST (REST) #{url}"
         ap "params: "
-        ap body
+        ap post_body
       end
       
-      check_and_wrap_response { json_parse_if_needed(post_raw(url, body)) }
+      check_and_wrap_response { json_parse_if_needed(post_raw(url, post_body)) }
     end
     
-    def post_file(route, body = nil)
+    def post_file(route, post_body = {})
       url = rest_url(route)
       if verbose_mode_on?
           ap "POST (FILE) #{url}"
         ap "params: "
-        ap body
+        ap post_body
       end
       
-      check_and_wrap_response { json_parse_if_needed(post_raw(url,body,{:content_type => 'avro/binary'})) }
+      check_and_wrap_response { json_parse_if_needed(post_raw(url,post_body,{:content_type => 'avro/binary'})) }
     end
 
     def connection_error?
@@ -194,8 +194,8 @@ module DTK::Client
       ::DTK::Common::Response::RestClientWrapper.get_raw(url, {}, default_rest_opts.merge(:cookies => @cookies))
     end
 
-    def post_raw(url, body, params = {})
-      ::DTK::Common::Response::RestClientWrapper.post_raw(url, body, default_rest_opts.merge(:cookies => @cookies).merge(params))
+    def post_raw(url, post_body, params = {})
+      ::DTK::Common::Response::RestClientWrapper.post_raw(url, post_body, default_rest_opts.merge(:cookies => @cookies).merge(params))
     end
     
     def json_parse_if_needed(item)

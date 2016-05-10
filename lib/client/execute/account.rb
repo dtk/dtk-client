@@ -18,6 +18,8 @@
 module DTK::Client
   class Execute
     class Account < self
+      RoutePrefix = 'account'
+
       # opts can have keys
       #  :first_registration - Booelan (default: false)
       #  :name - (default: 'dtk-client')
@@ -47,7 +49,6 @@ module DTK::Client
 
       private
 
-      KEY_EXISTS_ALREADY_CONTENT = 'key exists already'
       # opts can have keys
       #  :first_registration - Booelan (default: false)
       # :name - (default: 'dtk-client')
@@ -62,7 +63,7 @@ module DTK::Client
           :username?          => name && name.chomp,
           :first_registration => first_registration,
         }
-        post 'account/add_user_direct_access', PostBody.new(post_body)
+        rest_post "#{RoutePrefix}/add_user_direct_access", PostBody.new(post_body)
       end
     end
   end
