@@ -73,19 +73,8 @@ module DTK; module Client
       return !@connection_error.nil?
     end
     
-    def logout
-      # TODO: this should be changed to pust and can we use get("user/process_logout")
-      response = get_raw rest_url("user/process_logout")
-      
-      # save cookies - no need to persist them
-      # DiskCacher.new.save_cookie(@cookies)
-
-      raise Error, "Failed to logout, and terminate session!" unless response
-      @cookies = nil
-    end
-    
     ##
-      # Method will warn user that connection could not be established. User should check configuration
+    # Method will warn user that connection could not be established. User should check configuration
     # to make sure that connection is properly set.
     #
     def print_warning
@@ -97,7 +86,7 @@ module DTK; module Client
       printf "%15s %s\n", "Password:", "#{creds[:password] ? creds[:password].gsub(/./,'*') : 'No password set'}"
       puts   "==================================================================="
       
-      if self.connection_error['errors'].first['errors']
+      if connection_error['errors'].first['errors']
         error_code = self.connection_error['errors'].first['errors'].first['code']
         print " Error code: "
         OsUtil.print(error_code, :red)
@@ -106,8 +95,12 @@ module DTK; module Client
     
     private
 
+    REST_VERSION = 'v1'
+    REST_PREFIX = "rest/api/#{REST_VERSION}"
+    # REST_PREFIX = "rest"
+
     def rest_url(route = nil)
-      "#{rest_url_base}/rest/#{route}"
+      "#{rest_url_base}/#{REST_PREFIX}/#{route}"
     end
 
     def rest_url_base
@@ -153,7 +146,7 @@ module DTK; module Client
 
     def login
       creds = get_credentials
-      response = post_raw rest_url("user/process_login"), creds
+      response = post_raw rest_url('auth/login'), creds
       errors = response['errors']
       
       if response.kind_of?(Common::Response) and not response.ok?
@@ -167,6 +160,12 @@ module DTK; module Client
       end
     end
     
+    def logout
+      response = get_raw rest_url('auth/logout')
+      raise Error, "Failed to logout, and terminate session!" unless response
+      @cookies = nil
+    end
+
     def set_credentials(username, password)
       @parsed_credentials = { :username => username, :password => password}
     end
