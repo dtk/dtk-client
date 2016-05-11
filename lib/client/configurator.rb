@@ -22,7 +22,7 @@ module DTK::Client
     CRED_FILE     = File.join(OsUtil.dtk_local_folder, '.connection')
     DIRECT_ACCESS = File.join(OsUtil.dtk_local_folder, '.add_direct_access')
     NODE_SSH_CREDENTIALS = File.join(OsUtil.dtk_local_folder, 'ssh_credentials.yaml')
-    CLIENT_CONF_HEADER = File.expand_path('configurator/config/client.conf.header', File.dirname(__FILE__))
+    CLIENT_CONF_HEADER = File.expand_path('config/client.conf.header', File.dirname(__FILE__))
 
     def self.client_config_path
       CONFIG_FILE
