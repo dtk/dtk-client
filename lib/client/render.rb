@@ -32,59 +32,85 @@ module DTK::Client
     end
     private :initialize
 
-    def self.render(command_class, ruby_obj, type, data_type, adapter=nil, print_error_table=false)
-      adapter ||= get_adapter(type,command_class,data_type)
+    # opts can have keys
+    #  :type - One of Render::Type constants
+    #  :command_class
+    #  :data_type
+    #  :adapter - way to pass in already created adapter
+    #  :print_error_table - Boolean (default: false)
+    # value returned is Boolean indicating whether any additional print needed
+    def self.render(ruby_obj, opts = {})
+      type = opts[:type]
       if type == Type::TABLE
         # for table there is only one rendering, we use command class to
         # determine output of the table
-        adapter.render(ruby_obj, command_class, data_type, nil, print_error_table)
-        
-        # saying no additional print needed (see core class)
-        return false
+        get_adapter(type, opts).render(ruby_obj, opts)
+        # saying no additional print needed 
+        false
       elsif ruby_obj.kind_of?(Hash)
-        adapter.render(ruby_obj)
+        get_adapter(type, opts).render(ruby_obj)
       elsif ruby_obj.kind_of?(Array)
-        ruby_obj.map{|el|render(command_class,el,type,nil,adapter)}
+        ruby_obj.map{ |el| render(el, opts) }
       elsif ruby_obj.kind_of?(String)
         ruby_obj
       else
-        raise Error.new('ruby_obj has unexepected type')
+        raise Error.new('ruby_obj has unexpected type')
       end
     end
     
     private
 
-    def self.get_adapter(type, command_class, data_type=nil)
+    # opts can have keys
+    #  :adapter - way to pass in already created adapter
+    #  :command_class
+    #  :data_type
+    def self.get_adapter(type, opts = {})
+     return opts[:adapter] if opts[:adapter]
+
+      raise Error.new('No type is given') unless type
+
+      command_class = opts[:command_class]
+      data_type = opts[:data_type]
+
       data_type_index = use_data_type_index?(command_class, data_type)
-      cached = 
-        if data_type_index
-          ((AdapterCacheAug[type]||{})[command_class]||{})[data_type_index]
-        else
-          (AdapterCache[type]||{})[command_class]
-        end               
-      
-      return cached if cached
+      cached_adapter = AdapterCache.get?(type, command_class, data_type_index)
+      return cached_adapter if cached_adapter
+
       require_relative("render/#{type}")
       klass = const_get cap_form(type) 
+
       if data_type_index
-        AdapterCacheAug[type] ||= Hash.new
-        AdapterCacheAug[type][command_class] ||= Hash.new
-        AdapterCacheAug[type][command_class][data_type_index] = klass.new(type,command_class,data_type_index)
+        AdapterCache::Aug.set(klass.new(type, command_class, data_type_index))
       else
-        AdapterCache[type] ||= Hash.new
-        AdapterCache[type][command_class] = klass.new(type,command_class)               
+        AdapterCache::Simple.set(klass.new(type, command_class))
       end
     end
     
-    AdapterCache = Hash.new
-    AdapterCacheAug = Hash.new
-
     #data_type_index is used if there is adata type passed and it is different than command_class default data type
     def self.use_data_type_index?(command_class, data_type)
       if data_type
         data_type_index = data_type.downcase
         if data_type_index != snake_form(command_class)
           data_type_index
+        end
+      end
+    end
+
+    module AdapterCache
+      def self.get?(type, command_class, data_type_index)
+        data_type_index ?
+        ((Aug::STORE[type]||{})[command_class]||{})[data_type_index] :
+          (Simple::STORE[type]||{})[command_class]
+      end
+      module Simple
+        STORE = {}
+        def self.set(adapter)
+          (STORE[adapter.type] ||= {})[adapter.command_class]  = adapter
+        end
+      end
+      module Aug
+        def self.set(adapter)
+          ((STORE[adapter.type] ||= {})[adapter.command_class] ||= {})[adapter.data_type_index] = adapter
         end
       end
     end
