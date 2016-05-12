@@ -15,8 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'net/http'
-
 module DTK::Client
   #
   # Class dedicated for caching data on local system as well as for cookie management
@@ -47,14 +45,8 @@ module DTK::Client
       # if the file does not exist (or if the data is not fresh), we
       #  make an get request and save it to a file
       response_string = ''
-      response = get rest_url("metadata/get_metadata/#{file_name}")
-      
-      if (response['status'] == 'ok')
-        file = File.open(file_path, 'w') do |data|
-          data << response_string = response['data']
-        end
-      end
-      
+      response = Session.rest_get("metadata/get_metadata/#{file_name}")
+      File.open(file_path, 'w') { |f| f << response_string = response.data } if response.ok? 
       response_string
     end
     

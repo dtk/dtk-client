@@ -38,7 +38,7 @@ module DTK::Client
       get_credentials[:username]
     end
     
-    def get(route, args = {})
+    def get(route, _opts = {})
       url = rest_url(route)
       ap "GET #{url}" if verbose_mode_on?
       

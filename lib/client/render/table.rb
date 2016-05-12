@@ -19,7 +19,7 @@
 module DTK::Client
   class Render
     class Table 
-      requiare_relative('table/processor')
+      require_relative('table/processor')
 
       # opts can have keys
       #  :semantic_datatype (required)

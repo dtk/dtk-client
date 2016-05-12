@@ -54,8 +54,8 @@ module DTK::Client
       instance.conn.post(route, post_body)
     end
 
-    def self.rest_get(route, args = {})
-      instance.conn.get(route, args)
+    def self.rest_get(route, opts = {})
+      instance.conn.get(route, opts)
     end
 
   end

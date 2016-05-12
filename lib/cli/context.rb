@@ -35,9 +35,8 @@ module DTK::Client
         get_and_set_cache { create_when_in_specific_context? || create_default }
       end
       
-      def run(argv)
-        response = @command_processor.run_and_return_command_response(argv)
-        pp [:response, response.class, response]
+      def run_and_return_response_object(argv)
+        @command_processor.run_and_return_response_object(argv)
       end
       
       def method_missing(method, *args, &body)

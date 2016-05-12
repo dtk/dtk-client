@@ -23,19 +23,19 @@ module DTK::Client::CLI
         include ::GLI::App
 
         def initialize
-          @command_response = nil
+          @response_obj = nil
         end
 
-        def run_and_return_command_response(argv)
+        def run_and_return_response_object(argv)
           run(argv)
-          @command_response
+          @response_obj
         end
 
         # add_command_hooks! works in conjunction with run
         def add_command_hooks!
           around do |_global_options, _command, _options, _arguments, code|
             # It is expected that last line in code block returns response
-            @command_response =  code.call
+            @response_obj = code.call
           end
         end
 

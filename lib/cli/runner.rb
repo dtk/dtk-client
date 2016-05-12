@@ -22,31 +22,37 @@ module DTK::Client
       require_relative('runner/dtkn_access')
       
       def self.run(argv)
-        Configurator.check_git
-        Configurator.create_missing_client_dirs
+        begin 
+          Configurator.check_git
+          Configurator.create_missing_client_dirs
+          
+          # checks if config exists and if not prompts user with questions to create a config
+          config_existed = Configurator.check_config_exists
+          
+          raise_error_if_invalid_connection
         
-        # checks if config exists and if not prompts user with questions to create a config
-        config_existed = Configurator.check_config_exists
-        
-        exit 1 unless valid_connection?
-        
-        # check if .add_direct_access file exists, if not then add direct access and create .add_direct_access file
-        DTKNAccess.resolve_direct_access(config_existed)
-        
-        Context.determine_context.run(argv)
+          # check if .add_direct_access file exists, if not then add direct access and create .add_direct_access file
+          DTKNAccess.resolve_direct_access(config_existed)
+          
+          response_obj = Context.determine_context.run_and_return_response_object(argv)
+          # render_response will raise DTK::Client::Error in case of error response
+          render_response(response_obj)
+        rescue Error::InvalidConnection => e
+          e.print_warning
+          puts "\nDTK will now exit. Please set up your connection properly and try again."
+        rescue Error => e
+          # this are expected application errors
+          Logger.instance.error_pp(e.message, e.backtrace)
+        rescue Exception => e
+          Logger.instance.fatal_pp("[#{Error::Client.label}] DTK has encountered an error #{e.class}: #{e.message}", e.backtrace)
+        end
       end
       
       private
-      
-      def self.valid_connection?
+
+      def self.raise_error_if_invalid_connection
         connection = Session.get_connection
-        if connection.connection_error?
-          connection.print_warning
-          puts "\nDTK will now exit. Please set up your connection properly and try again."
-          false
-        else
-          true
-        end
+        raise Error::InvalidConnection.new(connection) if connection.connection_error?
       end
     end
   end

@@ -26,6 +26,7 @@ module DTK::Client
     def self.raise_error(response)
       raise_if_error?(response, :default_error_if_nil => true)
     end
+
     def self.raise_if_error?(response,opts={})
       # check for errors in response
       unless error = response.error_info?(opts)
@@ -47,7 +48,7 @@ module DTK::Client
       when :connection_refused
         raise self, "[CONNECTION REFUSED] Connection refused by server."
       when :resource_not_found
-            raise self, "[RESOURCE NOT FOUND] #{error.msg}"
+        raise self, "[RESOURCE NOT FOUND] #{error.msg}"
       when :pg_error
         raise self, "[PG_ERROR] #{error.msg}"
       when :server_error
@@ -59,7 +60,17 @@ module DTK::Client
         raise Usage.new(error.msg)
       end
     end
-    
+
+    # Purposely not inheriting from self
+    class InvalidConnection
+      def initialize(bad_connection)
+        @bad_connection = bad_connection
+      end
+      def print_warning
+        @bad_connection.print_warning
+      end
+    end
+
     class Usage < self
       def initialize(error_msg,opts={})
         msg_to_pass_to_super = "[ERROR] #{error_msg}"
@@ -88,7 +99,7 @@ module DTK::Client
       def initialize(error_msg,opts={})
         super(error_msg,opts.merge(:where => :client))
       end
-      def self.label(*args)
+      def self.label(*_args)
         super(:client)
       end
     end

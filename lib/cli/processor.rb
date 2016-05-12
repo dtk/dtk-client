@@ -31,7 +31,7 @@ module DTK::Client
       
       module Methods
         def self.all
-          [:arg_name, :command, :default_value, :desc, :flag, :switch, :add_command_defaults!, :add_command_hooks!, :run_and_return_command_response]
+          [:arg_name, :command, :default_value, :desc, :flag, :switch, :add_command_defaults!, :add_command_hooks!, :run_and_return_response_object]
         end
       end
       
