@@ -29,16 +29,16 @@ module DTK::Client
 
             # if response is empty, response status is ok but no data is passed back
             if data.empty? or (data.is_a?(Array) ? data.first.nil? : data.nil?)
-              @render_view = RenderView::SIMPLE_LIST
+              @render_view = Render::Type::SIMPLE_LIST
               if data.kind_of?(Array)
-                set_data('Message' => "List is empty.")
+                set_data('Message' => 'List is empty.')
               else #data.kind_of?(Hash)
                 set_data('Status' => 'OK')
               end
             end
 
             # sending raw data from response
-            rendered_data = ViewProcessor.render(@command_class, data, @render_view, @render_data_type, nil, @print_error_table)
+            rendered_data = Render.render(@command_class, data, @render_view, @render_data_type, nil, @print_error_table)
 
             puts "\n" unless rendered_data
             return rendered_data
@@ -53,11 +53,11 @@ module DTK::Client
           return self
         end
         unless data_type = (use_default ? default_data_type : (response_datatype || default_data_type))
-          raise DTK::Client::DtkError, "Server did not return datatype."
+          raise ::DTK::Client::Error, 'Server did not return datatype.'
         end
 
         @render_data_type = symbol_to_data_type_upcase(data_type)
-        @render_view = RenderView::TABLE
+        @render_view = Render::Type::TABLE
         self
       end
 
@@ -68,9 +68,8 @@ module DTK::Client
 
       private
 
-      
       def response_datatype
-        self["datatype"] && self["datatype"].to_sym
+        self['datatype'] && self['datatype'].to_sym
       end
 
       def hash_part

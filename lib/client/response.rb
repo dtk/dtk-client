@@ -31,13 +31,13 @@ module DTK::Client
     # :skip_render        => flag that specifies that render is not needed (default: false)
     # :print_error_table  => we use it if we want to print 'error legend' for given tables (default: false)
     attr_accessor :render_view, :skip_render, :print_error_table
-    def initialize(command_class=nil,hash={})
+    def initialize(command_class=nil, hash={})
       super(hash)
       @command_class     = command_class
       @skip_render       = false
       @print_error_table = false
       # default values
-      @render_view = RenderView::AUG_SIMPLE_LIST
+      @render_view      = Render::Type::AUG_SIMPLE_LIST
       @render_data_type = nil
     end
 

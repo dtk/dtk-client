@@ -8,5 +8,6 @@ module DTK
     require_relative 'client/session'
     require_relative 'client/config'
     require_relative 'client/execute'
+    require_relative 'client/render'
   end
 end
