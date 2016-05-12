@@ -131,7 +131,7 @@ module DTK::Client
     end
     
     def self.ask_catalog_credentials
-      are_there_creds = Console.confirmation_prompt("Do you have DTK catalog credentials", true)
+      are_there_creds = Console.prompt_yes_no("Do you have DTK catalog credentials?", :add_options => true)
       property_template = {}
       if are_there_creds
         property_template = self.enter_catalog_credentials

@@ -5,4 +5,5 @@ module DTK
   # auxiliary must be before os_util
   require_relative 'util/os_util'
   require_relative 'util/ssh_util'
+  require_relative 'util/console'
 end
