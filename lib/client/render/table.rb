@@ -15,11 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'hirb'
-require 'ostruct'
-require 'colorize'
-require 'rest_client'
-require 'json'
 
 # we override String here to give power to our mutators defined in TableDefintions
 class String
@@ -30,15 +25,26 @@ end
 
 module DTK::Client
   class Render
-    class Table
-      include Hirb::Console
-
-      def self.render(data, command_clazz, data_type_clazz, forced_metadata=nil, print_error_table=false)
-        new(data, data_type_clazz, forced_metadata, print_error_table).print
+    class Table 
+      # opts can have keys
+      #  :semantic_datatype (required)
+      def initialize(render_type, opts = {})
+        unless semantic_datatype = opts[:semantic_datatype]
+          raise Error, 'Missing opts[:semantic_datatype] value'
+        end
+        super(render_type, semantic_datatype)
+        @table_definition = get_table_definition?(semantic_datatype)
       end
 
-      attr_accessor :evaluated_data
-
+      # opts can have keys
+      #  :print_error_table - Boolean (default: false)
+      #  table_definition - if set overrides the one associated with the object
+      def render(data, opts = {})
+        unless table_definition = opts[:table_definition] || @table_definition
+          raise Error, 'Missing table definition'
+        end
+        Process.render(data, table_definition, opts)
+      end
       private
 
       def initialize(data, data_type, forced_metadata, print_error_table)
@@ -63,6 +69,23 @@ module DTK::Client
         if @table_definition.nil? || @order_definition.nil?
           raise Error, "Missing table definition(s) for data type #{data_type}."
         end
+
+
+
+require 'hirb'
+require 'ostruct'
+require 'colorize'
+require 'rest_client'
+require 'json'
+
+      class Process
+        include Hirb::Console
+
+        def self.render(data, table_definition, opts = {})
+          new(table_definition).render(data, opts)
+        end
+
+        private
 
         @evaluated_data = []
         @error_data     = []

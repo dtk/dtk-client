@@ -6,4 +6,5 @@ module DTK
   require_relative 'util/os_util'
   require_relative 'util/ssh_util'
   require_relative 'util/console'
+  require_relative 'util/disk_cacher'
 end

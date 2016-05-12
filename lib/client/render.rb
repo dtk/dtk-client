@@ -18,33 +18,37 @@
 module DTK::Client
   class Render
     module Type
+      TABLE           = 'table'
       SIMPLE_LIST     = 'simple_list'
-      TABLE           = 'table_print'
       PRETTY_PRINT    = 'hash_pretty_print'
       AUG_SIMPLE_LIST = 'augmented_simple_list'
     end
 
+    require_relative('render/table')
+
     include Auxiliary
 
-    def initialize(type, command_class, data_type_index=nil)
-      @command_class = command_class
-      @data_type_index = data_type_index
+    attr_reader :render_type, :semantic_datatype
+    def initialize(render_type, semantic_datatype = nil)
+      @render_type = render_type
+      @semantic_datatype   = semantic_datatype
     end
     private :initialize
 
     # opts can have keys
-    #  :type - One of Render::Type constants
-    #  :command_class
-    #  :data_type
+    #  :semantic_datatype
     #  :adapter - way to pass in already created adapter
     #  :print_error_table - Boolean (default: false)
+    #  :forced_metadata
+    # 
     # value returned is Boolean indicating whether any additional print needed
     def self.render(ruby_obj, opts = {})
-      type = opts[:type]
-      if type == Type::TABLE
-        # for table there is only one rendering, we use command class to
-        # determine output of the table
-        get_adapter(type, opts).render(ruby_obj, opts)
+      render_type = opts[:render_type]
+      if render_type == Type::TABLE
+        render_opts = {
+          :print_error_table => opts[:print_error_table],
+        }
+        get_adapter(Type::TABLE, opts).render(ruby_obj, render_opts)
         # saying no additional print needed 
         false
       elsif ruby_obj.kind_of?(Hash)
@@ -62,56 +66,39 @@ module DTK::Client
 
     # opts can have keys
     #  :adapter - way to pass in already created adapter
-    #  :command_class
-    #  :data_type
-    def self.get_adapter(type, opts = {})
+    #  :semantic_datatype
+    def self.get_adapter(render_type, opts = {})
      return opts[:adapter] if opts[:adapter]
+      
+      raise Error.new('No type is given') unless render_type
+      
+      AdapterCache.get?(render_type, opts[:semantic_datatype]) || AdapterCache.set(create_adapter(render_type, opts))
+    end
 
-      raise Error.new('No type is given') unless type
-
-      command_class = opts[:command_class]
-      data_type = opts[:data_type]
-
-      data_type_index = use_data_type_index?(command_class, data_type)
-      cached_adapter = AdapterCache.get?(type, command_class, data_type_index)
-      return cached_adapter if cached_adapter
-
-      require_relative("render/#{type}")
+    def create_adapter(render_type, opts = {})
       klass = const_get cap_form(type) 
-
-      if data_type_index
-        AdapterCache::Aug.set(klass.new(type, command_class, data_type_index))
-      else
-        AdapterCache::Simple.set(klass.new(type, command_class))
-      end
+      klass.new(opts)
     end
     
-    #data_type_index is used if there is adata type passed and it is different than command_class default data type
-    def self.use_data_type_index?(command_class, data_type)
-      if data_type
-        data_type_index = data_type.downcase
-        if data_type_index != snake_form(command_class)
-          data_type_index
-        end
-      end
-    end
-
     module AdapterCache
-      def self.get?(type, command_class, data_type_index)
-        data_type_index ?
-        ((Aug::STORE[type]||{})[command_class]||{})[data_type_index] :
-          (Simple::STORE[type]||{})[command_class]
-      end
-      module Simple
-        STORE = {}
-        def self.set(adapter)
-          (STORE[adapter.type] ||= {})[adapter.command_class]  = adapter
+      STORE_SIMPLE = {}
+      STORE_AUG = {}
+
+      def self.get?(render_type, semantic_datatype = nil)
+        if semantic_datatype
+          (STORE_AUG[render_type]||{})[semantic_datatype]
+        else
+          STORE_SIMPLE[render_type]
         end
       end
-      module Aug
-        def self.set(adapter)
-          ((STORE[adapter.type] ||= {})[adapter.command_class] ||= {})[adapter.data_type_index] = adapter
+      
+      def self.set(adapter)
+        if semantic_datatype = adapter.semantic_datatype
+          (STORE_AUG[adapter.render_type] ||= {})[semantic_datatype] = adapter
+        else
+          STORE_SIMPLE[adapter.render_type] = adapter
         end
+        adapter
       end
     end
   end
