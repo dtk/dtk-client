@@ -37,15 +37,18 @@ module DTK::Client
       end
 
       # opts can have keys
-      #  :print_error_table - Boolean (default: false)
-      #  table_definition - if set overrides the one associated with the object
+      #   :print_error_table - Boolean (default: false)
+      #   :table_definition - if set overrides the one associated with the object
       def render(data, opts = {})
         unless table_definition = opts[:table_definition] || @table_definition
           raise Error, 'Missing table definition'
         end
         Process.render(data, table_definition, opts)
       end
+
       private
+      
+      def get_table_definition?(semantic_datatype)
 
       def initialize(data, data_type, forced_metadata, print_error_table)
         # if there is no custom metadata, then we use metadata predefined in meta-response.json file

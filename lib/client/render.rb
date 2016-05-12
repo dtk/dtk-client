@@ -39,7 +39,7 @@ module DTK::Client
     #  :semantic_datatype
     #  :adapter - way to pass in already created adapter
     #  :print_error_table - Boolean (default: false)
-    #  :forced_metadata
+    #  :table_definition - pverride to table def associated with semantic_datatype
     # 
     # value returned is Boolean indicating whether any additional print needed
     def self.render(ruby_obj, opts = {})
