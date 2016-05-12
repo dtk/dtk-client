@@ -15,11 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'dtk_common_core' 
 
 module DTK::Client
   class Conn
-    require_relative('conn/response_error_handler')
     def initialize
       @cookies          = {}
       @connection_error = nil
@@ -121,17 +119,17 @@ module DTK::Client
     def check_and_wrap_response(&rest_method_func)
       response = rest_method_func.call
       
-      if ResponseErrorHandler.check_for_session_expiried(response)
+      if Response::ErrorHandler.check_for_session_expiried(response)
         # re-logging user and repeating request
         OsUtil.print("Session expired: re-establishing session & re-trying request ...", :yellow)
         @cookies = Session.re_initialize
         response = rest_method_func.call
       end
       
-      response_obj = ::DTK::Common::Response.new(response)
+      response_obj = Response.new(response)
       
       # queue messages from server to be displayed later
-      #TODOL put in processing of messages Shell::MessageQueue.process_response(response_obj)
+      #TODO: DTK-2554: put in processing of messages Shell::MessageQueue.process_response(response_obj)
       response_obj
     end
 
@@ -145,15 +143,15 @@ module DTK::Client
     end
 
     def login
-      creds = get_credentials
-      response = post_raw rest_url('auth/login'), creds
-      errors = response['errors']
-      
-      if response.kind_of?(::DTK::Common::Response) and not response.ok?
-        if (errors && errors.first['code']=="pg_error")
-          OsUtil.print(errors.first['message'].gsub!("403 Forbidden", "[PG_ERROR]"), :red)
-          exit
-        end
+      response = post_raw rest_url('auth/login'), get_credentials
+      # TODO: see if response.kind_of?(Response) can be false
+      if response.kind_of?(Response) and not response.ok?
+        # TODO: check if we need this
+        # errors = response['errors']
+        # if (errors && errors.first['code']=="pg_error")
+        #  OsUtil.print(errors.first['message'].gsub!("403 Forbidden", "[PG_ERROR]"), :red)
+        #  exit
+        # end
         @connection_error = response
       else
         @cookies = response.cookies
@@ -162,6 +160,7 @@ module DTK::Client
     
     def logout
       response = get_raw rest_url('auth/logout')
+      # TODO: see if response can be nil
       raise Error, "Failed to logout, and terminate session!" unless response
       @cookies = nil
     end
@@ -191,15 +190,15 @@ module DTK::Client
     end
     
     def get_raw(url)
-      ::DTK::Common::Response::RestClientWrapper.get_raw(url, {}, default_rest_opts.merge(:cookies => @cookies))
+      Response::RestClientWrapper.get_raw(url, {}, default_rest_opts.merge(:cookies => @cookies))
     end
 
     def post_raw(url, post_body, params = {})
-      ::DTK::Common::Response::RestClientWrapper.post_raw(url, post_body, default_rest_opts.merge(:cookies => @cookies).merge(params))
+      Response::RestClientWrapper.post_raw(url, post_body, default_rest_opts.merge(:cookies => @cookies).merge(params))
     end
     
     def json_parse_if_needed(item)
-      ::DTK::Common::Response::RestClientWrapper.json_parse_if_needed(item)
+      Response::RestClientWrapper.json_parse_if_needed(item)
     end
   end
 end

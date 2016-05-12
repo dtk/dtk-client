@@ -24,7 +24,7 @@ module DTK::Client
     attr_reader :backtrace
     
     def self.raise_error(response)
-      raise_if_error?(response,:default_error_if_nil => true)
+      raise_if_error?(response, :default_error_if_nil => true)
     end
     def self.raise_if_error?(response,opts={})
       # check for errors in response
