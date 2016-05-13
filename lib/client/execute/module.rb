@@ -21,7 +21,7 @@ module DTK::Client
       RoutePrefix = 'modules'
 
       def self.list_assemblies
-        rest_get "#{RoutePrefix}/list_assemblies"
+        rest_get("#{RoutePrefix}/list_assemblies").set_render_as_table!
       end
     end
   end

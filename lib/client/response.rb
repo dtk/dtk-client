@@ -23,24 +23,25 @@ require 'dtk_common_core'
 module DTK::Client
   class Response < ::DTK::Common::Response
     require_relative('response/error_handler')
-    require_relative('response/render')
-    include RenderMixin
+    require_relative('response/render_helper')
+    require_relative('response/subclasses')
 
-    def initialize(hash={}, opts = {})
+    include RenderHelperMixin
+
+    def initialize(hash = {})
       super(hash)
-      @command_class     = opts[:command_class]
       @print_error_table = false #we use it if we want to print 'error legend' for given tables 
       render_attributes_init!
     end
 
     # opts can be
     #  :default_error_if_nil - Boolean
-    def error_info?(opts={})
+    def error_info?(opts = {})
       ErrorHandler.error_info?(self, opts)
     end
     
     # This method is used so that client side actions can be wrapped like server responses
-    def self.wrap_helper_actions(data={}, &block)
+    def self.wrap_helper_actions(data = {}, &block)
       begin
         results = (block ? yield : data)
         Ok.new(results)
@@ -73,43 +74,6 @@ module DTK::Client
       end
       
       ErrorResponse::Internal.new(error_hash)
-    end
-    
-    class Ok < self
-      def initialize(data={})
-        super(nil,{'data'=> data, 'status' => 'ok'})
-      end
-    end
-    
-    class NotOk < self
-      def initialize(data={})
-        super(nil,{'data'=> data, 'status' => 'notok'})
-      end
-    end
-    
-    class NoOp < self
-      def render_data
-      end
-    end
-    
-    class ErrorResponse < self
-      include ::DTK::Common::Response::ErrorMixin
-      def initialize(hash={})
-        super(nil,{'errors' => [hash]})
-      end
-      
-      class Usage < self
-        def initialize(hash_or_string={})
-          hash = (hash_or_string.kind_of?(String) ? {'message' => hash_or_string} : hash_or_string)
-          super({'code' => 'error'}.merge(hash))
-        end
-      end
-      
-      class Internal < self
-        def initialize(hash={})
-          super({'code' => 'error'}.merge(hash).merge('internal' => true))
-        end
-      end
     end
   end
 end

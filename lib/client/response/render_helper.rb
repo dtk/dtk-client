@@ -20,7 +20,7 @@
 # selection
 module DTK::Client
   class Response
-    module RenderMixin
+    module RenderHelperMixin
       def render_attributes_init!
         @semantic_datatype  = nil
         @skip_render       = false
@@ -54,36 +54,33 @@ module DTK::Client
         rendered_data
       end
           
-      def render_table(default_data_type=nil, use_default=false)
-        unless ok?
-          return self
-        end
-        unless data_type = (use_default ? default_data_type : (response_datatype || default_data_type))
-          raise ::DTK::Client::Error, 'Server did not return datatype.'
-        end
+      def set_render_as_table!(semantic_datatype = nil)
+        return self unless ok?
 
-        @semantic_datatype = symbol_to_data_type_upcase(data_type)
+        unless semantic_datatype ||= semantic_datatype_in_payload
+          error_hash = {
+            'message'=> 'Server did not return table datatype',
+            'on_client' => false
+          }
+          return ErrorResponse::Internal.new(error_hash)
+        end
+        @semantic_datatype = normalize_semantic_datatype(semantic_datatype)
         @render_type = Render::Type::TABLE
-        self
-      end
-
-      def set_datatype(data_type)
-        @semantic_datatype = symbol_to_data_type_upcase(data_type)
         self
       end
 
       private
 
-      def response_datatype
+      def semantic_datatype_in_payload
         self['datatype'] && self['datatype'].to_sym
       end
 
       def hash_part
         keys.inject(Hash.new){|h,k|h.merge(k => self[k])}
       end
-      
-      def symbol_to_data_type_upcase(data_type)
-        data_type.nil? ? nil : data_type.to_s.upcase
+
+      def normalize_semantic_datatype(semantic_datatype)
+        semantic_datatype && semantic_datatype.to_sym
       end
     end
   end
