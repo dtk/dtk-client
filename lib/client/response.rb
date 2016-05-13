@@ -26,20 +26,11 @@ module DTK::Client
     require_relative('response/render')
     include RenderMixin
 
-    # :render_view        => symbol specifing type of data to be rendered e.g. :assembly
-    # :skip_render        => flag that specifies that render is not needed (default: false)
-    # :print_error_table  => we use it if we want to print 'error legend' for given tables (default: false)
-    attr_accessor :render_view, :skip_render, :print_error_table
-    # opts can have kyes:
-    #  :command_class
     def initialize(hash={}, opts = {})
       super(hash)
       @command_class     = opts[:command_class]
-      @skip_render       = false
-      @print_error_table = false
-      # default values
-      @render_view      = Render::Type::AUG_SIMPLE_LIST
-      @render_data_type = nil
+      @print_error_table = false #we use it if we want to print 'error legend' for given tables 
+      render_attributes_init!
     end
 
     # opts can be

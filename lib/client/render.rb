@@ -22,16 +22,18 @@ module DTK::Client
       SIMPLE_LIST     = 'simple_list'
       PRETTY_PRINT    = 'hash_pretty_print'
       AUG_SIMPLE_LIST = 'augmented_simple_list'
+
+      DEFAULT = AUG_SIMPLE_LIST
     end
 
     require_relative('render/table')
 
-    include Auxiliary
+    extend Auxiliary
 
     attr_reader :render_type, :semantic_datatype
     def initialize(render_type, semantic_datatype = nil)
-      @render_type = render_type
-      @semantic_datatype   = semantic_datatype
+      @render_type       = render_type
+      @semantic_datatype = semantic_datatype
     end
     private :initialize
 
@@ -52,7 +54,7 @@ module DTK::Client
         # saying no additional print needed 
         false
       elsif ruby_obj.kind_of?(Hash)
-        get_adapter(type, opts).render(ruby_obj)
+        get_adapter(render_type, opts).render(ruby_obj)
       elsif ruby_obj.kind_of?(Array)
         ruby_obj.map{ |el| render(el, opts) }
       elsif ruby_obj.kind_of?(String)
@@ -75,8 +77,8 @@ module DTK::Client
       AdapterCache.get?(render_type, opts[:semantic_datatype]) || AdapterCache.set(create_adapter(render_type, opts))
     end
 
-    def create_adapter(render_type, opts = {})
-      klass = const_get cap_form(type) 
+    def self.create_adapter(render_type, opts = {})
+      klass = const_get cap_form(render_type) 
       klass.new(opts)
     end
     

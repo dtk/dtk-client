@@ -21,33 +21,39 @@
 module DTK::Client
   class Response
     module RenderMixin
-      def render_data(print_error_table=false)
-        unless @skip_render
-          if ok?
+      def render_attributes_init!
+        @semantic_datatype  = nil
+        @skip_render       = false
+        @render_type       = Render::Type::DEFAULT
+      end
+      private :render_attributes_init!
 
-            @print_error_table ||= print_error_table
+      def render_data(print_error_table = false)
+        return nil if @skip_render
+        return hash_part  unless ok?
 
-            # if response is empty, response status is ok but no data is passed back
-            if data.empty? or (data.is_a?(Array) ? data.first.nil? : data.nil?)
-              @render_view = Render::Type::SIMPLE_LIST
-              if data.kind_of?(Array)
-                set_data('Message' => 'List is empty.')
-              else #data.kind_of?(Hash)
-                set_data('Status' => 'OK')
-              end
-            end
-
-            # sending raw data from response
-            rendered_data = Render.render(@command_class, data, @render_view, @render_data_type, nil, @print_error_table)
-
-            puts "\n" unless rendered_data
-            return rendered_data
-          else
-            hash_part
+        @print_error_table ||= print_error_table
+        # if response is empty, response status is ok but no data is passed back
+        if data.empty? or (data.is_a?(Array) ? data.first.nil? : data.nil?)
+          @render_type = Render::Type::SIMPLE_LIST
+          if data.kind_of?(Array)
+            set_data('Message' => 'List is empty.')
+          else #data.kind_of?(Hash)
+            set_data('Status' => 'OK')
           end
         end
+
+        render_opts = {
+          :render_type       => @render_type,
+          :semantic_datatype => @semantic_datatype,
+          :print_error_table => @print_error_table
+        }
+        rendered_data = Render.render(data, render_opts)
+
+        puts "\n" unless rendered_data
+        rendered_data
       end
-      
+          
       def render_table(default_data_type=nil, use_default=false)
         unless ok?
           return self
@@ -56,13 +62,13 @@ module DTK::Client
           raise ::DTK::Client::Error, 'Server did not return datatype.'
         end
 
-        @render_data_type = symbol_to_data_type_upcase(data_type)
-        @render_view = Render::Type::TABLE
+        @semantic_datatype = symbol_to_data_type_upcase(data_type)
+        @render_type = Render::Type::TABLE
         self
       end
 
       def set_datatype(data_type)
-        @render_data_type = symbol_to_data_type_upcase(data_type)
+        @semantic_datatype = symbol_to_data_type_upcase(data_type)
         self
       end
 
@@ -77,7 +83,7 @@ module DTK::Client
       end
       
       def symbol_to_data_type_upcase(data_type)
-        return data_type.nil? ? nil : data_type.to_s.upcase
+        data_type.nil? ? nil : data_type.to_s.upcase
       end
     end
   end
