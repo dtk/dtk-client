@@ -21,6 +21,7 @@ module DTK::Client
       TABLE  = 'table'
       SIMPLE = 'simple'
 
+      ALL = [TABLE, SIMPLE]
       DEFAULT = SIMPLE
 
       # TODO: DTK-2554: removed below and put in simple, which is yaml
@@ -28,9 +29,8 @@ module DTK::Client
       # PRETTY_PRINT    = 'hash_pretty_print'
       # AUG_SIMPLE_LIST = 'augmented_simple_list'
     end
-
-    require_relative('render/simple')
-    require_relative('render/table')
+    
+    Type::ALL.each { |render_type| require_relative("render/view/#{render_type}") }
 
     extend Auxiliary
 
