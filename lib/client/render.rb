@@ -18,14 +18,18 @@
 module DTK::Client
   class Render
     module Type
-      TABLE           = 'table'
-      SIMPLE_LIST     = 'simple_list'
-      PRETTY_PRINT    = 'hash_pretty_print'
-      AUG_SIMPLE_LIST = 'augmented_simple_list'
+      TABLE  = 'table'
+      SIMPLE = 'simple'
 
-      DEFAULT = AUG_SIMPLE_LIST
+      DEFAULT = SIMPLE
+
+      # TODO: DTK-2554: removed below and put in simple, which is yaml
+      # SIMPLE_LIST     = 'simple_list'
+      # PRETTY_PRINT    = 'hash_pretty_print'
+      # AUG_SIMPLE_LIST = 'augmented_simple_list'
     end
 
+    require_relative('render/simple')
     require_relative('render/table')
 
     extend Auxiliary
@@ -56,7 +60,7 @@ module DTK::Client
       elsif ruby_obj.kind_of?(Hash)
         get_adapter(render_type, opts).render(ruby_obj)
       elsif ruby_obj.kind_of?(Array)
-        ruby_obj.map{ |el| render(el, opts) }
+        get_adapter(render_type, opts).render(ruby_obj)
       elsif ruby_obj.kind_of?(String)
         ruby_obj
       else
@@ -70,7 +74,7 @@ module DTK::Client
     #  :adapter - way to pass in already created adapter
     #  :semantic_datatype
     def self.get_adapter(render_type, opts = {})
-     return opts[:adapter] if opts[:adapter]
+      return opts[:adapter] if opts[:adapter]
       
       raise Error.new('No type is given') unless render_type
       

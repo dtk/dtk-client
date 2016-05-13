@@ -18,7 +18,7 @@
 
 module DTK::Client
   class Render
-    class Table 
+    class Table < self 
       require_relative('table/processor')
 
       # opts can have keys
