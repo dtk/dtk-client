@@ -55,8 +55,6 @@ module DTK::Client
           :print_error_table => opts[:print_error_table],
         }
         get_adapter(Type::TABLE, opts).render(ruby_obj, render_opts)
-        # saying no additional print needed 
-        false
       elsif ruby_obj.kind_of?(Hash)
         get_adapter(render_type, opts).render(ruby_obj)
       elsif ruby_obj.kind_of?(Array)
@@ -83,7 +81,7 @@ module DTK::Client
 
     def self.create_adapter(render_type, opts = {})
       klass = const_get cap_form(render_type) 
-      klass.new(opts)
+      klass.new(render_type, opts)
     end
     
     module AdapterCache

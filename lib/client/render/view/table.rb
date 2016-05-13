@@ -51,7 +51,7 @@ module DTK::Client
       end
 
       def table_def_index_from_semantic_datatype(semantic_datatype)
-        semantic_datatype
+        semantic_datatype.to_s
       end
 
       def table_definitions
