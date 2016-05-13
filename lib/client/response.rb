@@ -62,7 +62,7 @@ module DTK::Client
         end
         handle_error_in_wrapper(e)
        rescue ErrorUsage => e
-         Error::Usage.new('message'=> e.to_s)
+         ErrorResponse::Usage.new('message'=> e.to_s)
        rescue => e
         handle_error_in_wrapper(e)
       end
@@ -81,7 +81,7 @@ module DTK::Client
         Logger.instance.error_pp("Error inside wrapper DEV ONLY: #{exception.message}", exception.backtrace)
       end
       
-      Error::Internal.new(error_hash)
+      ErrorResponse::Internal.new(error_hash)
     end
     
     class Ok < self
@@ -101,7 +101,7 @@ module DTK::Client
       end
     end
     
-    class Error < self
+    class ErrorResponse < self
       include ::DTK::Common::Response::ErrorMixin
       def initialize(hash={})
         super(nil,{'errors' => [hash]})
@@ -122,3 +122,4 @@ module DTK::Client
     end
   end
 end
+

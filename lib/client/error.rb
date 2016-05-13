@@ -27,7 +27,7 @@ module DTK::Client
       raise_if_error?(response, :default_error_if_nil => true)
     end
 
-    def self.raise_if_error?(response,opts={})
+    def self.raise_if_error?(response, opts = {})
       # check for errors in response
       unless error = response.error_info?(opts)
         return
@@ -42,7 +42,7 @@ module DTK::Client
       when :broken
         raise self, "[BROKEN] Unable to connect to the DTK server at host: #{Config[:server_host]}"
       when :forbidden
-        raise DTK::Client::DtkLoginRequiredError, "[FORBIDDEN] Access not granted, please log in again."
+        raise self, "[FORBIDDEN] Access not granted, please log in again."
       when :timeout
         raise self, "[TIMEOUT ERROR] Server is taking too long to respond."
       when :connection_refused

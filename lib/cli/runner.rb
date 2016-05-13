@@ -56,7 +56,18 @@ module DTK::Client
       end
 
       def self.render_response(response_obj)
-        pp [:debug, response_obj]
+        # this will raise error if found
+        Response::ErrorHandler.check(response_obj)
+        if print = response_obj.render_data
+          print = [print] unless print.kind_of?(Array)
+          print.each do |el|
+            if el.kind_of?(String)
+              el.each_line{|l| STDOUT << l}
+            else
+              PP.pp(el, STDOUT)
+            end
+          end
+        end
       end
     end
   end
