@@ -17,7 +17,7 @@
 #
 module DTK::Client
   class Error < ::NameError
-    def initialize(msg, opts = {})
+    def initialize(msg = '', opts = {})
       super(msg)
       @backtrace = opts[:backtrace]
     end
@@ -61,9 +61,11 @@ module DTK::Client
       end
     end
 
-    # Purposely not inheriting from self
-    class InvalidConnection
+    class InvalidConnection < self
+      # TODO: DTK-2554: leveraged connection#print_warning
+      # might instaed use 'msg_to_pass_to_super'
       def initialize(bad_connection)
+        super()
         @bad_connection = bad_connection
       end
       def print_warning

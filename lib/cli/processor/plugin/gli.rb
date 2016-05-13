@@ -25,12 +25,12 @@ module DTK::Client::CLI
         def initialize
           @response_obj = nil
         end
-
+        
         def run_and_return_response_object(argv)
           run(argv)
           @response_obj
         end
-
+        
         # add_command_hooks! works in conjunction with run
         def add_command_hooks!
           around do |_global_options, _command, _options, _arguments, code|

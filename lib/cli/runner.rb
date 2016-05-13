@@ -54,6 +54,10 @@ module DTK::Client
         connection = Session.get_connection
         raise Error::InvalidConnection.new(connection) if connection.connection_error?
       end
+
+      def self.render_response(response_obj)
+        pp [:debug, response_obj]
+      end
     end
   end
 end

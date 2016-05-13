@@ -68,7 +68,7 @@ module DTK::Client
     end
 
     def connection_error?
-      return !@connection_error.nil?
+      !@connection_error.nil?
     end
     
     ##
@@ -144,14 +144,7 @@ module DTK::Client
 
     def login
       response = post_raw rest_url('auth/login'), get_credentials
-      # TODO: see if response.kind_of?(Response) can be false
-      if response.kind_of?(Response) and not response.ok?
-        # TODO: check if we need this
-        # errors = response['errors']
-        # if (errors && errors.first['code']=="pg_error")
-        #  OsUtil.print(errors.first['message'].gsub!("403 Forbidden", "[PG_ERROR]"), :red)
-        #  exit
-        # end
+      if response.kind_of?(::DTK::Common::Response) and ! response.ok?
         @connection_error = response
       else
         @cookies = response.cookies
