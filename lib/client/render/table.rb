@@ -62,8 +62,8 @@ module DTK::Client
 
       # get all table definitions from json file
       def get_table_definitions
-        content = DiskCacher.new.fetch("table_metadata", Configuration.get(:meta_table_ttl))
-        raise Error, "Table metadata is empty, please contact DTK team." if content.empty?
+        content = DiskCacher.new.fetch('table_metadata', Config[:meta_table_ttl])
+        raise Error, 'Table metadata is empty' if content.empty?
         JSON.parse(content)
       end
     end

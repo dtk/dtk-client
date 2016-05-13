@@ -22,7 +22,6 @@ require 'dtk_common_core'
 
 module DTK::Client
   class Response < ::DTK::Common::Response
-#    require_relative('response/rest_client_wrapper')
     require_relative('response/error_handler')
     require_relative('response/render')
     include RenderMixin
@@ -49,7 +48,8 @@ module DTK::Client
       ErrorHandler.error_info?(self, opts)
     end
     
-    def self.wrap_helper_actions(data={},&block)
+    # This method is used so that client side actions can be wrapped like server responses
+    def self.wrap_helper_actions(data={}, &block)
       begin
         results = (block ? yield : data)
         Ok.new(results)
@@ -58,7 +58,7 @@ module DTK::Client
         if e.message.include?('Please make sure you have the correct access rights')
           error_msg  = "You do not have git access from this client, please add following SSH key in your git account: \n\n"
           error_msg += "#{SSHUtil.rsa_pub_key_content()}\n"
-          raise ::DTK::Client::Error, error_msg
+          raise Error, error_msg
         end
         handle_error_in_wrapper(e)
        rescue ErrorUsage => e
@@ -77,7 +77,7 @@ module DTK::Client
         'on_client' => true
       }
       
-      if DTK::Configuration.get(:development_mode)
+      if Config[:development_mode]
         Logger.instance.error_pp("Error inside wrapper DEV ONLY: #{exception.message}", exception.backtrace)
       end
       
