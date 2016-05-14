@@ -1,0 +1,120 @@
+---
+dsl_version: 1.0.0
+module: rich/spark
+keywords: spark, hdfs, zeppelin
+description: Spark cluster
+license: Apache 2.0
+version: 0.1.2
+
+modules:
+- bigtop/bigtop_base
+- bigtop/bigtop_multiservice
+- bigtop-new/hadoop
+- bigtop-new/spark
+- bigtop/zookeeper
+- bigtop/zeppelin
+assemblies:
+  cluster:
+    description: Spark cluster with Zeppelin on trusty
+    components:
+    - bigtop_multiservice
+    - hadoop::cluster:
+        component_links:
+          bigtop_multiservice: bigtop_multiservice
+    - spark::cluster:
+        component_links:
+          bigtop_multiservice: bigtop_multiservice
+    nodes:
+      master:
+        attributes:
+          image: trusty_hvm
+          size: medium
+          root_device_size: 30
+        components:
+        - bigtop_multiservice::hiera:
+            component_links:
+              bigtop_multiservice: bigtop_multiservice
+        - bigtop_base:
+            attributes:
+              with_maven: false
+
+        - hadoop::namenode
+        - hadoop::hdfs_directories
+
+        - spark::master:
+            attributes:
+              eventlog_enabled: true
+            component_links:
+              hadoop::hdfs_directories: master/hadoop::hdfs_directories
+        - spark::client
+
+        - zeppelin::server:
+            attributes:
+              install_mode: deb
+            component_links:
+              spark::master: master/spark::master
+      master:
+        attributes:
+          image: trusty_hvm
+          size: medium
+          cardinality: 2
+          type: group
+        components:
+        - bigtop_multiservice::hiera:
+            component_links:
+              bigtop_multiservice: bigtop_multiservice
+        - bigtop_base:
+            attributes:
+              with_maven: false
+
+        - hadoop::common_hdfs:
+            component_links:
+              hadoop::namenode: master/hadoop::namenode
+        - hadoop::datanode
+
+        - spark::common:
+            component_links:
+              spark::master: master/spark::master
+        - spark::worker
+    workflows:
+      create:
+        subtasks:
+        - name: bigtop_multiservice
+          components:
+          - bigtop_multiservice
+        - name: bigtop hiera
+          components:
+          - bigtop_multiservice::hiera
+        - name: bigtop_base
+          components:
+          - bigtop_base
+
+        - name: namenode
+          components:
+          - hadoop::namenode
+        - name: if needed leave safemode
+          actions:
+          - hadoop::namenode.leave_safemode
+        - name: namenode smoke test
+          actions:
+          - hadoop::namenode.smoke_test
+        - name: datanodes
+          ordered_components:
+          - hadoop::common_hdfs
+          - hadoop::datanode
+        - name: hdfs directories for spark
+          component:
+          - hadoop::hdfs_directories
+
+        - name: spark master and client
+          components:
+          - spark::master
+          - spark::client
+        - name: spark workers
+          ordered_components:
+          - spark::common
+          - spark::worker
+
+        - name: zeppelin server
+          components:
+          - zeppelin::server
