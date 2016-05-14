@@ -33,7 +33,7 @@ module DTK::Client
     include Singleton
     
     def initialize
-      log_location_dir = OsUtil.get_log_location
+      log_location_dir = OsUtil.dtk_log_location
       begin
         if File.directory?(log_location_dir)
           file = File.open(file_path, "a")
@@ -52,7 +52,7 @@ module DTK::Client
     end
     
     def file_path
-      "#{OsUtil.get_log_location}/#{LOG_FILE_NAME}"
+      "#{OsUtil.dtk_log_location}/#{LOG_FILE_NAME}"
     end
 
     LoggerMethods = [:debug, :info, :warn, :error, :fatal, :error_pp, :fatal_pp]
