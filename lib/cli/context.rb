@@ -20,14 +20,18 @@ module DTK::Client
     # Object that provides the context for interpreting commands
     class Context
       require_relative('context/attributes')
+      require_relative('context/base_dsl_file')
       
       ALL_CONTEXTS = [:service, :module]
-      ALL_CONTEXTS.each { |context| require_relative("context/#{context}") }
-      require_relative('context/top')
+
+      (ALL_CONTEXTS + [:top]).each { |context| require_relative("context/type/#{context}") }
       
       def initialize
         @command_processor = Processor.default
         @context_attributes = attributes
+        # @base_dsl_file gets computed on demand
+        @base_dsl_file = nil
+        @base_dsl_file_computed = false
       end
       private :initialize 
       
@@ -53,9 +57,18 @@ module DTK::Client
         add_command_hooks!
         self
       end
-      
+
       private
       
+      def base_dsl_file?
+        if @base_dsl_file_computed
+          @base_dsl_file
+        else
+          @base_dsl_file_computed = true
+          @base_dsl_file = BaseDslFile.find?
+        end
+      end
+
       # The method 'create_attributes' can be ovewritten
       def attributes
         Attributes.new
