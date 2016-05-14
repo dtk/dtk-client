@@ -34,9 +34,10 @@ module DTK::Client
           # check if .add_direct_access file exists, if not then add direct access and create .add_direct_access file
           DTKNAccess.resolve_direct_access(config_existed)
           
-          response_obj = Context.determine_context.run_and_return_response_object(argv)
-          # render_response will raise DTK::Client::Error in case of error response
-          render_response(response_obj)
+          if response_obj = Context.determine_context.run_and_return_response_object(argv)
+            # render_response will raise Error in case of error response
+            render_response(response_obj)
+          end
         rescue Error::InvalidConnection => e
           e.print_warning
           puts "\nDTK will now exit. Please set up your connection properly and try again."
