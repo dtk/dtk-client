@@ -25,7 +25,7 @@ module DTK::Client
     end
     
     def self.update_ssh_known_hosts(server_dns,server_fingerprint)
-      known_hosts_path = ssh_known_hosts_path()
+      known_hosts_path = ssh_known_hosts_path
       if File.file?(known_hosts_path)
         `ssh-keygen -f #{known_hosts_path} -R #{server_dns} 2> /dev/null`
         File.open(known_hosts_path,"a"){|f|f << server_fingerprint}
@@ -59,15 +59,14 @@ module DTK::Client
       "0".eql?(output.strip())
     end
 
-
     private
 
     def self.ssh_base_dir()
-      "#{OsUtil.dtk_home_dir}/.ssh"
+      "#{DtkPath.base_dir}/.ssh"
     end
       
     def self.ssh_known_hosts_path()
-        "#{ssh_base_dir()}/known_hosts"
+        "#{ssh_base_dir}/known_hosts"
     end
 
     def self.is_ssh_key_path_valid?(path_to_key)

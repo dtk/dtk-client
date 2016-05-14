@@ -16,9 +16,17 @@
 # limitations under the License.
 #
 module DTK::Client
-  module OsUtil
-    module LocationMixin
-
-    end    
+  module DtkPath
+    def self.base_dir
+      "#{OsUtil.home_dir}/dtk"
+    end
+    
+    def self.log_dir
+      base_dir
+    end
+    
+    # TODO: stub for dtk modules
+    module DtkModule
+    end
   end
 end

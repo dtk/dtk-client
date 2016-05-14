@@ -33,10 +33,10 @@ module DTK::Client
     include Singleton
     
     def initialize
-      log_location_dir = OsUtil.dtk_log_location
+      log_location_dir = log_dir
       begin
         if File.directory?(log_location_dir)
-          file = File.open(file_path, "a")
+          file = File.open(log_file_path, 'a')
           file.sync = true
           @logger = ::Logger.new(file, LOG_NUMBER_OF_OLD_FILES, LOG_MB_SIZE * 1024000)
           
@@ -51,10 +51,6 @@ module DTK::Client
       end
     end
     
-    def file_path
-      "#{OsUtil.dtk_log_location}/#{LOG_FILE_NAME}"
-    end
-
     LoggerMethods = [:debug, :info, :warn, :error, :fatal, :error_pp, :fatal_pp]
     def self.method_missing(method, *args)
       if LoggerMethods.include?(method)
@@ -107,6 +103,14 @@ module DTK::Client
     end
     
     private
+
+    def log_dir
+      DtkPath.log_dir
+    end
+
+    def log_file_path
+      "#{log_dir}/#{LOG_FILE_NAME}"
+    end
 
     def development_mode?
       unless @development_mode.nil?

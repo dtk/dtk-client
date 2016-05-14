@@ -18,10 +18,10 @@
 require 'fileutils'
 module DTK::Client
   module Configurator
-    CONFIG_FILE   = File.join(OsUtil.dtk_local_folder, 'client.conf')
-    CRED_FILE     = File.join(OsUtil.dtk_local_folder, '.connection')
-    DIRECT_ACCESS = File.join(OsUtil.dtk_local_folder, '.add_direct_access')
-    NODE_SSH_CREDENTIALS = File.join(OsUtil.dtk_local_folder, 'ssh_credentials.yaml')
+    CONFIG_FILE   = File.join(DtkPath.base_dir, 'client.conf')
+    CRED_FILE     = File.join(DtkPath.base_dir, '.connection')
+    DIRECT_ACCESS = File.join(DtkPath.base_dir, '.add_direct_access')
+    NODE_SSH_CREDENTIALS = File.join(DtkPath.base_dir, 'ssh_credentials.yaml')
     CLIENT_CONF_HEADER = File.expand_path('config/client.conf.header', File.dirname(__FILE__))
 
     def self.client_config_path
@@ -37,7 +37,8 @@ module DTK::Client
     end
 
     def self.create_missing_client_dirs
-      create_client_dir?(:dtk_local_folder)
+      base_dir = DtkPath.base_dir
+      FileUtils.mkdir(base_dir) unless File.directory?(base_dir)
     end
 
     def self.check_config_exists
@@ -177,10 +178,6 @@ module DTK::Client
       end
     end
 
-    def self.create_client_dir?(dir_type)
-      dir_path = OsUtil.send(dir_type)
-      FileUtils.mkdir(dir_path) unless File.directory?(dir_path)
-    end
 
   end
 end

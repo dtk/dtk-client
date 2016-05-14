@@ -24,7 +24,7 @@ module DTK::Client
     COOKIE_HOLDER_NAME = 'tempdtkstore'
     FILE_DELIMITER = '--'
     
-    def initialize(cache_dir = OsUtil.get_temp_location)
+    def initialize(cache_dir = OsUtil.temp_dir)
       @cache_dir = cache_dir
       @current_user = Configurator.client_username
     end
