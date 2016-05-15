@@ -23,6 +23,11 @@ module DTK::Client
       def self.list_assemblies
         rest_get("#{RoutePrefix}/list_assemblies").set_render_as_table!
       end
+
+      def self.install(args = Args.new)
+        args = Args.convert(args)
+      end
+
     end
   end
 end

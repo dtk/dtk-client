@@ -16,23 +16,25 @@
 # limitations under the License.
 #
 module DTK::Client
-  # Abstract class that holds classes and methods for executing commands by
-  # make calls to server and performing client side operations
   class Operation
-    TYPES = [:account, :module]
+    class Args < ::Hash
+      def initialize(hash = {})
+        replace(hash)
+      end
 
-    require_relative('operation/args')
-    TYPES.each { |op_type| require_relative("operation/type/#{op_type}") }
-      
-    private
-    
-    # delegate rest calls to Session
-    def self.rest_post(route, post_body = {})
-      Session.rest_post(route, post_body)
-    end
-    def self.rest_get(route, args = {})
-      Session.rest_get(route, args)
+      def self.convert(ruby_hash_or_args)
+        ruby_hash_or_args.kind_of?(Args) ? ruby_hash_or_args : new(ruby_hash_or_args)
+      end
+
+      def required(key)
+        if has_key?(key)
+          self[key]
+        else
+          raise Error, "Args object missing the key '#{key}'"
+        end
+      end
     end
   end
 end
+
 
