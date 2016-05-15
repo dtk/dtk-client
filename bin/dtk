@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
+require_relative '../lib/common'
 require_relative '../lib/client'
-# client must be loaded first
+# client must be loaded before cli
 require_relative '../lib/cli'
+
 DTK::Client::CLI::Runner.run(ARGV)

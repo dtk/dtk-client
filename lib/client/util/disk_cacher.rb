@@ -45,7 +45,7 @@ module DTK::Client
       # if the file does not exist (or if the data is not fresh), we
       #  make an get request and save it to a file
       response_string = ''
-      response = Session.rest_get("metadata/get_metadata/#{file_name}")
+      response = Session.rest_get("metadata/get/#{file_name}")
       File.open(file_path, 'w') { |f| f << response_string = response.data } if response.ok? 
       response_string
     end
