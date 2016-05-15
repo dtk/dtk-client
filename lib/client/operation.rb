@@ -20,7 +20,7 @@ module DTK::Client
   # make calls to server and performing client side operations
   class Operation
     TYPES = [:account, :module]
-    TYPES.each { |op_type| require_relative("operation/type/#{op_type}") }
+    TYPES.each { |op_type| require_relative("operation/#{op_type}") }
       
     private
     
