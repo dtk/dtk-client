@@ -42,7 +42,7 @@ module DTK::Client; module CLI
         c.desc 'List assemblies'
         c.command 'list-assemblies'  do |sc|
           sc.action do 
-            Execute::Module.list_assemblies
+            Operation::Module.list_assemblies
           end
         end
       end

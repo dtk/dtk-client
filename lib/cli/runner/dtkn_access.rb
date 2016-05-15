@@ -50,7 +50,7 @@ module DTK::Client; module CLI
           :first_registration => true, 
           :name => "#{Session.connection_username}-client"
         }
-        response = Execute::Account.add_key(params[:ssh_key_path], add_key_opts)
+        response = Operation::Account.add_key(params[:ssh_key_path], add_key_opts)
         matched_pub_key = response.data(:matched_pub_key)
         matched_username = response.data(:matched_username)
         

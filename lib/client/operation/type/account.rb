@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 module DTK::Client
-  class Execute
+  class Operation
     class Account < self
       RoutePrefix = 'account'
 
