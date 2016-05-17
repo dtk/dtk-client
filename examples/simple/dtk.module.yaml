@@ -1,0 +1,29 @@
+---
+dsl_version: 1.0.0
+module: dtk-jira/dtk2554
+keywords: DTK-2554
+description: Tests for DTK-2554
+license: Apache 2.0
+version: 0.0.1
+
+modules:
+- aws:ec2
+- dtk:host
+
+assemblies:
+  simple:
+    nodes:
+      n1:
+        attributes:
+          image: amazon_hvm
+          size: small
+        components:
+        - host::hostname:
+            attributes:
+              hostname: host1
+    workflows:
+      create:
+        subtasks:
+        - name: set hostname
+          components:
+          - host::hostname
