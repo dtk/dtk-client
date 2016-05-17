@@ -16,16 +16,28 @@
 # limitations under the License.
 #
 
-module DTK::DSL    
-  class DirectoryParser
+module DTK::DSL::Parser    
+  class Directory
     class PathInfo
       # opts can have keys
       #  :depth 
       #  :base_path
-      def initialize(regexp, opts = {})
-        @regexp    = regexp
+      def initialize(regexp_or_string, opts = {})
+        @regexp    = regexp(regexp_or_string)
         @depth     = opts[:depth]
         @base_path = opts[:base_path]
+      end
+
+      private
+
+      def regexp(regexp_or_string)
+        if regexp_or_string.kind_of?(String)
+          Regexp.new(regexp_or_string)
+        elsif regexp_or_string.kind_of?(Regexp)
+          regexp_or_string
+        else
+          raise Error, "Unexpected class '#{regexp_or_string.class}'"
+        end
       end
     end
   end

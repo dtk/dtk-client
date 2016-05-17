@@ -1,8 +1,9 @@
 #!/usr/bin/env ruby
 require_relative '../lib/client'
-# lib/client must be loaded before lib/cli
-require_relative '../lib/cli'
 require_relative '../lib/dsl'
+
+# lib/cli must be loaded after lib/client and lib/dsl
+require_relative '../lib/cli'
 
 DTK::DSL.set_delegate_module!(DTK::Client)
 

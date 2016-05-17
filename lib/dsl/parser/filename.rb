@@ -16,20 +16,18 @@
 # limitations under the License.
 #
 
-module DTK::DSL
-  class Error < ::NameError
-    def initialize(*args)
-      @base_error_obj = base_error_class.new(*args)
-    end
-    
-    def message
-      @base_error_obj.message
+module DTK::DSL::Parser    
+  # Contains information about what file names are
+  class Filename
+    def self.create_path_info
+      Directory::PathInfo.new(regexp)
     end
 
-    private
-    
-    def base_error_class
-      DTK::DSL.delegate_module::Error
+    class BaseModule < self
+      private
+      def self.regexp
+        /^dtk\.module\.(yml|yaml)$/
+      end
     end
   end
 end

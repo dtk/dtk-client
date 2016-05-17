@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-module DTK::DSL    
-  class DirectoryParser
+module DTK::DSL::Parser    
+  class Directory
     # For getting directory information when files in a vanilla file system
-    class Filesystem < self
+    class FileSystem < self
     # def matching_file_paths(path_info)
     # end
     end

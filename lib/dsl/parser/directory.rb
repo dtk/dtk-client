@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-module DTK::DSL    
-  class DirectoryParser
-    # Types of directory_parsers
-    require_relative('directory_parser/git')
-    require_relative('directory_parser/file_system')
+module DTK::DSL; module Parser    
+  class Directory
+    # Types of directoryparsers
+    require_relative('directory/git')
+    require_relative('directory/file_system')
 
-    require_relative('directory_parser/path_info')
+    require_relative('directory/path_info')
 
-    ## Abstract methods 
+    #### Abstract methods 
 
     # returns an array of strings that are file paths
     def matching_file_paths(path_info)
@@ -36,6 +36,6 @@ module DTK::DSL
     def most_nested_matching_file_path?(path_info)
       raise Error, "No method for concrete class '#{self.class}'"
     end
-
+    ##### End Abstract methods
   end
-end
+end; end

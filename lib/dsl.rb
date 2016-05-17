@@ -19,7 +19,7 @@
 module DTK
   module DSL    
     require_relative('dsl/error')
-    require_relative('dsl/directory_parser')
+    require_relative('dsl/parser')
 
     def self.set_delegate_module!(delegate_module)
       @delegate_module = delegate_module

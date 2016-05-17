@@ -17,10 +17,41 @@
 #
 module DTK::Client
   class CLI::Context
-    class BaseDslFile < ::Hash
-      # This method find the base dsl file if it exists
-      def self.find?
+    class BaseDslFile
+      include ::DTK::DSL
+
+      attr_reader :path, :content
+      def initialize(path)
+        @path    = path
+        @content = get_content?(path)
       end
+      private :initialize
+
+      # This method finds the base dsl file if it exists returns a BaseDslFileobject
+      # opts can have keys:
+      #   :path
+      def self.find?(opts = {})
+        if path = opts[:path] || find_path?
+          new(path)
+        end
+      end
+
+      private
+
+      # This method finds the base dsl file if it exists and returns its path
+      def self.find_path?
+        path_info = Parser::Filename::BaseModule.create_path_info
+        directory_parser.most_nested_matching_file_path?(path_info)
+      end
+
+      def get_content?(path)
+        File.open(path).read if File.exists?(path)
+      end
+
+      def self.directory_parser
+        @directory_parser ||= Parser::Directory::FileSystem.new
+      end
+
     end
   end
 end

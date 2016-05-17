@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-module DTK::DSL    
-  class DirectoryParser
+module DTK::DSL::Parser    
+  class Directory
     # For getting directory information when files in git repo
     class Git < self
     end

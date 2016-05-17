@@ -29,9 +29,11 @@ module DTK::Client
       def initialize
         @command_processor = Processor.default
         @context_attributes = attributes
-        # @base_dsl_file gets computed on demand
-        @base_dsl_file = nil
-        @base_dsl_file_computed = false
+        # @base_dsl_file_obj gets computed on demand
+        @base_dsl_file_obj = nil
+
+        # TODO: test
+        base_dsl_file_obj?
       end
       private :initialize 
       
@@ -60,13 +62,8 @@ module DTK::Client
 
       private
       
-      def base_dsl_file?
-        if @base_dsl_file_computed
-          @base_dsl_file
-        else
-          @base_dsl_file_computed = true
-          @base_dsl_file = BaseDslFile.find?
-        end
+      def base_dsl_file_obj?
+        @base_dsl_file_obj ||= BaseDslFile.find?
       end
 
       # The method 'create_attributes' can be ovewritten

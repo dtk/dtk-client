@@ -16,20 +16,9 @@
 # limitations under the License.
 #
 
-module DTK::DSL
-  class Error < ::NameError
-    def initialize(*args)
-      @base_error_obj = base_error_class.new(*args)
-    end
-    
-    def message
-      @base_error_obj.message
-    end
-
-    private
-    
-    def base_error_class
-      DTK::DSL.delegate_module::Error
-    end
+module DTK::DSL    
+  module Parser
+    require_relative('parser/directory')
+    require_relative('parser/filename')
   end
 end
