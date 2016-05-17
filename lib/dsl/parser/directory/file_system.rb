@@ -20,8 +20,12 @@ module DTK::DSL::Parser
   class Directory
     # For getting directory information when files in a vanilla file system
     class FileSystem < self
-    # def matching_file_paths(path_info)
-    # end
+      def most_nested_matching_file_path?(path_info)
+        pp [:path_info, path_info]
+        nil
+      end
+      # def matching_file_paths(path_info)
+      # end
     end
   end
 end
