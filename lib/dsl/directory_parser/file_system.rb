@@ -18,8 +18,10 @@
 
 module DTK::DSL    
   class DirectoryParser
-    # For getting directory information when files in file system
+    # For getting directory information when files in a vanilla file system
     class Filesystem < self
+    # def matching_file_paths(path_info)
+    # end
     end
   end
 end

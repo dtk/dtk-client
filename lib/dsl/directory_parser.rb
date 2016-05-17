@@ -23,5 +23,11 @@ module DTK::DSL
     require_relative('directory_parser/file_system')
 
     require_relative('directory_parser/path_info')
+
+    # returns an array of strings that are file paths
+    def matching_file_paths(path_info)
+      raise Error, "No method for concrete class '#{self.class}'"
+    end
+
   end
 end

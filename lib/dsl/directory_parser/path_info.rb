@@ -18,8 +18,14 @@
 
 module DTK::DSL    
   class DirectoryParser
-    # For getting directory information when files in git repo
-    class Git < self
+    class PathInfo
+      attr_reader :regexp, :depth
+      # opts can have keys
+      #  :depth 
+      def initialize(regexp, opts = {})
+        @regexp = regexp
+        @depth  = opts[:depth]
+      end
     end
   end
 end
