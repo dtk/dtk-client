@@ -17,10 +17,8 @@
 #
 
 module DTK
-  # Common holds code to be shared between server and client
-  # TODO: will fold this into dtk-common-core gem
-  module Common
-    require_relative('common/error')
-    require_relative('common/dsl')
+  module DSL    
+    require_relative('dsl/directory_parser')
+    require_relative('dsl/file_parser')
   end
 end

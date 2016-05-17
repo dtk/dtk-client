@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require_relative '../lib/common'
+require_relative '../lib/dsl'
 require_relative '../lib/client'
 # client must be loaded before cli
 require_relative '../lib/cli'
