@@ -16,8 +16,10 @@
 # limitations under the License.
 #
 
-module DTK
-  module DSL    
-    require_relative('dsl/directory_parser')
+module DTK::DSL    
+  class DirectoryParser
+    # For getting directory information when files in git repo
+    class Git < self
+    end
   end
 end
