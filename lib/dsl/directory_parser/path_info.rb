@@ -19,12 +19,13 @@
 module DTK::DSL    
   class DirectoryParser
     class PathInfo
-      attr_reader :regexp, :depth
       # opts can have keys
       #  :depth 
+      #  :base_path
       def initialize(regexp, opts = {})
-        @regexp = regexp
-        @depth  = opts[:depth]
+        @regexp    = regexp
+        @depth     = opts[:depth]
+        @base_path = opts[:base_path]
       end
     end
   end
