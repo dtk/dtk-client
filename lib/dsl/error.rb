@@ -16,17 +16,24 @@
 # limitations under the License.
 #
 
-module DTK
-  module DSL    
-    require_relative('dsl/error')
-    require_relative('dsl/directory_parser')
-
-    def self.set_delegate_module!(delegate_module)
-      @delegate_module = delegate_module
+module DTK::DSL
+  class Error
+    def initialize(*args)
+      @base_error_obj = base_error_class.new(*args)
     end
-
-    def self.delegate_module
-      @delegate_module
+    
+    def method_missing(method, *args, &body)
+      @base_error_obj.respond_to?(method) ? @base_error_obj.send(method, *args, &body) : super
+    end
+    
+    def respond_to?(method)
+      @base_error_obj.respond_to?(method) or super
+    end
+    
+    private
+    
+    def base_error_class
+      DTK::DSL.delegate_module::Error
     end
   end
 end

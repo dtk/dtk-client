@@ -18,7 +18,10 @@
 
 module DTK::DSL    
   class DirectoryParser
+    # Types of directory_parsers
     require_relative('directory_parser/git')
     require_relative('directory_parser/file_system')
+
+    require_relative('directory_parser/path_info')
   end
 end

@@ -1,7 +1,9 @@
 #!/usr/bin/env ruby
-require_relative '../lib/dsl'
 require_relative '../lib/client'
-# client must be loaded before cli
+# lib/client must be loaded before lib/cli
 require_relative '../lib/cli'
+require_relative '../lib/dsl'
+
+DTK::DSL.set_delegate_module!(DTK::Client)
 
 DTK::Client::CLI::Runner.run(ARGV)

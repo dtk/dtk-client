@@ -16,28 +16,10 @@
 # limitations under the License.
 #
 
-module DTK
-  module Common
-    class Error
-      def initialize(*args)
-        @base_error_obj = base_error_class.new(*args)
-      end
-
-      def method_missing(method, *args, &body)
-        @base_error_obj.respond_to?(method) ? @base_error_obj.call(method, *args, &body) : super
-      end
-
-      def respond_to?(method)
-        base_error_obj.respond_to?(method) or super
-      end
-
-      private
-      
-      def base_error_class
-        # TOD: this is stubbed; should be dynamically determined and return 
-        # apporpriate class when this library used n server side
-        ::DTK::Client
-      end
+module DTK::DSL    
+  class DirectoryParser
+    # For getting directory information when files in git repo
+    class Git < self
     end
   end
 end
