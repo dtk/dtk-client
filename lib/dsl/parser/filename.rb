@@ -25,8 +25,9 @@ module DTK::DSL::Parser
 
     class BaseModule < self
       private
+      # Purposely does not have ^ or $ so calling function can insert these depending on context
       def self.regexp
-        /^dtk\.module\.(yml|yaml)$/
+        /dtk\.module\.(yml|yaml)/
       end
     end
   end

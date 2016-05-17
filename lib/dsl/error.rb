@@ -29,7 +29,7 @@ module DTK::DSL
     private
     
     def base_error_class
-      DTK::DSL.delegate_module::Error
+      DTK::DSL.delegate_module.error_class
     end
   end
 end

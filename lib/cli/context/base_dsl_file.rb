@@ -41,7 +41,12 @@ module DTK::Client
       # This method finds the base dsl file if it exists and returns its path
       def self.find_path?
         path_info = Parser::Filename::BaseModule.create_path_info
-        directory_parser.most_nested_matching_file_path?(path_info)
+        # TODO: stub
+current_dir = File.expand_path('../../../examples/simple/test', File.dirname(__FILE__))
+opts = { current_dir: current_dir }
+ret =  directory_parser.most_nested_matching_file_path?(path_info, opts)
+pp(current_dir: current_dir, most_nested_matching_file: ret)
+ret
       end
 
       def get_content?(path)

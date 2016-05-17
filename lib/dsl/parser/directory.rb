@@ -33,7 +33,9 @@ module DTK::DSL; module Parser
 
     # return either a string file path or of match to path_info working from current directory and 'otwards'
     # until base_path in path_info (if it exists)
-    def most_nested_matching_file_path?(path_info)
+    # opts can have keys
+    #  :current_dir if set means start from this dir; otherwise start from computed current dir
+    def most_nested_matching_file_path?(path_info, opts = {})
       raise Error, "No method for concrete class '#{self.class}'"
     end
     ##### End Abstract methods

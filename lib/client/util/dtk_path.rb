@@ -24,9 +24,5 @@ module DTK::Client
     def self.log_dir
       base_dir
     end
-    
-    # TODO: stub for dtk modules
-    module DtkModule
-    end
   end
 end

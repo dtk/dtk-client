@@ -16,16 +16,51 @@
 # limitations under the License.
 #
 
-module DTK::DSL::Parser    
+module DTK::DSL; module Parser    
   class Directory
     # For getting directory information when files in a vanilla file system
     class FileSystem < self
-      def most_nested_matching_file_path?(path_info)
-        pp [:path_info, path_info]
-        nil
+      # opts can have keys
+      #  :current_dir if set means start from this dir; otherwise start from computed current dir
+      def most_nested_matching_file_path?(path_info, opts = {})
+        regexp       = path_info.regexp
+        base_dir    = path_info.base_dir || OsUtil.home_dir
+        current_dir = opts[:current_dir] || OsUtil.current_dir
+
+        check_match_recurse_on_failure?(regexp, current_dir, base_dir)
       end
       # def matching_file_paths(path_info)
       # end
+      
+      private
+
+      def check_match_recurse_on_failure?(regexp, current_dir, base_dir)
+        match = matching_file_paths(current_dir, regexp)
+        if match.empty?
+          unless current_dir == base_dir
+            if parent_path = OsUtil.parent_dir?(current_dir)
+              check_match_recurse_on_failure?(regexp, parent_path, base_dir)
+            end
+          end
+        elsif match.size == 1
+          match.first
+        else
+          raise Error, "Unexpected that more than one match: #{match.join(', ')}"
+        end
+      end
+
+      def matching_file_paths(dir_path, regexp)
+        Dir.glob("#{dir_path}/*").select { |path| File.file?(path) and file_path_matches_regexp?(path, regexp) }
+      end
+
+      def file_path_matches_regexp?(file_path, regexp) 
+        # extra check to see if regep is just for file part or has '/' seperators
+        if '/' =~ regexp
+          file_path.split(OsUtil.delim).last =~ Regexp.new("^#{regexp.source}$")
+        else
+          file_path =~ Regexp.new("#{regexp.source}$")
+        end
+      end
     end
   end
-end
+end; end

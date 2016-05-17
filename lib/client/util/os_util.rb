@@ -21,56 +21,63 @@ module DTK::Client
     extend Auxiliary
     extend PrintMixin
     
-    class << self
-      def home_dir
-        is_windows? ? home_dir__windows : "#{genv(:home)}"
+    def self.home_dir
+      is_windows? ? home_dir__windows : genv(:home)
+    end
+    
+    def self.current_dir
+      Dir.getwd
+    end
+    
+    def self.temp_dir
+      is_windows? ? genv(:temp) : '/tmp'
+    end
+    
+    def self.which(cmd)
+      exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+      ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+        exts.each { |ext|
+          exe = File.join(path, "#{cmd}#{ext}")
+          return exe if File.executable? exe
+        }
       end
-      
-      def current_dir
-        current_dir = Dir.getwd
-        current_dir.gsub(home_dir, '~')
-      end
+      nil
+    end
 
-      def temp_dir
-        is_windows? ? genv(:temp) : '/tmp'
+    # Returns parent directory; if at root returns nil
+    def self.parent_dir?(dir_path)
+      raise Error.new("Not implemented for windows") if is_windows?
+      ret = File.expand_path('../', dir_path)
+      unless ret == dir_path # meaning at root
+        ret
       end
-      
-      def which(cmd)
-        exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
-        ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
-          exts.each { |ext|
-            exe = File.join(path, "#{cmd}#{ext}")
-            return exe if File.executable? exe
-          }
-        end
-        nil
-      end
+    end
 
-      def root(relative_path)
-        OsUtil.is_windows? ? "#{OsUtil.genv(:homedrive)}#{genv(:homepath)}/dtk/" : "#{home_dir}/dtk/"
-      end
+    def self.delim
+      is_windows? ? '\\' : '/'
+    end
 
-      private
-      
-      def genv(name)
-        ENV[name.to_s.upcase].gsub(/\\/,'/')
-      end
-
-      def is_mac?
-        RUBY_PLATFORM.downcase.include?('darwin')
-      end
-      
-      def is_windows?
-        RUBY_PLATFORM =~ /mswin|mingw|cygwin/
-      end
-
-      def home_dir__windows
-        "#{genv(:homedrive)}#{genv(:homepath)}"
-      end
-      
-      def is_linux?
-        RUBY_PLATFORM.downcase.include?('linux')
-      end
+    private
+    
+    def self.genv(name)
+      ENV[name.to_s.upcase].gsub(/\\/,'/')
+    end
+    
+    def self.is_mac?
+      RUBY_PLATFORM.downcase.include?('darwin')
+    end
+    
+    def self.is_windows?
+      RUBY_PLATFORM =~ /mswin|mingw|cygwin/
+    end
+    
+    def self.home_dir__windows
+      "#{genv(:homedrive)}#{genv(:homepath)}"
+    end
+    
+    def self.is_linux?
+      RUBY_PLATFORM.downcase.include?('linux')
     end
   end
 end
+

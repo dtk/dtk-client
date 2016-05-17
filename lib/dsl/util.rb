@@ -15,10 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client
-  module OsUtil
-    module LocationMixin
 
-    end    
-  end
+module DTK::DSL
+  require_relative('util/os_util')
 end

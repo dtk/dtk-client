@@ -11,5 +11,12 @@ module DTK
     require_relative 'client/config'
     require_relative 'client/operation'
     require_relative 'client/render'
+
+    def self.error_class
+      Error
+    end
+    def self.os_util_module
+      OsUtil
+    end
   end
 end

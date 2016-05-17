@@ -15,19 +15,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-module DTK
-  module DSL    
-    require_relative('dsl/error')
-    require_relative('dsl/util')
-    require_relative('dsl/parser')
-
-    def self.set_delegate_module!(delegate_module)
-      @delegate_module = delegate_module
+module DTK::DSL
+  module OsUtil
+    def self.method_missing(method, *args, &body)
+      base_module.respond_to?(method) ? base_module.send(method, *args, &body) : super
     end
 
-    def self.delegate_module
-      @delegate_module
+    def self.respond_to?(method)
+      base_module.respond_to?(method) or super
+    end
+
+    private
+
+    def self.base_module
+      DTK::DSL.delegate_module.os_util_module
     end
   end
 end

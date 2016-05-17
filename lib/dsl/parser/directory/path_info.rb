@@ -19,18 +19,18 @@
 module DTK::DSL::Parser    
   class Directory
     class PathInfo
+      attr_reader :regexp, :depth, :base_dir
       # opts can have keys
-      #  :depth 
-      #  :base_path
+      #  :depth - used for pruning when a git directory
       def initialize(regexp_or_string, opts = {})
-        @regexp    = regexp(regexp_or_string)
-        @depth     = opts[:depth]
-        @base_path = opts[:base_path]
+        @regexp   = ret_regexp(regexp_or_string)
+        @depth    = opts[:depth]
+        @base_dir = opts[:base_dir]
       end
 
       private
 
-      def regexp(regexp_or_string)
+      def ret_regexp(regexp_or_string)
         if regexp_or_string.kind_of?(String)
           Regexp.new(regexp_or_string)
         elsif regexp_or_string.kind_of?(Regexp)
