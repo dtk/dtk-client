@@ -33,6 +33,13 @@ module DTK::Client
     def self.rest_get(route, args = {})
       Session.rest_get(route, args)
     end
+
+    def self.wrap_as_response(args = Args.new, &block)
+      Response.wrap_as_response do
+        block.call(Args.convert(args))
+      end
+    end
+
   end
 end
 

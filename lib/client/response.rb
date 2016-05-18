@@ -40,40 +40,16 @@ module DTK::Client
       ErrorHandler.error_info?(self, opts)
     end
     
-    # This method is used so that client side actions can be wrapped like server responses
-    def self.wrap_helper_actions(data = {}, &block)
-      begin
-        results = (block ? yield : data)
+    # This method is used so that client side actions can be wrapped like calls to server
+    def self.wrap_as_response(data = {}, &block)
+      results = (block ? yield : data)
+      if results.nil?
+        NoOp.new
+      elsif results.kind_of?(Response)
+        results
+      else
         Ok.new(results)
-        
-      rescue Git::GitExecuteError => e
-        if e.message.include?('Please make sure you have the correct access rights')
-          error_msg  = "You do not have git access from this client, please add following SSH key in your git account: \n\n"
-          error_msg += "#{SSHUtil.rsa_pub_key_content()}\n"
-          raise Error, error_msg
-        end
-        handle_error_in_wrapper(e)
-       rescue ErrorUsage => e
-         ErrorResponse::Usage.new('message'=> e.to_s)
-       rescue => e
-        handle_error_in_wrapper(e)
       end
-    end
-
-    private
-
-    def self.handle_error_in_wrapper(exception)
-      error_hash =  {
-        'message'=> exception.message,
-        'backtrace' => exception.backtrace,
-        'on_client' => true
-      }
-      
-      if Config[:development_mode]
-        Logger.instance.error_pp("Error inside wrapper DEV ONLY: #{exception.message}", exception.backtrace)
-      end
-      
-      ErrorResponse::Internal.new(error_hash)
     end
   end
 end
