@@ -42,14 +42,23 @@ module DTK::Client
           e.print_warning
           puts "\nDTK will now exit. Please set up your connection properly and try again."
         rescue Error => e
-          # this are expected application errors
+          # If vanilla error treat like client error
+          if e.class == Error
+            e = convert_to_client_error(e)
+          end
           Logger.instance.error_pp(e.message, e.backtrace)
-        rescue Exception => e
-          Logger.instance.fatal_pp("[#{Error::Client.label}] DTK has encountered an error #{e.class}: #{e.message}", e.backtrace)
+        rescue Exception => exception
+          # If treat like client error
+          e = convert_to_client_error(exception)
+          Logger.instance.error_pp(e.message, e.backtrace)
         end
       end
       
       private
+
+      def self.convert_to_client_error(e)
+        Error::Client.new(e.message, :backtrace => e.backtrace)
+      end
 
       def self.raise_error_if_invalid_connection
         connection = Session.get_connection

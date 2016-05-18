@@ -18,12 +18,15 @@
 module DTK::Client
   class Error < ::NameError
     # opts can have keys
-    #  :backtrace
+    #  :backtrace - if want backtrace of nested error
     def initialize(msg = '', opts = {})
       super(msg)
-      @backtrace = opts[:backtrace]
+      @initial_error_backtrace = opts[:backtrace]
     end
-    attr_reader :backtrace
+
+    def backtrace
+      @initial_error_backtrace || super
+    end
     
     def self.raise_error(response)
       raise_if_error?(response, :default_error_if_nil => true)

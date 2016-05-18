@@ -39,7 +39,11 @@ module DTK::Client; module CLI
           end
 
           on_error do |exception|
-            raise Error::Client.new(exception.message, :backtrace => exception.backtrace)
+            if exception.kind_of?(Error)
+              raise exception
+            else
+              raise Error::Client.new(exception.message, :backtrace => exception.backtrace)
+            end
           end
         end
 
