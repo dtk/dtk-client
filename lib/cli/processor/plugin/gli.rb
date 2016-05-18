@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 require 'gli'
-module DTK::Client::CLI
+module DTK::Client; module CLI
   class Processor
     module Plugin
       class Gli
@@ -37,6 +37,10 @@ module DTK::Client::CLI
             # It is expected that last line in code block returns response
             @response_obj = code.call
           end
+
+          on_error do |exception|
+            raise Error::Client.new(exception.message, :backtrace => exception.backtrace)
+          end
         end
 
         def add_command_defaults!
@@ -48,4 +52,4 @@ module DTK::Client::CLI
       end
     end
   end
-end
+end; end

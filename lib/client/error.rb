@@ -17,6 +17,8 @@
 #
 module DTK::Client
   class Error < ::NameError
+    # opts can have keys
+    #  :backtrace
     def initialize(msg = '', opts = {})
       super(msg)
       @backtrace = opts[:backtrace]
@@ -52,9 +54,9 @@ module DTK::Client
       when :pg_error
         raise self, "[PG_ERROR] #{error.msg}"
       when :server_error
-        raise Server.new(error.msg,:backtrace => error.backtrace)
+        raise Server.new(error.msg, :backtrace => error.backtrace)
       when :client_error
-        raise Client.new(error.msg,:backtrace => error.backtrace)
+        raise Client.new(error.msg, :backtrace => error.backtrace)
       else
         # if usage error occurred, display message to console and display that same message to log
         raise Usage.new(error.msg)
@@ -63,7 +65,7 @@ module DTK::Client
 
     class InvalidConnection < self
       # TODO: DTK-2554: leveraged connection#print_warning
-      # might instaed use 'msg_to_pass_to_super'
+      # might instead use 'msg_to_pass_to_super'
       def initialize(bad_connection)
         super()
         @bad_connection = bad_connection
@@ -72,20 +74,24 @@ module DTK::Client
         @bad_connection.print_warning
       end
     end
-
     class Usage < self
-      def initialize(error_msg,opts={})
+      # opts can have keys
+      #  :backtrace
+      def initialize(error_msg, opts = {})
         msg_to_pass_to_super = "[ERROR] #{error_msg}"
-        super(msg_to_pass_to_super,opts)
+        super(msg_to_pass_to_super, opts)
       end
     end
     
     class InternalError < self
-      def initialize(error_msg,opts={})
+      # opts can have keys
+      #  :backtrace
+      #  :where
+      def initialize(error_msg, opts = {})
         msg_to_pass_to_super = "[#{label(opts[:where])}] #{error_msg}"
-        super(msg_to_pass_to_super,opts)
+        super(msg_to_pass_to_super, opts)
       end
-      def self.label(where=nil)
+      def self.label(where = nil)
         prefix = (where ? "#{where.to_s.upcase} " : '')
         "#{prefix}#{InternalErrorLabel}"
       end
@@ -98,8 +104,10 @@ module DTK::Client
     end
     
     class Client < InternalError
-      def initialize(error_msg,opts={})
-        super(error_msg,opts.merge(:where => :client))
+      # opts can have keys
+      #  :backtrace
+      def initialize(error_msg, opts = {})
+        super(error_msg, opts.merge(:where => :client))
       end
       def self.label(*_args)
         super(:client)
@@ -107,8 +115,10 @@ module DTK::Client
     end
     
     class Server < InternalError
-      def initialize(error_msg,opts={})
-        super(error_msg,opts.merge(:where => :server))
+      # opts can have keys
+      #  :backtrace
+      def initialize(error_msg, opts = {})
+        super(error_msg, opts.merge(:where => :server))
       end
       def self.label(*args)
         super(:server)
@@ -116,6 +126,8 @@ module DTK::Client
     end
     
     class InteractiveWizardError < self
+      # opts can have keys
+      #  :backtrace
       def initialize(error_msg, opts={})
         super(error_msg, opts)
       end
