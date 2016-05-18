@@ -33,8 +33,6 @@ module DTK::Client; module CLI
           sc.switch [:f], :default_value => false, :desc => 'Force Install'
           sc.action do |global_options, options, args|
             # pp [self.class, options, args, context_attributes: context_attributes]
-raise Error, 'foo'
-
             Operation::Module.install(args)
           end
         end

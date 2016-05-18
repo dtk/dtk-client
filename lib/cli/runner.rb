@@ -22,7 +22,7 @@ module DTK::Client
       require_relative('runner/dtkn_access')
       
       def self.run(argv)
-        begin 
+        trap_error do
           Configurator.check_git
           Configurator.create_missing_client_dirs
           
@@ -38,6 +38,14 @@ module DTK::Client
             # render_response will raise Error in case of error response
             render_response(response_obj)
           end
+        end
+      end
+      
+      private
+      
+      def self.trap_error(&body)
+        begin
+          yield
         rescue Error::InvalidConnection => e
           e.print_warning
           puts "\nDTK will now exit. Please set up your connection properly and try again."
@@ -46,15 +54,13 @@ module DTK::Client
           if e.class == Error
             e = convert_to_client_error(e)
           end
-          Logger.instance.error_pp(e.message, e.backtrace)
+          Logger.instance.error_pp(e.message, e.backtrace?)
         rescue Exception => exception
           # If treat like client error
           e = convert_to_client_error(exception)
-          Logger.instance.error_pp(e.message, e.backtrace)
+          Logger.instance.error_pp(e.message, e.backtrace?)
         end
       end
-      
-      private
 
       def self.convert_to_client_error(e)
         Error::Client.new(e.message, :backtrace => e.backtrace)

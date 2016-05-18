@@ -17,15 +17,23 @@
 #
 module DTK::Client
   class Error < ::NameError
+    require_relative('error/subclasses')
+
     # opts can have keys
     #  :backtrace - if want backtrace of nested error
     def initialize(msg = '', opts = {})
       super(msg)
-      @initial_error_backtrace = opts[:backtrace]
+      @backtrace = opts[:backtrace] 
     end
 
-    def backtrace
-      @initial_error_backtrace || super
+    NO_BACKTRACE = :no_backtarce
+
+    def backtrace?
+     if @backtrace
+       @backtrace unless @backtrace == NO_BACKTRACE
+     else
+       backtrace
+     end
     end
     
     def self.raise_error(response)
@@ -57,82 +65,13 @@ module DTK::Client
       when :pg_error
         raise self, "[PG_ERROR] #{error.msg}"
       when :server_error
-        raise Server.new(error.msg, :backtrace => error.backtrace)
+        # Unless explicit backtrace given we dont want to use as backtace where error detected on client
+        raise Server.new(error.msg, :backtrace => NO_BACKTRACE)
       when :client_error
         raise Client.new(error.msg, :backtrace => error.backtrace)
       else
         # if usage error occurred, display message to console and display that same message to log
         raise Usage.new(error.msg)
-      end
-    end
-
-    class InvalidConnection < self
-      # TODO: DTK-2554: leveraged connection#print_warning
-      # might instead use 'msg_to_pass_to_super'
-      def initialize(bad_connection)
-        super()
-        @bad_connection = bad_connection
-      end
-      def print_warning
-        @bad_connection.print_warning
-      end
-    end
-    class Usage < self
-      # opts can have keys
-      #  :backtrace
-      def initialize(error_msg, opts = {})
-        msg_to_pass_to_super = "[ERROR] #{error_msg}"
-        super(msg_to_pass_to_super, opts)
-      end
-    end
-    
-    class InternalError < self
-      # opts can have keys
-      #  :backtrace
-      #  :where
-      def initialize(error_msg, opts = {})
-        msg_to_pass_to_super = "[#{label(opts[:where])}] #{error_msg}"
-        super(msg_to_pass_to_super, opts)
-      end
-      def self.label(where = nil)
-        prefix = (where ? "#{where.to_s.upcase} " : '')
-        "#{prefix}#{InternalErrorLabel}"
-      end
-      InternalErrorLabel = 'INTERNAL ERROR'
-      
-      private
-      def label(where=nil)
-        self.class.label(where)
-      end
-    end
-    
-    class Client < InternalError
-      # opts can have keys
-      #  :backtrace
-      def initialize(error_msg, opts = {})
-        super(error_msg, opts.merge(:where => :client))
-      end
-      def self.label(*_args)
-        super(:client)
-      end
-    end
-    
-    class Server < InternalError
-      # opts can have keys
-      #  :backtrace
-      def initialize(error_msg, opts = {})
-        super(error_msg, opts.merge(:where => :server))
-      end
-      def self.label(*args)
-        super(:server)
-      end
-    end
-    
-    class InteractiveWizardError < self
-      # opts can have keys
-      #  :backtrace
-      def initialize(error_msg, opts={})
-        super(error_msg, opts)
       end
     end
   end
