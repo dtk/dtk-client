@@ -20,37 +20,51 @@ module DTK::Client
     class BaseDslFile
       include ::DTK::DSL
 
-      attr_reader :path, :content
-      def initialize(path)
-        @path    = path
-        @content = get_content?(path)
+      attr_reader :path 
+      # opts can have keys
+      #  :dir_path
+      #  :file_path
+      def initialize(opts = {})
+        @file_path = opts[:file_path]
+        @dir_path  = opts[:dir_path]
+        @content   = get_content?(@file_path)
       end
       private :initialize
-
+      
       # This method finds the base dsl file if it exists returns a BaseDslFileobject
       # opts can have keys:
-      #   :path
-      def self.find?(opts = {})
-        if path = opts[:path] || find_path?
-          new(path)
-        end
+      #  :dir_path
+      #  :file_path
+      # Returns a BaseDslFile object even under error
+      def self.find(opts = {})
+        new(opts.merge(:file_path =>  opts[:file_path] || find_path?(opts)))
+      end
+
+      def content_or_raise_error
+        @content || raise(Error::Usage, error_msg_no_content)
       end
 
       private
 
+      def error_msg_no_content
+        if @file_path
+          "No DSL file found at '#{@file_path}'"
+        else
+          dir = @dir_path ? "specified directory '#{@dir_path}'" : "current directory '{OsUtil.current_dir}'"
+          "Cannot find the base DTK DSL file in the #{dir} or ones nested under it"
+        end
+      end
+
       # This method finds the base dsl file if it exists and returns its path
-      def self.find_path?
+      # opts can have keys:
+      #  :dir_path
+      def self.find_path?(opts = {})
         path_info = Parser::Filename::BaseModule.create_path_info
-        # TODO: stub
-current_dir = File.expand_path('../../../examples/simple/test', File.dirname(__FILE__))
-opts = { current_dir: current_dir }
-ret =  directory_parser.most_nested_matching_file_path?(path_info, opts)
-pp(current_dir: current_dir, most_nested_matching_file: ret)
-ret
+        directory_parser.most_nested_matching_file_path?(path_info, :current_dir => opts[:dir_path])
       end
 
       def get_content?(path)
-        File.open(path).read if File.exists?(path)
+        File.open(path).read if path and File.exists?(path)
       end
 
       def self.directory_parser

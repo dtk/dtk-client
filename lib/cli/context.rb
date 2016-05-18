@@ -29,8 +29,6 @@ module DTK::Client
       def initialize
         @command_processor = Processor.default
         @context_attributes = attributes
-        # @base_dsl_file_obj gets computed on demand
-        @base_dsl_file_obj = nil
       end
       private :initialize 
       
@@ -57,8 +55,12 @@ module DTK::Client
         self
       end
 
-      def base_dsl_file_obj?
-        @base_dsl_file_obj ||= BaseDslFile.find?
+      # opts can have keys
+      #  :dir_path
+      #  :file_path
+      # Returns a BaseDslFile object even under error
+      def ret_base_dsl_file_obj(opts = {})
+        BaseDslFile.find(opts)
       end
 
       private

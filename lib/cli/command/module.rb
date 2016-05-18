@@ -25,15 +25,19 @@ module DTK::Client; module CLI
 
       subcommand_def 'install' do |c|
         unless context_attributes[:module_name]
-          c.arg 'NAMESPACE/MODULE-NAME', :optional
+        # TODO: put in later  c.arg 'NAMESPACE/MODULE-NAME', :optional
         end
         c.desc 'Install DTK module'
         c.command :install  do |sc|
-          sc.flag [:v, :version], :arg_name => 'VERSION', :desc => 'Module Version'
-          sc.switch [:f], :default_value => false, :desc => 'Force Install'
-          sc.action do |global_options, options, args|
-            # pp [self.class, options, args, context_attributes: context_attributes]
-            Operation::Module.install(args)
+          # TODO: put in later
+          # sc.flag [:v, :version], :arg_name => 'VERSION', :desc => 'Module Version'
+          # sc.switch [:f], :default_value => false, :desc => 'Force Install'
+          sc.action do |_global_options, _options, _args|
+            # TODO: when pass in arg 'NAMESPACE/MODULE-NAME', do not usebase_dsl_file_obj
+#stub
+dir_path = File.expand_path('../../../examples/simple/test', File.dirname(__FILE__))
+            content = ret_base_dsl_file_obj(:dir_path => dir_path).content_or_raise_error
+            Operation::Module.install(:base_dsl_file_content => content)
           end
         end
       end

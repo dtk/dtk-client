@@ -38,11 +38,13 @@ module DTK::Client; module CLI
             @response_obj = code.call
           end
 
-          on_error do |exception|
-            if exception.kind_of?(Error)
-              raise exception
+          on_error do |err|
+            if err.kind_of?(::GLI::BadCommandLine) or err.kind_of?(::GLI::UnknownCommand)
+              true # so gli mechanism processes it
+            elsif err.kind_of?(Error)
+              raise err
             else
-              raise Error::Client.new(exception.message, :backtrace => exception.backtrace)
+              raise Error::Client.new(err.message, :backtrace => err.backtrace)
             end
           end
         end
