@@ -15,21 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-module DTK::DSL
-  class Error < ::NameError
-    def initialize(*args)
-      @base_error_obj = base_error_class.new(*args)
-    end
-    
-    def message
-      @base_error_obj.message
-    end
-
-    private
-    
-    def base_error_class
-      DTK::DSL.delegate_module.error_class
-    end
+module DTK
+  module Base
+    # TODO: unify this with dtk-common-core
+    require_relative 'base/error'
   end
 end

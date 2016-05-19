@@ -20,7 +20,7 @@ module DTK::Client
     # Object that provides the context for interpreting commands
     class Context
       require_relative('context/attributes')
-      require_relative('context/base_dsl_file')
+      require_relative('context/base_dsl_file_obj')
       
       ALL_CONTEXTS = [:service, :module]
 
@@ -60,7 +60,7 @@ module DTK::Client
       #  :file_path
       # Returns a BaseDslFile object even under error
       def ret_base_dsl_file_obj(opts = {})
-        BaseDslFile.find(opts)
+        BaseDslFileObj.find(opts)
       end
 
       private

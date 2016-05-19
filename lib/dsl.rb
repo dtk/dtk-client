@@ -18,9 +18,11 @@
 
 module DTK
   module DSL    
-    require_relative('dsl/error')
     require_relative('dsl/util')
     require_relative('dsl/parser')
+
+    class Error < ::DTK::Base::Error
+    end
 
     def self.set_delegate_module!(delegate_module)
       @delegate_module = delegate_module

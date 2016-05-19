@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+require_relative '../lib/base'
+# lib/base must go first
 require_relative '../lib/client'
 require_relative '../lib/dsl'
 

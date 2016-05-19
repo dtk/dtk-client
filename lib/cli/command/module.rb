@@ -36,8 +36,9 @@ module DTK::Client; module CLI
             # TODO: when pass in arg 'NAMESPACE/MODULE-NAME', do not usebase_dsl_file_obj
 #stub
 dir_path = File.expand_path('../../../examples/simple/test', File.dirname(__FILE__))
-            content = ret_base_dsl_file_obj(:dir_path => dir_path).content_or_raise_error
-            Operation::Module.install(:base_dsl_file_content => content)
+dir_path = nil
+            file_obj = ret_base_dsl_file_obj(:dir_path => dir_path)
+            Operation::Module.install(:base_dsl_file_obj => file_obj)
           end
         end
       end

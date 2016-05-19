@@ -22,7 +22,7 @@ module DTK::Client
       require_relative('runner/dtkn_access')
       
       def self.run(argv)
-        trap_error do
+        Error.top_level_trap_error(Logger.instance) do
           Configurator.check_git
           Configurator.create_missing_client_dirs
           
@@ -30,7 +30,7 @@ module DTK::Client
           config_existed = Configurator.check_config_exists
           
           raise_error_if_invalid_connection
-        
+          
           # check if .add_direct_access file exists, if not then add direct access and create .add_direct_access file
           DTKNAccess.resolve_direct_access(config_existed)
           
@@ -43,29 +43,6 @@ module DTK::Client
       
       private
       
-      def self.trap_error(&body)
-        begin
-          yield
-        rescue Error::InvalidConnection => e
-          e.print_warning
-          puts "\nDTK will now exit. Please set up your connection properly and try again."
-        rescue Error => e
-          # If vanilla error treat like client error
-          if e.class == Error
-            e = convert_to_client_error(e)
-          end
-          Logger.instance.error_pp(e.message, e.backtrace?)
-        rescue Exception => exception
-          # If treat like client error
-          e = convert_to_client_error(exception)
-          Logger.instance.error_pp(e.message, e.backtrace?)
-        end
-      end
-
-      def self.convert_to_client_error(e)
-        Error::Client.new(e.message, :backtrace => e.backtrace)
-      end
-
       def self.raise_error_if_invalid_connection
         connection = Session.get_connection
         raise Error::InvalidConnection.new(connection) if connection.connection_error?

@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client
+module DTK::Base
   class Error
     class InvalidConnection < self
       # TODO: DTK-2554: leveraged connection#print_warning
@@ -28,6 +28,7 @@ module DTK::Client
         @bad_connection.print_warning
       end
     end
+
     class Usage < self
       def initialize(error_msg, _opts = {})
         msg_to_pass_to_super = "[ERROR] #{error_msg}"
@@ -78,14 +79,6 @@ module DTK::Client
       end
       def self.label(*args)
         super(:server)
-      end
-    end
-    
-    class InteractiveWizardError < self
-      # opts can have keys
-      #  :backtrace
-      def initialize(error_msg, opts={})
-        super(error_msg, opts)
       end
     end
   end

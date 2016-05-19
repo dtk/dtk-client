@@ -41,7 +41,7 @@ module DTK::Client; module CLI
           on_error do |err|
             if err.kind_of?(::GLI::BadCommandLine) or err.kind_of?(::GLI::UnknownCommand)
               true # so gli mechanism processes it
-            elsif err.kind_of?(Error)
+            elsif err.kind_of?(::DTK::Base::Error)
               raise err
             else
               raise Error::Client.new(err.message, :backtrace => err.backtrace)

@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client
+module DTK::Base
   class Error < ::NameError
     require_relative('error/subclasses')
 
@@ -24,6 +24,25 @@ module DTK::Client
     def initialize(msg = '', opts = {})
       super(msg)
       @backtrace = opts[:backtrace] 
+    end
+
+    def self.top_level_trap_error(logger, &body)
+      begin
+        yield
+      rescue Error::InvalidConnection => e
+        e.print_warning
+        puts "\nDTK will now exit. Please set up your connection properly and try again."
+        rescue Error => e
+        # If vanilla error treat like client error
+        if e.class == Error
+          e = convert_to_client_error(e)
+        end
+        logger.error_pp(e.message, e.backtrace?)
+      rescue Exception => exception
+        # If treat like client error
+        e = convert_to_client_error(exception)
+        logger.error_pp(e.message, e.backtrace?)
+      end
     end
 
     NO_BACKTRACE = :no_backtarce
@@ -74,5 +93,12 @@ module DTK::Client
         raise Usage.new(error.msg)
       end
     end
+
+    private
+    
+    def self.convert_to_client_error(e)
+      Client.new(e.message, :backtrace => e.backtrace)
+    end
+    
   end
 end
