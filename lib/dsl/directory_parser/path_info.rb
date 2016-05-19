@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-module DTK::DSL::Parser    
-  class Directory
+module DTK::DSL
+  class DirectoryParser    
     class PathInfo
       attr_reader :regexp, :depth, :base_dir
       # opts can have keys

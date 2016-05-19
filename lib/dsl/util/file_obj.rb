@@ -27,15 +27,18 @@ module DTK::DSL
     def content_or_raise_error
       @content || raise(Error::Usage, error_msg_no_content)
     end
-
+    def content
+      @content || raise(Error, 'Method should not be called if @content is nil')
+    end
+    def content?
+      @content 
+    end
     def raise_error_if_no_content
       raise(Error::Usage, error_msg_no_content) unless @content
       self
     end
 
-    def content
-      @content || raise(Error, 'Method should not be called if @content is nil')
-    end
+
 
     private
 

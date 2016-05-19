@@ -16,19 +16,10 @@
 # limitations under the License.
 #
 
-module DTK::DSL::Parser    
-  # Contains information about what file names are
-  class Filename
-    def self.create_path_info
-      Directory::PathInfo.new(regexp)
-    end
-
-    class BaseModule < self
-      private
-      # Purposely does not have ^ or $ so calling function can insert these depending on context
-      def self.regexp
-        /dtk\.module\.(yml|yaml)/
-      end
+module DTK::DSL
+  class DirectoryParser    
+    # For getting directory information when files in git repo
+    class Git < self
     end
   end
 end

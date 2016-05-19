@@ -16,9 +16,19 @@
 # limitations under the License.
 #
 
-module DTK::DSL    
-  module Parser
-    require_relative('parser/directory')
-    require_relative('parser/filename')
+module DTK::DSL
+  # Contains information about what file names are
+  class Filename
+    def self.create_path_info
+      DirectoryParser::PathInfo.new(regexp)
+    end
+
+    class BaseModule < self
+      private
+      # Purposely does not have ^ or $ so calling function can insert these depending on context
+      def self.regexp
+        /dtk\.module\.(yml|yaml)/
+      end
+    end
   end
 end

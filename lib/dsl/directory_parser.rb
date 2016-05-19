@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-module DTK::DSL; module Parser    
-  class Directory
-    # Types of directoryparsers
-    require_relative('directory/git')
-    require_relative('directory/file_system')
+module DTK::DSL; 
+  class DirectoryParser
+    # Types of directory parsers
+    require_relative('directory_parser/git')
+    require_relative('directory_parser/file_system')
 
-    require_relative('directory/path_info')
+    require_relative('directory_parser/path_info')
 
     #### Abstract methods 
 
@@ -40,4 +40,4 @@ module DTK::DSL; module Parser
     end
     ##### End Abstract methods
   end
-end; end
+end

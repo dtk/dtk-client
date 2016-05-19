@@ -15,23 +15,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-module DTK
-  module DSL    
-    require_relative('dsl/util')
-    require_relative('dsl/filename')
-    require_relative('dsl/directory_parser')
-    require_relative('dsl/file_parser')
-
-    class Error < ::DTK::Base::Error
-    end
-
-    def self.set_delegate_module!(delegate_module)
-      @delegate_module = delegate_module
-    end
-
-    def self.delegate_module
-      @delegate_module
+module DTK::DSL
+  class FileParser                   
+    class OutputHash < ::DTK::Common::SimpleHashObject
+      def merge_non_empty!(hash)
+        hash.each{|k,v| merge!(k => v) unless v.nil? or v.empty?}
+        self
+      end
+      
+      def +(output_obj)
+        if output_obj.kind_of?(OutputArray)
+          OutputArray.new(self) + output_obj
+        elsif output_obj.kind_of?(OutputHash)
+          merge(output_obj)
+        elsif output_obj.nil?
+          self
+        else
+          raise Error.new("Unexpected object type (#{output_obj.class})")
+        end
+      end
     end
   end
 end

@@ -15,10 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Common; module DSL; class FileParser
+module DTK::DSL; class FileParser
   class Assembly < self
     class OutputArray < FileParser::OutputArray
-      def self.keys_for_row()
+      def self.keys_for_row
         [:assembly_name,:components]
       end
     end
@@ -36,7 +36,7 @@ module DTK::Common; module DSL; class FileParser
 
       class Component
         class OutputArray < FileParser::OutputArray
-          def self.keys_for_row()
+          def self.keys_for_row
             [:component_name,:module_name,:node_name]
           end
         end

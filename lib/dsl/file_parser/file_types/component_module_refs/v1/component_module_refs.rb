@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Common; module DSL; class FileParser
+module DTK::DSL; class FileParser
   class ComponentModuleRefs < self
     class V1 < self
       def parse_hash_content(input_hash)
@@ -28,7 +28,7 @@ module DTK::Common; module DSL; class FileParser
         component_modules.each do |component_module,v|
           new_el = OutputHash.new(:component_module => component_module)
           parse_error = true
-          if v.kind_of?(InputHash) and v.only_has_keys?(:version,:remote_namespace,:namespace,:external_ref) and not v.empty?()
+          if v.kind_of?(InputHash) and v.only_has_keys?(:version,:remote_namespace,:namespace,:external_ref) and not v.empty?
             parse_error = false
 
             namespace    = v[:namespace]
@@ -46,30 +46,17 @@ module DTK::Common; module DSL; class FileParser
           end
           if parse_error
             err_msg = (parse_error.kind_of?(String) ? parse_error : "Ill-formed term (#{v.inspect})")
-            raise ErrorUsage::DTKParse.new(err_msg)
+            raise Error::Usage.new(err_msg)
           else
             ret << new_el
           end
         end
         ret
       end
-
-      def generate_hash(output_array)
-        component_modules = output_array.inject(Hash.new) do |h,r|
-          unless cmp_module = r[:component_module]
-            raise Error.new("Missing field (:component_module)")
-          end
-          h.merge(cmp_module => Aux.hash_subset(r,OutputArrayToParseHashCols,:no_non_nil => true))
-        end
-        {:component_modules => component_modules}
-      end
-
-      OutputArrayToParseHashCols = [{:version_info => :version},:remote_namespace]
-
     end
 
     class OutputArray < FileParser::OutputArray
-      def self.keys_for_row()
+      def self.keys_for_row
         [:component_module,:version_info,:remote_namespace, :external_ref]
       end
       def self.has_required_keys?(hash_el)
@@ -77,4 +64,4 @@ module DTK::Common; module DSL; class FileParser
       end
     end
   end
-end; end; end
+end; end

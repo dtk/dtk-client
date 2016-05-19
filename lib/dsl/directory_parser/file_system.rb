@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-module DTK::DSL; module Parser    
-  class Directory
+module DTK::DSL
+  class DirectoryParser
     # For getting directory information when files in a vanilla file system
     class FileSystem < self
       # opts can have keys
@@ -63,4 +63,5 @@ module DTK::DSL; module Parser
       end
     end
   end
-end; end
+end
+

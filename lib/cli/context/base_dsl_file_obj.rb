@@ -50,12 +50,12 @@ module DTK::Client
       # opts can have keys:
       #  :dir_path
       def self.find_path?(opts = {})
-        path_info = ::DTK::DSL::Parser::Filename::BaseModule.create_path_info
+        path_info = ::DTK::DSL::Filename::BaseModule.create_path_info
         directory_parser.most_nested_matching_file_path?(path_info, :current_dir => opts[:dir_path])
       end
 
       def self.directory_parser
-        @directory_parser ||= ::DTK::DSL::Parser::Directory::FileSystem.new
+        @directory_parser ||= ::DTK::DSL::DirectoryParser::FileSystem.new
       end
 
     end

@@ -15,11 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-module DTK::DSL::Parser    
-  class Directory
-    # For getting directory information when files in git repo
-    class Git < self
+module DTK::DSL
+  class FileParser                   
+    module Type
+      require_relative('type/loader')
     end
   end
 end
