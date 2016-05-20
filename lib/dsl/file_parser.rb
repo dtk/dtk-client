@@ -20,8 +20,10 @@ require 'dtk_common_core'
 
 module DTK::DSL
   class FileParser                   
-    require_relative('file_parser/type')
+    require_relative('file_parser/template')
+    require_relative('file_parser/input_hash')
     require_relative('file_parser/output_array')
+    require_relative('file_parser/output_hash')
     
     def initialize(input_hash_class)
       @input_hash_class = input_hash_class
@@ -29,14 +31,14 @@ module DTK::DSL
     private :initialize
     
     # opts can have keys:
-    #  :file_type_version
-    def self.parse_content(file_type, file_obj, opts = {})
+    #  :version
+    def self.parse_content(parse_template_type, file_obj, opts = {})
       ret = OutputArray.new
       return ret unless file_obj.content?
       
       raw_hash_content = convert_yaml_content_to_hash(file_obj)
-      file_parser = Type::Loader.file_parser(file_type, opts[:file_type_version])
-      file_parser.parse_hash_content_aux(raw_hash_content)
+      parser = Template.parser(parse_template_type, opts[:version])
+      parser.parse_hash_content_aux(raw_hash_content)
     end
     
     def parse_hash_content_aux(raw_hash)

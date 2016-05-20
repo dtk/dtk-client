@@ -15,25 +15,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::DSL; class FileParser
-  class ComponentModuleRefs < self
-    class V1 < self
+module DTK::DSL; class FileParser 
+  class Template::V1
+    class BaseModuleTop < self
       def parse_hash_content(input_hash)
         ret = OutputArray.new
         component_modules = input_hash[:component_modules]
-        if component_modules.empty?
-          return ret
-        end
-
+        return ret if component_modules.empty?
+        
         component_modules.each do |component_module,v|
           new_el = OutputHash.new(:component_module => component_module)
           parse_error = true
           if v.kind_of?(InputHash) and v.only_has_keys?(:version,:remote_namespace,:namespace,:external_ref) and not v.empty?
             parse_error = false
-
+            
             namespace    = v[:namespace]
             namespace    = v[:remote_namespace] if namespace.empty? # TODO: for legacy
-
+            
             # to extend module_refs.yaml attributes add code here
             new_el.merge_non_empty!(:version_info => v[:version])
             new_el.merge_non_empty!(:remote_namespace => namespace)
@@ -54,10 +52,10 @@ module DTK::DSL; class FileParser
         ret
       end
     end
-
+    
     class OutputArray < FileParser::OutputArray
       def self.keys_for_row
-        [:component_module,:version_info,:remote_namespace, :external_ref]
+        [:component_module, :version_info, :remote_namespace, :external_ref]
       end
       def self.has_required_keys?(hash_el)
         !hash_el[:component_module].nil?

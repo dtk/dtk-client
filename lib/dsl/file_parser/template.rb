@@ -17,8 +17,14 @@
 #
 module DTK::DSL
   class FileParser                   
-    module Type
-      require_relative('type/loader')
+    class Template
+      require_relative('template/loader')
+
+      DSL_VERSIONS = [1]
+      DSL_VERSIONS.each { |dsl_version| require_relative("template/v#{dsl_version.to_s}") }
+
+      TYPES = [:base_module_top]
     end
   end
 end
+
