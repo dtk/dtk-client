@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'yaml'
+
 require 'dtk_common_core'
 
 module DTK::DSL
@@ -24,6 +24,7 @@ module DTK::DSL
     require_relative('file_parser/input_hash')
     require_relative('file_parser/output_array')
     require_relative('file_parser/output_hash')
+    require_relative('file_parser/yaml_parser')
     
     # opts can have keys:
     #  :dsl_version
@@ -32,37 +33,30 @@ module DTK::DSL
       return ret unless file_obj.content?
 
       # YAML parsing
-      raw_input_hash = convert_yaml_content_to_hash(file_obj)
-      dsl_version =  opts[:dsl_version] || dsl_version__raise_error_if_illegal(raw_input_hash, file_obj)
-      parser_class = Template.template_class(parse_template_type, dsl_version)
+      input_hash = YamlParser.parse(file_obj)
+      dsl_version =  opts[:dsl_version] || dsl_version__raise_error_if_illegal(input_hash, file_obj)
+
       # parsing with respect to the parse_template_type
-      parser_class.new(raw_input_hash, :file_obj => file_obj).parse_input_hash
+      parser_class = Template.template_class(parse_template_type, dsl_version)
+      parser_class.new(input_hash, :file_obj => file_obj).parse_input_hash
+    end
+
+    def self.file_ref_in_error(file_obj)
+      file_obj.path? ? " in file #{file_obj.path?}" : ''
     end
     
     private
-    
-    def self.convert_yaml_content_to_hash(file_obj)
-      begin
-        ::YAML.load(file_obj.content)
-      rescue Exception => e
-        raise_in_file_error("YAML parsing error #{e.to_s} in file", file_obj)
-      end
-    end
 
     DSL_VERSION_KEY = 'dsl_version'
-    def self.dsl_version__raise_error_if_illegal(raw_input_hash, file_obj)
-      if val_in_hash = raw_input_hash[DSL_VERSION_KEY]
-        unless DSLVersion.legal?(val_in_hash)
-          raise_in_file_error("Illegal DSL version '#{val_in_hash}' in file", file_obj)
+    def self.dsl_version__raise_error_if_illegal(input_hash, file_obj)
+      if dsl_version = input_hash[DSL_VERSION_KEY]
+        unless DSLVersion.legal?(dsl_version)
+          raise Error::Usage, "Illegal DSL version '#{dsl_version}'#{file_ref_in_error(file_obj)}"
         end
-        DSLVersion.new(val_in_hash)
+        DSLVersion.new(dsl_version)
       else
         DSLVersion.default
       end
-    end
-
-    def self.raise_in_file_error(msg, file_obj)
-      raise Error::Usage::InFile.new(msg, :file_path => file_obj.path?)
     end
   end
 end

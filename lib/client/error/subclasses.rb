@@ -22,15 +22,6 @@ module DTK::Client
         msg_to_pass_to_super = "[ERROR] #{error_msg}"
         super(msg_to_pass_to_super, :backtrace => NO_BACKTRACE)
       end
-
-      class InFile < self
-        # opts can have keys:
-        #  :file_path
-        def initialize(error_msg, opts = {})
-          file_path = opts[:file_path]
-          super(file_path ? "#{error_msg} '#{file_path}'" : error_msg)
-        end
-      end
     end
 
     class InternalError < self
