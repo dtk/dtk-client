@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Base
+module DTK::Client
   class Error
     class InvalidConnection < self
       # TODO: DTK-2554: leveraged connection#print_warning
