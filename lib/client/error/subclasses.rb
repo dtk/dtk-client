@@ -17,18 +17,6 @@
 #
 module DTK::Client
   class Error
-    class InvalidConnection < self
-      # TODO: DTK-2554: leveraged connection#print_warning
-      # might instead use 'msg_to_pass_to_super'
-      def initialize(bad_connection)
-        super()
-        @bad_connection = bad_connection
-      end
-      def print_warning
-        @bad_connection.print_warning
-      end
-    end
-
     class Usage < self
       def initialize(error_msg, _opts = {})
         msg_to_pass_to_super = "[ERROR] #{error_msg}"
@@ -44,7 +32,7 @@ module DTK::Client
         end
       end
     end
-    
+
     class InternalError < self
       # opts can have keys
       #  :backtrace
@@ -88,6 +76,30 @@ module DTK::Client
       end
       def self.label(*args)
         super(:server)
+      end
+    end
+
+    class InvalidConnection < self
+      # TODO: DTK-2554: leveraged connection#print_warning
+      # might instead use 'msg_to_pass_to_super'
+      def initialize(bad_connection)
+        super()
+        @bad_connection = bad_connection
+      end
+      def print_warning
+        @bad_connection.print_warning
+      end
+    end
+    
+    class NoMethodForConcreteClass < self
+      def initialize(klass)
+        method_string = caller[1]
+        method_ref =
+          if method_string =~ /`(.+)'$/
+            method = $1
+            " '#{method}'"
+          end
+        super("No method#{method_ref} for concrete class #{klass}")
       end
     end
   end

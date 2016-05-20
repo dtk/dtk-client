@@ -15,7 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::DSL; class FileParser
-  class V1 < self
+module DTK::DSL
+  class FileParser::Template
+    class V1 < self
+    end
   end
 end
+

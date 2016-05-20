@@ -24,6 +24,21 @@ module DTK::DSL
       DSL_VERSIONS.each { |dsl_version| require_relative("template/v#{dsl_version.to_s}") }
 
       TYPES = [:base_module_top]
+
+      # opts can have keys
+      #   :file_obj
+      def initialize(raw_input_hash, opts = {})
+        @input_hash = InputHash.new(raw_input_hash)
+        @file_obj   = opts[:file_obj]
+      end
+
+      def self.template_class(parse_template_type, version = nil)
+        Loader.template_class(parse_template_type, version)
+      end
+
+      def parse_input_hash
+        raise Error::NoMethodForConcreteClass.new(self.class)
+      end
     end
   end
 end

@@ -25,30 +25,20 @@ module DTK::DSL
     require_relative('file_parser/output_array')
     require_relative('file_parser/output_hash')
     
-    def initialize(input_hash_class)
-      @input_hash_class = input_hash_class
-    end
-    private :initialize
-    
     # opts can have keys:
     #  :version
     def self.parse_content(parse_template_type, file_obj, opts = {})
       ret = OutputArray.new
       return ret unless file_obj.content?
-      
-      raw_hash_content = convert_yaml_content_to_hash(file_obj)
-      parser = Template.parser(parse_template_type, opts[:version])
-      parser.parse_hash_content_aux(raw_hash_content)
-    end
-    
-    def parse_hash_content_aux(raw_hash)
-      parse_hash_content(input_form(raw_hash))
+
+      # YAML parsing
+      raw_input_hash_content = convert_yaml_content_to_hash(file_obj)
+      parser_class = Template.template_class(parse_template_type, opts[:version])
+      # parsing with respect to the parse_template_type
+      parser_class.new(raw_input_hash_content, :file_obj => file_obj).parse_input_hash
     end
     
     private
-    def input_form(raw_hash)
-      @input_hash_class.new(raw_hash)
-    end
     
     def self.convert_yaml_content_to_hash(file_obj)
       begin

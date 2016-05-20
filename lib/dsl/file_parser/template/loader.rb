@@ -20,29 +20,28 @@ module DTK::DSL; class FileParser
   class Template
     class Loader
       include Singleton
+
       def initialize
-        @loaded_types = {}
+        @loaded_templates = {}
       end
       private :initialize
 
-      def self.parser(parse_template_type, version = nil)
-        instance.parser(parse_template_type, version)
+      def self.template_class(parse_template_type, version = nil)
+        instance.template_class(parse_template_type, version)
       end
 
-      def parser(parse_template_type, version = nil)
-        (@loaded_types[parse_template_type] || {})[version] || load_parser(parse_template_type, version)
+      def template_class(parse_template_type, version = nil)
+        (@loaded_templates[parse_template_type] || {})[version] || load_template_class(parse_template_type, version)
       end
-      BaseDirForFileTypes = File.dirname(__FILE__)
 
-      def load_parser(parse_template_type, version = nil)
+      def load_template_class(parse_template_type, version = nil)
         raise Error.new("Illegal parse template type '#{parse_template_type}'") unless Template::TYPES.include?(parse_template_type)
         version ||= default_version(parse_template_type)
         require_relative("v#{version.to_s}/#{parse_template_type}")
         
         base_class = Template.const_get("V#{version.to_s}")
-        ret_class = base_class.const_get(::DTK::Common::Aux.snake_to_camel_case(parse_template_type.to_s))
-        input_hash_class = ret_class.const_get 'InputHash'
-        (@loaded_types[parse_template_type] ||= {})[version] = ret_class.new(input_hash_class)
+        ret = base_class.const_get(::DTK::Common::Aux.snake_to_camel_case(parse_template_type.to_s))
+        (@loaded_templates[parse_template_type] ||= {})[version] = ret
       end
 
       private
