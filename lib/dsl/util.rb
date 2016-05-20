@@ -17,6 +17,6 @@
 #
 
 module DTK::DSL
-  require_relative('util/os_util')
+#  require_relative('util/os_util')
   require_relative('util/file_obj')
 end

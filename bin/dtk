@@ -1,12 +1,13 @@
 #!/usr/bin/env ruby
-require_relative '../lib/base'
-# lib/base must go first
-require_relative '../lib/client'
-require_relative '../lib/dsl'
+module DTK
+  require_relative '../lib/client'
+  module GlobalForDSL
+    Error  = ::DTK::Client::Error
+    OsUtil = ::DTK::Client::OsUtil
+  end
+  require_relative '../lib/dsl'
+  # lib/cli must be loaded after lib/client and lib/dsl
+  require_relative '../lib/cli'
 
-# lib/cli must be loaded after lib/client and lib/dsl
-require_relative '../lib/cli'
-
-DTK::DSL.set_delegate_module!(DTK::Client)
-
-DTK::Client::CLI::Runner.run(ARGV)
+  Client::CLI::Runner.run(ARGV)
+end

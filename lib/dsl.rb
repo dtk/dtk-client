@@ -23,15 +23,7 @@ module DTK
     require_relative('dsl/directory_parser')
     require_relative('dsl/file_parser')
 
-    class Error < ::DTK::Base::Error
-    end
-
-    def self.set_delegate_module!(delegate_module)
-      @delegate_module = delegate_module
-    end
-
-    def self.delegate_module
-      @delegate_module
-    end
+    Error  = GlobalForDSL::Error
+    OsUtil = GlobalForDSL::OsUtil
   end
 end

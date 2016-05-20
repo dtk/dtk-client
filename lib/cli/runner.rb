@@ -22,7 +22,7 @@ module DTK::Client
       require_relative('runner/dtkn_access')
       
       def self.run(argv)
-        Error.top_level_trap_error(Logger.instance) do
+        Error.top_level_trap_error do
           Configurator.check_git
           Configurator.create_missing_client_dirs
           
