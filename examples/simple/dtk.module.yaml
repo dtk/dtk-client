@@ -1,14 +1,14 @@
 ---
 dsl_version: 1.0.0
-module: dtk-jira:dtk2554
+module: dtk-jira/dtk2554
 keywords: DTK-2554
 description: Tests for DTK-2554
 license: Apache 2.0
 version: 0.0.1
 
 modules:
-- aws:ec2
-- dtk:host
+- aws/ec2
+- dtk/host
 
 assemblies:
   simple:
