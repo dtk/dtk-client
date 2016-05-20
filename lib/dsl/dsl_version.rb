@@ -15,28 +15,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 module DTK::DSL
-  class FileParser                   
-    class Template
-      require_relative('template/loader')
+  # This refers to semnatic dsl version
+  class DSLVersion < ::String
+    DSL_VERSIONS = ['1.0.0']
 
-      TYPES = [:base_module_top]
+    def self.legal?(str)
+      DSL_VERSIONS.include?(str)
+    end 
 
-      # opts can have keys
-      #   :file_obj
-      def initialize(raw_input_hash, opts = {})
-        @input_hash = InputHash.new(raw_input_hash)
-        @file_obj   = opts[:file_obj]
-      end
+    def self.lataset
+      DSL_VERSIONS.last
+    end
 
-      def self.template_class(parse_template_type, dsl_version)
-        Loader.template_class(parse_template_type, dsl_version)
-      end
-
-      def parse_input_hash
-        raise Error::NoMethodForConcreteClass.new(self.class)
-      end
+    def self.default
+      lataset
     end
   end
 end
-

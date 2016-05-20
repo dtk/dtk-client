@@ -33,7 +33,7 @@ module DTK::Client
       #  :file_path
       # Returns a BaseDslFile object even under error
       def self.find(opts = {})
-        new(opts.merge(:file_path =>  opts[:file_path] || find_path?(opts)))
+        new(:path =>  opts[:file_path] || find_path?(opts))
       end
 
       private

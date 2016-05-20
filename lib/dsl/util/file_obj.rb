@@ -18,10 +18,10 @@
 module DTK::DSL
   class FileObj
     # opts can have keys
-    #  :file_path
+    #  :path
     def initialize(opts = {})
-      @file_path = opts[:file_path]
-      @content   = get_content?(@file_path)
+      @path = opts[:path]
+      @content   = get_content?(@path)
     end
     
     def content_or_raise_error
@@ -38,7 +38,9 @@ module DTK::DSL
       self
     end
 
-
+    def path?
+      @path
+    end
 
     private
 
@@ -53,8 +55,8 @@ module DTK::DSL
     ### 
 
     def error_msg_no_content
-      if @file_path
-        "No #{file_path_type} found at '#{@file_path}'"
+      if @path
+        "No #{file_path_type} found at '#{@path}'"
       else
         "Cannot find #{file_path_type} in the #{dir_ref} or ones nested under it"
       end

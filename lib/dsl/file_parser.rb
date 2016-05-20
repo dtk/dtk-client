@@ -26,16 +26,17 @@ module DTK::DSL
     require_relative('file_parser/output_hash')
     
     # opts can have keys:
-    #  :version
+    #  :dsl_version
     def self.parse_content(parse_template_type, file_obj, opts = {})
       ret = OutputArray.new
       return ret unless file_obj.content?
 
       # YAML parsing
-      raw_input_hash_content = convert_yaml_content_to_hash(file_obj)
-      parser_class = Template.template_class(parse_template_type, opts[:version])
+      raw_input_hash = convert_yaml_content_to_hash(file_obj)
+      dsl_version =  opts[:dsl_version] || dsl_version__raise_error_if_illegal(raw_input_hash, file_obj)
+      parser_class = Template.template_class(parse_template_type, dsl_version)
       # parsing with respect to the parse_template_type
-      parser_class.new(raw_input_hash_content, :file_obj => file_obj).parse_input_hash
+      parser_class.new(raw_input_hash, :file_obj => file_obj).parse_input_hash
     end
     
     private
@@ -44,8 +45,24 @@ module DTK::DSL
       begin
         ::YAML.load(file_obj.content)
       rescue Exception => e
-        raise Error::Usage::InFile, "YAML parsing error #{e.to_s} in file", :file_path => file_obj.path?
+        raise_in_file_error("YAML parsing error #{e.to_s} in file", file_obj)
       end
+    end
+
+    DSL_VERSION_KEY = 'dsl_version'
+    def self.dsl_version__raise_error_if_illegal(raw_input_hash, file_obj)
+      if val_in_hash = raw_input_hash[DSL_VERSION_KEY]
+        unless DSLVersion.legal?(val_in_hash)
+          raise_in_file_error("Illegal DSL version '#{val_in_hash}' in file", file_obj)
+        end
+        DSLVersion.new(val_in_hash)
+      else
+        DSLVersion.default
+      end
+    end
+
+    def self.raise_in_file_error(msg, file_obj)
+      raise Error::Usage::InFile.new(msg, :file_path => file_obj.path?)
     end
   end
 end

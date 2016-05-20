@@ -23,7 +23,7 @@ module DTK::Client
         super(msg_to_pass_to_super, :backtrace => NO_BACKTRACE)
       end
 
-      class InFile
+      class InFile < self
         # opts can have keys:
         #  :file_path
         def initialize(error_msg, opts = {})

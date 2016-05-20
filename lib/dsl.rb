@@ -19,6 +19,7 @@
 module DTK
   module DSL    
     require_relative('dsl/util')
+    require_relative('dsl/dsl_version')
     require_relative('dsl/filename')
     require_relative('dsl/directory_parser')
     require_relative('dsl/file_parser')
