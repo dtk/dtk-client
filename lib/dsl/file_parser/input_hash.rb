@@ -18,25 +18,33 @@
 module DTK::DSL
   class FileParser                   
     class InputHash < ::Hash
-      #to provide autovification and use of symbol indexes
       def initialize(hash = nil)
         super()
-        return unless hash
-        replace_el = hash.inject({}) do |h,(k,v)|
-          processed_v = (v.kind_of?(::Hash) ? self.class.new(v) : v)
-          h.merge(k =>  processed_v)
-        end
-        replace(replace_el)
+        replace(reify(hash)) if hash
       end
       
       def [](index)
-        val = super(internal_key_form(index)) || {}
-        (val.kind_of?(::Hash) ? self.class.new(val) : val)
+        super(internal_key_form(index))
       end
+
       def only_has_keys?(*only_has_keys)
         (keys - only_has_keys.map{ |k| internal_key_form(k) }).empty?
       end
+
+      def reify(obj)
+        if obj.kind_of?(InputHash)
+          obj
+        elsif obj.kind_of?(::Hash)
+          obj.inject(self.class.new) { |h, (k, v)| h.merge(k => reify(v)) }
+        elsif obj.kind_of?(::Array)
+          obj.map { |el| reify(el) }
+        else
+          obj
+        end
+      end
+
       private
+
       def internal_key_form(key)
         key.to_s
       end

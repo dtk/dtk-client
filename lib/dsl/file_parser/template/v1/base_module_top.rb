@@ -18,8 +18,17 @@
 module DTK::DSL; class FileParser 
   class Template::V1
     class BaseModuleTop < self
-      def parse_hash_content(input_hash)
+      def parse_input_hash
         ret = OutputArray.new
+        unless module_ref = input_hash[:module]
+          raise parsing_error { missing_top_level_key(:module) }
+        end
+        ret
+      end
+    end
+  end
+end; end
+=begin
         component_modules = input_hash[:component_modules]
         return ret if component_modules.empty?
         
@@ -63,3 +72,4 @@ module DTK::DSL; class FileParser
     end
   end
 end; end
+=end

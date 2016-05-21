@@ -15,17 +15,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+module DTK::DSL; class FileParser                   
+  class Template
+    class ParsingError < Error::Usage
+      # opts can have keys
+      #  :file_obj
+      #  :error_msg
+      def initialize(opts = {}, &error_text)
+        file_ref = FileParser.file_ref_in_error(opts[:file_obj])
+        error_msg = opts[:error_msg] || error_text && instance_eval(&error_text)
+        super("DTK parsing error#{file_ref}:\n  #{error_msg}")
+      end
 
-module DTK
-  module DSL    
-    Error  = GlobalForDSL::Error
-    OsUtil = GlobalForDSL::OsUtil
-    # Above defs must go first
+      # Below are useed for error test
+      def missing_top_level_key(key)
+        "Missing top level key '#{key}'"
+      end
 
-    require_relative('dsl/util')
-    require_relative('dsl/dsl_version')
-    require_relative('dsl/filename')
-    require_relative('dsl/directory_parser')
-    require_relative('dsl/file_parser')
+    end
   end
-end
+end; end
+

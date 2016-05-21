@@ -42,7 +42,7 @@ module DTK::DSL
     end
 
     def self.file_ref_in_error(file_obj)
-      file_obj.path? ? " in file #{file_obj.path?}" : ''
+      (file_obj && file_obj.path?) ? " in file #{file_obj.path?}" : ''
     end
     
     private

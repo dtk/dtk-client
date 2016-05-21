@@ -19,6 +19,7 @@ module DTK::DSL
   class FileParser                   
     class Template
       require_relative('template/loader')
+      require_relative('template/parsing_error')
 
       TYPES = [:base_module_top]
 
@@ -33,8 +34,17 @@ module DTK::DSL
         Loader.template_class(parse_template_type, dsl_version)
       end
 
+      # Main parse call; Each concrete class shoudl over write this
       def parse_input_hash
         raise Error::NoMethodForConcreteClass.new(self.class)
+      end
+
+      private
+
+      attr_reader :input_hash
+
+      def parsing_error(error_msg = nil, &error_text)
+        ParsingError.new(:error_msg => error_msg, :file_obj => @file_obj, &error_text)
       end
     end
   end
