@@ -6,7 +6,7 @@ description: Tests for DTK-2554
 license: Apache 2.0
 version: 0.0.1
 
-modules:
+dependent_modules:
 - aws/ec2
 - dtk/host
 

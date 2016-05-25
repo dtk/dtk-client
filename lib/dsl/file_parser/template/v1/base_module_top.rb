@@ -18,9 +18,17 @@
 module DTK::DSL; class FileParser 
   class Template::V1
     class BaseModuleTop < self
+      module Constant
+        module Variations
+        end
+        extend ParsingingHelper::ClassMixin
+        Module = 'module'
+        Variations::Module = ['module', 'module_name'] 
+      end
+
       def parse_input_hash
         ret = OutputArray.new
-        unless module_ref = input_hash[:module]
+        unless module_ref = Constant.matches?(input_hash, :Module)
           raise parsing_error { missing_top_level_key(:module) }
         end
         ret
@@ -28,48 +36,3 @@ module DTK::DSL; class FileParser
     end
   end
 end; end
-=begin
-        component_modules = input_hash[:component_modules]
-        return ret if component_modules.empty?
-        
-        component_modules.each do |component_module,v|
-          new_el = OutputHash.new(:component_module => component_module)
-          parse_error = true
-          if v.kind_of?(InputHash) and v.only_has_keys?(:version,:remote_namespace,:namespace,:external_ref) and not v.empty?
-            parse_error = false
-            
-            namespace    = v[:namespace]
-            namespace    = v[:remote_namespace] if namespace.empty? # TODO: for legacy
-            
-            # to extend module_refs.yaml attributes add code here
-            new_el.merge_non_empty!(:version_info => v[:version])
-            new_el.merge_non_empty!(:remote_namespace => namespace)
-            new_el.merge_non_empty!(:external_ref => v[:external_ref])
-          elsif v.kind_of?(String)
-            parse_error = false
-            new_el.merge_non_empty!(:version_info => v)
-          elsif v.nil?
-            parse_error = false
-          end
-          if parse_error
-            err_msg = (parse_error.kind_of?(String) ? parse_error : "Ill-formed term (#{v.inspect})")
-            raise Error::Usage.new(err_msg)
-          else
-            ret << new_el
-          end
-        end
-        ret
-      end
-    end
-    
-    class OutputArray < FileParser::OutputArray
-      def self.keys_for_row
-        [:component_module, :version_info, :remote_namespace, :external_ref]
-      end
-      def self.has_required_keys?(hash_el)
-        !hash_el[:component_module].nil?
-      end
-    end
-  end
-end; end
-=end
