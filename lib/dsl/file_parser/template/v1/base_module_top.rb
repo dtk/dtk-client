@@ -22,6 +22,7 @@ module DTK::DSL; class FileParser
         module Variations
         end
         extend ParsingingHelper::ClassMixin
+
         Module = 'module'
         Variations::Module = ['module', 'module_name'] 
       end
@@ -29,7 +30,7 @@ module DTK::DSL; class FileParser
       def parse_input_hash
         ret = OutputArray.new
         unless module_ref = Constant.matches?(input_hash, :Module)
-          raise parsing_error { missing_top_level_key(:module) }
+          raise parsing_error { missing_top_level_key(Constant::Module) }
         end
         ret
       end
