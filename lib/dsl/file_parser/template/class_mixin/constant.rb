@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 module DTK::DSL
-  class FileParser
+  class FileParser::Template
     # assumption is that where this included could have a Variations module
-    module ParsingConstant
-      module ClassMixin
+    module ClassMixin
+      module Constant
         def matches?(object, constant)
           unless object.nil?
             variations = variations(constant)

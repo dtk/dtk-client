@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 module DTK::DSL
-  class FileParser                   
+  class FileParser
     class OutputArray < ::Array
       def <<(hash_el)
         bad_keys = hash_el.keys - self.class.keys_for_row

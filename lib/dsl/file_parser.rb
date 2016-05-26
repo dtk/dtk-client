@@ -20,13 +20,12 @@ require 'dtk_common_core'
 
 module DTK::DSL
   class FileParser                   
-    require_relative('file_parser/parsing_constant')
     require_relative('file_parser/template')
+    require_relative('file_parser/yaml_parser')
     require_relative('file_parser/input_hash')
     require_relative('file_parser/output_array')
-    require_relative('file_parser/output_hash')
-    require_relative('file_parser/yaml_parser')
-    
+    require_relative('file_parser/output_hash')    
+
     # opts can have keys:
     #  :dsl_version
     def self.parse_content(parse_template_type, file_obj, opts = {})

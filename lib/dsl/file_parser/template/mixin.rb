@@ -16,24 +16,9 @@
 # limitations under the License.
 #
 module DTK::DSL
-  class FileParser
-    class OutputHash < ::DTK::Common::SimpleHashObject
-      def merge_non_empty!(hash)
-        hash.each{|k,v| merge!(k => v) unless v.nil? or v.empty?}
-        self
-      end
-      
-      def +(output_obj)
-        if output_obj.kind_of?(OutputArray)
-          OutputArray.new(self) + output_obj
-        elsif output_obj.kind_of?(OutputHash)
-          merge(output_obj)
-        elsif output_obj.nil?
-          self
-        else
-          raise Error.new("Unexpected object type (#{output_obj.class})")
-        end
-      end
+  class FileParser::Template
+    module Mixin
+     # require_relative('mixin/module_def')
     end
   end
 end

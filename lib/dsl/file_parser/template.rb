@@ -18,8 +18,11 @@
 module DTK::DSL
   class FileParser                   
     class Template
+      require_relative('template/mixin')
+      require_relative('template/class_mixin')
       require_relative('template/loader')
       require_relative('template/parsing_error')
+
 
       TYPES = [:base_module_top]
 

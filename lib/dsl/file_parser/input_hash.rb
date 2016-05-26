@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 module DTK::DSL
-  class FileParser                   
+  class FileParser
     class InputHash < ::Hash
       def initialize(hash = nil)
         super()
