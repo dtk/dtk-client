@@ -32,6 +32,10 @@ module DTK::DSL; class FileParser
         "Missing top level key '#{key}'"
       end
 
+      def wrong_object_type(key, obj, correct_ruby_type)
+        "Key '#{key}' should be of type #{correct_ruby_type}, but has type #{obj.class}"
+      end
+
     end
   end
 end; end

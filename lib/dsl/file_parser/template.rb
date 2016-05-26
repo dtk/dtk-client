@@ -25,9 +25,10 @@ module DTK::DSL
 
       # opts can have keys
       #   :file_obj
-      def initialize(raw_input_hash, opts = {})
+      def initialize(output_type, raw_input_hash, opts = {})
         @input_hash = InputHash.new(raw_input_hash)
         @file_obj   = opts[:file_obj]
+        @output     = initialize_output(output_type)
       end
 
       def self.template_class(parse_template_type, dsl_version)
@@ -45,6 +46,15 @@ module DTK::DSL
 
       def parsing_error(error_msg = nil, &error_text)
         ParsingError.new(:error_msg => error_msg, :file_obj => @file_obj, &error_text)
+      end
+
+      def initialize_output(output_type)
+        case output_type
+          when :hash then OutputHash.new
+          when :array then OutputArray.new
+          else
+            raise Error, "Unexpected output_type '#{output_type}'"
+        end
       end
     end
   end

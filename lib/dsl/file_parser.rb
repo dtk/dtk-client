@@ -20,7 +20,7 @@ require 'dtk_common_core'
 
 module DTK::DSL
   class FileParser                   
-    require_relative('file_parser/parsing_helper')
+    require_relative('file_parser/parsing_constant')
     require_relative('file_parser/template')
     require_relative('file_parser/input_hash')
     require_relative('file_parser/output_array')

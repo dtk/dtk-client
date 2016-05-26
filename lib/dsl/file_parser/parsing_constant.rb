@@ -18,7 +18,7 @@
 module DTK::DSL
   class FileParser
     # assumption is that where this included could have a Variations module
-    module ParsingingHelper
+    module ParsingConstant
       module ClassMixin
         def matches?(object, constant)
           unless object.nil?
