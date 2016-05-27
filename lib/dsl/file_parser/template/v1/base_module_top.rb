@@ -28,10 +28,10 @@ class DTK::DSL::FileParser::Template
       end
 
       def initialize(*args)
-        super(:hash, *args)
+        super(*args)
       end
 
-      def parse_input_hash
+      def parse
         unless module_ref = Constant.matches?(input_hash, :Module)
           raise parsing_error { missing_top_level_key(Constant::Module) }
         end

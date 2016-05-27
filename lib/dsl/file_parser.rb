@@ -22,14 +22,13 @@ module DTK::DSL
   class FileParser                   
     require_relative('file_parser/template')
     require_relative('file_parser/yaml_parser')
-    require_relative('file_parser/input_hash')
-    require_relative('file_parser/output_array')
-    require_relative('file_parser/output_hash')    
+    require_relative('file_parser/input')
+    require_relative('file_parser/output')
 
     # opts can have keys:
     #  :dsl_version
     def self.parse_content(parse_template_type, file_obj, opts = {})
-      ret = OutputHash.new
+      ret = Output::Hash.new
       return ret unless file_obj.content?
 
       # YAML parsing
@@ -38,7 +37,7 @@ module DTK::DSL
 
       # parsing with respect to the parse_template_type
       parser_class = Template::ParseInstance.template_class(parse_template_type, dsl_version)
-      parser_class.new(input_hash, :file_obj => file_obj).parse_input_hash
+      parser_class.new(input_hash, :file_obj => file_obj).parse
     end
 
     def self.file_ref_in_error(file_obj)

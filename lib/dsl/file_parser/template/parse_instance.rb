@@ -20,10 +20,10 @@ module DTK::DSL; class FileParser
     class ParseInstance < self
       # opts can have keys
       #   :file_obj
-      def initialize(output_type, raw_input_hash, opts = {})
-        @input_hash = InputHash.new(raw_input_hash)
-        @file_obj   = opts[:file_obj]
-        @output     = initialize_output(output_type)
+      def initialize(raw_input, opts = {})
+        @input    = Input.create(raw_input)
+        @file_obj = opts[:file_obj]
+        @output   = @input.empty_output
       end
       
       def self.template_class(parse_template_type, dsl_version)
@@ -31,25 +31,22 @@ module DTK::DSL; class FileParser
       end
       
       # Main parse call; Each concrete class shoudl over write this
-      def parse_input_hash
+      def parse
         raise Error::NoMethodForConcreteClass.new(self.class)
       end
       
       private
       
-      attr_reader :input_hash
-      
+      def input_hash
+        @input_hash ||= @input.kind_of?(Input::Hash) ? @input : raise(Error, 'Unexpected that @input is not a hash')
+      end
+
+      def input_array
+        @input_array = @input.kind_of?(Input::Array) ? @input : raise(Error, 'Unexpected that @input is not an array')
+      end
+
       def parsing_error(error_msg = nil, &error_text)
         self.class.parsing_error(error_msg, &error_text)
-      end
-      
-      def initialize_output(output_type)
-        case output_type
-        when :hash then OutputHash.new
-        when :array then OutputArray.new
-        else
-          raise Error, "Unexpected output_type '#{output_type}'"
-        end
       end
     end
   end

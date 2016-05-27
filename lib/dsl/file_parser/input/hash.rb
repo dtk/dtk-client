@@ -15,29 +15,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::DSL
-  class FileParser
-    class InputHash < ::Hash
+module DTK::DSL; class FileParser
+  class Input
+    class Hash < ::Hash
       def initialize(hash = nil)
         super()
         replace(reify(hash)) if hash
+      end
+
+      def empty_output
+        Output::Hash.new
       end
       
       def [](index)
         super(internal_key_form(index))
       end
-
+      
       def only_has_keys?(*only_has_keys)
         (keys - only_has_keys.map{ |k| internal_key_form(k) }).empty?
       end
 
       def reify(obj)
-        if obj.kind_of?(InputHash)
+        if obj.kind_of?(self.class)
           obj
         elsif obj.kind_of?(::Hash)
           obj.inject(self.class.new) { |h, (k, v)| h.merge(k => reify(v)) }
         elsif obj.kind_of?(::Array)
-          obj.map { |el| reify(el) }
+          Input::Array.new(obj)
         else
           obj
         end
@@ -50,4 +54,5 @@ module DTK::DSL
       end
     end
   end
-end
+end; end
+

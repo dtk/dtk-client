@@ -17,21 +17,17 @@
 #
 module DTK::DSL
   class FileParser
-    class OutputHash < ::DTK::Common::SimpleHashObject
-      def merge_non_empty!(hash)
-        hash.each{|k,v| merge!(k => v) unless v.nil? or v.empty?}
-        self
-      end
-      
-      def +(output_obj)
-        if output_obj.kind_of?(OutputArray)
-          OutputArray.new(self) + output_obj
-        elsif output_obj.kind_of?(OutputHash)
-          merge(output_obj)
-        elsif output_obj.nil?
-          self
+    class Input
+      require_relative('input/hash')
+      require_relative('input/array')
+
+      def self.create(raw_input)
+        if raw_input.kind_of?(::Hash)
+          Hash.new(raw_input)
+        elsif raw_input.kind_of?(::Array)
+          Array.new(raw_input)
         else
-          raise Error.new("Unexpected object type (#{output_obj.class})")
+          raise Error, "Unexpected raw_input type '#{raw_input.class}'"
         end
       end
     end
