@@ -1,8 +1,6 @@
 ---
 dsl_version: 1.0.0
-module: 
-  xxx:
-    dtk-jira/dtk2554
+module: dtk-jira/dtk2554
 keywords: DTK-2554
 description: Tests for DTK-2554
 license: Apache 2.0

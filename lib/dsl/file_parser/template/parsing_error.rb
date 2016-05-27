@@ -33,9 +33,17 @@ module DTK::DSL; class FileParser
       end
 
       def wrong_object_type(key, obj, correct_ruby_type)
-        "Key '#{key}' should be of type #{correct_ruby_type}, but has type #{obj.class}"
+        "Key '#{key}' should be of type #{correct_ruby_type}, but has type #{input_class_string(obj)}"
       end
 
+      private
+
+      def input_class_string(obj)
+        klass = obj.kind_of?(InputHash) ? ::Hash : obj.class
+        # demodularize
+        klass.to_s.split('::').last
+      end
+      
     end
   end
 end; end
