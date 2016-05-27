@@ -35,7 +35,7 @@ class DTK::DSL::FileParser::Template
         unless module_ref = Constant.matches?(input_hash, :Module)
           raise parsing_error { missing_top_level_key(Constant::Module) }
         end
-        parsed_module_ref = ModuleRef.parse(module_ref)
+        parsed_module_ref = ModuleRef.parse(module_ref, Constant::Module)
         @output.merge!(:namespace => parsed_module_ref.namespace, :module_name => parsed_module_ref.module_name)
 
      pp   @output

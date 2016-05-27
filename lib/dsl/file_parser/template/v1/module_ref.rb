@@ -22,9 +22,9 @@ class DTK::DSL::FileParser::Template
       MODULE_NAMESPACE_DELIMS = ['/', ':']
 
       Output = Struct.new(:namespace, :module_name)
-      def self.parse(module_ref)
+      def self.parse(module_ref, module_ref_key)
         unless module_ref.kind_of?(String)
-          raise parsing_error { wrong_object_type(Constant::Module, module_ref, String) }
+          raise parsing_error { wrong_object_type(module_ref_key, module_ref, String) }
         end
         split = split_by_delim(module_ref)
         unless split.size == 2
