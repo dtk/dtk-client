@@ -43,10 +43,6 @@ module DTK::DSL; class FileParser
         self.class.parsing_error(error_msg, &error_text)
       end
       
-      def self.parsing_error(error_msg = nil, &error_text)
-        ParsingError.new(:error_msg => error_msg, :file_obj => @file_obj, &error_text)
-      end
-      
       def initialize_output(output_type)
         case output_type
         when :hash then OutputHash.new
