@@ -19,50 +19,10 @@ module DTK::DSL
   class FileParser                   
     class Template
       require_relative('template/class_mixin')
-      require_relative('template/parse_instance')
       require_relative('template/helper')
-      require_relative('template/loader')
+      require_relative('template/parse_instance')
       require_relative('template/parsing_error')
-
-      TYPES = [:base_module_top]
-
-      # opts can have keys
-      #   :file_obj
-      def initialize(output_type, raw_input_hash, opts = {})
-        @input_hash = InputHash.new(raw_input_hash)
-        @file_obj   = opts[:file_obj]
-        @output     = initialize_output(output_type)
-      end
-
-      def self.template_class(parse_template_type, dsl_version)
-        Loader.template_class(parse_template_type, dsl_version)
-      end
-
-      # Main parse call; Each concrete class shoudl over write this
-      def parse_input_hash
-        raise Error::NoMethodForConcreteClass.new(self.class)
-      end
-
-      private
-
-      attr_reader :input_hash
-
-      def parsing_error(error_msg = nil, &error_text)
-        self.class.parsing_error(error_msg, &error_text)
-      end
-
-      def self.parsing_error(error_msg = nil, &error_text)
-        ParsingError.new(:error_msg => error_msg, :file_obj => @file_obj, &error_text)
-      end
-
-      def initialize_output(output_type)
-        case output_type
-          when :hash then OutputHash.new
-          when :array then OutputArray.new
-          else
-            raise Error, "Unexpected output_type '#{output_type}'"
-        end
-      end
+      require_relative('template/loader')
     end
   end
 end
