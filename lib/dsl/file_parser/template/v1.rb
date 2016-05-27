@@ -15,13 +15,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::DSL
-  class FileParser::Template
+module DTK::DSL; class FileParser
+  class Template
     module V1
+      VERSION = 1
+      class ParseInstance < Template::ParseInstance
+        def template_version
+          VERSION
+        end
+      end
+
+      class Helper < Template::Helper
+        def self.template_version
+          VERSION
+        end
+      end
+
+      # These requires need to go after the two classes above
       require_relative('v1/module_ref')
       require_relative('v1/base_module')
-#      require_relative('v1/depednet_modules')
+      require_relative('v1/dependent_modules')
+
     end
   end
-end
+end; end
 

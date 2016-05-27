@@ -30,10 +30,14 @@ class DTK::DSL::FileParser::Template
 
       end
 
-      def parse
+      def parse!
         module_ref = constant_matches(input_hash, :Module)
         parsed_module_ref = ModuleRef.parse(module_ref, Constant::Module)
         @output.merge!(:namespace => parsed_module_ref.namespace, :module_name => parsed_module_ref.module_name)
+
+        dependent_modules = constant_matches(input_hash, :DependentModules)
+        parsed_dep_modules = parse_child(:dependent_modules, dependent_modules)
+
       end
     end
   end

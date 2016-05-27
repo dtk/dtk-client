@@ -27,15 +27,26 @@ module DTK::DSL; class FileParser
       end
       
       def self.template_class(parse_template_type, dsl_version)
-        Loader.template_class(parse_template_type, dsl_version)
+        Loader.template_class(parse_template_type, :dsl_version => dsl_version)
       end
       
-      # Main parse call; Each concrete class shoudl over write this
-      def parse
+      # Main parse call; Each concrete class should over write this
+      def parse!
         raise Error::NoMethodForConcreteClass.new(self.class)
       end
-      
+
+      def parse
+        parse!
+        # return @output
+        @output
+      end
+
       private
+
+      def parse_child(parse_template_type, input)
+        parser_class = Loader.template_class(parse_template_type, :template_version => template_version)
+        parser_class.new(input, :file_obj => @file_obj).parse
+      end
       
       def input_hash
         @input_hash ||= @input.kind_of?(Input::Hash) ? @input : raise(Error, 'Unexpected that @input is not a hash')

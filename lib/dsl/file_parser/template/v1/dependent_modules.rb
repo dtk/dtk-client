@@ -17,17 +17,12 @@
 #
 class DTK::DSL::FileParser::Template
   module V1
-    class DepedentModules < ParseInstance
-      def parse_input_hash
-        ret = OutputArray.new
-        unless module_ref = input_hash[:module]
-          raise parsing_error { missing_top_level_key(:module) }
-        end
-        ret
+    class DependentModules < ParseInstance
+      def parse!
       end
     end
   end
-end; end
+end
 =begin
         component_modules = input_hash[:component_modules]
         return ret if component_modules.empty?

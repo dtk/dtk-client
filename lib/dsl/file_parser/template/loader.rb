@@ -20,9 +20,12 @@ class DTK::DSL::FileParser
   class Template
     class Loader
       TEMPLATE_VERSIONS = [1]
-      
-      def self.template_class(template_type, dsl_version)
-        template_version = template_version(dsl_version, template_type)
+
+      # opts can have keys
+      #  :dsl_version
+      #  :template_version
+      def self.template_class(template_type, opts = {})
+        template_version = opts[:template_version] || template_version(opts[:dsl_version])
         load_version(template_version) unless version_loaded?(template_version)
         template_class_aux(template_type, template_version)
       end
@@ -33,11 +36,11 @@ class DTK::DSL::FileParser
         @loaded_versions and @loaded_versions.include?(template_version)
       end
       
-      def self.template_version(_dsl_version, _template_type)
-        # TODO: when have multiple versions tehn want a mapping between
+      def self.template_version(_dsl_version)
+        # TODO: when have multiple versions thn want a mapping between
         # dsl version and template version, which could also be per template type
         # (i.e., same dsl version can map to different template versions depending on template_type)
-        raise Error, "Unsupported wen have multiple template versions" unless TEMPLATE_VERSIONS.size == 1
+        raise Error, "Unsupported when have multiple template versions" unless TEMPLATE_VERSIONS.size == 1
         TEMPLATE_VERSIONS.first
       end
       
