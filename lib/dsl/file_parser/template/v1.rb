@@ -19,7 +19,8 @@ module DTK::DSL
   class FileParser::Template
     module V1
       require_relative('v1/module_ref')
-      require_relative('v1/base_module_top')
+      require_relative('v1/base_module')
+#      require_relative('v1/depednet_modules')
     end
   end
 end

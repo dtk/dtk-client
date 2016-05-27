@@ -48,6 +48,11 @@ module DTK::DSL; class FileParser
       def parsing_error(error_msg = nil, &error_text)
         self.class.parsing_error(error_msg, &error_text)
       end
+
+      def constant_matches(object, constant, &error_text)
+        self.class::Constant.matches?(object, constant) || raise(parsing_error(&error_text))
+      end
+
     end
   end
 end; end

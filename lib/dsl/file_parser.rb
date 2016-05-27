@@ -37,7 +37,9 @@ module DTK::DSL
 
       # parsing with respect to the parse_template_type
       parser_class = Template::ParseInstance.template_class(parse_template_type, dsl_version)
-      parser_class.new(input_hash, :file_obj => file_obj).parse
+ret =      parser_class.new(input_hash, :file_obj => file_obj).parse
+pp ret
+ret
     end
 
     def self.file_ref_in_error(file_obj)

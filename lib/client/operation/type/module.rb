@@ -27,7 +27,7 @@ module DTK::Client
       def self.install(args = Args.new)
         wrap_as_response(args) do |args|
           file_obj = args.required(:base_dsl_file_obj).raise_error_if_no_content
-          ::DTK::DSL::FileParser.parse_content(:base_module_top, file_obj)
+          ::DTK::DSL::FileParser.parse_content(:base_module, file_obj)
           nil
         end
       end

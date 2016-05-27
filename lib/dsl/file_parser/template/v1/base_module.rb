@@ -17,7 +17,7 @@
 #
 class DTK::DSL::FileParser::Template
   module V1
-    class BaseModuleTop < ParseInstance
+    class BaseModule < ParseInstance
       module Constant
         module Variations
         end
@@ -25,21 +25,15 @@ class DTK::DSL::FileParser::Template
 
         Module = 'module'
         Variations::Module = ['module', 'module_name'] 
-      end
 
-      def initialize(*args)
-        super(*args)
+        DependentModules = 'dependent_modules'
+
       end
 
       def parse
-        unless module_ref = Constant.matches?(input_hash, :Module)
-          raise parsing_error { missing_top_level_key(Constant::Module) }
-        end
+        module_ref = constant_matches(input_hash, :Module)
         parsed_module_ref = ModuleRef.parse(module_ref, Constant::Module)
         @output.merge!(:namespace => parsed_module_ref.namespace, :module_name => parsed_module_ref.module_name)
-
-     pp   @output
-@output
       end
     end
   end

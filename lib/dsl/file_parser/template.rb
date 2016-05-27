@@ -18,13 +18,11 @@
 module DTK::DSL
   class FileParser                   
     class Template
-      require_relative('template/class_mixin')
+      require_relative('template/constant_class_mixin')
       require_relative('template/helper')
       require_relative('template/parse_instance')
       require_relative('template/parsing_error')
       require_relative('template/loader')
-
-      private
 
       def self.parsing_error(error_msg = nil, &error_text)
         ParsingError.new(:error_msg => error_msg, :file_obj => @file_obj, &error_text)
