@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::DSL; class FileParser::Template
-  class V1
+class DTK::DSL::FileParser::Template
+  module V1
     class ModuleRef < Helper
 
       MODULE_NAMESPACE_DELIMS = ['/', ':']
@@ -43,5 +43,5 @@ module DTK::DSL; class FileParser::Template
       end
     end
   end
-end; end
+end
 

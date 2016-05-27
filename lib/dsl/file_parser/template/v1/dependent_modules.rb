@@ -15,9 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::DSL; class FileParser 
-  class Template::V1
-    class DepedentModules < self
+class DTK::DSL::FileParser::Template
+  module V1
+    class DepedentModules < ParseInstance
       def parse_input_hash
         ret = OutputArray.new
         unless module_ref = input_hash[:module]

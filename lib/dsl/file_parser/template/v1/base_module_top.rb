@@ -15,9 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::DSL; class FileParser::Template
-  class V1
-    class BaseModuleTop < self
+class DTK::DSL::FileParser::Template
+  module V1
+    class BaseModuleTop < ParseInstance
       module Constant
         module Variations
         end
@@ -43,4 +43,4 @@ module DTK::DSL; class FileParser::Template
       end
     end
   end
-end; end
+end

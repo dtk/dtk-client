@@ -17,9 +17,7 @@
 #
 module DTK::DSL
   class FileParser::Template
-    module V1
-      # Just loading helpers; templates are dynamically loaded
-      require_relative('v1/module_ref')
+    class ParseInstance < self
     end
   end
 end
