@@ -18,6 +18,8 @@
 module DTK::DSL
   class FileParser::Template
     class V1 < self
+      # Just loading helpers; tempaltes are dynamically loaded
+      require_relative('v1/module_ref')
     end
   end
 end

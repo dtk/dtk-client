@@ -17,8 +17,8 @@
 #
 module DTK::DSL
   class FileParser::Template
-    module Mixin
-     # require_relative('mixin/module_def')
+    class Helper < self
     end
   end
 end
+

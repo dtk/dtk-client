@@ -35,33 +35,12 @@ module DTK::DSL; class FileParser::Template
         unless module_ref = Constant.matches?(input_hash, :Module)
           raise parsing_error { missing_top_level_key(Constant::Module) }
         end
-        parse_module_ref(module_ref)
+        parsed_module_ref = ModuleRef.parse(module_ref)
+        @output.merge!(:namespace => parsed_module_ref.namespace, :module_name => parsed_module_ref.module_name)
+
      pp   @output
 @output
       end
-
-      private
-
-      MODULE_NAMESPACE_DELIMS = ['/', ':']
-      def parse_module_ref(module_ref)
-        unless module_ref.kind_of?(String)
-          raise parsing_error { wrong_object_type(Constant::Module, module_ref, String) }
-        end
-        split = split_by_delim(module_ref, MODULE_NAMESPACE_DELIMS)
-        unless split.size == 2
-          raise parsing_error("The term '#{module_ref}' is an ill-formed module reference")
-        end
-        @output.merge!(:namespace => split[0], :module_name => split[1])
-      end
-
-      def split_by_delim(str, delims)
-        if matching_delim = delims.find { |delim| str =~ Regexp.new(delim) }
-          str.split(matching_delim)
-        else
-          [str]
-        end
-      end
-
     end
   end
 end; end
