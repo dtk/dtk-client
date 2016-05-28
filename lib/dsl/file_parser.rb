@@ -28,7 +28,7 @@ module DTK::DSL
     # opts can have keys:
     #  :dsl_version
     def self.parse_content(parse_template_type, file_obj, opts = {})
-      ret = Output::Hash.new
+      ret = Output.create(:output_type => :hash)
       return ret unless file_obj.content?
 
       # YAML parsing
@@ -36,7 +36,7 @@ module DTK::DSL
       dsl_version =  opts[:dsl_version] || dsl_version__raise_error_if_illegal(input_hash, file_obj)
 
       # parsing with respect to the parse_template_type
-      parser_class = Template::ParseInstance.template_class(parse_template_type, dsl_version)
+      parser_class = Template.template_class(parse_template_type, dsl_version)
 ret =      parser_class.new(input_hash, :file_obj => file_obj).parse
 pp ret
 ret

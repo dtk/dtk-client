@@ -18,8 +18,37 @@
 module DTK::DSL
   class FileParser
     class Output
-      require_relative('output/hash')
-      require_relative('output/array')
+      # opts can have keys
+      #  :output_type
+      #  :input
+      def self.create(opts = {})
+        if output_type = opts[:output_type]
+          create_from_output_type(output_type)
+        elsif input = opts[:input]
+          create_from_input(input)
+        else 
+          raise Error, "opts must have one of the keys :output_type or :input"
+        end
+      end
+
+      private
+
+      def self.create_from_output_type(output_type)
+        case output_type
+          when :hash then ::Hash.new
+          when :array then ::Array.new
+          when :string then ::String.new
+          else raise Error, "Unexpected output_type '#{output_type}'"
+        end
+      end
+
+      def self.create_from_input(input)
+        if input.kind_of?(::Hash) then ::Hash.new
+        elsif input.kind_of?(::Array) then ::Array.new
+        elsif input.kind_of?(::String) then ::String.new
+        else raise Error, "Unexpected input type '#{input.class}'"
+        end
+      end
     end
   end
 end

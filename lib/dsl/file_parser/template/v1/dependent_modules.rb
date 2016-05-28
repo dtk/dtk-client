@@ -16,9 +16,12 @@
 # limitations under the License.
 #
 class DTK::DSL::FileParser::Template
-  module V1
-    class DependentModules < ParseInstance
+  class V1
+    class DependentModules < self
       def parse!
+        input_array.each_with_index do |module_ref, i|
+          @output << parse_child(:module_ref, module_ref, :parent_key => parent_key?(i))
+        end
       end
     end
   end

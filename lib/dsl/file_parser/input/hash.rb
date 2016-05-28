@@ -23,10 +23,6 @@ module DTK::DSL; class FileParser
         replace(reify(hash)) if hash
       end
 
-      def empty_output
-        Output::Hash.new
-      end
-      
       def [](index)
         super(internal_key_form(index))
       end

@@ -19,15 +19,89 @@ module DTK::DSL
   class FileParser                   
     class Template
       require_relative('template/constant_class_mixin')
-      require_relative('template/helper')
-      require_relative('template/parse_instance')
       require_relative('template/parsing_error')
       require_relative('template/loader')
 
-      def self.parsing_error(error_msg = nil, &error_text)
+      # opts can have keys
+      #   :file_obj
+      #   :parent_key
+      def initialize(raw_input, opts = {})
+        @input      = Input.create(raw_input)
+        @output     = empty_output(@input)
+        @file_obj   = opts[:file_obj]
+        @parent_key = opts[:parent_key]
+      end
+      
+      def self.template_class(parse_template_type, dsl_version)
+        Loader.template_class(parse_template_type, :dsl_version => dsl_version)
+      end
+      
+      def parse
+        parse!
+        # return @output
+        @output
+      end
+
+      private
+
+      # Main parse call; Each concrete class should over write this
+      def parse!
+        raise Error::NoMethodForConcreteClass.new(self.class)
+      end
+
+      # The method output_type can be set on concrete class; it wil be set if input and output types are different
+      def output_type
+        nil
+      end
+
+      def empty_output(input)
+        if output_type 
+          Output.create(:output_type => output_type)
+        else
+          Output.create(:input => input)
+        end
+      end
+
+      def parsing_error(error_msg = nil, &error_text)
         ParsingError.new(:error_msg => error_msg, :file_obj => @file_obj, &error_text)
       end
 
+      # opts can have keys
+      #  :parent_key
+      def parse_child(parse_template_type, input, opts = {})
+        parser_class = Loader.template_class(parse_template_type, :template_version => template_version)
+        parser_class.new(input, opts.merge(:file_obj => @file_obj)).parse
+      end
+      
+
+      def parent_key?(index = nil)
+        if @parent_key
+          index ? "#{@parent_key}[#{index}]" : parent_key
+        end
+      end
+
+      def input_hash
+        @input_hash ||= @input.kind_of?(Input::Hash) ? @input : raise_input_error(::Hash)
+      end
+
+      def input_array
+        @input_array = @input.kind_of?(Input::Array) ? @input : raise_input_error(::Array)
+      end
+
+      def input_string
+        @input_string ||= @input.kind_of?(::String) ? @input : raise_input_error(::String)
+      end
+
+      def raise_input_error(correct_ruby_type)
+        parent_key = parent_key?
+        input = @input
+        # Cant pass in @ vals since evalued with regards to parsing_error object
+        raise parsing_error { wrong_object_type(parent_key, input, correct_ruby_type) }
+      end
+
+      def constant_matches(object, constant, &error_text)
+        self.class::Constant.matches?(object, constant) || raise(parsing_error(&error_text))
+      end
     end
   end
 end

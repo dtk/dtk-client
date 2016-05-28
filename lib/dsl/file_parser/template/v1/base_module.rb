@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 class DTK::DSL::FileParser::Template
-  module V1
-    class BaseModule < ParseInstance
+  class V1
+    class BaseModule < self
       module Constant
         module Variations
         end
@@ -32,12 +32,11 @@ class DTK::DSL::FileParser::Template
 
       def parse!
         module_ref = constant_matches(input_hash, :Module)
-        parsed_module_ref = ModuleRef.parse(module_ref, Constant::Module)
-        @output.merge!(:namespace => parsed_module_ref.namespace, :module_name => parsed_module_ref.module_name)
+        @output.merge!(parse_child(:module_ref, module_ref, :parent_key => Constant::Module))
 
         dependent_modules = constant_matches(input_hash, :DependentModules)
-        parsed_dep_modules = parse_child(:dependent_modules, dependent_modules)
-
+        parsed_dep_modules = parse_child(:dependent_modules, dependent_modules, :parent_key => Constant::DependentModules)
+        @output.merge!(:dependent_modules => parsed_dep_modules)
       end
     end
   end

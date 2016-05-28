@@ -33,17 +33,26 @@ module DTK::DSL; class FileParser
       end
 
       def wrong_object_type(key, obj, correct_ruby_type)
-        "Key '#{key}' should be of type #{correct_ruby_type}, but has type #{input_class_string(obj)}"
+        prefix_msg =  key.nil? ? 'A key exists that' : "Key '#{key}'"
+        "#{prefix_msg} should be of type #{correct_ruby_type}, but has type #{input_class_string(obj)}"
       end
 
       private
 
       def input_class_string(obj)
-        klass = obj.kind_of?(InputHash) ? ::Hash : obj.class
+        # The special casing on Input::Hash is not needed since end with Hash and Array, but this makes it more robust
+        # if change the Input subclasses
+        klass = 
+          if obj.kind_of?(Input::Hash) 
+            ::Hash 
+          elsif obj.kind_of?(Input::Array)
+            ::Array
+          else
+            obj.class
+          end
         # demodularize
         klass.to_s.split('::').last
       end
-      
     end
   end
 end; end

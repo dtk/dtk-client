@@ -22,10 +22,6 @@ module DTK::DSL; class FileParser
         array.each { |el| self << reify(el) }
       end
 
-      def empty_output
-        Output::Array.new
-      end
-
       def map(&body)
         inject(self.class.new) { |a, el| a + el }
       end

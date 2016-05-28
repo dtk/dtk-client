@@ -23,9 +23,11 @@ module DTK::DSL
 
       def self.create(raw_input)
         if raw_input.kind_of?(::Hash)
-          Hash.new(raw_input)
+          Input::Hash.new(raw_input)
         elsif raw_input.kind_of?(::Array)
-          Array.new(raw_input)
+          Input::Array.new(raw_input)
+        elsif raw_input.kind_of?(::String)
+          ::String.new(raw_input)
         else
           raise Error, "Unexpected raw_input type '#{raw_input.class}'"
         end

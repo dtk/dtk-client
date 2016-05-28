@@ -16,25 +16,25 @@
 # limitations under the License.
 #
 class DTK::DSL::FileParser::Template
-  module V1
-    class ModuleRef < Helper
+  class V1
+    class ModuleRef < self
 
       MODULE_NAMESPACE_DELIMS = ['/', ':']
 
-      Output = Struct.new(:namespace, :module_name)
-      def self.parse(module_ref, module_ref_key)
-        unless module_ref.kind_of?(String)
-          raise parsing_error { wrong_object_type(module_ref_key, module_ref, String) }
-        end
-        split = split_by_delim(module_ref)
+      def output_type
+        :hash
+      end
+
+      def parse!
+        split = split_by_delim(input_string)
         unless split.size == 2
-          raise parsing_error("The term '#{module_ref}' is an ill-formed module reference")
+          raise parsing_error("The term '#{input_string}' is an ill-formed module reference")
         end
         namespace, module_name = split
-        Output.new(namespace, module_name)
+        @output.merge!(:namespace => namespace, :module_name => module_name)
       end
       
-      def self.split_by_delim(str)
+      def split_by_delim(str)
         if matching_delim = MODULE_NAMESPACE_DELIMS.find { |delim| str =~ Regexp.new(delim) }
           str.split(matching_delim)
         else
