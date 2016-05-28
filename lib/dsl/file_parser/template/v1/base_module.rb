@@ -31,7 +31,7 @@ class DTK::DSL::FileParser::Template
       end
 
       def parse!
-        module_ref = constant_matches(input_hash, :Module)
+        module_ref = constant_matches(input_hash, :Module) 
         @output.merge!(parse_child(:module_ref, module_ref, :parent_key => Constant::Module))
 
         dependent_modules = constant_matches(input_hash, :DependentModules)

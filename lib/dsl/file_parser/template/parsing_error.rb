@@ -28,8 +28,8 @@ module DTK::DSL; class FileParser
       end
 
       # Below are useed for error test
-      def missing_top_level_key(key)
-        "Missing top level key '#{key}'"
+      def missing_key_value(key)
+        "Missing value for key '#{key}'"
       end
 
       def wrong_object_type(key, obj, correct_ruby_type)

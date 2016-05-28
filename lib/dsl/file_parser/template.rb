@@ -99,8 +99,17 @@ module DTK::DSL
         raise parsing_error { wrong_object_type(parent_key, input, correct_ruby_type) }
       end
 
-      def constant_matches(object, constant, &error_text)
-        self.class::Constant.matches?(object, constant) || raise(parsing_error(&error_text))
+      def constant_matches(object, constant)
+        constant_class.matches?(object, constant) || raise_missing_key_value(constant)
+      end
+
+      def raise_missing_key_value(constant)
+        key = constant_class.canonical_value(constant)
+        raise parsing_error { missing_key_value(key) }
+      end
+      
+      def constant_class
+        self.class::Constant
       end
     end
   end

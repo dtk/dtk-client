@@ -53,6 +53,11 @@ module DTK::DSL
           end
         end
 
+        def canonical_value(constant)
+          # self. is important beacuse want to evalute wrt to class that calls this
+          self.const_get(constant.to_s)
+        end
+
         private
 
         def variations(constant, opts = {})
@@ -62,8 +67,7 @@ module DTK::DSL
           opts[:string_only] ? string_variations : string_variations + variations.map(&:to_sym)
          rescue
           # if Variations not defined
-          # self:: is important beacuse want to evalute wrt to module that pulss this in
-          term = self.const_get(constant.to_s)
+          term = canonical_value(constant)
           opts[:string_only] ? [term.to_s] : [term.to_s, term.to_sym]
         end
 
