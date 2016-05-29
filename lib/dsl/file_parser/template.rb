@@ -61,9 +61,29 @@ module DTK::DSL
           Output.create(:input => input)
         end
       end
+      
+      # args can have form 
+      #  (:PasringErrorName,*parsing_error_params) or
+      #  (parsing_error_params)
+      def parsing_error(*args)
+        if error_class = parsing_error_class?(args)
+          error_params = args[1..args.size-1]
+          error_class.new(*error_params, :file_obj => @file_obj, :qualified_key => @parent_key)
+        else
+          ParsingError.new(*args, :file_obj => @file_obj, :qualified_key => @parent_key)
+        end
+      end
 
-      def parsing_error(error_msg = nil, &error_text)
-        ParsingError.new(:error_msg => error_msg, :file_obj => @file_obj, &error_text)
+      def parsing_error_class?(args)
+        if args.first.kind_of?(Symbol)
+          begin
+            ParsingError.const_get(args.first.to_s)
+          rescue
+            nil
+          end
+        elsif args.first.kind_of?(ParsingError)
+          args.first
+        end
       end
 
       # opts can have keys
@@ -72,7 +92,6 @@ module DTK::DSL
         parser_class = Loader.template_class(parse_template_type, :template_version => template_version)
         parser_class.new(input, opts.merge(:file_obj => @file_obj)).parse
       end
-      
 
       def parent_key?(index = nil)
         if @parent_key
@@ -93,10 +112,7 @@ module DTK::DSL
       end
 
       def raise_input_error(correct_ruby_type)
-        parent_key = parent_key?
-        input = @input
-        # Cant pass in @ vals since evalued with regards to parsing_error object
-        raise parsing_error { wrong_object_type(parent_key, input, correct_ruby_type) }
+        raise parsing_error(:WrongObjectType, @input, correct_ruby_type)
       end
 
       def constant_matches(object, constant)
@@ -105,7 +121,7 @@ module DTK::DSL
 
       def raise_missing_key_value(constant)
         key = constant_class.canonical_value(constant)
-        raise parsing_error { missing_key_value(key) }
+        raise parsing_error(:MissingKeyValue, key)
       end
       
       def constant_class

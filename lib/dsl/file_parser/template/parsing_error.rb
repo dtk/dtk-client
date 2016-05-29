@@ -15,45 +15,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::DSL; class FileParser                   
-  class Template
+module DTK::DSL
+  class FileParser::Template
     class ParsingError < Error::Usage
+      require_relative('parsing_error/subclasses')
+
       # opts can have keys
       #  :file_obj
-      #  :error_msg
-      def initialize(opts = {}, &error_text)
-        file_ref = FileParser.file_ref_in_error(opts[:file_obj])
-        error_msg = opts[:error_msg] || error_text && instance_eval(&error_text)
-        super("DTK parsing error#{file_ref}:\n  #{error_msg}")
-      end
-
-      # Below are useed for error test
-      def missing_key_value(key)
-        "Missing value for key '#{key}'"
-      end
-
-      def wrong_object_type(key, obj, correct_ruby_type)
-        prefix_msg =  key.nil? ? 'A key exists that' : "Key '#{key}'"
-        "#{prefix_msg} should be of type #{correct_ruby_type}, but has type #{input_class_string(obj)}"
-      end
-
-      private
-
-      def input_class_string(obj)
-        # The special casing on Input::Hash is not needed since end with Hash and Array, but this makes it more robust
-        # if change the Input subclasses
-        klass = 
-          if obj.kind_of?(Input::Hash) 
-            ::Hash 
-          elsif obj.kind_of?(Input::Array)
-            ::Array
-          else
-            obj.class
-          end
-        # demodularize
-        klass.to_s.split('::').last
+      #  :qualified_key
+      def initialize(error_msg, opts = {})
+        @file_ref      = FileParser.file_ref_in_error(opts[:file_obj])
+        @qualified_key = opts[:qualified_key]
+        # TODO: later enhancment can use @qualified_key to find line numbers in yaml file
+        key_ref = @qualified_key ? " under key '#{@qualified_key}'" : ''
+        super("DTK parsing error#{key_ref}#{@file_ref}:\n  #{error_msg}")
       end
     end
   end
-end; end
+end
+
 

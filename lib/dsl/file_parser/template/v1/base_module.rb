@@ -26,8 +26,7 @@ class DTK::DSL::FileParser::Template
         Module = 'module'
         Variations::Module = ['module', 'module_name'] 
 
-        DependentModules = 'dependent_modules'
-
+        DependentModules = 'dependencies'
       end
 
       def parse!

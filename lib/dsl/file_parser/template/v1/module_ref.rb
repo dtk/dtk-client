@@ -28,8 +28,7 @@ class DTK::DSL::FileParser::Template
       def parse!
         split = split_by_delim(input_string)
         unless split.size == 2
-          key_ref = @parent_key ? " under key '#{@parent_key}'" : ''
-          raise parsing_error("The term '#{input_string}'#{key_ref} is an ill-formed module reference")
+          raise parsing_error("The term '#{input_string}' is an ill-formed module reference")
         end
         namespace, module_name = split
         @output.merge!(:namespace => namespace, :module_name => module_name)
