@@ -42,6 +42,3 @@ components:
     actions:
       create:
         puppet_class: simple::hostname
-
-includes:
-- manifests/
