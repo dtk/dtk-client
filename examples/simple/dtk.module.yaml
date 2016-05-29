@@ -1,14 +1,13 @@
 ---
 dsl_version: 1.0.0
-module: dtk-jira/dtk2554
+module: rich/simple
+version: 0.0.1
 keywords: DTK-2554
 description: Tests for DTK-2554
 license: Apache 2.0
-version: 0.0.1
 
-dependent_modules:
+dependencies:
 - aws/ec2
-- dtk/host
 
 assemblies:
   simple:
@@ -18,7 +17,7 @@ assemblies:
           image: amazon_hvm
           size: small
         components:
-        - host::hostname:
+        - simple::hostname:
             attributes:
               hostname: host1
     workflows:
@@ -26,4 +25,23 @@ assemblies:
         subtasks:
         - name: set hostname
           components:
-          - host::hostname
+          - simple::hostname
+
+components:
+  hostname:
+    attributes:
+      hostname:
+        type: string
+        required: true
+    actions:
+      create:
+        puppet_class: simple::hostname
+
+  dtk_hostname:
+    description: Use dtk node name as host name
+    actions:
+      create:
+        puppet_class: simple::hostname
+
+includes:
+- manifests/
