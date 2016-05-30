@@ -38,11 +38,11 @@ module DTK::Client
       get_credentials[:username]
     end
     
-    def get(route, _opts = {})
+    def get(route, query_params_hash = {})
       url = rest_url(route)
       ap "GET #{url}" if verbose_mode_on?
       
-      check_and_wrap_response { json_parse_if_needed(get_raw(url)) }
+      check_and_wrap_response { json_parse_if_needed(get_raw(url, query_params_hash)) }
     end
     
     def post(route, post_body = {})
@@ -182,8 +182,8 @@ module DTK::Client
       }
     end
     
-    def get_raw(url)
-      Response::RestClientWrapper.get_raw(url, {}, default_rest_opts.merge(:cookies => @cookies))
+    def get_raw(url, query_params_hash = {})
+      Response::RestClientWrapper.get_raw(url, query_params_hash, default_rest_opts.merge(:cookies => @cookies))
     end
 
     def post_raw(url, post_body, params = {})

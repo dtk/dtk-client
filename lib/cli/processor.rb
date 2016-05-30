@@ -23,7 +23,7 @@ module DTK::Client
         DEFAULT = :gli
         DEFAULT_CLASS_NAME = "#{DEFAULT.to_s.capitalize}"
         # autoload DEFAULT_CLASS_NAME.to_sym, "plugin/#{DEFAULT_PLUGIN}"
-        require_relative "processor/plugin/#{DEFAULT}"
+        require_relative("processor/plugin/#{DEFAULT}")
         def self.default_class
           const_get DEFAULT_CLASS_NAME
         end

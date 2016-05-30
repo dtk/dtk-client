@@ -16,21 +16,6 @@
 # limitations under the License.
 #
 module DTK::Client
-  class Operation
-    class Module < self
-      require_relative('module/install')
-      BaseRoute = 'modules'
-
-      def self.list_assemblies
-        rest_get("#{BaseRoute}/list_assemblies").set_render_as_table!
-      end
-
-      def self.install(args = Args.new)
-        Install.install(args)
-      end
-
-    end
+  class QueryParams < HashWithOptionalKeys
   end
 end
-
-

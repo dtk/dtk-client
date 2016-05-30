@@ -16,36 +16,6 @@
 # limitations under the License.
 #
 module DTK::Client
-  class PostBody < Hash
-    def initialize(raw={})
-      super()
-      replace(convert(raw)) unless raw.empty?
-    end
-
-    def merge(raw)
-      super(convert(raw))
-    end
-
-    def merge!(raw)
-      super(convert(raw))
-    end
-    
-    private
-
-    def convert(raw)
-      raw.inject(Hash.new) do |h,(k,v)|
-        if non_null_var = is_only_non_null_var?(k)
-          v.nil? ? h : h.merge(non_null_var => v)
-        else
-          h.merge(k => v)
-        end
-      end
-    end
-
-    def is_only_non_null_var?(k)
-      if k.to_s =~ /\?$/
-        k.to_s.gsub(/\?$/,'').to_sym
-      end
-    end
+  class PostBody < HashWithOptionalKeys
   end
 end

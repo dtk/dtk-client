@@ -16,21 +16,37 @@
 # limitations under the License.
 #
 module DTK::Client
-  class Operation
-    class Module < self
-      require_relative('module/install')
-      BaseRoute = 'modules'
-
-      def self.list_assemblies
-        rest_get("#{BaseRoute}/list_assemblies").set_render_as_table!
+  class HashWithOptionalKeys < ::Hash
+    def initialize(raw={})
+      super()
+      replace(convert(raw)) unless raw.empty?
+    end
+    
+    def merge(raw)
+      super(convert(raw))
+    end
+    
+    def merge!(raw)
+      super(convert(raw))
+    end
+    
+    private
+    
+    def convert(raw)
+      raw.inject(Hash.new) do |h,(k,v)|
+        if non_null_var = is_only_non_null_var?(k)
+          v.nil? ? h : h.merge(non_null_var => v)
+        else
+          h.merge(k => v)
+        end
       end
-
-      def self.install(args = Args.new)
-        Install.install(args)
+    end
+    
+    def is_only_non_null_var?(k)
+      if k.to_s =~ /\?$/
+        k.to_s.gsub(/\?$/,'').to_sym
       end
-
     end
   end
 end
-
 

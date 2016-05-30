@@ -30,9 +30,16 @@ module DTK::Client
     def self.rest_post(route, post_body = {})
       Session.rest_post(route, post_body)
     end
-    def self.rest_get(route, args = {})
-      Session.rest_get(route, args)
+    def self.rest_get(route, query_params_hash = {})
+      Session.rest_get(route, query_params_hash)
     end
+    def rest_post(route, post_body = {})
+      self.class.rest_post(route, post_body)
+    end
+    def rest_get(route, query_params_hash = {})
+      self.class.rest_get(route, query_params_hash)
+    end
+
 
     def self.wrap_as_response(args = Args.new, &block)
       Response.wrap_as_response do
