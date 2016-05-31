@@ -29,7 +29,7 @@ module DTK::Client
 
       NAMESPACE_MOD_DELIM = ':'
       def reference
-        ret = "#{namespace}#{NAMESPACE_MOD_DELIM}/#{module_name}"
+        ret = "#{namespace}#{NAMESPACE_MOD_DELIM}#{module_name}"
         ret << "(#{version})" if @version
         ret
       end

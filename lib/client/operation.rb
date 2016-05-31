@@ -28,24 +28,21 @@ module DTK::Client
     
     # delegate rest calls to Session
     def self.rest_post(route, post_body = {})
-      Session.rest_post(route, post_body)
-    end
-    def self.rest_get(route, query_params_hash = {})
-      Session.rest_get(route, query_params_hash)
+      raise_error_if_notok_response do
+        Session.rest_post(route, post_body)
+      end
     end
     def rest_post(route, post_body = {})
       self.class.rest_post(route, post_body)
     end
+
+    def self.rest_get(route, query_params_hash = {})
+      raise_error_if_notok_response do
+        Session.rest_get(route, query_params_hash)
+      end
+    end
     def rest_get(route, query_params_hash = {})
       self.class.rest_get(route, query_params_hash)
-    end
-
-    def self.raise_error_if_notok_response(&block)
-      ret = block.call
-      if ret.ok?
-        ret
-      else
-      end
     end
 
     def self.wrap_as_response(args = Args.new, &block)
@@ -54,6 +51,16 @@ module DTK::Client
       end
     end
 
+    # This is used so can fail on not ok rest responses without needing to do explicit
+    # response.ok? checks in many places
+    def self.raise_error_if_notok_response(&block)
+      response = block.call
+      if response.ok?
+        response
+      else
+        raise Error::ServerNotOkResponse.new(response)
+      end
+    end
   end
 end
 

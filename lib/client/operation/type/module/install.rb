@@ -39,7 +39,7 @@ module DTK::Client
         # and on server side (i.e., v1 api routes that recieved and process them)
         
         if base_module_exists?(base_module_ref)
-          raise Error::Usage, "Module #{module_ref.reference} exists already"
+          raise Error::Usage, "Module #{base_module_ref.reference} exists already"
         end
 
         ComponentModule.install_modules(dependent_modules)

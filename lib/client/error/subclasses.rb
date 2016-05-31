@@ -24,6 +24,14 @@ module DTK::Client
       end
     end
 
+    # Used for trapping not ok rest responses
+    class ServerNotOkResponse < self
+      attr_reader :response
+      def initialize(response)
+        @response = response
+      end
+    end
+
     class InternalError < self
       # opts can have keys
       #  :backtrace
