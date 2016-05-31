@@ -40,6 +40,13 @@ module DTK::Client
       self.class.rest_get(route, query_params_hash)
     end
 
+    def self.raise_error_if_notok_response(&block)
+      ret = block.call
+      if ret.ok?
+        ret
+      else
+      end
+    end
 
     def self.wrap_as_response(args = Args.new, &block)
       Response.wrap_as_response do

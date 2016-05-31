@@ -18,6 +18,10 @@
 module DTK::Client
   class Operation::Module
     class Install < self
+
+      require_relative('install/module_ref')
+      require_relative('install/component_module')
+
       def self.install(args = Args.new)
         wrap_as_response(args) do |args|
           file_obj = args.required(:base_dsl_file_obj).raise_error_if_no_content
@@ -30,7 +34,18 @@ module DTK::Client
         unless base_module_ref = get_base_module_ref?
           raise Error::Usage, "No base module reference #{dsl_path_ref}"
         end
-        raise_error_if_base_module_exists(base_module_ref)
+        # TODO DTK-2583: Aldin
+        # The methods below are just stub; complete these on client side
+        # and on server side (i.e., v1 api routes that recieved and process them)
+        
+        if base_module_exists?(base_module_ref)
+          raise Error::Usage, "Module #{module_ref.reference} exists already"
+        end
+
+        ComponentModule.install_modules(dependent_modules)
+
+        install_service_module(base_module_ref)
+
         nil
       end
       
@@ -41,31 +56,39 @@ module DTK::Client
         @file_obj      = file_obj
       end
       
-      def dsl_path_ref
-        if path = @file_obj.path?
-          "in the dsl file '#{path}'"
-        else
-          "in the dsl file"
-        end
+      def install_service_module(base_module_ref)
       end
       
-      ModuleRef = Struct.new(:namespace, :module_name, :version)
       def get_base_module_ref?
         namespace   = @parsed_output[:namespace]
         module_name = @parsed_output[:module_name]
         if namespace and module_name
-          ModuleRef.new(namespace, module_name, @parsed_output[:version])
+          ModuleRef.new(:namespace => namespace, :module_name => module_name, :version => @parsed_output[:version])
         end
       end
-
-      def raise_error_if_base_module_exists(module_ref)
+      
+      def base_module_exists?(module_ref)
         query_params = QueryParams.new(
           :namespace   => module_ref.namespace,
           :module_name => module_ref.module_name,
           :version?    => module_ref.version
         )
         response = rest_get(BaseRoute, query_params)
-        pp response
+        # if response has key :service_module_id then a service module exists and
+        # an error is thrown
+        ! response.data(:service_module_id).nil?
+      end
+
+      def dependent_modules
+        (@parsed_output[:dependent_modules] || []).map { |module_ref_hash| ModuleRef.new(module_ref_hash) }
+      end
+
+      def dsl_path_ref
+        if path = @file_obj.path?
+          "in the dsl file '#{path}'"
+        else
+          "in the dsl file"
+        end
       end
     end
   end
