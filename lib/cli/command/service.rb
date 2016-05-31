@@ -20,48 +20,27 @@ module DTK::Client; module CLI
     module Service
       include Command::Mixin
 
-      ALL_SUBCOMMANDS = ['deploy', 'deploy-target']
-      command_def :desc => 'Subcommands for interacting with DTK services'
+#      ALL_SUBCOMMANDS = ['deploy', 'deploy-target', 'stage', 'stage-target']
+      ALL_SUBCOMMANDS = ['stage']
+      command_def :desc => 'Subcommands for creating and interacting with DTK service instances'
 
-      subcommand_def 'deploy' do |c|
+      subcommand_def 'stage' do |c|
         c.arg 'ASSEMBLY-NAME'
         unless context_attributes[:module_name]
           c.arg 'NAMESPACE/MODULE-NAME', :optional
         end
-        c.desc 'Deploy a new service instance from the selected assembly'
-        c.command :deploy  do |sc|
-          sc.flag [:i], :arg_name =>'INSTANCE-NAME', :desc => 'If specified, name to call new service instance' 
-          sc.flag [:t], :arg_name => 'PARENT-SERVICE-INSTANCE', :desc => 'Parent Service instance into which the new assembly is deployed' 
+        c.desc 'Stage a new service instance from an assembly'
+        c.command :stage  do |sc|
+          sc.flag [:i], :arg_name =>'INSTANCE-NAME', :desc => 'If specified, new service instance name' 
+          sc.flag [:t], :arg_name => 'PARENT-SERVICE-INSTANCE', :desc => 'Parent Service instance providing the context for the staged assembly' 
           sc.flag [:v], :arg_name => 'VERSION', :desc => 'Version'
           sc.switch ['auto-complete'], :default_value => true, :desc => 'If true, components with dependencies are automatically linked'
           sc.switch [:s, 'stream-results'], :default_value => true, :desc => 'If true, results are streamed as tasks progresses and completes or user enters ^C'
           sc.action do |global_options, options, args|
-            pp [self.class, options, args, context_attributes: context_attributes]
-            pp [self.class, options, args]
-            puts 'dtk service deploy'
+            Operation::Service.stage()
           end
         end
       end
-
-      subcommand_def 'deploy-target' do |c|
-        c.arg 'ASSEMBLY-NAME'
-        unless context_attributes[:module_name]
-          c.arg 'NAMESPACE/MODULE-NAME', :optional
-        end
-        c.desc 'Deploy a top level service instance that will serve as a target'
-        c.command 'deploy-target'  do |sc|
-          sc.flag [:i], :arg_name =>'INSTANCE-NAME', :desc => 'If specified, name to call new service instance' 
-          sc.flag [:v], :arg_name => 'VERSION', :desc => 'Version'
-          sc.switch ['auto-complete'], :default_value => true, :desc => 'If true, components with dependencies are automatically linked'
-          sc.switch [:s, 'stream-results'], :default_value => true, :desc => 'If true, results are streamed as tasks progresses and completes or user enters ^C'
-          sc.action do |global_options, options, args|
-            pp [self.class, options, args, context_attributes: context_attributes]
-            pp [self.class, options, args]
-            puts 'dtk service deploy-target'
-          end
-        end
-      end
-
     end
   end
 end; end

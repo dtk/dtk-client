@@ -19,7 +19,7 @@ module DTK::Client
   # Abstract class that holds classes and methods for executing commands by
   # make calls to server and performing client side operations
   class Operation
-    TYPES = [:account, :module]
+    TYPES = [:account, :module, :service]
 
     require_relative('operation/args')
     TYPES.each { |op_type| require_relative("operation/type/#{op_type}") }

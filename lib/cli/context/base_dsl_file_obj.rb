@@ -18,12 +18,15 @@
 module DTK::Client
   class CLI::Context
     class BaseDslFileObj < ::DTK::DSL::FileObj
+      attr_accessor :yaml_parse_hash
       # opts can have keys
       #  :dir_path
       #  :file_path
       def initialize(opts = {})
         super
         @dir_path  = opts[:dir_path]
+        # below computed on demand
+        @yaml_parse_hash = nil
       end
       private :initialize
       

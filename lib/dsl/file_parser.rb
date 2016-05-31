@@ -31,13 +31,24 @@ module DTK::DSL
       ret = Output.create(:output_type => :hash)
       return ret unless file_obj.content?
 
-      # YAML parsing
-      input_hash = YamlParser.parse(file_obj)
+      input_hash = yaml_parse!(file_obj)
       dsl_version =  opts[:dsl_version] || dsl_version__raise_error_if_illegal(input_hash, file_obj)
 
       # parsing with respect to the parse_template_type
       parser_class = Template.template_class(parse_template_type, dsl_version)
       parser_class.new(input_hash, :file_obj => file_obj).parse
+    end
+
+    def self.yaml_parse!(file_obj)
+      if file_obj.respond_to?(:yaml_parse_hash) 
+        if ret = file_obj.yaml_parse_hash
+          ret
+        else
+          file_obj.yaml_parse_hash = YamlParser.parse(file_obj)
+        end
+      else
+        YamlParser.parse(file_obj)
+      end
     end
 
     def self.file_ref_in_error(file_obj)

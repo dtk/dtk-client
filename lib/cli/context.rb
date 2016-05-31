@@ -19,22 +19,21 @@ module DTK::Client
   module CLI
     # Object that provides the context for interpreting commands
     class Context
+      require_relative('context/determine_context')
       require_relative('context/attributes')
       require_relative('context/base_dsl_file_obj')
-      
-      ALL_CONTEXTS = [:service, :module]
 
-      (ALL_CONTEXTS + [:top]).each { |context| require_relative("context/type/#{context}") }
-      
+      include DetermineContextMixin
+      def self.determine_context
+        new.set_context!.add_command_defs_defaults_and_hooks!
+      end
+
       def initialize
-        @command_processor = Processor.default
-        @context_attributes = attributes
+        @command_processor   = Processor.default
+        @context_attributes  = Attributes.new
+        @applicable_commands = []
       end
       private :initialize 
-      
-      def self.determine_context
-        get_and_set_cache { create_when_in_specific_context? || create_default }
-      end
       
       def run_and_return_response_object(argv)
         @command_processor.run_and_return_response_object(argv)
@@ -50,50 +49,26 @@ module DTK::Client
       
       def add_command_defs_defaults_and_hooks!
         add_command_defaults!
-        add_command_defs!
+        @applicable_commands.each { |command_name| add_command command_name }
         add_command_hooks!
         self
       end
 
+      private
+
+      attr_reader :context_attributes
+      
+
+      # Returns a BaseDslFile object even under error      
       # opts can have keys
       #  :dir_path
       #  :file_path
-      # Returns a BaseDslFile object even under error
-      def ret_base_dsl_file_obj(opts = {})
-        BaseDslFileObj.find(opts)
+      def base_dsl_file_obj(opts = {})
+        @base_dsl_file_obj ||= BaseDslFileObj.find(opts)
       end
 
-      private
-
-      # The method 'create_attributes' can be ovewritten
-      def attributes
-        Attributes.new
-      end
-      
-      attr_reader :context_attributes
-      
-      def self.create
-        new.add_command_defs_defaults_and_hooks!
-      end
-      
-      def self.create_default
-        Top.create
-      end
-      
       def command_processor_object_methods
         @@command_processor_object_methods ||= Processor::Methods.all 
-      end
-      
-      def self.get_and_set_cache
-        # TODO: stub
-        yield
-      end
-      
-      def self.create_when_in_specific_context?
-        # TODO: stub 
-        nil
-        # Module.create
-        # Service.create
       end
     end
   end

@@ -15,15 +15,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client::CLI
-  class Context
-    class Top < self
-      include Command::All
-      private
+module DTK::Client
+  class Operation
+    class Service < self
+      BaseRoute = 'services'
 
-      def add_command_defs!
-        Command.all_command_names.each { |command_name| add_command command_name }
+      def self.stage(args = Args.new)
+        rest_post("#{BaseRoute}/create")
       end
     end
   end
 end
+
+
