@@ -23,6 +23,7 @@ module DTK::Client
       require_relative('context/attributes')
       require_relative('context/base_dsl_file_obj')
 
+      include Command::All
       include Type::Mixin
 
       def self.determine_context
