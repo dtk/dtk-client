@@ -47,7 +47,7 @@ module DTK::Client
         directory_parser.most_nested_matching_file_path?(path_info, :current_dir => opts[:dir_path])
       end
       def find_path?(opts = {})
-        self.class.find_path?(opts = {})
+        self.class.find_path?(opts)
       end
 
       def self.directory_parser
