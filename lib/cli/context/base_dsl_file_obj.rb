@@ -23,7 +23,7 @@ module DTK::Client
       #  :dir_path
       #  :file_path
       def initialize(opts = {})
-        super
+        super(:path =>  opts[:file_path] || find_path?(opts))
         @dir_path  = opts[:dir_path]
         # below computed on demand
         @yaml_parse_hash = nil
@@ -45,6 +45,9 @@ module DTK::Client
       def self.find_path?(opts = {})
         path_info = ::DTK::DSL::Filename::BaseModule.create_path_info
         directory_parser.most_nested_matching_file_path?(path_info, :current_dir => opts[:dir_path])
+      end
+      def find_path?(opts = {})
+        self.class.find_path?(opts = {})
       end
 
       def self.directory_parser
