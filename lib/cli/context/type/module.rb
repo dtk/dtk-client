@@ -20,7 +20,7 @@ module DTK::Client::CLI
     module Type
       class Module < Context
         include Command::Module
-        
+        include Command::Service        
         private
         
         def add_command_defs!

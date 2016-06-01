@@ -23,11 +23,23 @@ module DTK::DSL
       DirectoryParser::PathInfo.new(regexp)
     end
 
+    def self.matches?(file_path)
+      DirectoryParser::PathInfo.matches?(file_path, regexp)
+    end
+
     class BaseModule < self
       private
       # Purposely does not have ^ or $ so calling function can insert these depending on context
       def self.regexp
         /dtk\.module\.(yml|yaml)/
+      end
+    end
+
+    class BaseService < self
+      private
+      # Purposely does not have ^ or $ so calling function can insert these depending on context
+      def self.regexp
+        /dtk\.service\.(yml|yaml)/
       end
     end
   end

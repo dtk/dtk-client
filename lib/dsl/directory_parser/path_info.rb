@@ -28,6 +28,18 @@ module DTK::DSL
         @base_dir = opts[:base_dir]
       end
 
+      def matches?(file_path)
+        self.class.matches?(file_path, @regexp)
+      end
+      def self.matches?(file_path, regexp)
+        # extra check to see if regep is just for file part or has '/' seperators
+        if '/' =~ regexp
+          file_path.split(OsUtil.delim).last =~ Regexp.new("^#{regexp.source}$")
+        else
+          file_path =~ Regexp.new("#{regexp.source}$")
+        end
+      end
+
       private
 
       def ret_regexp(regexp_or_string)

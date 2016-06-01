@@ -18,13 +18,22 @@
 module DTK::Client
   class CLI::Context
     class BaseDslFileObj < ::DTK::DSL::FileObj
-      attr_accessor :yaml_parse_hash
+
+      BASE_DSL_MAPPINGS = {
+        :module => ::DTK::DSL::Filename::BaseModule,
+        :service => ::DTK::DSL::Filename::BaseService
+      }
+
+      attr_accessor :base_dsl_type, :yaml_parse_hash
       # opts can have keys
       #  :dir_path
       #  :file_path
       def initialize(opts = {})
-        super(:path =>  opts[:file_path] || find_path?(opts))
-        @dir_path  = opts[:dir_path]
+        base_dsl_type, path = find_type_and_path?(opts)
+        @base_dsl_type = base_dsl_type
+        @dir_path      = opts[:dir_path]
+        super(:path => path)  
+
         # below computed on demand
         @yaml_parse_hash = nil
       end
@@ -42,16 +51,29 @@ module DTK::Client
       # This method finds the base dsl file if it exists and returns its path
       # opts can have keys:
       #  :dir_path
-      def self.find_path?(opts = {})
-        path_info = ::DTK::DSL::Filename::BaseModule.create_path_info
-        directory_parser.most_nested_matching_file_path?(path_info, :current_dir => opts[:dir_path])
-      end
-      def find_path?(opts = {})
-        self.class.find_path?(opts)
+      #  :file_path
+      # returns nil or [base_dsl_type, path]
+      def find_type_and_path?(opts = {})
+        ret = nil
+        if path = opts[:file_path]
+          BASE_DSL_MAPPINGS.each do | dsl_type, filename_class|
+            if filename_class.matches?(path)
+              return [dsl_type, path]
+            end
+          end
+        else
+          BASE_DSL_MAPPINGS.each do | dsl_type, filename_class|
+            path_info = filename_class.create_path_info
+            if path = directory_parser.most_nested_matching_file_path?(path_info, :current_dir => opts[:dir_path])
+              return [dsl_type, path]
+            end
+          end
+        end
+        ret
       end
 
-      def self.directory_parser
-        @directory_parser ||= ::DTK::DSL::DirectoryParser::FileSystem.new
+      def directory_parser
+        @@directory_parser ||= ::DTK::DSL::DirectoryParser::FileSystem.new
       end
 
     end
