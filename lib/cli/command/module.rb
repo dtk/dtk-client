@@ -33,12 +33,7 @@ module DTK::Client; module CLI
           # sc.flag [:v, :version], :arg_name => 'VERSION', :desc => 'Module Version'
           # sc.switch [:f], :default_value => false, :desc => 'Force Install'
           sc.action do |_global_options, _options, _args|
-            # TODO: when pass in arg 'NAMESPACE/MODULE-NAME', do not usebase_dsl_file_obj
-#stub
-dir_path = File.expand_path('../../../examples/simple/test', File.dirname(__FILE__))
-#dir_path = nil
-            file_obj = ret_base_dsl_file_obj(:dir_path => dir_path)
-            Operation::Module.install(:base_dsl_file_obj => file_obj)
+            Operation::Module.install(:base_dsl_file_obj => @base_dsl_file_obj)
           end
         end
       end

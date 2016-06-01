@@ -15,21 +15,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client
-  class CLI::Context
+module DTK::Client::CLI
+  class Context
     module Type
-      require_relative('type/top')
-      require_relative('type/module')
-      require_relative('type/service')
+      class Service < Context
+        include Command::Service
 
-      # This function can have the side of updating base_dsl_file_obj
-      def self.create_context!(base_dsl_file_obj)
-        if path = base_dsl_file_obj.path?
-          pp [path]
-        else
-          Top.new(base_dsl_file_obj)
+        private
+        
+        def add_command_defs!
+          add_command :service
         end
       end
     end
   end
 end
+

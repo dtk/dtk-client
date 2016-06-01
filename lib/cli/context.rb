@@ -23,17 +23,18 @@ module DTK::Client
       require_relative('context/attributes')
       require_relative('context/base_dsl_file_obj')
 
-      include Command::All
-      include Type::Mixin
-
       def self.determine_context
-        new
+#stub
+dir_path = File.expand_path('../../examples/simple/test', File.dirname(__FILE__))
+#dir_path = nil
+        base_dsl_file_obj = BaseDslFileObj.new(:dir_path => dir_path)
+        Type.create_context!(base_dsl_file_obj)
       end
-      def initialize
+
+      def initialize(base_dsl_file_obj)
+        @base_dsl_file_obj   = base_dsl_file_obj
         @command_processor   = Processor.default
-        @context_attributes  = Attributes.new
-        @base_dsl_file_obj   = BaseDslFileObj.new
-        @type                = determine_type!
+        @context_attributes  = attributes
         add_command_defs_defaults_and_hooks!
       end
       private :initialize
@@ -54,9 +55,18 @@ module DTK::Client
 
       attr_reader :context_attributes
 
+      # The method 'attributes' can be ovewritten
+      def attributes
+        Attributes.new
+      end
+
+      def add_command_defs!
+        raise Error::NoMethodForConcreteClass.new(self.class)
+      end
+
       def add_command_defs_defaults_and_hooks!
         add_command_defaults!
-        @type.applicable_commands.each { |command_name| add_command(command_name) }
+        add_command_defs!
         add_command_hooks!
         self
       end
