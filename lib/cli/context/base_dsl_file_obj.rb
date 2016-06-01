@@ -28,16 +28,6 @@ module DTK::Client
         # below computed on demand
         @yaml_parse_hash = nil
       end
-      private :initialize
-      
-      # This method finds the base dsl file if it exists returns a BaseDslFileobject
-      # opts can have keys:
-      #  :dir_path
-      #  :file_path
-      # Returns a BaseDslFile object even under error
-      def self.find(opts = {})
-        new(:path =>  opts[:file_path] || find_path?(opts))
-      end
 
       private
 

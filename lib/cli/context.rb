@@ -19,22 +19,24 @@ module DTK::Client
   module CLI
     # Object that provides the context for interpreting commands
     class Context
-      require_relative('context/determine_context')
+      require_relative('context/type')
       require_relative('context/attributes')
       require_relative('context/base_dsl_file_obj')
 
-      include DetermineContextMixin
-      def self.determine_context
-        new.set_context!.add_command_defs_defaults_and_hooks!
-      end
+      include Type::Mixin
 
+      def self.determine_context
+        new
+      end
       def initialize
         @command_processor   = Processor.default
         @context_attributes  = Attributes.new
-        @applicable_commands = []
+        @base_dsl_file_obj   = BaseDslFileObj.new
+        @type                = determine_type!
+        add_command_defs_defaults_and_hooks!
       end
-      private :initialize 
-      
+      private :initialize
+
       def run_and_return_response_object(argv)
         @command_processor.run_and_return_response_object(argv)
       end
@@ -47,24 +49,15 @@ module DTK::Client
         command_processor_object_methods.include?(method) or super
       end
       
-      def add_command_defs_defaults_and_hooks!
-        add_command_defaults!
-        @applicable_commands.each { |command_name| add_command command_name }
-        add_command_hooks!
-        self
-      end
-
       private
 
       attr_reader :context_attributes
-      
 
-      # Returns a BaseDslFile object even under error      
-      # opts can have keys
-      #  :dir_path
-      #  :file_path
-      def base_dsl_file_obj(opts = {})
-        @base_dsl_file_obj ||= BaseDslFileObj.find(opts)
+      def add_command_defs_defaults_and_hooks!
+        add_command_defaults!
+        @type.applicable_commands.each { |command_name| add_command(command_name) }
+        add_command_hooks!
+        self
       end
 
       def command_processor_object_methods
