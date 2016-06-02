@@ -21,7 +21,12 @@ module DTK::Client
       BaseRoute = 'services'
 
       def self.stage(args = Args.new)
-        rest_post("#{BaseRoute}/create")
+        post_body = {
+          :namespace => 'dtk-jira',
+          :module_name => 'dtk2554',
+          :assembly_name => 'foo'
+        }
+        rest_post("#{BaseRoute}/create", post_body)
       end
     end
   end
