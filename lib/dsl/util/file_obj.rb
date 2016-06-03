@@ -33,9 +33,14 @@ module DTK::DSL
     def content?
       @content 
     end
+
     def raise_error_if_no_content
       raise(Error::Usage, error_msg_no_content) unless @content
       self
+    end
+
+    def exists?
+      ! @content.nil?
     end
 
     def path?

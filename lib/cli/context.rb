@@ -74,6 +74,11 @@ dir_path = File.expand_path('../../examples/simple/test', File.dirname(__FILE__)
       def command_processor_object_methods
         @@command_processor_object_methods ||= Processor::Methods.all 
       end
+
+      def base_dsl_hash_content?
+        @base_dsl_file_obj.hash_content?
+      end
+
     end
   end
 end

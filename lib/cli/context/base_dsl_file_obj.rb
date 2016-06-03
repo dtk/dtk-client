@@ -38,6 +38,10 @@ module DTK::Client
         @yaml_parse_hash = nil
       end
 
+      def hash_content?
+        ::DTK::DSL::FileParser.yaml_parse!(self) if exists?
+      end
+
       private
 
       def file_path_type

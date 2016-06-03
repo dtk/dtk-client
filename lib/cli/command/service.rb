@@ -28,7 +28,7 @@ module DTK::Client; module CLI
         c.arg 'ASSEMBLY-NAME'
         c.desc 'Stage a new service instance from an assembly'
         c.command :stage  do |sc|
-          sc.flag [:m, :module], :arg_name => 'NAMESPACE/MODULE-NAME', :desc => 'Module name with namespace', :default_value => context_attributes[:module_name] 
+          sc.flag [:m, :module], :arg_name => 'NAMESPACE/MODULE-NAME', :desc => 'Module name with namespace', :default_value => context_attributes[:module_ref] 
           sc.flag [:i], :arg_name =>'INSTANCE-NAME', :desc => 'If specified, new service instance name' 
           sc.flag [:t], :arg_name => 'PARENT-SERVICE-INSTANCE', :desc => 'Parent Service instance providing the context for the staged assembly' 
           sc.flag [:v], :arg_name => 'VERSION', :desc => 'Version'

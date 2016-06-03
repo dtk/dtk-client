@@ -25,13 +25,24 @@ module DTK::Client::CLI
         
         def add_command_defs!
           add_command :module
-          # add_command :service needd for stage and deploy commands
+          # add_command :service needed for stage and deploy commands
           add_command :service
         end
         
         def attributes
-       #   super.merge(:module_name => 'foo', :only_context_commands => true)
-          super
+          ret = super
+          if module_ref = module_ref?
+            ret.merge!(:module_ref => module_ref)
+          end
+          ret
+        end
+
+        private
+
+        def module_ref?
+          if base_dsl_hash_content = base_dsl_hash_content?
+            base_dsl_hash_content['module']
+          end
         end
       end
     end
