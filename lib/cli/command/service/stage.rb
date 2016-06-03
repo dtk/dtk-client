@@ -26,8 +26,7 @@ module DTK::Client; module CLI
           sc.flag [:i], :arg_name =>'INSTANCE-NAME', :desc => 'If specified, new service instance name' 
           sc.flag [:t], :arg_name => 'PARENT-SERVICE-INSTANCE', :desc => 'Parent Service instance providing the context for the staged assembly' 
           sc.flag [:v], :arg_name => 'VERSION', :desc => 'Version'
-#          sc.switch ['auto-complete'], :default_value => true, :desc => 'If true, components with dependencies are automatically linked'
-#          sc.switch [:s, 'stream-results'], :default_value => true, :desc => 'If true, results are streamed as tasks progresses and completes or user enters ^C'
+          # sc.switch ['auto-complete'], :default_value => true, :desc => 'If true, components with dependencies are automatically linked'
           sc.action do |_global_options, options, args|
             unless module_ref = options[:m]
               raise Error::Usage, "The module reference must be given using option '-m NAMESPACE/MODULE-NAME'"

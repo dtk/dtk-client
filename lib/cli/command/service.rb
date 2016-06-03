@@ -19,9 +19,10 @@ module DTK::Client::CLI
   module Command
     module Service
       include Command::Mixin
-      
+      # order is important
       # ALL_SUBCOMMANDS = ['deploy', 'deploy-target', 'stage', 'stage-target']
       ALL_SUBCOMMANDS = ['stage']
+      command_def :desc => 'Subcommands for creating and interacting with DTK service instances'
       ALL_SUBCOMMANDS.each { |subcommand| require_relative("service/#{subcommand}") } 
     end
   end
