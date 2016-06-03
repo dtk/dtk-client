@@ -28,7 +28,7 @@ module DTK::Client; module CLI
         c.arg 'ASSEMBLY-NAME'
         c.desc 'Stage a new service instance from an assembly'
         c.command :stage  do |sc|
-          sc.flag [:m], :arg_name => 'NAMESPACE/MODULE-NAME', :desc => 'Module name with namespace', :default_value => context_attributes[:module_name] 
+          sc.flag [:m, :module], :arg_name => 'NAMESPACE/MODULE-NAME', :desc => 'Module name with namespace', :default_value => context_attributes[:module_name] 
           sc.flag [:i], :arg_name =>'INSTANCE-NAME', :desc => 'If specified, new service instance name' 
           sc.flag [:t], :arg_name => 'PARENT-SERVICE-INSTANCE', :desc => 'Parent Service instance providing the context for the staged assembly' 
           sc.flag [:v], :arg_name => 'VERSION', :desc => 'Version'
@@ -38,9 +38,9 @@ module DTK::Client; module CLI
             unless module_ref = options[:m]
               raise Error::Usage, "The module reference must be given using option '-m NAMESPACE/MODULE-NAME'"
             end
-            namespace, module_name = ModuleRef.parse(module_ref)
+            module_ref  = ModuleRef.reify(module_ref)
             assembly_name = args[0]
-            Operation::Service.stage(:namespace => namespace, :module_name => module_name, :assembly_name => assembly_name)
+            Operation::Service.stage(:namespace => module_ref.namespace, :module_name => module_ref.module_name, :assembly_name => assembly_name)
           end
         end
       end

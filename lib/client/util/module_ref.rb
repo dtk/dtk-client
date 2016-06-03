@@ -16,17 +16,28 @@
 # limitations under the License.
 #
 module DTK::Client
-  module ModuleRef
+  class ModuleRef
+
+    attr_reader :namespace, :module_name
+
+    def initialize(namespace, module_name)
+      @namespace   = namespace
+      @module_name = module_name
+    end
+
     MODULE_NAMESPACE_DELIMS = ['/', ':']
 
     # returns [namespace, module_name] or raises error
-    def self.parse(input_string)
+    def self.reify(input_string_or_module_ref_obj)
+      return input_string_or_module_ref_obj if input_string_or_module_ref_obj.kind_of?(self)
+
+      input_string = input_string_or_module_ref_obj
       split = split_by_delim(input_string)
       unless split.size == 2
         raise Error::Usage, "The term '#{input_string}' is an ill-formed module reference"
       end
       namespace, module_name = split
-      [namespace, module_name]
+      new(namespace, module_name)
     end
 
     private
