@@ -29,6 +29,17 @@ module DTK::Client
         Install.install(args)
       end
 
+      def self.module_exists?(module_ref, type)
+        query_params = QueryParams.new(
+          :namespace   => module_ref.namespace,
+          :module_name => module_ref.module_name,
+          :version?    => module_ref.version
+        )
+        response = rest_get(BaseRoute, query_params)
+        # ! response.data(:service_module_id).nil?
+        ! response.data("#{type}_id".to_sym).nil?
+      end
+
     end
   end
 end

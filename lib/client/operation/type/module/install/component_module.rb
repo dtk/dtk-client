@@ -18,18 +18,27 @@
 module DTK::Client
   class Operation::Module::Install
     class ComponentModule < self
+      BaseRoute = "modules"
+
       def self.install_modules(module_refs)
-        # TODO DTK-2583: Aldin
-        # This should work like the current behavior where when installing a service module
-        # the code iterates over all the dependent modules and 
-        # has the behavior
-        #  Iterate over the list of dependent modules and for each DEP_MOD[_WITH_OPTIONAL_VERSION]
-        #  do the following  (which is what we do today when installing component modules with exception in this new 
-        # flow we dont pull the component module clones onto the client machine
-        #   If DEP_MOD without version is not installed, install it on the serevr from the dtkn
-        #   If DEP_MOD has a version and the version is not installed then install it on the server from the dtkn
-        #  if DEP_MOD does not have a version and it is installed do an update on the server from dtkn after prompting whether to skip or not
         return if module_refs.empty?
+
+        module_refs.each do |module_ref|
+          post_body = {
+            :remote_module_name => "#{module_ref.namespace}/#{module_ref.module_name}",
+            :local_module_name => module_ref.module_name,
+            :rsa_pub_key => SSHUtil.rsa_pub_key_content()
+          }
+
+          if version = module_ref.version
+            post_body.merge!(:version => module_ref.version)
+          end
+
+          # if module exists skip for now
+          next if module_exists?(module_ref, "component_module")
+
+          rest_post "#{BaseRoute}/install_component_module", PostBody.new(post_body)
+        end
       end
     end
   end
