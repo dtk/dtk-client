@@ -26,18 +26,21 @@ module DTK::Client; module CLI
 
       subcommand_def 'stage' do |c|
         c.arg 'ASSEMBLY-NAME'
-        unless context_attributes[:module_name]
-          c.arg 'NAMESPACE/MODULE-NAME', :optional
-        end
         c.desc 'Stage a new service instance from an assembly'
         c.command :stage  do |sc|
+          sc.flag [:m], :arg_name => 'NAMESPACE/MODULE-NAME', :desc => 'Module name with namespace', :default_value => context_attributes[:module_name] 
           sc.flag [:i], :arg_name =>'INSTANCE-NAME', :desc => 'If specified, new service instance name' 
           sc.flag [:t], :arg_name => 'PARENT-SERVICE-INSTANCE', :desc => 'Parent Service instance providing the context for the staged assembly' 
           sc.flag [:v], :arg_name => 'VERSION', :desc => 'Version'
           sc.switch ['auto-complete'], :default_value => true, :desc => 'If true, components with dependencies are automatically linked'
           sc.switch [:s, 'stream-results'], :default_value => true, :desc => 'If true, results are streamed as tasks progresses and completes or user enters ^C'
-          sc.action do |global_options, options, args|
-            Operation::Service.stage()
+          sc.action do |_global_options, options, args|
+            unless module_ref = options[:m]
+              raise Error::Usage, "The module reference must be given using option '-m NAMESPACE/MODULE-NAME'"
+            end
+            namespace, module_name = ModuleRef.parse(module_ref)
+            assembly_name = args[0]
+            Operation::Service.stage(:namespace => namespace, :module_name => module_name, :assembly_name => assembly_name)
           end
         end
       end

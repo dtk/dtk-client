@@ -16,22 +16,27 @@
 # limitations under the License.
 #
 module DTK::Client
-  class Operation
-    class Service < self
-      BaseRoute = 'services'
+  module ModuleRef
+    MODULE_NAMESPACE_DELIMS = ['/', ':']
 
-      def self.stage(args = Args.new)
-        wrap_as_response(args) do |args|
-          post_body = PostBody.new(
-            :namespace     => args.required(:namespace),
-            :module_name   => args.required(:module_name),
-            :assembly_name => args.required(:assembly_name)
-          )
-          rest_post("#{BaseRoute}/create", post_body)
-        end
+    # returns [namespace, module_name] or raises error
+    def self.parse(input_string)
+      split = split_by_delim(input_string)
+      unless split.size == 2
+        raise Error::Usage, "The term '#{input_string}' is an ill-formed module reference"
+      end
+      namespace, module_name = split
+      [namespace, module_name]
+    end
+
+    private
+
+    def self.split_by_delim(str)
+      if matching_delim = MODULE_NAMESPACE_DELIMS.find { |delim| str =~ Regexp.new(delim) }
+        str.split(matching_delim)
+      else
+        [str]
       end
     end
   end
 end
-
-
