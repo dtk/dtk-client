@@ -18,8 +18,8 @@
 module DTK::Client
   class Response
     module ErrorHandler
-      def self.check(response)
-        Error.raise_if_error?(response)
+      def self.raise_if_error(response)
+        Error.raise_if_error(response)
       end
 
       def self.check_for_session_expiried(response)

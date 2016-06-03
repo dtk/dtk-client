@@ -22,7 +22,9 @@ module DTK::Client
     class Simple < self
 
       def render(data, _opts = {})
-        STDOUT << YAML.dump(data)
+        if data.kind_of?(Hash) or data.kind_of?(Array)
+          render_text(YAML.dump(data)) unless data.empty?
+        end
       end
 
       private

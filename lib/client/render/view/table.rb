@@ -38,7 +38,11 @@ module DTK::Client
         unless table_definition = opts[:table_definition] || @table_definition
           raise Error, 'Missing table definition'
         end
-        Processor.render(data, table_definition, opts)
+        if data.empty?
+          render_text("Table is empty\n")
+        else
+          Processor.render(data, table_definition, opts)
+        end
       end
 
       private

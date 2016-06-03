@@ -68,6 +68,10 @@ module DTK::Client
     
     private
 
+    def render_text(text)
+      STDOUT << text
+    end
+
     # opts can have keys
     #  :adapter - way to pass in already created adapter
     #  :semantic_datatype
