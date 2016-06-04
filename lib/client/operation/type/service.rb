@@ -23,9 +23,12 @@ module DTK::Client
       def self.stage(args = Args.new)
         wrap_as_response(args) do |args|
           post_body = PostBody.new(
-            :namespace     => args.required(:namespace),
-            :module_name   => args.required(:module_name),
-            :assembly_name => args.required(:assembly_name)
+            :namespace       => args.required(:namespace),
+            :module_name     => args.required(:module_name),
+            :assembly_name   => args.required(:assembly_name),
+            :service_name?   => args[:service_name],
+            :version?        => args[:version],
+            :target_service? => args[:target_service],
           )
           rest_post("#{BaseRoute}/create", post_body)
         end
