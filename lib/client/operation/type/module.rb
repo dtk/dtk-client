@@ -36,7 +36,6 @@ module DTK::Client
           :version?    => module_ref.version
         )
         response = rest_get(BaseRoute, query_params)
-        # ! response.data(:service_module_id).nil?
         ! response.data("#{type}_id".to_sym).nil?
       end
 
