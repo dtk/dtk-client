@@ -22,7 +22,6 @@ module DTK::Client
     CRED_FILE     = File.join(DtkPath.base_dir, '.connection')
     DIRECT_ACCESS = File.join(DtkPath.base_dir, '.add_direct_access')
     NODE_SSH_CREDENTIALS = File.join(DtkPath.base_dir, 'ssh_credentials.yaml')
-    CLIENT_CONF_HEADER = File.expand_path('config/client.conf.header', File.dirname(__FILE__))
 
     def self.client_config_path
       CONFIG_FILE
@@ -45,7 +44,7 @@ module DTK::Client
       exists = true
       if !File.exists?(client_config_path)
         puts "", "Please enter the DTK server address (example: instance.dtk.io)"
-        header = File.read(CLIENT_CONF_HEADER)
+        header = File.read(Config::DEFAULT_CONF_FILE_PATH)
         generate_conf_file(client_config_path, [['server_host', 'Server address']], header)
         exists = false
       end

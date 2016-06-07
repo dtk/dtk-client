@@ -28,6 +28,9 @@ module DTK::Client
       instance[k.to_s]
     end
 
+    CLIENT_CONF            = 'client.conf'
+    DEFAULT_CONF_FILE_PATH = File.expand_path('config/default.conf', File.dirname(__FILE__))
+
     private
 
     def initialize
@@ -35,9 +38,6 @@ module DTK::Client
       load_config_file_values!
       validate
     end
-
-    CLIENT_CONF            = 'client.conf'
-    DEFAULT_CONF_FILE_PATH = File.expand_path('config/default.conf', File.dirname(__FILE__))
 
     def set_defaults!
       merge_config_file_content_into_hash!(DEFAULT_CONF_FILE_PATH)
