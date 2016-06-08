@@ -19,13 +19,30 @@
 # so checkout branch is not done in most cases
 
 module DTK::Client 
+  # Wrapper from gem that does the git interaction
   class GitRepo
     require_relative('git_repo/git_adapter')
     
     # opts can have keys
     #  :branch
     def self.create(repo_dir, opts = {})
-      Adapter.new(repo_dir, opts)
+      new(repo_dir, opts)
     end
+    
+    def initialize(repo_dir, opts = {})
+      @git_adapter = self.class.git_adapter_class.new(repo_dir, opts)
+    end
+    private :initialize
+    
+    def self.clone(repo_url, target_path, branch)
+      @git_adapter.clone(repo_url, target_path, branch)
+    end
+    
+    private
+    
+    def self.git_adapter_class
+      GitAdapter
+    end
+
   end
 end

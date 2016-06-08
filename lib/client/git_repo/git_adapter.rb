@@ -19,17 +19,34 @@ require 'git'
 
 module DTK::Client
   class GitRepo
-    class Adapter < self
+    class GitAdapter
+      require_relative('git_adapter/error_handler')
+      
+      include ErrorHandler::Mixin
+      extend ErrorHandler::Mixin
+
       attr_accessor :git_repo
       
       # opts can have keys
       #  :branch
       def initialize(repo_dir, opts = {})
         @git_repo = ::Git.init(repo_dir)
-        # If we want to log GIT interaction
+        # If we want to log Git interaction
         # @git_repo = ::Git.init(repo_dir, :log => Logger.new(STDOUT))
         @local_branch_name = opts[:branch_name]
+      end
+
+      def self.clone(repo_url, target_path, branch)
+        git_base = handle_git_error { ::Git.clone(repo_url, target_path) }
+        begin
+          git_base.checkout(branch)
+        rescue => e
+          # TODO: see if any other kind of error
+          raise Error::Usage, "The branch or tag '#{branch}' does not exist on repo '#{repo_url}'"
+        end
+        git_base
       end
     end
   end
 end
+
