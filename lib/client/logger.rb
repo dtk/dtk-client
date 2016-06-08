@@ -75,12 +75,12 @@ module DTK::Client
     end
     
     def warn(log_text, sttdout_out=false)
-      OsUtil.print(log_text, :yellow) if sttdout_out || development_mode?
+      OsUtil.print_warning(log_text) if sttdout_out || development_mode?
       @logger.warn(log_text) if log_created?
     end
     
     def error(log_text, sttdout_out=false)
-      OsUtil.print(log_text, :red) if sttdout_out || development_mode?
+      OsUtil.print_error(log_text) if sttdout_out || development_mode?
       @logger.error(log_text) if log_created?
     end
     

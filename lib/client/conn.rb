@@ -86,8 +86,7 @@ module DTK::Client
       
       if connection_error['errors'].first['errors']
         error_code = self.connection_error['errors'].first['errors'].first['code']
-        print " Error code: "
-        OsUtil.print(error_code, :red)
+        OsUtil.print_error("Error code: #{error_code}")
       end
     end
     
@@ -121,7 +120,7 @@ module DTK::Client
       
       if Response::ErrorHandler.check_for_session_expiried(response)
         # re-logging user and repeating request
-        OsUtil.print("Session expired: re-establishing session & re-trying request ...", :yellow)
+        OsUtil.print_warning("Session expired: re-establishing session & re-trying request ...")
         @cookies = Session.re_initialize
         response = rest_method_func.call
       end

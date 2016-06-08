@@ -32,7 +32,7 @@ module DTK::Client
           if opts[:backup_if_exist]
             backup_dir = backup_dir(type, module_ref)
             FileUtils.mv(target_repo_dir, backup_dir)
-            puts "Backup of existing module directory moved to '#{backup_dir}'"
+            OsUtil.print_warning("Backup of existing module directory moved to '#{backup_dir}'")
           else
             raise Error::Usage, "Directory '#{path}' is not empty; it must be deleted or removed before retrying the command"
           end

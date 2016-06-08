@@ -29,6 +29,18 @@ module DTK::Client
       def print(message, color = :white)
         puts colorize(message, color)
       end
+
+      def print_info(message)
+        print(message, :white)
+      end
+
+      def print_warning(message)
+        print(message, :yellow)
+      end
+
+      def print_error(message)
+        print(message, :red)
+      end
       
       def put_warning(prefix, text, color)
         width = HighLine::SystemExtensions.terminal_size[0] - (prefix.length + 1)

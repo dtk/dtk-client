@@ -35,7 +35,7 @@ module DTK::Client
         if response.ok? and !response.data(:match)
           repo_manager_fingerprint, repo_manager_dns = response.data_ret_and_remove!(:repo_manager_fingerprint, :repo_manager_dns)
           SSHUtil.update_ssh_known_hosts(repo_manager_dns, repo_manager_fingerprint)
-          OsUtil.print("SSH key '#{response.data('new_username')}' added successfully!", :yellow)
+          OsUtil.print_info("SSH key '#{response.data('new_username')}' added successfully!")
         end
         
         response

@@ -24,7 +24,7 @@ module DTK::Client; module CLI
         params = Configurator.check_direct_access
         return if params[:username_exists]
         
-        OsUtil.print('Processing ...', :yellow) if config_existed
+        OsUtil.print_info('Processing ...') if config_existed
         # check to see if catalog credentials are set
         conn = Session.get_connection
         response = conn.post 'account/check_catalog_credentials'
@@ -42,7 +42,7 @@ module DTK::Client; module CLI
             response = conn.post 'account/set_catalog_credentials', post_body 
             unless response.ok?
               error_message = response.error_message.gsub(/\.[ ]*$/,'')
-              OsUtil.print("#{error_message}. You will have to set catalog credentials manually ('dtk account set-catalog-credentials').", :yellow)
+              OsUtil.print_error("#{error_message}. You will have to set catalog credentials manually ('dtk account set-catalog-credentials').")
             end
           end
         end
@@ -56,16 +56,16 @@ module DTK::Client; module CLI
         
         if !response.ok?
           error_message = response.error_message.gsub(/\.[ ]*$/,'')
-          OsUtil.print("We were not able to add access for current user. #{error_message}. In order to properly use dtk-shell you will have to add access manually ('dtk account add-ssh-key').\n", :yellow)
+          OsUtil.print_warning("We were not able to add access for current user. #{error_message}. In order to properly use dtk-shell you will have to add access manually ('dtk account add-ssh-key').\n")
         elsif matched_pub_key
           # message will be displayed by add key # TODO: Refactor this flow
-          OsUtil.print("Provided SSH PUB key has already been added.", :yellow)
+          OsUtil.print_warning("Provided SSH PUB key has already been added.")
           Configurator.add_current_user_to_direct_access
         elsif matched_username
-          OsUtil.print("User with provided name already exists.", :yellow)
+          OsUtil.print_warning("User with provided name already exists.")
         else
           # commented out because 'add_key' method called above will also print the same message
-          # OsUtil.print("Your SSH PUB key has been successfully added.", :yellow)
+          # OsUtil.print_info("Your SSH PUB key has been successfully added.")
           Configurator.add_current_user_to_direct_access
         end
         response
