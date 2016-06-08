@@ -26,6 +26,10 @@ module DTK::Client
       end
       
       private
+
+      def self.git
+        ::DTK::Client::GitRepo
+      end
       
       def self.clone_service_repo_aux(args)
         repo_url        = args.required(:repo_url)
@@ -34,10 +38,12 @@ module DTK::Client
         service_name    = args.required(:service_name)
 
         target_repo_dir  = create_service_dir(service_name)
-        raise Error::Usage.new('got here')        
         begin
-          GitAdapter.clone(repo_url, target_repo_dir, branch, opts_clone)
+          git.clone(repo_url, target_repo_dir,  branch)
         rescue => e
+
+          raise Error::Usage.new('got here')        
+
           # Handling Git error messages with more user friendly messages
           e = GitErrorHandler.handle(e)
           
