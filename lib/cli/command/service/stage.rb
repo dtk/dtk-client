@@ -42,8 +42,7 @@ module DTK::Client; module CLI
             assembly_name = args[0]
             version = options[:v] || (in_module ? 'master' : nil)
             args = {
-              :namespace      => module_ref.namespace, 
-              :module_name    => module_ref.module_name, 
+              :module_ref     => module_ref,
               :assembly_name  => assembly_name,
               :service_name   => options[:i],
               :version        => version,

@@ -22,15 +22,24 @@ module DTK::Client
 
       def self.stage(args = Args.new)
         wrap_as_response(args) do |args|
+          module_ref = args.required(:module_ref)
           post_body = PostBody.new(
-            :namespace       => args.required(:namespace),
-            :module_name     => args.required(:module_name),
+            :namespace       => module_ref.namespace,
+            :module_name     => module_ref.module_name,
             :assembly_name   => args.required(:assembly_name),
             :service_name?   => args[:service_name],
             :version?        => args[:version],
             :target_service? => args[:target_service],
           )
-          rest_post("#{BaseRoute}/create", post_body)
+          response = rest_post("#{BaseRoute}/create", post_body)
+          pp [:debug, response.class, response]
+          clone_args = {
+            :module_dir_type => :service,
+            :module_ref      => module_ref,
+            :repo_url        => response.required(:repo, :url),
+            :branch          => response.required(:branch, :name)
+          } 
+          ModuleDir::GitRepo.create_clone(clone_args)
         end
       end
     end

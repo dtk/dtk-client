@@ -51,6 +51,22 @@ module DTK::Client
         Ok.new(results)
       end
     end
+
+    def required(*indexes)
+      if indexes.empty?
+        raise Error, 'indexes should not be empty'
+      else
+        val = data
+        indexes.each do |key|
+          unless val.kind_of?(::Hash) and val.has_key?(key.to_s)
+            raise Error, "Missing response field 'response[:#{indexes.join('][:')}]'"
+          end
+          val = val[key.to_s]
+        end
+        val
+      end
+    end
+
   end
 end
 

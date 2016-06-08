@@ -19,7 +19,42 @@ module DTK::Client
   class Operation::ModuleDir
     # Operations for managing module folders that are git repos
     class GitRepo < self
+      def self.create_clone(args = Args.new)
+        wrap_as_response(args) do |args|
+          repo_url        = args.required(:repo_url)
+          module_dir_type = args.required(:module_dir_type)
+          module_ref      = args.required(:module_ref)
+          branch          = args.required(:branch)
+          create_clone_aux(module_dir_type, module_ref, repo_url, branch)
+        end
+      end
+      
+      private
+      
+      def self.create_clone_aux(module_dir_type, module_ref, repo_url, branch)
+        pp [:d2, module_dir_type, module_ref, repo_url, branch]
+        raise Error::Usage.new('got here')
+        target_repo_dir = create_module_dir(module_dir_type, module_ref)
+        
+        begin
+          opts_clone = (opts[:track_remote_branch] ? {:track_remote_branch => true} : {})
+          GitAdapter.clone(repo_url, target_repo_dir, branch, opts_clone)
+        rescue => e
+          # Handling Git error messages with more user friendly messages
+          e = GitErrorHandler.handle(e)
+          
+          #cleanup by deleting directory
+          FileUtils.rm_rf(target_repo_dir) if File.directory?(target_repo_dir)
+          error_msg = "Clone to directory (#{target_repo_dir}) failed"
+          
+          DtkLogger.instance.error_pp(e.message, e.backtrace)
+          
+          raise ErrorUsage.new(error_msg, :log_error => false)
+        end
+        {"module_directory" => target_repo_dir}
+      end
     end
+
   end
 end
 
