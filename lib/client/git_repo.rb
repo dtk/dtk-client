@@ -15,19 +15,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK
-  module Client
-    require_relative('client/util')
-    # util must be loaded first
-    require_relative('client/logger')
-    require_relative('client/error')
-    require_relative('client/config')
-    require_relative('client/configurator')
-    require_relative('client/response')
-    require_relative('client/conn')
-    require_relative('client/session')
-    require_relative('client/git_repo')
-    require_relative('client/operation')
-    require_relative('client/render')
+# This code is predciated on assumption that they is only one local branch (with with documented exceptions)
+# so checkout branch is not done in most cases
+
+module DTK::Client 
+  class GitRepo
+    require_relative('git_repo/git_adapter')
+    
+    # opts can have keys
+    #  :branch
+    def self.create(repo_dir, opts = {})
+      Adapter.new(repo_dir, opts)
+    end
   end
 end
