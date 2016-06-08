@@ -19,25 +19,23 @@ module DTK::Client
   class Operation::ModuleDir
     # Operations for managing module folders that are git repos
     class GitRepo < self
-      def self.create_clone(args = Args.new)
+      def self.clone_service_repo(args)
         wrap_as_response(args) do |args|
-          repo_url        = args.required(:repo_url)
-          module_dir_type = args.required(:module_dir_type)
-          module_ref      = args.required(:module_ref)
-          branch          = args.required(:branch)
-          create_clone_aux(module_dir_type, module_ref, repo_url, branch)
+          clone_service_repo_aux(args)
         end
       end
       
       private
       
-      def self.create_clone_aux(module_dir_type, module_ref, repo_url, branch)
-        pp [:d2, module_dir_type, module_ref, repo_url, branch]
-        raise Error::Usage.new('got here')
-        target_repo_dir = create_module_dir(module_dir_type, module_ref)
-        
+      def self.clone_service_repo_aux(args)
+        repo_url        = args.required(:repo_url)
+        module_ref      = args.required(:module_ref)
+        branch          = args.required(:branch)
+        service_name    = args.required(:service_name)
+
+        target_repo_dir  = create_service_dir(service_name)
+        raise Error::Usage.new('got here')        
         begin
-          opts_clone = (opts[:track_remote_branch] ? {:track_remote_branch => true} : {})
           GitAdapter.clone(repo_url, target_repo_dir, branch, opts_clone)
         rescue => e
           # Handling Git error messages with more user friendly messages

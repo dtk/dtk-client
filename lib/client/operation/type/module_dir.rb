@@ -23,40 +23,31 @@ module DTK::Client
     class ModuleDir < self
       require_relative('module_dir/git_repo')
       
-      # opts can have keys:
-      #  :backup_if_exist (optional) - Boolean
-      def create_module_dir(type, module_ref, opts = {})
-        path = module_dir_path(type, module_ref)
+      def self.create_service_dir(service_name)
+        # since option, backup_if_exist is not set on create_service_dir, this will fail on
+        create_service_dir?(service_name)
+      end
+
+      # opts can have keys
+      #  backup_if_exist (optional) - Boolean
+      def self.create_service_dir?(service_name, opts = {})
+        path = "#{base_path(:service)}/#{service_name}"
         if File.exists?(path)
+          # TODO: put back in after refernced methods are ported over
           # if local copy of module exists then move that module to backups location
-          if opts[:backup_if_exist]
-            backup_dir = backup_dir(type, module_ref)
-            FileUtils.mv(target_repo_dir, backup_dir)
-            OsUtil.print_warning("Backup of existing module directory moved to '#{backup_dir}'")
-          else
-            raise Error::Usage, "Directory '#{path}' is not empty; it must be deleted or removed before retrying the command"
-          end
+          # if opts[:backup_if_exist]
+          #  backup_dir = backup_dir(type, module_ref)
+          #  FileUtils.mv(target_repo_dir, backup_dir)
+          #  OsUtil.print_warning("Backup of existing module directory moved to '#{backup_dir}'")
+          # else
+          # raise Error::Usage, "Directory '#{path}' is not empty; it must be deleted or removed before retrying the command"
+          #end
+          raise Error::Usage, "Directory '#{path}' is not empty; it must be deleted or removed before retrying the command"
         end
         FileUtils.mkdir_p(path)
         path
       end
-    end
-  end
-end
-=begin
-      def self.module_dir_path(type, module_ref)
-        target_repo_dir = module_dir_path(type, module_ref)
-        
-        
-        full_name = module_namespace ? ModuleUtil.resolve_name(module_name, module_namespace) : module_name
-        
-        modules_dir = modules_dir(type,full_name,version,opts)
-        FileUtils.mkdir_p(modules_dir) unless File.directory?(modules_dir)
-
-        target_repo_dir = local_repo_dir(type,full_name,version,opts)
-
-      end
-
+    
       private
 
       def self.base_path(type)
@@ -68,6 +59,7 @@ end
           else raise Error, "Unexpected type (#{type}) when determining base path"
           end
         
+        # see if path is relative or not
         final_path = path && path.start_with?('/') ? path : "#{dtk_local_folder}#{path}"
         # remove last slash if set in configuration by mistake
         final_path.gsub(/\/$/,'')
@@ -75,5 +67,4 @@ end
     end
   end
 end
-=end
 

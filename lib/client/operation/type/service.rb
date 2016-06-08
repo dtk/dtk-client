@@ -34,12 +34,12 @@ module DTK::Client
           response = rest_post("#{BaseRoute}/create", post_body)
           pp [:debug, response.class, response]
           clone_args = {
-            :module_dir_type => :service,
             :module_ref      => module_ref,
             :repo_url        => response.required(:repo, :url),
-            :branch          => response.required(:branch, :name)
+            :branch          => response.required(:branch, :name),
+            :service_name    => response.required(:service, :name)
           } 
-          ModuleDir::GitRepo.create_clone(clone_args)
+          ModuleDir::GitRepo.clone_service_repo(clone_args)
         end
       end
     end
