@@ -27,7 +27,10 @@ assemblies:
           - simple::hostname
 providers:
   puppet:
-    include: deploy/puppet
+    content: 
+    - from: deploy/puppet
+      to: /etc/puppet/modules/rich
+      # For Puppet 'to:' can be omitted and default would be /etc/puppet/modules/<MODULENAME>
 
 components:
   hostname:
