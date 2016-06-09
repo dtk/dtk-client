@@ -1,7 +1,6 @@
 ---
 dsl_version: 1.0.0
 module: rich/simple
-version: 0.0.1
 keywords: DTK-2554
 description: Tests for DTK-2554
 license: Apache 2.0
@@ -26,6 +25,9 @@ assemblies:
         - name: set hostname
           components:
           - simple::hostname
+providers:
+  puppet:
+    include: deploy/puppet
 
 components:
   hostname:
