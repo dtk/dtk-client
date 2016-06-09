@@ -40,7 +40,7 @@ module DTK::Client
         end
 
         ComponentModule.install_modules(dependent_modules)
-
+        ComponentModule.import_modules(base_module_ref, components) if components
         install_service_module(base_module_ref)
 
         nil
@@ -54,6 +54,17 @@ module DTK::Client
       end
       
       def install_service_module(base_module_ref)
+        post_body = {
+          :module_name => base_module_ref.module_name,
+          :namespace   => base_module_ref.namespace,
+          :content     => @file_obj.yaml_parse_hash
+        }
+
+        if version = base_module_ref.version
+          post_body.merge!(:version => version)
+        end
+
+        response = rest_post "modules/install_service_module", PostBody.new(post_body)
       end
       
       def get_base_module_ref?
@@ -78,6 +89,10 @@ module DTK::Client
 
       def dependent_modules
         (@parsed_output[:dependent_modules] || []).map { |module_ref_hash| ModuleRef.new(module_ref_hash) }
+      end
+
+      def components
+        (@file_obj.yaml_parse_hash||{})['components']
       end
 
       def dsl_path_ref
