@@ -1,14 +1,14 @@
 #!/usr/bin/env ruby
 module DTK
-  require_relative '../lib/client'
+  require_relative '../lib/dtk_client'
   module GlobalForDSL
     Error  = ::DTK::Client::Error
     OsUtil = ::DTK::Client::OsUtil
   end
   #dtk_dsl must be loaded adter GlobalForDSL set
   require 'dtk_dsl'
-  # lib/cli must be loaded after lib/client and lib/dsl
-  require_relative '../lib/cli'
+  # lib/dtk_cli must be loaded after lib/client and lib/dsl
+  require_relative '../lib/dtk_cli'
 
   Client::CLI::Runner.run(ARGV)
 end
