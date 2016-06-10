@@ -28,6 +28,32 @@ module DTK::Client
       #  info and then pushes all the content under the project repo.
       #  Open question if send the yaml parsed dsl hash object or have server from info it pulls pasrses it
       def self.install(base_module_ref, components, file_obj)
+
+        # tell server to create a module that wil be used to push the contents of project folder to
+        post_body = PostBody.new(
+          :module_name => base_module_ref.module_name,
+          :namespace   => base_module_ref.namespace,
+          :version?    => base_module_ref.version
+        )
+        # DTK-2554: Aldin: not that use of PostBody.new with a key with ? shuld be used instaed of pattern
+        # if version = base_module_ref.version
+        #  post_body.merge!(:version => version)
+        # end
+
+        response = rest_post("#{BaseRoute}/create_empty_module", post_body)
+        pp [:debug, response]
+        # # DTK-2554: Aldin: 
+        # put in steps that 
+        # 1) pushes the content to the newly created module repo
+        #   if project folder is a git repo add a remote that points to the newly created module and then
+        #   push content; otherwise create a a new git clone in project folder and point it to the newly created module
+        #   and push content
+        # 2) call rest_post "#{BaseRoute}/update_from_repo (which in past we have called 'update_model_from_clone
+
+
+        raise Error::Usage.new('got here')
+        # DTK-2554: Aldin: Above is start of rewrite
+
         import_component_modules(base_module_ref, components) if components
         post_body = {
           :module_name => base_module_ref.module_name,
