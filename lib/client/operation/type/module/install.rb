@@ -18,9 +18,9 @@
 module DTK::Client
   class Operation::Module
     class Install < self
-
       require_relative('install/module_ref')
-      require_relative('install/component_module')
+      require_relative('install/external_module')
+      require_relative('install/base_module')
 
       def self.install(args = Args.new)
         wrap_as_response(args) do |args|
@@ -39,10 +39,8 @@ module DTK::Client
           raise Error::Usage, "Module #{base_module_ref.reference} exists already"
         end
 
-        ComponentModule.install_modules(dependent_modules)
-        ComponentModule.import_modules(base_module_ref, components) if components
-        install_service_module(base_module_ref)
-
+        ExternalModule.install_dependent_modules(dependent_modules)
+        BaseModule.install_install(base_module_ref, components, @file_obj)
         nil
       end
       
@@ -52,21 +50,7 @@ module DTK::Client
         @parsed_output = parsed_output
         @file_obj      = file_obj
       end
-      
-      def install_service_module(base_module_ref)
-        post_body = {
-          :module_name => base_module_ref.module_name,
-          :namespace   => base_module_ref.namespace,
-          :content     => @file_obj.yaml_parse_hash
-        }
 
-        if version = base_module_ref.version
-          post_body.merge!(:version => version)
-        end
-
-        response = rest_post "modules/install_service_module", PostBody.new(post_body)
-      end
-      
       def get_base_module_ref?
         namespace   = @parsed_output[:namespace]
         module_name = @parsed_output[:module_name]
@@ -88,11 +72,11 @@ module DTK::Client
       end
 
       def dependent_modules
-        (@parsed_output[:dependent_modules] || []).map { |module_ref_hash| ModuleRef.new(module_ref_hash) }
+        @dependent_modules ||= (@parsed_output[:dependent_modules] || []).map { |module_ref_hash| ModuleRef.new(module_ref_hash) }
       end
 
       def components
-        (@file_obj.yaml_parse_hash||{})['components']
+        @components ||= (@file_obj.yaml_parse_hash||{})['components']
       end
 
       def dsl_path_ref
