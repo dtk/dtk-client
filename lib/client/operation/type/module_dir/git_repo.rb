@@ -21,16 +21,12 @@ module DTK::Client
     class GitRepo < self
       def self.clone_service_repo(args)
         wrap_as_response(args) do |args|
-          clone_service_repo_aux(args)
+          { :target_repo_dir => clone_service_repo_aux(args) }
         end
       end
       
       private
 
-      def self.git
-        ::DTK::Client::GitRepo
-      end
-      
       def self.clone_service_repo_aux(args)
         repo_url        = args.required(:repo_url)
         module_ref      = args.required(:module_ref)
@@ -39,26 +35,26 @@ module DTK::Client
 
         target_repo_dir  = create_service_dir(service_name)
         begin
-          git.clone(repo_url, target_repo_dir,  branch)
+          git_repo.clone(repo_url, target_repo_dir,  branch)
         rescue => e
-
-          raise Error::Usage.new('got here')        
-
-          # Handling Git error messages with more user friendly messages
-          e = GitErrorHandler.handle(e)
-          
           #cleanup by deleting directory
+
           FileUtils.rm_rf(target_repo_dir) if File.directory?(target_repo_dir)
-          error_msg = "Clone to directory (#{target_repo_dir}) failed"
+          # Log error detaails
+          Logger.instance.error_pp(e.message, e.backtrace)
           
-          DtkLogger.instance.error_pp(e.message, e.backtrace)
-          
-          raise ErrorUsage.new(error_msg, :log_error => false)
+          # User-friendly error
+          raise Error::Usage, "Clone to directory '#{target_repo_dir}' failed"
         end
-        {"module_directory" => target_repo_dir}
+        target_repo_dir
       end
     end
 
+    private
+    
+    def self.git_repo
+      ::DTK::Client::GitRepo
+    end
   end
 end
 

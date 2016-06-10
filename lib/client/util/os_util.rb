@@ -25,12 +25,17 @@ module DTK::Client
       is_windows? ? home_dir__windows : genv(:home)
     end
     
-    def self.current_dir
-      Dir.getwd
+    DTK_FOLDER_DIR = 'dtk'
+    def self.dtk_local_folder
+      "#{home_dir}/#{DTK_FOLDER_DIR}"
     end
     
     def self.temp_dir
       is_windows? ? genv(:temp) : '/tmp'
+    end
+
+    def self.current_dir
+      Dir.getwd
     end
     
     def self.which(cmd)

@@ -18,13 +18,13 @@
 require 'git'
 
 module DTK::Client
-  class GitRepo
-    class GitAdapter
-      require_relative('git_adapter/error_handler')
+  module GitRepo::Adapter
+    class GitGem
+      require_relative('git_gem/error_handler')
       
       include ErrorHandler::Mixin
       extend ErrorHandler::Mixin
-
+      
       attr_accessor :git_repo
       
       # opts can have keys
@@ -35,9 +35,10 @@ module DTK::Client
         # @git_repo = ::Git.init(repo_dir, :log => Logger.new(STDOUT))
         @local_branch_name = opts[:branch_name]
       end
-
+      
       def self.clone(repo_url, target_path, branch)
         git_base = handle_git_error { ::Git.clone(repo_url, target_path) }
+        pp [git_base.class, git_base]
         begin
           git_base.checkout(branch)
         rescue => e
@@ -49,4 +50,3 @@ module DTK::Client
     end
   end
 end
-

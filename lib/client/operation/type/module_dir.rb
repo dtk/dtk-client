@@ -60,7 +60,7 @@ module DTK::Client
           end
         
         # see if path is relative or not
-        final_path = path && path.start_with?('/') ? path : "#{dtk_local_folder}#{path}"
+        final_path = path && path.start_with?('/') ? path : "#{OsUtil.dtk_local_folder}/#{path}"
         # remove last slash if set in configuration by mistake
         final_path.gsub(/\/$/,'')
       end
