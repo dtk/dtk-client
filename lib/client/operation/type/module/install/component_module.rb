@@ -51,27 +51,28 @@ module DTK::Client
           post_body.merge!(:version => version)
         end
 
-        # unless opts[:skip_dependencies]
-        #   dep_response = get_module_dependencies(component_module)
+        unless opts[:skip_dependencies]
+          dep_response = get_module_dependencies(component_module)
 
-        #   are_there_warnings = RemoteDependency.check_permission_warnings(dep_response)
-        #   are_there_warnings ||= RemoteDependency.print_dependency_warnings(dep_response, nil, :ignore_permission_warnings => true)
+          are_there_warnings = RemoteDependency.check_permission_warnings(dep_response)
+          are_there_warnings ||= RemoteDependency.print_dependency_warnings(dep_response, nil, :ignore_permission_warnings => true)
 
-        #   # prompt to see if user is ready to continue with warnings/errors
-        #   if are_there_warnings
-        #     return false unless Console.prompt_yes_no("Do you still want to proceed with import?", :add_options => true)
-        #   end
+          # prompt to see if user is ready to continue with warnings/errors
+          if are_there_warnings
+            return false unless Console.prompt_yes_no("Do you still want to proceed with import?", :add_options => true)
+          end
 
-        #   if missing_modules = dep_response.data(:missing_module_components)
-        #     unless missing_modules.empty?
-        #       dep_module_refs = (missing_modules || []).map { |module_ref_hash| ModuleRef.new(module_ref_hash) }
-        #       install_modules(dep_module_refs, :skip_dependencies => true)
-        #     end
-        #   end
-        # end
+          if missing_modules = dep_response.data(:missing_module_components)
+            unless missing_modules.empty?
+              dep_module_refs = (missing_modules || []).map { |module_ref_hash| ModuleRef.new(module_ref_hash) }
+              install_modules(dep_module_refs, :skip_dependencies => true)
+            end
+          end
+        end
 
-        response = rest_post "#{BaseRoute}/create_component_module", PostBody.new(post_body)
+        response = rest_post "#{BaseRoute}/install_component_module", PostBody.new(post_body)
         puts 'Done.'
+
         response
       end
 

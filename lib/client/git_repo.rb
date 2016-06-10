@@ -39,6 +39,10 @@ module DTK::Client
     def self.clone(repo_url, target_path, branch)
       git_adapter_class.clone(repo_url, target_path, branch)
     end
+
+    def add_remote(name, url)
+      @git_adapter.add_remote(name, url)
+    end
     
     private
     

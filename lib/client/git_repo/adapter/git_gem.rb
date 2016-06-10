@@ -35,7 +35,11 @@ module DTK::Client
         # @git_repo = ::Git.init(repo_dir, :log => Logger.new(STDOUT))
         @local_branch_name = opts[:branch_name]
       end
-      
+
+      def add_remote(name, url)
+        @git_repo.add_remote(name, url)
+      end
+
       def self.clone(repo_url, target_path, branch)
         git_base = handle_git_error { ::Git.clone(repo_url, target_path) }
         pp [git_base.class, git_base]

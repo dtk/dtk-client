@@ -24,6 +24,12 @@ module DTK::Client
           { :target_repo_dir => clone_service_repo_aux(args) }
         end
       end
+
+      def self.add_remote_and_push(args)
+        wrap_as_response(args) do |args|
+          add_remote_and_push_aux(args)
+        end
+      end
       
       private
 
@@ -47,6 +53,13 @@ module DTK::Client
           raise Error::Usage, "Clone to directory '#{target_repo_dir}' failed"
         end
         target_repo_dir
+      end
+
+      def self.add_remote_and_push_aux(args)
+        repo_dir = args.required(:repo_dir)
+        repo_url = args.required(:repo_url)
+        repo = git.create(repo_dir)
+        repo.add_remote('origin', repo_url)
       end
     end
 
