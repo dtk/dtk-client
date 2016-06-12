@@ -35,10 +35,6 @@ module DTK::Client
           :namespace   => base_module_ref.namespace,
           :version?    => base_module_ref.version
         )
-        # DTK-2554: Aldin: not that use of PostBody.new with a key with ? shuld be used instaed of pattern
-        # if version = base_module_ref.version
-        #  post_body.merge!(:version => version)
-        # end
 
         response = rest_post("#{BaseRoute}/create_empty_module", post_body)
         pp [:debug, response]
