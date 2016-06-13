@@ -36,10 +36,6 @@ module DTK::Client
         @local_branch_name = opts[:branch_name]
       end
 
-      def add_remote(name, url)
-        @git_repo.add_remote(name, url)
-      end
-
       def self.clone(repo_url, target_path, branch)
         git_base = handle_git_error { ::Git.clone(repo_url, target_path) }
         pp [git_base.class, git_base]
@@ -50,6 +46,71 @@ module DTK::Client
           raise Error::Usage, "The branch or tag '#{branch}' does not exist on repo '#{repo_url}'"
         end
         git_base
+      end
+
+      def add_remote(name, url)
+        @git_repo.remove_remote(name) if is_there_remote?(name)
+        @git_repo.add_remote(name, url)
+      end
+
+      def push(remote, branch, opts = {})
+        branch_name = current_branch ? current_branch.name : 'master'
+        branch_for_push = "#{branch_name}:refs/heads/#{branch||local_branch_name}"
+        @git_repo.push(remote, branch_for_push, opts)
+      end
+
+      def status
+        @git_repo.status
+      end
+
+      def changed
+        status.is_a?(Hash) ? status.changed().keys : status.changed().collect { |file| file.first }
+      end
+
+      def untracked
+        status.is_a?(Hash) ? status.untracked().keys : status.untracked().collect { |file| file.first }
+      end
+
+      def deleted
+        status.is_a?(Hash) ? status.deleted().keys : status.deleted().collect { |file| file.first }
+      end
+
+      def added
+        status.is_a?(Hash) ? status.added().keys : status.added().collect { |file| file.first }
+      end
+
+      def stage_and_commit(commit_msg = "")
+        stage_changes()
+        commit("Initial commit")
+      end
+
+      def stage_changes()
+        handle_git_error do
+          @git_repo.add(untracked())
+          @git_repo.add(added())
+          @git_repo.add(changed())
+        end
+        deleted().each do |file|
+          begin
+            @git_repo.remove(file)
+          rescue
+            # ignore this error means file has already been staged
+            # we cannot support status of file, in 1.8.7 so this is
+            # solution for that
+          end
+        end
+      end
+
+      def commit(commit_msg = "")
+        @git_repo.commit(commit_msg)
+      end
+
+      def is_there_remote?(remote_name)
+        @git_repo.remotes.find { |r| r.name == remote_name }
+      end
+
+      def current_branch()
+        @git_repo.branches.local.find { |b| b.current }
       end
     end
   end

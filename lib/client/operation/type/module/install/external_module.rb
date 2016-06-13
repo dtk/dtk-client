@@ -57,7 +57,6 @@ module DTK::Client
           are_there_warnings = RemoteDependency.check_permission_warnings(dependencies)
           are_there_warnings ||= RemoteDependency.print_dependency_warnings(dependencies, nil, :ignore_permission_warnings => true)
 
-          # prompt to see if user is ready to continue with warnings/errors
           if are_there_warnings
             return false unless Console.prompt_yes_no("Do you still want to proceed with import?", :add_options => true)
           end

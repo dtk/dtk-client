@@ -38,6 +38,7 @@ module DTK::Client
 
         response = rest_post("#{BaseRoute}/create_empty_module", post_body)
         pp [:debug, response]
+
         # # DTK-2554: Aldin: 
         # put in steps that 
         # 1) pushes the content to the newly created module repo
@@ -46,49 +47,12 @@ module DTK::Client
         #   and push content
         # 2) call rest_post "#{BaseRoute}/update_from_repo (which in past we have called 'update_model_from_clone
 
-
-        raise Error::Usage.new('got here')
-        # DTK-2554: Aldin: Above is start of rewrite
-
-        import_component_modules(base_module_ref, components) if components
-        post_body = {
-          :module_name => base_module_ref.module_name,
-          :namespace   => base_module_ref.namespace,
-          :content     => file_obj.yaml_parse_hash
+        args = {
+          :repo_dir => OsUtil.current_dir,
+          :repo_url => response.required(:repo_url),
+          :branch   => response.required(:branch_name)
         }
-
-        if version = base_module_ref.version
-          post_body.merge!(:version => version)
-        end
-
-        rest_post "#{BaseRoute}/install_service_module", PostBody.new(post_body)
-      end
-      
-      private
-
-      def self.import_component_modules(base_module_ref, components)
-        namespace = base_module_ref.namespace
-        components.each do |cmp_name, content|
-          import_component_module(namespace, cmp_name, content)
-        end
-      end
-
-      def self.import_component_module(namespace, module_name, content)
-        post_body = {
-          :module_name => component_module.module_name,
-          :namespace   => component_module.namespace
-        }
-        if version = component_module.version
-          post_body.merge!(:version => version)
-        end
-        response = rest_post "#{BaseRoute}/get_module_dependencies", PostBody.new(post_body)
-
-        service_module_id, repo_info = response.data(:service_module_id, :repo_info)
-        repo_url, repo_id, module_id, branch, new_module_name = [:repo_url,:repo_id,:module_id,:workspace_branch,:full_module_name].map { |k| repo_info[k.to_s] }
-        service_directory = OsUtil.current_dir
-        # DTK-2554: Aldin: Assuming you have not got to this; we wil do away with all  Helper(:git_repo) calls and instead use 
-        # operations we add to lib/client/operation/type/module_dir/git_repo.rb
-        response = Helper(:git_repo).rename_and_initialize_clone_and_push(:service_module, local_module_name, new_module_name, branch, repo_url, service_directory)
+        ModuleDir::GitRepo.add_remote_and_push(args)
       end
     end
   end

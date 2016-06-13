@@ -58,12 +58,14 @@ module DTK::Client
       def self.add_remote_and_push_aux(args)
         repo_dir = args.required(:repo_dir)
         repo_url = args.required(:repo_url)
-        repo = git.create(repo_dir)
+        branch   = args.required(:branch)
+
+        repo = git_repo.create(repo_dir)
+        repo.stage_and_commit()
         repo.add_remote('origin', repo_url)
+        repo.push('origin', branch, { :force => true })
       end
     end
-
-    private
     
     def self.git_repo
       ::DTK::Client::GitRepo

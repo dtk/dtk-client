@@ -43,6 +43,14 @@ module DTK::Client
     def add_remote(name, url)
       @git_adapter.add_remote(name, url)
     end
+
+    def push(remote, branch, opts = {})
+      @git_adapter.push(remote, branch, opts)
+    end
+
+    def stage_and_commit(commit_msg = "")
+      @git_adapter.stage_and_commit(commit_msg = "")
+    end
     
     private
     
