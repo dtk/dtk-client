@@ -55,13 +55,14 @@ module DTK::Client
         target_repo_dir
       end
 
+      # TODO: Aldin - will probably need to make more generic (provide remote, etc ...)
       def self.add_remote_and_push_aux(args)
         repo_dir = args.required(:repo_dir)
         repo_url = args.required(:repo_url)
         branch   = args.required(:branch)
 
         repo = git_repo.create(repo_dir)
-        repo.stage_and_commit()
+        repo.stage_and_commit
         repo.add_remote('origin', repo_url)
         repo.push('origin', branch, { :force => true })
       end

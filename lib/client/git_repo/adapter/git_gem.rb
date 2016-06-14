@@ -79,9 +79,13 @@ module DTK::Client
         status.is_a?(Hash) ? status.added().keys : status.added().collect { |file| file.first }
       end
 
-      def stage_and_commit(commit_msg = "")
-        stage_changes()
-        commit("Initial commit")
+      def stage_and_commit(commit_msg = nil)
+        add_all
+        begin
+          commit(commit_msg || "Commit caused by module install command!")
+        rescue
+          # do not raise if nothing to commit
+        end
       end
 
       def stage_changes()
@@ -103,6 +107,14 @@ module DTK::Client
 
       def commit(commit_msg = "")
         @git_repo.commit(commit_msg)
+      end
+
+      def add(*files)
+        @git_repo.add(files.flatten)
+      end
+
+      def add_all
+        @git_repo.add(:all => true)
       end
 
       def is_there_remote?(remote_name)

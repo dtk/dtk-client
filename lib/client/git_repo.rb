@@ -48,8 +48,8 @@ module DTK::Client
       @git_adapter.push(remote, branch, opts)
     end
 
-    def stage_and_commit(commit_msg = "")
-      @git_adapter.stage_and_commit(commit_msg = "")
+    def stage_and_commit(commit_msg = nil)
+      @git_adapter.stage_and_commit(commit_msg)
     end
     
     private

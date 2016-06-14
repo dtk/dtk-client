@@ -20,16 +20,7 @@ module DTK::Client
     class BaseModule < self
       BaseRoute = "modules"
 
-      # DTK-2554: Aldin: We will subtsantially modify BaseModule.install; right now all original code is still here
-      #  The key change will be:  rather than doing seperate
-      #  interactions with server to import the service module and component module (if it exists)
-      #  we will instead do this in an interaction with server that has teh server create an empty repo
-      #  where this repo wil either be a component repo or a new kind of repo that handles both component and service
-      #  info and then pushes all the content under the project repo.
-      #  Open question if send the yaml parsed dsl hash object or have server from info it pulls pasrses it
       def self.install(base_module_ref, components, file_obj)
-
-        # tell server to create a module that wil be used to push the contents of project folder to
         post_body = PostBody.new(
           :module_name => base_module_ref.module_name,
           :namespace   => base_module_ref.namespace,
@@ -37,22 +28,23 @@ module DTK::Client
         )
 
         response = rest_post("#{BaseRoute}/create_empty_module", post_body)
-        pp [:debug, response]
 
-        # # DTK-2554: Aldin: 
-        # put in steps that 
-        # 1) pushes the content to the newly created module repo
-        #   if project folder is a git repo add a remote that points to the newly created module and then
-        #   push content; otherwise create a a new git clone in project folder and point it to the newly created module
-        #   and push content
-        # 2) call rest_post "#{BaseRoute}/update_from_repo (which in past we have called 'update_model_from_clone
+        # hardcoded for testing
+        # dir_path = File.expand_path('/home/ubuntu/simple', File.dirname(__FILE__))
 
         args = {
+          # :repo_dir => dir_path,
           :repo_dir => OsUtil.current_dir,
           :repo_url => response.required(:repo_url),
           :branch   => response.required(:branch_name)
         }
         ModuleDir::GitRepo.add_remote_and_push(args)
+
+        post_body.merge!(
+          :branch => response.required(:branch_name),
+          :repo_name => response.required(:repo_name)
+        )
+        rest_post("#{BaseRoute}/update_from_repo", post_body)
       end
     end
   end
