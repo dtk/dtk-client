@@ -31,19 +31,26 @@ module DTK::Client
 
         # hardcoded for testing
         # dir_path = File.expand_path('/home/ubuntu/simple', File.dirname(__FILE__))
+        branch    = response.required(:branch, :name)
+        repo_url  = response.required(:repo, :url)
+        repo_name = response.required(:repo, :name)
+        head_sha  = response.required(:branch, :head_sha)
 
         args = {
           # :repo_dir => dir_path,
           :repo_dir => OsUtil.current_dir,
-          :repo_url => response.required(:repo_url),
-          :branch   => response.required(:branch_name)
+          :repo_url => repo_url,
+          :branch   => branch
         }
+
         ModuleDir::GitRepo.add_remote_and_push(args)
 
         post_body.merge!(
-          :branch => response.required(:branch_name),
-          :repo_name => response.required(:repo_name)
+          :branch     => branch,
+          :repo_name  => repo_name,
+          :commit_sha => head_sha
         )
+
         rest_post("#{BaseRoute}/update_from_repo", post_body)
       end
     end

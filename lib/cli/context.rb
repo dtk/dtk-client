@@ -26,6 +26,10 @@ module DTK::Client
       def self.determine_context
 #stub
 dir_path = File.expand_path('../../examples/simple/test', File.dirname(__FILE__))
+
+# TODO: Aldin - used for testing
+# dir_path = File.expand_path('/home/ubuntu/simple', File.dirname(__FILE__))
+
 #dir_path = nil
         base_dsl_file_obj = BaseDslFileObj.new(:dir_path => dir_path)
         Type.create_context!(base_dsl_file_obj)
