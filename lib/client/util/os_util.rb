@@ -49,11 +49,15 @@ module DTK::Client
       nil
     end
 
+    def self.parent_dir(path)
+      parent_dir?(path) || raise(Error::Usage, "Cannot find parent dircetory of '#{path}'")
+    end
+
     # Returns parent directory; if at root returns nil
-    def self.parent_dir?(dir_path)
+    def self.parent_dir?(path)
       raise Error.new("Not implemented for windows") if is_windows?
-      ret = File.expand_path('../', dir_path)
-      unless ret == dir_path # meaning at root
+      ret = File.expand_path('../', path)
+      unless ret == path # meaning at root
         ret
       end
     end

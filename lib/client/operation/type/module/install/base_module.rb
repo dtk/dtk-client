@@ -29,16 +29,16 @@ module DTK::Client
 
         response = rest_post("#{BaseRoute}/create_empty_module", post_body)
 
-        # hardcoded for testing
-        # dir_path = File.expand_path('/home/ubuntu/simple', File.dirname(__FILE__))
         branch    = response.required(:branch, :name)
         repo_url  = response.required(:repo, :url)
         repo_name = response.required(:repo, :name)
         head_sha  = response.required(:branch, :head_sha)
+        
+        # making repo dir to be dircetory that directly holds the base file object file_obj
+        repo_dir = parent_dir(file_obj)
 
         args = {
-          # :repo_dir => dir_path,
-          :repo_dir => OsUtil.current_dir,
+          :repo_dir => repo_dir,
           :repo_url => repo_url,
           :branch   => branch
         }
@@ -52,6 +52,15 @@ module DTK::Client
         )
 
         rest_post("#{BaseRoute}/update_from_repo", post_body)
+      end
+
+      private
+
+      def self.parent_dir(file_obj)
+        unless path = file_obj.path?
+          raise Error, "Unexpected that 'file_obj.path?' is nil" 
+        end
+        OsUtil.parent_dir(path)
       end
     end
   end
