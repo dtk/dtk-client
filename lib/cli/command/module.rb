@@ -20,7 +20,7 @@ module DTK::Client; module CLI
     module Module 
       include Command::Mixin
 
-      ALL_SUBCOMMANDS = ['install', 'list-assemblies']
+      ALL_SUBCOMMANDS = ['install', 'list-assemblies', 'delete']
       command_def :desc => 'Subcommands for interacting with DTK modules'
 
       subcommand_def 'install' do |c|
@@ -43,6 +43,20 @@ module DTK::Client; module CLI
         c.command 'list-assemblies'  do |sc|
           sc.action do 
             Operation::Module.list_assemblies
+          end
+        end
+      end
+
+      subcommand_def 'delete' do |c|
+        c.desc 'Delete DTK module'
+        c.command :delete  do |sc|
+          sc.action do |_global_options, options, args|
+            unless module_ref = options[:m] || context_attributes[:module_ref]
+              # This error only applicable if not in module
+              raise Error::Usage, "The module reference must be given using option '-m NAMESPACE/MODULE-NAME'"
+            end
+            module_ref = ModuleRef.reify(module_ref)
+            Operation::Module.delete(:module_ref => module_ref)
           end
         end
       end

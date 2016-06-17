@@ -29,6 +29,23 @@ module DTK::Client
         Install.install(args)
       end
 
+      def self.delete(args = Args.new)
+        wrap_as_response(args) do |args|
+          module_ref  = args.required(:module_ref)
+          module_name = module_ref.module_name
+          namespace   = module_ref.namespace
+
+          return false unless Console.prompt_yes_no("Are you sure you want to delete DTK module '#{namespace}/#{module_name}'?", :add_options => true)
+
+          post_body = PostBody.new(
+            :module_name => module_ref.module_name,
+            :namespace   => module_ref.namespace
+          )
+          rest_post("#{BaseRoute}/delete", post_body)
+          OsUtil.print_info("DTK module '#{namespace}/#{module_name}' has been deleted successfully.")
+        end
+      end
+
       def self.module_exists?(module_ref, type)
         query_params = QueryParams.new(
           :namespace   => module_ref.namespace,
