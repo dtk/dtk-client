@@ -35,7 +35,7 @@ module DTK::Client
           module_name = module_ref.module_name
           namespace   = module_ref.namespace
 
-          return false unless Console.prompt_yes_no("Are you sure you want to delete DTK module '#{namespace}/#{module_name}'?", :add_options => true)
+          return false unless Console.prompt_yes_no("Are you sure you want to delete DTK module '#{namespace}:#{module_name}'?", :add_options => true)
 
           post_body = PostBody.new(
             :module_name => module_ref.module_name,

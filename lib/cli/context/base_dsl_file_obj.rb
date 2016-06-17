@@ -32,7 +32,7 @@ module DTK::Client
         base_dsl_type, path = find_type_and_path?(opts)
         @base_dsl_type = base_dsl_type
         @dir_path      = opts[:dir_path]
-        super(:path => path)  
+        super(::DTK::DSL::DirectoryParser::FileSystem.new, :path => path)  
 
         # below computed on demand
         @yaml_parse_hash = nil
