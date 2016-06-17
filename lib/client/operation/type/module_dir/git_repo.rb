@@ -63,7 +63,19 @@ module DTK::Client
         remote_branch = args.required(:branch)
         
         if git_repo.is_git_repo?(repo_dir)
-          raise Error, "DTK-2554: Aldin needs to be written"
+          # TODO: DTK-2554: Aldin needs to be written
+          # There are three cases here: 
+          # 1) where it is a (stale) git repo that points to just the dtk server; this probaly should be cleaned up when
+          #    delete module; although this can stil happen because theer can be clones on multiple machines
+          #    can detect this case by seeing if it has a remote to DTK_SERVER_REMOTE
+          #    This case should be handled I think just like below aside from first deleting the .git dircetory
+          # 2) has one or more remotes, none of them is DTK_SERVER_REMOTE
+          #    Thik this can be handled just like below, but rather than creating the git repo we need to initialize from
+          #    it
+          # 3) has two or more remotes, one of them being DTK_SERVER_REMOTE
+          #    Think this case should be handled by removing the remote DTK_SERVER_REMOTE
+          #    and following steps for 2
+          raise Error, "Needs to be written: case when installing in dircetory that is a git repo"
         else
           repo = git_repo.create(repo_dir, :branch => LOCAL_BRANCH)
           repo.checkout(LOCAL_BRANCH, :new_branch => true) 
@@ -74,18 +86,6 @@ module DTK::Client
           repo.push(DTK_SERVER_REMOTE, remote_branch)
         end
       end
-      
-      # TODO: DTK-2554: Aldin: took out your code but kept in here so you can reuse if you want
-      # TODO: Aldin - will probably need to make more generic (provide remote, etc ...)          
-      # def self.add_remote_and_push_aux(args)
-      #  repo_dir = args.required(:repo_dir)
-      #  repo_url = args.required(:repo_url)
-      #  branch   = args.required(:branch)
-      
-      #  repo = git_repo.create(repo_dir)
-      #  repo.stage_and_commit
-      #  repo.add_remote(DTK_SERVER_REMOTE, repo_url)
-      #  repo.push(DTK_SERVER_REMOTE, branch)
       
       def self.git_repo
         ::DTK::Client::GitRepo
