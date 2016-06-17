@@ -19,7 +19,7 @@ require 'highline'
 require 'colorize'
 
 module DTK::Client
-  module OsUtil
+  class OsUtil
     module PrintMixin
       # Method will print to STDOUT with given color
       #

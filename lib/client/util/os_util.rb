@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 module DTK::Client
-  module OsUtil
+  class OsUtil
     require_relative('os_util/print')
     extend Auxiliary
     extend PrintMixin

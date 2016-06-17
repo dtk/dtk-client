@@ -1,4 +1,5 @@
-require_relative 'lib/cli/version'
+require File.expand_path('../lib/cli/version', __FILE__)
+
 Gem::Specification.new do |spec| 
   spec.name        = 'dtk-cli'
   spec.version     = DTK::Client::CLI::VERSION
