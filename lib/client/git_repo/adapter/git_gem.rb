@@ -33,12 +33,11 @@ module DTK::Client
         @git_repo = ::Git.init(repo_dir)
         # If we want to log Git interaction
         # @git_repo = ::Git.init(repo_dir, :log => Logger.new(STDOUT))
-        @local_branch_name = opts[:branch_name]
+        @local_branch_name = opts[:branch]
       end
 
       def self.clone(repo_url, target_path, branch)
         git_base = handle_git_error { ::Git.clone(repo_url, target_path) }
-        pp [git_base.class, git_base]
         begin
           git_base.checkout(branch)
         rescue => e
@@ -48,6 +47,18 @@ module DTK::Client
         git_base
       end
 
+      # opts can have keys
+      #  :new_branch - Boolean
+      def checkout(branch, opts = {})
+        ret = @git_repo.checkout(branch, opts)
+        @local_branch_name = branch
+        ret
+      end
+
+      def fetch(remote = 'origin')
+        @git_repo.fetch(remote)
+      end
+
       def add_remote(name, url)
         @git_repo.remove_remote(name) if is_there_remote?(name)
         @git_repo.add_remote(name, url)
@@ -55,8 +66,12 @@ module DTK::Client
 
       def push(remote, branch, opts = {})
         branch_name = current_branch ? current_branch.name : 'master'
-        branch_for_push = "#{branch_name}:refs/heads/#{branch||local_branch_name}"
+        branch_for_push = "#{branch_name}:refs/heads/#{branch || local_branch_name}"
         @git_repo.push(remote, branch_for_push, opts)
+      end
+
+      def merge(branch_to_merge_from)
+        @git_repo.merge(branch_to_merge_from)
       end
 
       def status

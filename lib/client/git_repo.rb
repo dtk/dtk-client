@@ -31,6 +31,8 @@ module DTK::Client
       new(repo_dir, opts)
     end
     
+    # opts can have keys
+    #  :branch
     def initialize(repo_dir, opts = {})
       @git_adapter = git_adapter_class.new(repo_dir, opts)
     end
@@ -38,6 +40,16 @@ module DTK::Client
     
     def self.clone(repo_url, target_path, branch)
       git_adapter_class.clone(repo_url, target_path, branch)
+    end
+
+    # opts can have keys
+    #  :new_branch - Boolean
+    def checkout(branch, opts = {})
+      @git_adapter.checkout(branch, opts)
+    end
+
+    def fetch(remote = 'origin')
+      @git_adapter.fetch(remote)
     end
 
     def add_remote(name, url)
@@ -51,7 +63,15 @@ module DTK::Client
     def stage_and_commit(commit_msg = nil)
       @git_adapter.stage_and_commit(commit_msg)
     end
-    
+
+    def merge(branch_to_merge_from)
+      @git_adapter.merge(branch_to_merge_from)
+    end
+
+    def self.is_git_repo?(dir)
+      File.directory?("#{dir}/.git")
+    end
+
     private
     
     def git_adapter_class

@@ -18,7 +18,7 @@
 module DTK::Client
   class Operation::Module::Install
     class BaseModule < self
-      BaseRoute = "modules"
+      BaseRoute = 'modules'
 
       def self.install(base_module_ref, components, file_obj)
         post_body = PostBody.new(
@@ -43,7 +43,7 @@ module DTK::Client
           :branch   => branch
         }
 
-        ModuleDir::GitRepo.add_remote_and_push(args)
+        ModuleDir::GitRepo.fetch_merge_and_push(args)
 
         post_body.merge!(
           :branch     => branch,

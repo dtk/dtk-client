@@ -25,28 +25,28 @@ module DTK::Client
         end
       end
 
-      def self.add_remote_and_push(args)
+      def self.fetch_merge_and_push(args)
         wrap_as_response(args) do |args|
-          add_remote_and_push_aux(args)
+          fetch_merge_and_push_aux(args)
         end
       end
       
       private
-
+      
       def self.clone_service_repo_aux(args)
         repo_url        = args.required(:repo_url)
         module_ref      = args.required(:module_ref)
         branch          = args.required(:branch)
         service_name    = args.required(:service_name)
-
+        
         target_repo_dir  = create_service_dir(service_name)
         begin
           git_repo.clone(repo_url, target_repo_dir,  branch)
         rescue => e
           #cleanup by deleting directory
-
+          
           FileUtils.rm_rf(target_repo_dir) if File.directory?(target_repo_dir)
-          # Log error detaails
+          # Log error details
           Logger.instance.error_pp(e.message, e.backtrace)
           
           # User-friendly error
@@ -54,22 +54,42 @@ module DTK::Client
         end
         target_repo_dir
       end
-
-      # TODO: Aldin - will probably need to make more generic (provide remote, etc ...)
-      def self.add_remote_and_push_aux(args)
-        repo_dir = args.required(:repo_dir)
-        repo_url = args.required(:repo_url)
-        branch   = args.required(:branch)
-
-        repo = git_repo.create(repo_dir)
-        repo.stage_and_commit
-        repo.add_remote('origin', repo_url)
-        repo.push('origin', branch, { :force => true })
+      
+      DTK_SERVER_REMOTE = 'dtk-server'
+      LOCAL_BRANCH = 'master'
+      def self.fetch_merge_and_push_aux(args)
+        repo_dir      = args.required(:repo_dir)
+        repo_url      = args.required(:repo_url)
+        remote_branch = args.required(:branch)
+        
+        if git_repo.is_git_repo?(repo_dir)
+          raise Error, "DTK-2554: Aldin needs to be written"
+        else
+          repo = git_repo.create(repo_dir, :branch => LOCAL_BRANCH)
+          repo.checkout(LOCAL_BRANCH, :new_branch => true) 
+          repo.add_remote(DTK_SERVER_REMOTE, repo_url)
+          repo.fetch(DTK_SERVER_REMOTE)
+          repo.merge("#{DTK_SERVER_REMOTE}/#{remote_branch}")
+          repo.stage_and_commit
+          repo.push(DTK_SERVER_REMOTE, remote_branch)
+        end
       end
-    end
-    
-    def self.git_repo
-      ::DTK::Client::GitRepo
+      
+      # TODO: DTK-2554: Aldin: took out your code but kept in here so you can reuse if you want
+      # TODO: Aldin - will probably need to make more generic (provide remote, etc ...)          
+      # def self.add_remote_and_push_aux(args)
+      #  repo_dir = args.required(:repo_dir)
+      #  repo_url = args.required(:repo_url)
+      #  branch   = args.required(:branch)
+      
+      #  repo = git_repo.create(repo_dir)
+      #  repo.stage_and_commit
+      #  repo.add_remote(DTK_SERVER_REMOTE, repo_url)
+      #  repo.push(DTK_SERVER_REMOTE, branch)
+      
+      def self.git_repo
+        ::DTK::Client::GitRepo
+      end
     end
   end
 end
