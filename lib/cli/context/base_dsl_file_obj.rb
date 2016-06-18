@@ -29,10 +29,11 @@ module DTK::Client
       #  :dir_path
       #  :file_path
       def initialize(opts = {})
-        base_dsl_type, path = find_type_and_path?(opts)
+        directory_parser = ::DTK::DSL::DirectoryParser::FileSystem.new
+        base_dsl_type, path = find_type_and_path?(directory_parser, opts)
         @base_dsl_type = base_dsl_type
         @dir_path      = opts[:dir_path]
-        super(::DTK::DSL::DirectoryParser::FileSystem.new, :path => path)  
+        super(directory_parser, :path => path)  
 
         # below computed on demand
         @yaml_parse_hash = nil
@@ -57,7 +58,7 @@ module DTK::Client
       #  :dir_path
       #  :file_path
       # returns nil or [base_dsl_type, path]
-      def find_type_and_path?(opts = {})
+      def find_type_and_path?(directory_parser, opts = {})
         ret = nil
         if path = opts[:file_path]
           BASE_DSL_MAPPINGS.each do | dsl_type, filename_class|
@@ -75,11 +76,6 @@ module DTK::Client
         end
         ret
       end
-
-      def directory_parser
-        @@directory_parser ||= ::DTK::DSL::DirectoryParser::FileSystem.new
-      end
-
     end
   end
 end
