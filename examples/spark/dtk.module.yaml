@@ -6,7 +6,7 @@ description: Spark cluster
 license: Apache 2.0
 version: 0.1.2
 
-modules:
+dependencies:
 - bigtop/bigtop_base
 - bigtop/bigtop_multiservice
 - bigtop-new/hadoop
