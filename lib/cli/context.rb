@@ -24,8 +24,8 @@ module DTK::Client
 
       FILE_TYPES = 
         [
-         ::DTK::DSL::FileObj::Type::BaseModule,
-         ::DTK::DSL::FileObj::Type::BaseService
+         ::DTK::DSL::FileType::BaseModule,
+         ::DTK::DSL::FileType::BaseService
         ]
 
       def self.determine_context

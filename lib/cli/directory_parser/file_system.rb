@@ -29,14 +29,13 @@ module DTK::Client; module CLI
         ret = nil
         file_types = [file_types] unless file_types.kind_of?(Array)
 
-        file_type, file_path = matching_type_and_path?(opts)
-        content = get_content?(path)
+        file_type, file_path = matching_type_and_path?(file_types, opts)
         file_obj_opts = {
           dir_path: opts[:dir_path],
           current_dir: OsUtil.current_dir,
           content: get_content?(file_path)
         }
-        ::DTK::DSL::FileObj.new(directory_parser, file_type, file_path, file_obj_opts)
+        ::DTK::DSL::FileObj.new(file_type, file_path, file_obj_opts)
       end
       
       private

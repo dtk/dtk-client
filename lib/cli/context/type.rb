@@ -25,13 +25,13 @@ module DTK::Client
       # This function can have the side of updating base_dsl_file_obj
       def self.create_context!(base_dsl_file_obj)
         if path = base_dsl_file_obj.path?
-          case base_dsl_file_obj.file_type
-          when ::DTK::DSL::FileObj::Type::BaseModule 
+          file_type = base_dsl_file_obj.file_type
+          if file_type == ::DTK::DSL::FileType::BaseModule
             Module.new(base_dsl_file_obj)
-          when :DTK::DSL::FileObj::Type::BaseService
+          elsif file_type ==  ::DTK::DSL::FileType::BaseService
             Service.new(base_dsl_file_obj)
           else 
-            raise Error, "Unexpected base_dsl_type '#{base_dsl_type}'"
+            raise Error, "Unexpected file_type '#{file_type}'"
           end
         else
           Top.new(base_dsl_file_obj)
