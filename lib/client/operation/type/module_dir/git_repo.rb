@@ -66,19 +66,15 @@ module DTK::Client
           # TODO: DTK-2554: Aldin needs to be written
           # There are three cases here: 
           # 1) where it is a (stale) git repo that points to just the dtk server; this probaly should be cleaned up when
-          #    delete module; although this can stil happen because theer can be clones on multiple machines
+          #    delete module; although this can stil happen because there can be clones on multiple machines
           #    can detect this case by seeing if it has a remote to DTK_SERVER_REMOTE
-          #    This case should be handled I think just like create_repo_from_remote aside from first deleting the .git directory
+          #    This case should be handled just like create_repo_from_remote aside from first deleting the .git directory
           # 2) has one or more remotes, none of them is DTK_SERVER_REMOTE
-          #    Think this can be handled just like create_repo_from_remote, 
+          #    This can be handled just like create_repo_from_remote, 
           #    but rather than creating the git repo we need to initialize from it
           # 3) has two or more remotes, one of them being DTK_SERVER_REMOTE
-          #    Think this case should be handled by removing the remote DTK_SERVER_REMOTE
+          #    This can be handled handled by removing the remote DTK_SERVER_REMOTE
           #    and following steps for 2
-          #
-          # Think for cases 2 and 3 on server side rather than creating repo with an initial commit we might create it with no
-          # commits; and just push from client repo without needing to fetch and merge
-          # Iight be able to also modify 1 also so it can work from empty repo without any commits
           raise Error, "Needs to be written: case when installing in directory that is a git repo"
         else
           create_repo_from_remote(repo_dir, repo_url, remote_branch)
@@ -89,8 +85,6 @@ module DTK::Client
         repo = git_repo.create(repo_dir, :branch => LOCAL_BRANCH)
         repo.checkout(LOCAL_BRANCH, :new_branch => true) 
         repo.add_remote(DTK_SERVER_REMOTE, repo_url)
-        repo.fetch(DTK_SERVER_REMOTE)
-        repo.merge("#{DTK_SERVER_REMOTE}/#{remote_branch}")
         repo.stage_and_commit
         repo.push(DTK_SERVER_REMOTE, remote_branch)
       end
