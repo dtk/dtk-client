@@ -32,8 +32,7 @@ module DTK::Client
         branch    = response.required(:branch, :name)
         repo_url  = response.required(:repo, :url)
         repo_name = response.required(:repo, :name)
-        head_sha  = response.required(:branch, :head_sha)
-        
+
         # making repo dir to be dircetory that directly holds the base file object file_obj
         repo_dir = parent_dir(file_obj)
 
@@ -48,7 +47,9 @@ module DTK::Client
         post_body.merge!(
           :branch     => branch,
           :repo_name  => repo_name,
-          :commit_sha => head_sha
+          # TODO: DTK-2554: Alin: have ModuleDir::GitRepo.fetch_merge_and_push return head_sha
+          # and use it to set                         
+          #:commit_sha => head_sha
         )
 
         rest_post("#{BaseRoute}/update_from_repo", post_body)
