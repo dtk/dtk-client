@@ -15,15 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'pp'
-module DTK
-  module CLI
-    require_relative('cli/version')
-    require_relative('cli/runner')
-    require_relative('cli/processor')
-    require_relative('cli/command')
-    # processor and command must go before context
-    require_relative('cli/context')
-    require_relative('cli/directory_parser')
+
+module DTK::Client::CLI
+  class DirectoryParser < ::DTK::DSL::DirectoryParser
+    require_relative('directory_parser/file_system')
   end
 end
+

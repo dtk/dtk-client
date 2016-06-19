@@ -4,9 +4,8 @@ module DTK
   module GlobalForDSL
     Error  = ::DTK::Client::Error
     ErrorUsage  = ::DTK::Client::Error::Usage
-    OsUtil = ::DTK::Client::OsUtil
   end
-  #dtk_dsl must be loaded adter GlobalForDSL set
+  #dtk_dsl must be loaded after GlobalForDSL set
   require 'dtk_dsl'
   # lib/dtk_cli must be loaded after lib/client and lib/dsl
   require_relative '../lib/dtk_cli'

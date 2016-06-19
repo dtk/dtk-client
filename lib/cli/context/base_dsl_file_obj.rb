@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client
-  class CLI::Context
+module DTK::Client; module CLI
+  class Context
     class BaseDslFileObj < ::DTK::DSL::FileObj
 
       BASE_DSL_MAPPINGS = {
@@ -29,7 +29,7 @@ module DTK::Client
       #  :dir_path
       #  :file_path
       def initialize(opts = {})
-        directory_parser = ::DTK::DSL::DirectoryParser::FileSystem.new
+        directory_parser = DirectoryParser::FileSystem.new
         base_dsl_type, path = find_type_and_path?(directory_parser, opts)
         @base_dsl_type = base_dsl_type
         @dir_path      = opts[:dir_path]
@@ -78,4 +78,5 @@ module DTK::Client
       end
     end
   end
-end
+end; end
+
