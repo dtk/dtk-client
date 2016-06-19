@@ -21,7 +21,12 @@ module DTK::Client
     class Context
       require_relative('context/type')
       require_relative('context/attributes')
-      require_relative('context/base_dsl_file_obj')
+
+      FILE_TYPES = 
+        [
+         ::DTK::DSL::FileObj::Type::BaseModule,
+         ::DTK::DSL::FileObj::Type::BaseService
+        ]
 
       def self.determine_context
 #stub
@@ -31,7 +36,7 @@ dir_path = File.expand_path('../../examples/simple/test', File.dirname(__FILE__)
 # dir_path = File.expand_path('/home/ubuntu/simple', File.dirname(__FILE__))
 
 #dir_path = nil
-        base_dsl_file_obj = BaseDslFileObj.new(:dir_path => dir_path)
+        base_dsl_file_obj = DirectoryParser.matching_file_obj?(FILE_TYPES, :dir_path => dir_path)
         Type.create_context!(base_dsl_file_obj)
       end
 

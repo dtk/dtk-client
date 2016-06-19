@@ -19,6 +19,18 @@
 module DTK::Client::CLI
   class DirectoryParser < ::DTK::DSL::DirectoryParser
     require_relative('directory_parser/file_system')
+    # file_types - a single or array of :DTK::DSL::FileObj objects
+    # opts can have keys
+    #   :file_path - string
+    #   :dir_path - string
+    # Returns :DTK::DSL::FileObj object or nil that match a file_type
+    def self.matching_file_obj?(file_types, opts = {})
+      adapter.matching_file_obj?(file_types, opts)
+    end
+
+    def self.adapter
+      @adapter ||= FileSystem.new
+    end
   end
 end
 

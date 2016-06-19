@@ -18,8 +18,57 @@
 
 module DTK::Client; module CLI
   class DirectoryParser
-    # For getting directory information when files in a vanilla file system
+    # For Finding relevant content when files in a vanilla file system
     class FileSystem < self 
+      # file_types - a single or array of :DTK::DSL::FileObj objects
+      # opts can have keys
+      #   :file_path - string
+      #   :dir_path - string
+      # Returns :DTK::DSL::FileObj object or nil that match a file_type
+      def matching_file_obj?(file_types, opts = {})
+        ret = nil
+        file_types = [file_types] unless file_types.kind_of?(Array)
+
+        file_type, file_path = matching_type_and_path?(opts)
+        content = get_content?(path)
+        file_obj_opts = {
+          dir_path: opts[:dir_path],
+          current_dir: OsUtil.current_dir,
+          content: get_content?(file_path)
+        }
+        ::DTK::DSL::FileObj.new(directory_parser, file_type, file_path, file_obj_opts)
+      end
+      
+      private
+
+      def get_content?(file_path)
+        File.open(file_path).read if file_path and File.exists?(file_path)
+      end
+
+      # This method finds the base dsl file if it exists and returns its path
+      # opts can have keys:
+      #  :dir_path
+      #  :file_path
+      # returns nil or [file_type, path]
+      def matching_type_and_path?(file_types, opts = {})
+        ret = nil
+        if path = opts[:file_path]
+          file_types.each do | file_type |
+            if file_type.matches?(path)
+              return [file_type, path]
+            end
+          end
+        else
+          file_types.each do | file_type |
+            path_info = file_type.create_path_info
+            if path = most_nested_matching_file_path?(path_info, :current_dir => opts[:dir_path])
+              return [file_type, path]
+            end
+          end
+        end
+        ret
+      end
+
       # return either a string file path or of match to path_info working from current directory and 'otwards'
       # until base_path in path_info (if it exists)
       # opts can have keys
@@ -29,12 +78,6 @@ module DTK::Client; module CLI
         current_dir = opts[:current_dir] || OsUtil.current_dir
         check_match_recurse_on_failure?(path_info, current_dir, base_dir)
       end
-
-      def get_content?(path)
-        File.open(path).read if path and File.exists?(path)
-      end
-      
-      private
 
       def check_match_recurse_on_failure?(path_info, current_dir, base_dir)
         match = matching_file_paths(current_dir, path_info)
