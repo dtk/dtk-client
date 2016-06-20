@@ -64,6 +64,10 @@ module DTK::Client
         @git_repo.add_remote(name, url)
       end
 
+      def remove_remote(name)
+        @git_repo.remove_remote(name) if is_there_remote?(name)
+      end
+
       def push(remote, branch, opts = {})
         branch_name = current_branch ? current_branch.name : 'master'
         branch_for_push = "#{branch_name}:refs/heads/#{branch || local_branch_name}"
@@ -136,8 +140,16 @@ module DTK::Client
         @git_repo.remotes.find { |r| r.name == remote_name }
       end
 
-      def current_branch()
+      def current_branch
         @git_repo.branches.local.find { |b| b.current }
+      end
+
+      def remotes
+        @git_repo.remotes
+      end
+
+      def head_commit_sha
+        current_branch.gcommit.sha
       end
     end
   end

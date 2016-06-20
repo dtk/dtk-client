@@ -42,14 +42,13 @@ module DTK::Client
           :branch   => branch
         }
 
-        ModuleDir::GitRepo.fetch_merge_and_push(args)
+        git_response = ModuleDir::GitRepo.fetch_merge_and_push(args)
+        return git_response if git_response.is_a?(DTK::Client::Response) && !response.ok?
 
         post_body.merge!(
           :branch     => branch,
           :repo_name  => repo_name,
-          # TODO: DTK-2554: Alin: have ModuleDir::GitRepo.fetch_merge_and_push return head_sha
-          # and use it to set                         
-          #:commit_sha => head_sha
+          :commit_sha => git_response.data(:head_sha)
         )
 
         rest_post("#{BaseRoute}/update_from_repo", post_body)

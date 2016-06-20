@@ -61,29 +61,51 @@ module DTK::Client
         repo_dir      = args.required(:repo_dir)
         repo_url      = args.required(:repo_url)
         remote_branch = args.required(:branch)
-        
-        if git_repo.is_git_repo?(repo_dir)
-          # TODO: DTK-2554: Aldin needs to be written
-          # There are three cases here: 
-          # 1) where it is a (stale) git repo that points to just the dtk server; this probaly should be cleaned up when
-          #    delete module; although this can stil happen because there can be clones on multiple machines
-          #    can detect this case by seeing if it has a remote to DTK_SERVER_REMOTE
-          #    This case should be handled just like create_repo_from_remote aside from first deleting the .git directory
-          # 2) has one or more remotes, none of them is DTK_SERVER_REMOTE
-          #    This can be handled just like create_repo_from_remote, 
-          #    but rather than creating the git repo we need to initialize from it
-          # 3) has two or more remotes, one of them being DTK_SERVER_REMOTE
-          #    This can be handled handled by removing the remote DTK_SERVER_REMOTE
-          #    and following steps for 2
-          raise Error, "Needs to be written: case when installing in directory that is a git repo"
-        else
-          create_repo_from_remote(repo_dir, repo_url, remote_branch)
-        end
+
+        head_sha =
+          if git_repo.is_git_repo?(repo_dir)
+            init_and_push_from_existing_repo(repo_dir, repo_url, remote_branch)
+          else
+            create_repo_from_remote(repo_dir, repo_url, remote_branch)
+          end
+
+        { :head_sha => head_sha }
       end
 
       def self.create_repo_from_remote(repo_dir, repo_url, remote_branch)
         repo = git_repo.create(repo_dir, :branch => LOCAL_BRANCH)
-        repo.checkout(LOCAL_BRANCH, :new_branch => true) 
+        repo.checkout(LOCAL_BRANCH, :new_branch => true)
+        repo.add_remote(DTK_SERVER_REMOTE, repo_url)
+        repo.stage_and_commit
+        repo.push(DTK_SERVER_REMOTE, remote_branch)
+        repo.head_commit_sha
+      end
+
+      def self.init_and_push_from_existing_repo(repo_dir, repo_url, remote_branch)
+        repo = git_repo.create(repo_dir)
+
+        if repo.is_there_remote?(DTK_SERVER_REMOTE)
+          push_when_there_is_dtk_remote(repo, repo_dir, repo_url, remote_branch)
+        else
+          add_remote_and_push(repo, repo_url, remote_branch)
+        end
+
+        repo.head_commit_sha
+      end
+
+      def self.push_when_there_is_dtk_remote(repo, repo_dir, repo_url, remote_branch)
+        # if there is only one remote and it is dtk-server; remove .git and initialize and push as new repo to dtk-server remote
+        # else if multiple remotes and dtk-server being one of them; remove dtk-server; add new dtk-server remote and push
+        if repo.remotes.size == 1
+          git_repo.unlink_local_clone?(repo_dir)
+          create_repo_from_remote(repo_dir, repo_url, remote_branch)
+        else
+          repo.remove_remote(DTK_SERVER_REMOTE)
+          add_remote_and_push(repo, repo_url, remote_branch)
+        end
+      end
+
+      def self.add_remote_and_push(repo, repo_url, remote_branch)
         repo.add_remote(DTK_SERVER_REMOTE, repo_url)
         repo.stage_and_commit
         repo.push(DTK_SERVER_REMOTE, remote_branch)

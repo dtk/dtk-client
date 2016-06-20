@@ -56,6 +56,10 @@ module DTK::Client
       @git_adapter.add_remote(name, url)
     end
 
+    def remove_remote(name)
+      @git_adapter.remove_remote(name)
+    end
+
     def push(remote, branch, opts = {})
       @git_adapter.push(remote, branch, opts)
     end
@@ -70,6 +74,29 @@ module DTK::Client
 
     def self.is_git_repo?(dir)
       File.directory?("#{dir}/.git")
+    end
+
+    def current_branch
+      @git_adapter.current_branch
+    end
+
+    def is_there_remote?(remote_name)
+      @git_adapter.is_there_remote?(remote_name)
+    end
+
+    def remotes
+      @git_adapter.remotes
+    end
+
+    def head_commit_sha
+      @git_adapter.head_commit_sha
+    end
+
+    def self.unlink_local_clone?(dir)
+      git_dir = "#{dir}/.git"
+      if File.directory?(git_dir)
+        FileUtils.rm_rf(git_dir)
+      end
     end
 
     private
