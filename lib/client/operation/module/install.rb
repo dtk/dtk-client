@@ -35,7 +35,7 @@ module DTK::Client
           raise Error::Usage, "No base module reference #{dsl_path_ref}"
         end
 
-        if base_module_exists?(base_module_ref)
+        if module_exists?(base_module_ref, :service_module)
           raise Error::Usage, "Module #{base_module_ref.reference} exists already"
         end
 
@@ -59,18 +59,6 @@ module DTK::Client
         end
       end
       
-      def base_module_exists?(module_ref)
-        query_params = QueryParams.new(
-          :namespace   => module_ref.namespace,
-          :module_name => module_ref.module_name,
-          :version?    => module_ref.version
-        )
-        response = rest_get(BaseRoute, query_params)
-        # if response has key :service_module_id then a service module exists and
-        # an error is thrown
-        ! response.data(:service_module_id).nil?
-      end
-
       def dependent_modules
         @dependent_modules ||= (@parsed_output[:dependent_modules] || []).map { |module_ref_hash| ModuleRef.new(module_ref_hash) }
       end

@@ -15,20 +15,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK
-  module Client
-    require_relative('client/util')
-    # util must be loaded first
-    require_relative('client/logger')
-    require_relative('client/error')
-    require_relative('client/config')
-    require_relative('client/configurator')
-    require_relative('client/response')
-    require_relative('client/conn')
-    require_relative('client/session')
-    require_relative('client/git_repo')
-    require_relative('client/operation')
-    require_relative('client/operation_args')
-    require_relative('client/render')
+module DTK::Client
+  class Operation::Module
+    class Push < self
+      def self.push(args = Args.new)
+        wrap_as_response(args) do |args|
+          module_ref  = args.required(:module_ref)
+          module_exists?(module_ref, :service_id)
+        end
+      end
+    end
   end
 end
+
+

@@ -26,6 +26,7 @@ module DTK::Client
     end
 
     MODULE_NAMESPACE_DELIMS = ['/', ':']
+    PRINT_FORM_DELIM = ':'
 
     # returns [namespace, module_name] or raises error
     def self.reify(input_string_or_module_ref_obj)
@@ -33,11 +34,13 @@ module DTK::Client
 
       input_string = input_string_or_module_ref_obj
       split = split_by_delim(input_string)
-      unless split.size == 2
-        raise Error::Usage, "The term '#{input_string}' is an ill-formed module reference"
-      end
+      raise(Error::Usage, "The term '#{input_string}' is an ill-formed module reference") unless split.size == 2
       namespace, module_name = split
       new(namespace, module_name)
+    end
+
+    def print_form
+      "#{@namespace}#{PRINT_FORM_DELIM}#{@module_name}"
     end
 
     private

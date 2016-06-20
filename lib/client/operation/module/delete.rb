@@ -16,44 +16,20 @@
 # limitations under the License.
 #
 module DTK::Client
-  class Operation
-    class Module < self
-      require_relative('module/install')
-      BaseRoute = 'modules'
-
-      def self.list_assemblies
-        rest_get("#{BaseRoute}/list_assemblies").set_render_as_table!
-      end
-
-      def self.install(args = Args.new)
-        Install.install(args)
-      end
-
+  class Operation::Module
+    class Delete < self
       def self.delete(args = Args.new)
         wrap_as_response(args) do |args|
           module_ref  = args.required(:module_ref)
-          module_name = module_ref.module_name
-          namespace   = module_ref.namespace
-
-          return false unless Console.prompt_yes_no("Are you sure you want to delete DTK module '#{namespace}:#{module_name}'?", :add_options => true)
+          return false unless Console.prompt_yes_no("Are you sure you want to delete DTK module '#{module_ref.print_form}'?", :add_options => true)
 
           post_body = PostBody.new(
             :module_name => module_ref.module_name,
             :namespace   => module_ref.namespace
           )
           rest_post("#{BaseRoute}/delete", post_body)
-          OsUtil.print_info("DTK module '#{namespace}:#{module_name}' has been deleted successfully.")
+          OsUtil.print_info("DTK module '#{module_ref.print_form}' has been deleted successfully.")
         end
-      end
-
-      def self.module_exists?(module_ref, type)
-        query_params = QueryParams.new(
-          :namespace   => module_ref.namespace,
-          :module_name => module_ref.module_name,
-          :version?    => module_ref.version
-        )
-        response = rest_get(BaseRoute, query_params)
-        ! response.data("#{type}_id".to_sym).nil?
       end
 
     end

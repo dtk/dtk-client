@@ -16,13 +16,12 @@
 # limitations under the License.
 #
 module DTK::Client
-  # Abstract class that holds classes and methods for executing commands by
+  # Abstract class that holds classes and methods for xecuting commands by
   # make calls to server and performing client side operations
   class Operation
     TYPES = [:account, :module, :service, :module_dir]
 
-    require_relative('operation/args')
-    TYPES.each { |op_type| require_relative("operation/type/#{op_type}") }
+    TYPES.each { |op_type| require_relative("operation/#{op_type}") }
       
     private
     

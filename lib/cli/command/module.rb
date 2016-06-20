@@ -20,7 +20,7 @@ module DTK::Client; module CLI
     module Module 
       include Command::Mixin
 
-      ALL_SUBCOMMANDS = ['install', 'list-assemblies', 'delete']
+      ALL_SUBCOMMANDS = ['install', 'push', 'list-assemblies', 'delete']
       command_def :desc => 'Subcommands for interacting with DTK modules'
 
       subcommand_def 'install' do |c|
@@ -34,6 +34,21 @@ module DTK::Client; module CLI
           # sc.switch [:f], :default_value => false, :desc => 'Force Install'
           sc.action do |_global_options, _options, _args|
             Operation::Module.install(:base_dsl_file_obj => @base_dsl_file_obj)
+          end
+        end
+      end
+
+      subcommand_def 'push' do |c|
+        unless context_attributes[:module_name]
+        # TODO: put in later  c.arg 'NAMESPACE/MODULE-NAME', :optional
+        end
+        c.desc 'Push DTK module'
+        c.command :push  do |sc|
+          # TODO: put in later
+          # sc.flag [:v, :version], :arg_name => 'VERSION', :desc => 'Module Version'
+          # sc.switch [:f], :default_value => false, :desc => 'Force Push'
+          sc.action do |_global_options, _options, _args|
+            Operation::Module.push(:module_ref => ModuleRef.reify(context_attributes[:module_ref]))
           end
         end
       end
