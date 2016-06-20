@@ -23,7 +23,8 @@ module DTK::Client::CLI
     # opts can have keys
     #   :file_path - string
     #   :dir_path - string
-    # Returns :DTK::DSL::FileObj object or nil that match a file_type
+    # Returns :DTK::DSL::FileObj that matches a file_typeo bject that matches a file_type in file_types
+    #   or returns nil if no match found
     def self.matching_file_obj?(file_types, opts = {})
       adapter.matching_file_obj?(file_types, opts)
     end
