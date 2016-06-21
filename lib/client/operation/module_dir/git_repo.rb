@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 module DTK::Client
-  class Operation::ModuleDir
+  class Operation::ClientModuleDir
     # Operations for managing module folders that are git repos
     class GitRepo < self
       def self.fetch_merge_and_push(args)

@@ -42,7 +42,7 @@ module DTK::Client
           :branch   => branch
         }
 
-        git_response = ModuleDir::GitRepo.fetch_merge_and_push(args)
+        git_response = ClientModuleDir::GitRepo.fetch_merge_and_push(args)
         return git_response if git_response.is_a?(DTK::Client::Response) && !git_response.ok?
 
         post_body.merge!(

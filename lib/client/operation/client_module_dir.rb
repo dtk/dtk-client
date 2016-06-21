@@ -20,7 +20,7 @@ require 'fileutils'
 module DTK::Client
   class Operation
     # Operations for managing module folders
-    class ModuleDir < self
+    class ClientModuleDir < self
       require_relative('module_dir/git_repo')
       
       def self.create_service_dir(service_name)

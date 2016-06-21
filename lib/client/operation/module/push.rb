@@ -36,9 +36,9 @@ module DTK::Client
             :repo_url      => repo_url,
             :remote_branch => branch
           }
-          git_repo_response = ModuleDir::GitRepo.create_add_remote_and_push(git_repo_args)
+          git_repo_response = ClientModuleDir::GitRepo.create_add_remote_and_push(git_repo_args)
           # TODO: do we want below instea of above
-          # git_repo_response = ModuleDir::GitRepo.init_and_push_from_existing_repo(git_repo_args)
+          # git_repo_response = ClientModuleDir::GitRepo.init_and_push_from_existing_repo(git_repo_args)
 
           post_body = PostBody.new(
             :module_name => module_info.required(:module, :name),

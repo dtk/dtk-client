@@ -39,7 +39,7 @@ module DTK::Client
             :branch          => response.required(:branch, :name),
             :service_name    => response.required(:service, :name)
           } 
-          ModuleDir::GitRepo.clone_service_repo(clone_args)
+          ClientModuleDir::GitRepo.clone_service_repo(clone_args)
         end
       end
     end
