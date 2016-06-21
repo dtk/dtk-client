@@ -48,7 +48,7 @@ module DTK::Client; module CLI
           # sc.flag [:v, :version], :arg_name => 'VERSION', :desc => 'Module Version'
           # sc.switch [:f], :default_value => false, :desc => 'Force Push'
           sc.action do |_global_options, _options, _args|
-            Operation::Module.push(:module_ref => ModuleRef.reify(context_attributes[:module_ref]))
+            Operation::Module.push(:module_ref => ModuleRef.reify(context_attributes[:module_ref]), :base_dsl_file_obj => @base_dsl_file_obj)
           end
         end
       end

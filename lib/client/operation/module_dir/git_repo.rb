@@ -77,7 +77,7 @@ module DTK::Client
         repo.checkout(LOCAL_BRANCH, :new_branch => true)
         repo.add_remote(DTK_SERVER_REMOTE, repo_url)
         repo.stage_and_commit
-        repo.push(DTK_SERVER_REMOTE, remote_branch)
+        repo.push(DTK_SERVER_REMOTE, remote_branch, { :force => true })
         repo.head_commit_sha
       end
 
@@ -108,7 +108,13 @@ module DTK::Client
       def self.add_remote_and_push(repo, repo_url, remote_branch)
         repo.add_remote(DTK_SERVER_REMOTE, repo_url)
         repo.stage_and_commit
-        repo.push(DTK_SERVER_REMOTE, remote_branch)
+        repo.push(DTK_SERVER_REMOTE, remote_branch, { :force => true })
+      end
+
+      def self.create_add_remote_and_push(repo_dir, repo_url, remote_branch)
+        repo = git_repo.create(repo_dir)
+        add_remote_and_push(repo, repo_url, remote_branch)
+        repo.head_commit_sha
       end
 
       def self.git_repo

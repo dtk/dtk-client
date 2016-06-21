@@ -35,7 +35,7 @@ module DTK::Client
           raise Error::Usage, "No base module reference #{dsl_path_ref}"
         end
 
-        if module_exists?(base_module_ref, :service_module)
+        if module_exists?(base_module_ref, { :type => :common_module })
           raise Error::Usage, "Module #{base_module_ref.reference} exists already"
         end
 

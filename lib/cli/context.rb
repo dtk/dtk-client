@@ -32,9 +32,6 @@ module DTK::Client
 #stub
 dir_path = File.expand_path('../../examples/simple/test', File.dirname(__FILE__))
 
-# TODO: Aldin - used for testing
-# dir_path = File.expand_path('/home/ubuntu/simple', File.dirname(__FILE__))
-
 #dir_path = nil
         base_dsl_file_obj = DirectoryParser.matching_file_obj?(FILE_TYPES, :dir_path => dir_path)
         Type.create_context!(base_dsl_file_obj)

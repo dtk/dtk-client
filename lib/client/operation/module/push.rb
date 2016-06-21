@@ -20,15 +20,32 @@ module DTK::Client
     class Push < self
       def self.push(args = Args.new)
         wrap_as_response(args) do |args|
-          module_ref  = args.required(:module_ref)
-          # TODO: Aldin 6/21/2016:
-          # Put in logic that calls the new vewrsion of module_exists? explained in ../modules.rb
-          # pulls the needed parms so it could call the code sketched below
-          # unless module_info = module_exists?(module_ref, :common)
-          #  raise error that module does not exist
-          # end
-          # pull needed params from module_info so can call
-          # BaseRoute/update_from_repo
+          module_ref = args.required(:module_ref)
+          file_obj   = args.required(:base_dsl_file_obj).raise_error_if_no_content
+
+          unless module_info = module_exists?(module_ref, { :type => :common_module })
+            raise Error::Usage, "DTK module '#{module_ref.reference}' does not exist."
+          end
+
+          branch    = module_info.required(:branch, :name)
+          repo_url  = module_info.required(:repo, :url)
+          repo_name = module_info.required(:repo, :name)
+          repo_dir  = parent_dir(file_obj)
+
+          git_response = ModuleDir::GitRepo.create_add_remote_and_push(repo_dir, repo_url, branch)
+          # git_response = ModuleDir::GitRepo.init_and_push_from_existing_repo(repo_dir, repo_url, branch)
+          return git_response if git_response.is_a?(DTK::Client::Response) && !git_response.ok?
+
+          post_body = PostBody.new(
+            :module_name => module_info.required(:module, :name),
+            :namespace   => module_info.required(:module, :namespace),
+            :version?    => module_info.data['module']['version'],
+            :branch      => branch,
+            :repo_name   => repo_name,
+            :commit_sha  => git_response
+          )
+
+          rest_post("#{BaseRoute}/update_from_repo", post_body)
           nil
         end
       end

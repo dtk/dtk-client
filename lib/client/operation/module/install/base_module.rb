@@ -43,7 +43,7 @@ module DTK::Client
         }
 
         git_response = ModuleDir::GitRepo.fetch_merge_and_push(args)
-        return git_response if git_response.is_a?(DTK::Client::Response) && !response.ok?
+        return git_response if git_response.is_a?(DTK::Client::Response) && !git_response.ok?
 
         post_body.merge!(
           :branch     => branch,
@@ -52,15 +52,6 @@ module DTK::Client
         )
 
         rest_post("#{BaseRoute}/update_from_repo", post_body)
-      end
-
-      private
-
-      def self.parent_dir(file_obj)
-        unless path = file_obj.path?
-          raise Error, "Unexpected that 'file_obj.path?' is nil" 
-        end
-        OsUtil.parent_dir(path)
       end
     end
   end

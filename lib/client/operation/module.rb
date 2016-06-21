@@ -44,30 +44,28 @@ module DTK::Client
         Delete.delete(args)
       end
 
-      private
-
-      def module_exists?(module_ref, type)
-        self.class.module_exists?(module_ref, type)
+      def self.parent_dir(file_obj)
+        unless path = file_obj.path?
+          raise Error, "Unexpected that 'file_obj.path?' is nil"
+        end
+        OsUtil.parent_dir(path)
       end
 
-      # TODO: Aldin 6/21/2016: change this method and callers of it to have signature
-      # module_exists?(module_ref, opts = {})
-      # where opts an have keys
-      #  :type - default: common), which can have values :common, :component, or :service
-      # and add type to query params
-      # change what it returns to be the either the same hash that gets returned by 
-      # route BasreRoute/create_empty_module, which on server side is an object of type
-      #   ModuleRepoInfo or no keys in payload if module does not exist
-      # So really this is checking if a module branch exists; initially since dealing with just modules
-      # on the master branch we wont pass in any banch or version params; but later extend to do so 
-      def self.module_exists?(module_ref, type)
+      private
+
+      def module_exists?(module_ref, opts = {})
+        self.class.module_exists?(module_ref, opts)
+      end
+
+      def self.module_exists?(module_ref, opts = {})
+        type = opts[:type] || :common_module
         query_params = QueryParams.new(
           :namespace   => module_ref.namespace,
           :module_name => module_ref.module_name,
+          :module_type => type
         )
         response = rest_get(BaseRoute, query_params)
-        # if response has key #{type}_id then a module exists and
-        ! response.data("#{type}_id".to_sym).nil?
+        response.data.empty? ? nil : response
       end
 
     end

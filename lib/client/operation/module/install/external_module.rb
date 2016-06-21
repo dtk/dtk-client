@@ -26,7 +26,7 @@ module DTK::Client
         OsUtil.print_info('Auto-importing missing dependencies')
 
         module_refs.each do |module_ref|
-          next if module_exists?(module_ref, "component_module")
+          next if module_exists?(module_ref, { :type => :component_module })
           install_module(module_ref, opts)
         end
       end
