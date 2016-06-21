@@ -44,7 +44,6 @@ module DTK::Client
             :module_name => module_info.required(:module, :name),
             :namespace   => module_info.required(:module, :namespace),
             :version?    => module_info.index_data(:module, :version),
-            :branch      => branch,
             :repo_name   => repo_name,
             :commit_sha  => git_repo_response.data(:head_sha)
           )

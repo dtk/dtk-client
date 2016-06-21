@@ -43,10 +43,8 @@ module DTK::Client
         }
 
         git_response = ClientModuleDir::GitRepo.fetch_merge_and_push(args)
-        return git_response if git_response.is_a?(DTK::Client::Response) && !git_response.ok?
 
         post_body.merge!(
-          :branch     => branch,
           :repo_name  => repo_name,
           :commit_sha => git_response.data(:head_sha)
         )
