@@ -49,7 +49,17 @@ module DTK::Client
       def module_exists?(module_ref, type)
         self.class.module_exists?(module_ref, type)
       end
-      
+
+      # TODO: Aldin 6/21/2016: change this method and callers of it to have signature
+      # module_exists?(module_ref, opts = {})
+      # where opts an have keys
+      #  :type - default: common), which can have values :common, :component, or :service
+      # and add type to query params
+      # change what it returns to be the either the same hash that gets returned by 
+      # route BasreRoute/create_empty_module, which on server side is an object of type
+      #   ModuleRepoInfo or no keys in payload if module does not exist
+      # So really this is checking if a module branch exists; initially since dealing with just modules
+      # on the master branch we wont pass in any banch or version params; but later extend to do so 
       def self.module_exists?(module_ref, type)
         query_params = QueryParams.new(
           :namespace   => module_ref.namespace,

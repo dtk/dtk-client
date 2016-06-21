@@ -21,7 +21,15 @@ module DTK::Client
       def self.push(args = Args.new)
         wrap_as_response(args) do |args|
           module_ref  = args.required(:module_ref)
-          module_exists?(module_ref, :service_id)
+          # TODO: Aldin 6/21/2016:
+          # Put in logic that calls the new vewrsion of module_exists? explained in ../modules.rb
+          # pulls the needed parms so it could call the code sketched below
+          # unless module_info = module_exists?(module_ref, :common)
+          #  raise error that module does not exist
+          # end
+          # pull needed params from module_info so can call
+          # BaseRoute/update_from_repo
+          nil
         end
       end
     end
