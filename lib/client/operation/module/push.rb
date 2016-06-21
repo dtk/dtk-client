@@ -23,18 +23,22 @@ module DTK::Client
           module_ref = args.required(:module_ref)
           file_obj   = args.required(:base_dsl_file_obj).raise_error_if_no_content
 
-          unless module_info = module_exists?(module_ref, { :type => :common_module })
-            raise Error::Usage, "DTK module '#{module_ref.reference}' does not exist."
+          unless module_info = module_exists?(module_ref, :type => :common_module)
+            raise Error::Usage, "DTK module '#{module_ref.print_form}' does not exist."
           end
 
           branch    = module_info.required(:branch, :name)
           repo_url  = module_info.required(:repo, :url)
           repo_name = module_info.required(:repo, :name)
-          repo_dir  = parent_dir(file_obj)
 
-          git_response = ModuleDir::GitRepo.create_add_remote_and_push(repo_dir, repo_url, branch)
-          # git_response = ModuleDir::GitRepo.init_and_push_from_existing_repo(repo_dir, repo_url, branch)
-          return git_response if git_response.is_a?(DTK::Client::Response) && !git_response.ok?
+          git_repo_args = {
+            :repo_dir      => parent_dir(file_obj),
+            :repo_url      => repo_url,
+            :remote_branch => branch
+          }
+          git_repo_response = ModuleDir::GitRepo.create_add_remote_and_push(git_repo_args)
+          # TODO: do we want below instea of above
+          # git_repo_response = ModuleDir::GitRepo.init_and_push_from_existing_repo(git_repo_args)
 
           post_body = PostBody.new(
             :module_name => module_info.required(:module, :name),
@@ -42,7 +46,7 @@ module DTK::Client
             :version?    => module_info.data['module']['version'],
             :branch      => branch,
             :repo_name   => repo_name,
-            :commit_sha  => git_response
+            :commit_sha  => git_repo_response.data(:head_sha)
           )
 
           rest_post("#{BaseRoute}/update_from_repo", post_body)
