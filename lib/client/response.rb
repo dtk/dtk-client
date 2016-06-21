@@ -52,21 +52,32 @@ module DTK::Client
       end
     end
 
+    def index_data(*indexes)
+      index_common(*indexes) { |_indexes| nil }
+    end
+    
     def required(*indexes)
+      index_common(*indexes) do |indexes| 
+        raise Error, "Missing response field 'response[:#{indexes.join('][:')}]'" 
+      end
+    end
+
+    private
+
+    def index_common(*indexes, &block_when_no_data)
       if indexes.empty?
         raise Error, 'indexes should not be empty'
       else
         val = data
         indexes.each do |key|
           unless val.kind_of?(::Hash) and val.has_key?(key.to_s)
-            raise Error, "Missing response field 'response[:#{indexes.join('][:')}]'"
+            return block_when_no_data.call(indexes)
           end
           val = val[key.to_s]
         end
         val
       end
     end
-
   end
 end
 
