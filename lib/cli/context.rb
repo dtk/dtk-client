@@ -22,18 +22,12 @@ module DTK::Client
       require_relative('context/type')
       require_relative('context/attributes')
 
-      FILE_TYPES = 
-        [
-         ::DTK::DSL::FileType::CommonModule,
-         ::DTK::DSL::FileType::ServiceInstance
-        ]
-
       def self.determine_context
 #stub
 dir_path = File.expand_path('../../examples/simple/test', File.dirname(__FILE__))
 
 #dir_path = nil
-        base_dsl_file_obj = DirectoryParser.matching_file_obj?(FILE_TYPES, :dir_path => dir_path)
+        base_dsl_file_obj = base_dsl_file_obj(:dir_path => dir_path)
         Type.create_context!(base_dsl_file_obj)
       end
 
@@ -61,9 +55,22 @@ dir_path = File.expand_path('../../examples/simple/test', File.dirname(__FILE__)
 
       attr_reader :context_attributes
 
-      # The method 'attributes' can be ovewritten
+      # The method 'attributes' can be overwritten
       def attributes
         Attributes.new
+      end
+
+      FILE_TYPES = 
+        [
+         ::DTK::DSL::FileType::CommonModule,
+         ::DTK::DSL::FileType::ServiceInstance
+        ]
+
+      # opts can have keys
+      #   :dir_path
+      def  self.base_dsl_file_obj(opts = {}) 
+        file_obj = DirectoryParser.matching_file_obj?(FILE_TYPES, opts)
+        file_obj.add_parse_content!(:common_module_summary)
       end
 
       def add_command_defs!

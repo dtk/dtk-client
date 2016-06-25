@@ -17,14 +17,14 @@
 #
 module DTK::Client
   class Operation::Module::Install
-    class BaseModule < self
+    class CommonModule < self
       BaseRoute = 'modules'
 
-      def self.install(base_module_ref, components, file_obj)
+      def self.install(module_ref, components, file_obj)
         post_body = PostBody.new(
-          :module_name => base_module_ref.module_name,
-          :namespace   => base_module_ref.namespace,
-          :version?    => base_module_ref.version
+          :module_name => module_ref.module_name,
+          :namespace   => module_ref.namespace,
+          :version?    => module_ref.version
         )
 
         response = rest_post("#{BaseRoute}/create_empty_module", post_body)
