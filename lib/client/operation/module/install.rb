@@ -18,49 +18,49 @@
 module DTK::Client
   class Operation::Module
     class Install < self
-      require_relative('install/module_ref')
       require_relative('install/external_module')
       require_relative('install/common_module')
 
       def self.install(args = Args.new)
         wrap_as_response(args) do |args|
+          base_module_ref = args.required(:module_ref)
           file_obj = args.required(:base_dsl_file_obj).raise_error_if_no_content
-          new(file_obj).install
+          new(file_obj, base_module_ref).install
         end
       end
       
       def install
-        unless common_module_ref = get_common_module_ref?
+        unless @base_module_ref
           raise Error::Usage, "No base module reference #{dsl_path_ref}"
         end
 
-        if module_exists?(common_module_ref, { :type => :common_module })
-          raise Error::Usage, "Module #{common_module_ref.reference} exists already"
+        if module_exists?(@base_module_ref, { :type => :common_module })
+          raise Error::Usage, "Module #{@base_module_ref.print_form} exists already"
         end
 
         ExternalModule.install_dependent_modules(dependent_modules)
-        CommonModule.install(common_module_ref, components, @file_obj)
+        CommonModule.install(@base_module_ref, components, @file_obj)
         nil
       end
       
       private
 
-      def initialize(file_obj)      
-        @file_obj      = file_obj
-        @parsed_module = file_obj.parse_content(:common_module_summary)
+      def initialize(file_obj, module_ref)      
+        @file_obj         = file_obj
+        @base_module_ref  = module_ref
+        @parsed_module    = file_obj.parse_content(:common_module_summary)
       end
 
-      def get_common_module_ref?
-        namespace   = @parsed_module.val(:Namespace)
-        module_name = @parsed_module.val(:ModuleName)
-        version     = @parsed_module.val(:ModuleVersion)
-        if namespace and module_name
-          ModuleRef.new(:namespace => namespace, :module_name => module_name, :version => version)
-        end
-      end
-      
       def dependent_modules
-        @dependent_modules ||= (@parsed_module.val(:DependentModules) || []).map { |module_ref_hash| ModuleRef.new(module_ref_hash) }
+        @dependent_modules ||= compute_dependent_modules
+      end
+
+      def compute_dependent_modules
+        (@parsed_module.val(:DependentModules) || []).map do |parsed_module_ref| 
+          namespace   = parsed_module_ref.req(:Namespace)
+          module_name = parsed_module_ref.req(:ModuleName)
+          ModuleRef.new(namespace, module_name)
+        end
       end
 
       def components

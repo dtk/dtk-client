@@ -60,19 +60,26 @@ dir_path = File.expand_path('../../examples/simple/test', File.dirname(__FILE__)
         Attributes.new
       end
 
+      # opts can have keys
+      #   :dir_path
+      def  self.base_dsl_file_obj(opts = {}) 
+        DirectoryParser.matching_file_obj?(FILE_TYPES, opts)
+      end
       FILE_TYPES = 
         [
          ::DTK::DSL::FileType::CommonModule,
          ::DTK::DSL::FileType::ServiceInstance
         ]
 
-      # opts can have keys
-      #   :dir_path
-      def  self.base_dsl_file_obj(opts = {}) 
-        file_obj = DirectoryParser.matching_file_obj?(FILE_TYPES, opts)
-        file_obj.add_parse_content!(:common_module_summary)
+      def base_module_ref?
+        # TODO: might have a parse template that is even more sparse than :common_module_summary
+        parsed_module = @base_dsl_file_obj.parse_content(:common_module_summary)
+        namespace   = parsed_module.val(:Namespace)
+        module_name = parsed_module.val(:ModuleName)
+        ModuleRef.new(namespace, module_name) if namespace and module_name
       end
 
+      # Methods related to adding cli command definitions 
       def add_command_defs!
         raise Error::NoMethodForConcreteClass.new(self.class)
       end
@@ -86,10 +93,6 @@ dir_path = File.expand_path('../../examples/simple/test', File.dirname(__FILE__)
 
       def command_processor_object_methods
         @@command_processor_object_methods ||= Processor::Methods.all 
-      end
-
-      def base_dsl_hash_content?
-        @base_dsl_file_obj.hash_content?
       end
 
     end

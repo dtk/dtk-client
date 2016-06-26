@@ -33,7 +33,7 @@ module DTK::Client; module CLI
           # sc.flag [:v, :version], :arg_name => 'VERSION', :desc => 'Module Version'
           # sc.switch [:f], :default_value => false, :desc => 'Force Install'
           sc.action do |_global_options, _options, _args|
-            Operation::Module.install(:base_dsl_file_obj => @base_dsl_file_obj)
+            Operation::Module.install(:module_ref => context_attributes[:module_ref], :base_dsl_file_obj => @base_dsl_file_obj)
           end
         end
       end
@@ -48,7 +48,7 @@ module DTK::Client; module CLI
           # sc.flag [:v, :version], :arg_name => 'VERSION', :desc => 'Module Version'
           # sc.switch [:f], :default_value => false, :desc => 'Force Push'
           sc.action do |_global_options, _options, _args|
-            Operation::Module.push(:module_ref => ModuleRef.reify(context_attributes[:module_ref]), :base_dsl_file_obj => @base_dsl_file_obj)
+            Operation::Module.push(:module_ref => context_attributes[:module_ref], :base_dsl_file_obj => @base_dsl_file_obj)
           end
         end
       end
@@ -70,7 +70,6 @@ module DTK::Client; module CLI
               # This error only applicable if not in module
               raise Error::Usage, "The module reference must be given using option '-m NAMESPACE/MODULE-NAME'"
             end
-            module_ref = ModuleRef.reify(module_ref)
             Operation::Module.delete(:module_ref => module_ref)
           end
         end

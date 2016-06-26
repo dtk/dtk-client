@@ -18,39 +18,22 @@
 module DTK::Client
   class ModuleRef
 
-    attr_reader :namespace, :module_name
+    attr_reader :namespace, :module_name, :version
 
-    def initialize(namespace, module_name)
+    # opt scan have keys
+    #  :version
+    def initialize(namespace, module_name, opts = {})
       @namespace   = namespace
       @module_name = module_name
+      @version     = opts[:version] 
     end
 
-    MODULE_NAMESPACE_DELIMS = ['/', ':']
     PRINT_FORM_DELIM = ':'
 
-    # returns [namespace, module_name] or raises error
-    def self.reify(input_string_or_module_ref_obj)
-      return input_string_or_module_ref_obj if input_string_or_module_ref_obj.kind_of?(self)
-
-      input_string = input_string_or_module_ref_obj
-      split = split_by_delim(input_string)
-      raise(Error::Usage, "The term '#{input_string}' is an ill-formed module reference") unless split.size == 2
-      namespace, module_name = split
-      new(namespace, module_name)
-    end
-
     def print_form
-      "#{@namespace}#{PRINT_FORM_DELIM}#{@module_name}"
-    end
-
-    private
-
-    def self.split_by_delim(str)
-      if matching_delim = MODULE_NAMESPACE_DELIMS.find { |delim| str =~ Regexp.new(delim) }
-        str.split(matching_delim)
-      else
-        [str]
-      end
+      ret = "#{@namespace}#{PRINT_FORM_DELIM}#{@module_name}"
+      ret << "(#{version})" if @version
+      ret
     end
   end
 end

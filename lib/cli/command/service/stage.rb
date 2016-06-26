@@ -37,7 +37,6 @@ module DTK::Client; module CLI
               # This error only applicable if not in module
               raise Error::Usage, "The module reference must be given using option '-m NAMESPACE/MODULE-NAME'"
             end
-            module_ref  = ModuleRef.reify(module_ref)
 
             assembly_name = args[0]
             version = options[:v] || (in_module ? 'master' : nil)

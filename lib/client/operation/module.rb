@@ -24,8 +24,6 @@ module DTK::Client
 
       BaseRoute = 'modules'
 
-      # Args can have keys
-      #  :base_dsl_file_obj - DTK::DSL::FileObj (required)
       def self.install(args = Args.new)
         Install.install(args)
       end
@@ -38,8 +36,6 @@ module DTK::Client
         rest_get("#{BaseRoute}/list_assemblies").set_render_as_table!
       end
 
-      # Args can have keys
-      #  :module_ref - DTK::Client::ModuleRef object (required)
       def self.delete(args = Args.new)
         Delete.delete(args)
       end

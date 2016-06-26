@@ -21,6 +21,7 @@ module DTK::Client::CLI
       class Module < Context
         include Command::Module
         include Command::Service        
+
         private
         
         def add_command_defs!
@@ -31,19 +32,12 @@ module DTK::Client::CLI
         
         def attributes
           ret = super
-          if module_ref = module_ref?
+          if module_ref = base_module_ref?
             ret.merge!(:module_ref => module_ref)
           end
           ret
         end
-
-        private
-
-        def module_ref?
-          if base_dsl_hash_content = base_dsl_hash_content?
-            base_dsl_hash_content['module']
-          end
-        end
+        
       end
     end
   end
