@@ -63,8 +63,8 @@ module DTK::Client
 
           if missing_modules = dependencies.data(:missing_module_components)
             unless missing_modules.empty?
-              dep_module_refs = (missing_modules || []).map { |module_ref_hash| ModuleRef.new(module_ref_hash) }
-              install_modules(dep_module_refs, :skip_dependencies => true)
+              dep_module_refs = (missing_modules || []).map { |ref_hash| ModuleRef.new(ref_hash['namespace'], ref_hash['name'], :version => ref_hash['version']) }
+              install_dependent_modules(dep_module_refs, :skip_dependencies => true)
             end
           end
         end
