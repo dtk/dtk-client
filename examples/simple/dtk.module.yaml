@@ -11,6 +11,9 @@ dependencies:
 - dtk/host
 assemblies:
   simple:
+    description: Simple assembly for DTK-2554
+    attributes:
+      global_num: 5
     nodes:
       n1:
         attributes:
