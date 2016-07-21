@@ -23,8 +23,20 @@ module DTK::Client; module CLI
       module Flag
         Info = Struct.new(:opt, :arg_name, :desc)
 
+        def self.version
+          Info.new(:v, 'VERSION', 'Version')
+        end
+
         def self.service_instance
-          Info.new(:s, 'SERVICE-INSTANCE-NAME', 'Service instance name')
+          Info.new(:s, 'SERVICE-INSTANCE', 'Service instance name')
+        end
+
+        def self.target_service_instance
+          Info.new(:t, 'TARGET-SERVICE-INTANCE', 'Target service instance name')
+        end
+
+        def self.namespace_module_name
+          Info.new(:m, 'NAMESPACE/MODULE-NAME', 'Module name with namespace')
         end
 
         #### 

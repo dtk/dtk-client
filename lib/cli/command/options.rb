@@ -25,7 +25,6 @@ module DTK::Client
         
         def [](flag_name)
           key = Term::Flag.opt(flag_name)
-          raise Error, "Flag name '#{flag_name}' is illegal" unless @opts_hash.has_key?(key)
           @opts_hash[key]
         end
       end

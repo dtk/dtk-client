@@ -22,30 +22,31 @@ module DTK::Client; module CLI
         c.arg 'ASSEMBLY-NAME'
         c.desc 'Stage a new service instance from an assembly'
         c.command :stage  do |sc|
+          sc = Subcommand.new(sc)
           unless context_attributes[:module_ref]
-            sc.flag [:m], :arg_name => 'NAMESPACE/MODULE-NAME', :desc => 'Module name with namespace'
+            sc.flag Term::Flag.namespace_module_name
           end
-          sc.flag [:i], :arg_name =>'SERVICE-INSTANCE-NAME', :desc => 'If specified, new service instance name' 
-          sc.flag [:t], :arg_name => 'TARGET-SERVICE', :desc => 'Target service instance providing the context for the staged assembly' 
+          sc.flag Term::Flag.service_instance, :desc => 'If specified, new service instance name' 
+          sc.flag Term::Flag.target_service_instance, :desc => 'Target service instance providing the context for the staged assembly' 
           unless context_attributes[:module_ref]
-            sc.flag [:v], :arg_name => 'VERSION', :desc => 'Version'
+            sc.flag Term::Flag.version
           end
           # sc.switch ['auto-complete'], :default_value => true, :desc => 'If true, components with dependencies are automatically linked'
           sc.action do |_global_options, options, args|
             in_module =  !!context_attributes[:module_ref]
-            unless module_ref = options[:m] || context_attributes[:module_ref]
+            unless module_ref = options[:namespace_module_name] || context_attributes[:module_ref]
               # This error only applicable if not in module
-              raise Error::Usage, "The module reference must be given using option '-m NAMESPACE/MODULE-NAME'"
+              raise Error::Usage, "The module reference must be given using option ''#{option_ref(:namespace_module_name)}'"
             end
 
             assembly_name = args[0]
-            version = options[:v] || (in_module ? 'master' : nil)
+            version = options[:version] || (in_module ? 'master' : nil)
             args = {
               :module_ref     => module_ref,
               :assembly_name  => assembly_name,
-              :service_name   => options[:i],
+              :service_name   => options[:service_instance],
               :version        => version,
-              :target_service => options[:t],
+              :target_service => options[:target_service_instance],
             }
             Operation::Service.stage(args)
           end
