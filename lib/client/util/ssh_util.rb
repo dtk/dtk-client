@@ -38,12 +38,12 @@ module DTK::Client
       end
     end
     
-    def self.default_rsa_pub_key_path()
-      "#{ssh_base_dir()}/id_rsa.pub"
+    def self.default_rsa_pub_key_path
+      "#{ssh_base_dir}/id_rsa.pub"
     end
     
-    def self.rsa_pub_key_content()
-      path_to_key = self.default_rsa_pub_key_path()
+    def self.rsa_pub_key_content
+      path_to_key = self.default_rsa_pub_key_path
       unless File.file?(path_to_key)
         raise Error,"No File found at (#{path_to_key}). Path is wrong or it is necessary to generate the public rsa key (e.g., run ssh-keygen -t rsa)"
       end
@@ -56,17 +56,17 @@ module DTK::Client
       output = `ssh -o ConnectTimeout=#{timeout} -o \"StrictHostKeyChecking no\" -o \"UserKnownHostsFile /dev/null\" -q #{user}@#{server} exit; echo $?`
       
       # if response 0 than it is able to connect
-      "0".eql?(output.strip())
+      "0".eql?(output.strip)
     end
 
     private
 
-    def self.ssh_base_dir()
-      "#{DtkPath.base_dir}/.ssh"
+    def self.ssh_base_dir
+      "#{OsUtil.home_dir}/.ssh"
     end
       
-    def self.ssh_known_hosts_path()
-        "#{ssh_base_dir}/known_hosts"
+    def self.ssh_known_hosts_path
+      "#{ssh_base_dir}/known_hosts"
     end
 
     def self.is_ssh_key_path_valid?(path_to_key)
