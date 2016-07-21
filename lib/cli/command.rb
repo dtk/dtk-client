@@ -19,7 +19,10 @@ module DTK::Client
   module CLI
     module Command
       require_relative('command/mixin')
-      # mixin must be before rest
+      require_relative('command/term')
+      require_relative('command/subcommand')
+      require_relative('command/options')
+      # above must be included before below
       ALL_COMMANDS = [:service, :module]
       ALL_COMMANDS.each { |command_name| require_relative("command/#{command_name}") }
       

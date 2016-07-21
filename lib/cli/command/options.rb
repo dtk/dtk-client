@@ -15,14 +15,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client::CLI
-  module Command
-    module Service
-      include Command::Mixin
-      ALL_SUBCOMMANDS = ['stage', 'push']
-      command_def :desc => 'Subcommands for creating and interacting with DTK service instances'
-      ALL_SUBCOMMANDS.each { |subcommand| require_relative("service/#{subcommand}") } 
+module DTK::Client
+  module CLI
+    module Command
+      class Options
+        def initialize(opts_hash)
+          @opts_hash = opts_hash
+        end
+        
+        def [](flag_name)
+          key = Term::Flag.opt(flag_name)
+          raise Error, "Flag name '#{flag_name}' is illegal" unless @opts_hash.has_key?(key)
+          @opts_hash[key]
+        end
+      end
     end
   end
 end
-

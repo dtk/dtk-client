@@ -32,6 +32,15 @@ module DTK::Client::CLI
         send(mangled_method(command_name))
       end
 
+
+      def option_ref(flag_name)
+        Term::Flag.option_ref(flag_name)
+      end
+
+      def opt(flag_name)
+        options[Term::Flag.opt(flag_name)]
+      end
+
       private
       
       def self.included(klass)
@@ -69,7 +78,6 @@ module DTK::Client::CLI
         end
 
         private
-
 
         def mangled_subcommand_method(subcommand_name)
           "#{mangled_method(command_name)}__#{subcommand_name}".to_sym

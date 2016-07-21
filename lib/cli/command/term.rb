@@ -15,14 +15,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client::CLI
+module DTK::Client; module CLI
   module Command
-    module Service
-      include Command::Mixin
-      ALL_SUBCOMMANDS = ['stage', 'push']
-      command_def :desc => 'Subcommands for creating and interacting with DTK service instances'
-      ALL_SUBCOMMANDS.each { |subcommand| require_relative("service/#{subcommand}") } 
+    ##
+    # Common terms used in commands
+    module Term
+      module Flag
+        Info = Struct.new(:opt, :arg_name, :desc)
+
+        def self.service_instance
+          Info.new(:s, 'SERVICE-INSTANCE-NAME', 'Service instance name')
+        end
+
+        #### 
+        # general methods
+        def self.option_ref(flag_name)
+          flag_info = send(flag_name)
+          "-#{flag_info.opt} #{flag_info.arg_name}"
+        end
+
+        def self.opt(flag_name)
+          send(flag_name).opt
+        end
+      end
     end
   end
-end
-
+end; end
