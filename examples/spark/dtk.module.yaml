@@ -53,7 +53,7 @@ assemblies:
               install_mode: deb
             component_links:
               spark::master: master/spark::master
-      master:
+      slaves:
         attributes:
           image: trusty_hvm
           size: medium
