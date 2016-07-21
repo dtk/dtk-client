@@ -65,12 +65,13 @@ module DTK::Client; module CLI
       subcommand_def 'delete' do |c|
         c.desc 'Delete DTK module'
         c.command :delete  do |sc|
+          sc.switch [:y], :desc => 'Skip prompt'
           sc.action do |_global_options, options, args|
             unless module_ref = options[:m] || context_attributes[:module_ref]
               # This error only applicable if not in module
               raise Error::Usage, "The module reference must be given using option '-m NAMESPACE/MODULE-NAME'"
             end
-            Operation::Module.delete(:module_ref => module_ref)
+            Operation::Module.delete(:module_ref => module_ref, :force => options[:y])
           end
         end
       end

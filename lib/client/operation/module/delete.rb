@@ -21,7 +21,10 @@ module DTK::Client
       def self.delete(args = Args.new)
         wrap_as_response(args) do |args|
           module_ref  = args.required(:module_ref)
-          return false unless Console.prompt_yes_no("Are you sure you want to delete DTK module '#{module_ref.print_form}'?", :add_options => true)
+
+          unless args[:force]
+            return false unless Console.prompt_yes_no("Are you sure you want to delete DTK module '#{module_ref.print_form}'?", :add_options => true)
+          end
 
           post_body = PostBody.new(
             :module_name => module_ref.module_name,
