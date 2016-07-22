@@ -21,7 +21,7 @@ module DTK::Client
       BaseRoute = 'services'
 
       def self.stage(args = Args.new)
-        wrap_as_response(args) do |args|
+        wrap_operation(args) do |args|
           module_ref = args.required(:module_ref)
           post_body = PostBody.new(
             :namespace       => module_ref.namespace,
@@ -42,6 +42,16 @@ module DTK::Client
           ClientModuleDir::GitRepo.clone_service_repo(clone_args)
         end
       end
+
+      def self.push(args = Args.new)
+        wrap_operation(args) do |args|
+          post_body = PostBody.new(
+            :service_name   => args.required(:service_name)
+          )
+          rest_post("#{BaseRoute}/push", post_body)
+        end
+      end
+
     end
   end
 end

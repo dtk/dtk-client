@@ -22,7 +22,7 @@ module DTK::Client
       require_relative('install/common_module')
 
       def self.install(args = Args.new)
-        wrap_as_response(args) do |args|
+        wrap_operation(args) do |args|
           base_module_ref = args.required(:module_ref)
           file_obj = args.required(:base_dsl_file_obj).raise_error_if_no_content
           new(file_obj, base_module_ref).install

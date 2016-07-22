@@ -20,13 +20,13 @@ module DTK::Client
     # Operations for managing module folders that are git repos
     class GitRepo < self
       def self.fetch_merge_and_push(args)
-        wrap_as_response(args) do |args|
+        wrap_operation(args) do |args|
           { :head_sha => Internal.fetch_merge_and_push(args) }
         end
       end
 
       def self.create_add_remote_and_push(args)
-        wrap_as_response(args) do |args|
+        wrap_operation(args) do |args|
           repo_dir      = args.required(:repo_dir)
           repo_url      = args.required(:repo_url)
           remote_branch = args.required(:remote_branch)
@@ -35,7 +35,7 @@ module DTK::Client
       end
 
       def self.init_and_push_from_existing_repo(args)
-        wrap_as_response(args) do |args|
+        wrap_operation(args) do |args|
           repo_dir      = args.required(:repo_dir)
           repo_url      = args.required(:repo_url)
           remote_branch = args.required(:remote_branch)
@@ -44,14 +44,14 @@ module DTK::Client
       end
 
       def self.clone_service_repo(args)
-        wrap_as_response(args) do |args|
+        wrap_operation(args) do |args|
           { :target_repo_dir => Internal.clone_service_repo(args) }
         end
       end
 
       private
 
-      # All Internal do not have wrap_as_response and can only be accessed by a method that wraps it
+      # All Internal do not have wrap_operation and can only be accessed by a method that wraps it
       class Internal < self
         def self.clone_service_repo(args)
           repo_url        = args.required(:repo_url)

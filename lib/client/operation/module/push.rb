@@ -19,7 +19,7 @@ module DTK::Client
   class Operation::Module
     class Push < self
       def self.push(args = Args.new)
-        wrap_as_response(args) do |args|
+        wrap_operation(args) do |args|
           module_ref = args.required(:module_ref)
           file_obj   = args.required(:base_dsl_file_obj).raise_error_if_no_content
 

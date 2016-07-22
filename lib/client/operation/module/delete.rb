@@ -19,7 +19,7 @@ module DTK::Client
   class Operation::Module
     class Delete < self
       def self.delete(args = Args.new)
-        wrap_as_response(args) do |args|
+        wrap_operation(args) do |args|
           module_ref  = args.required(:module_ref)
 
           unless args[:force]

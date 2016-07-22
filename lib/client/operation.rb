@@ -44,7 +44,7 @@ module DTK::Client
       self.class.rest_get(route, query_params_hash)
     end
 
-    def self.wrap_as_response(args = Args.new, &block)
+    def self.wrap_operation(args = Args.new, &block)
       Response.wrap_as_response do
         block.call(Args.convert(args))
       end
