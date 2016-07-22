@@ -16,20 +16,19 @@
 # limitations under the License.
 #
 module DTK::Client
-  class Operation
-    class Service < self
-      require_relative('service/stage')
-      require_relative('service/push')
-
-      BaseRoute = 'services'
-
-      def self.stage(args = Args.new)
-        Stage.stage(args)
-      end
-
+  class Operation::Service
+    class Push < self
       def self.push(args = Args.new)
-        Push.push(args)
+        wrap_operation(args) do |args|
+          post_body = PostBody.new(
+            :service_name   => args.required(:service_name)
+          )
+          rest_post("#{BaseRoute}/update_from_repo", post_body)
+        end
       end
+
     end
   end
 end
+
+
