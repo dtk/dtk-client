@@ -20,9 +20,7 @@ module DTK::Client; module CLI
     module Service
       subcommand_def 'stage' do |c|
         c.arg 'ASSEMBLY-NAME'
-        c.desc 'Stage a new service instance from an assembly'
-        c.command :stage  do |sc|
-          sc = Subcommand.new(sc)
+        command_body c, :stage, 'Stage a new service instance from an assembly' do |sc|
           unless context_attributes[:module_ref]
             sc.flag Term::Flag.namespace_module_name
           end

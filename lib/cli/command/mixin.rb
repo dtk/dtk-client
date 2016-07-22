@@ -32,6 +32,10 @@ module DTK::Client::CLI
         send(mangled_method(command_name))
       end
 
+      def command_body(c, name, desc, &body)
+        c.desc(desc)
+        c.command(name) { |sc| body.call(Subcommand.new(sc)) }
+      end
 
       def option_ref(flag_name)
         Term::Flag.option_ref(flag_name)

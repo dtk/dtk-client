@@ -27,11 +27,7 @@ module DTK::Client; module CLI
         unless context_attributes[:module_name]
         # TODO: put in later  c.arg 'NAMESPACE/MODULE-NAME', :optional
         end
-        c.desc 'Install DTK module'
-        c.command :install  do |sc|
-          # TODO: put in later
-          # sc.flag [:v, :version], :arg_name => 'VERSION', :desc => 'Module Version'
-          # sc.switch [:f], :default_value => false, :desc => 'Force Install'
+        command_body c, :install, 'Install DTK module' do |sc|
           sc.action do |_global_options, _options, _args|
             Operation::Module.install(:module_ref => context_attributes[:module_ref], :base_dsl_file_obj => @base_dsl_file_obj)
           end
@@ -42,11 +38,7 @@ module DTK::Client; module CLI
         unless context_attributes[:module_name]
         # TODO: put in later  c.arg 'NAMESPACE/MODULE-NAME', :optional
         end
-        c.desc 'Push DTK module'
-        c.command :push  do |sc|
-          # TODO: put in later
-          # sc.flag [:v, :version], :arg_name => 'VERSION', :desc => 'Module Version'
-          # sc.switch [:f], :default_value => false, :desc => 'Force Push'
+          command_body c, :push, 'Push DTK module' do |sc|
           sc.action do |_global_options, _options, _args|
             Operation::Module.push(:module_ref => context_attributes[:module_ref], :base_dsl_file_obj => @base_dsl_file_obj)
           end
@@ -54,8 +46,7 @@ module DTK::Client; module CLI
       end
 
       subcommand_def 'list-assemblies' do |c|
-        c.desc 'List assemblies'
-        c.command 'list-assemblies'  do |sc|
+        command_body c, 'list-assemblies', 'List assemblies' do |sc|
           sc.action do 
             Operation::Module.list_assemblies
           end
@@ -64,12 +55,13 @@ module DTK::Client; module CLI
 
       subcommand_def 'delete' do |c|
         c.desc 'Delete DTK module'
-        c.command :delete  do |sc|
+        command_body c, :delete, 'Delete DTK module' do |sc|
+          sc.flag Term::Flag.namespace_module_name unless context_attributes[:module_ref]
           sc.switch [:y], :desc => 'Skip prompt'
           sc.action do |_global_options, options, args|
-            unless module_ref = options[:m] || context_attributes[:module_ref]
+            unless module_ref = options[:namespace_module_name] || context_attributes[:module_ref]
               # This error only applicable if not in module
-              raise Error::Usage, "The module reference must be given using option '-m NAMESPACE/MODULE-NAME'"
+              raise Error::Usage, "The module reference must be given using option ''#{option_ref(:namespace_module_name)}'"
             end
             Operation::Module.delete(:module_ref => module_ref, :force => options[:y])
           end

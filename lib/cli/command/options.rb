@@ -23,8 +23,8 @@ module DTK::Client
           @opts_hash = opts_hash
         end
         
-        def [](flag_name)
-          key = Term::Flag.opt(flag_name)
+        def [](flag_name_or_opt)
+          key = Term::Flag.opt?(flag_name_or_opt) || flag_name_or_opt
           @opts_hash[key]
         end
       end

@@ -46,8 +46,10 @@ module DTK::Client; module CLI
           "-#{flag_info.opt} #{flag_info.arg_name}"
         end
 
-        def self.opt(flag_name)
-          send(flag_name).opt
+        def self.opt?(flag_name)
+          if respond_to?(flag_name)
+            send(flag_name).opt
+          end
         end
       end
     end
