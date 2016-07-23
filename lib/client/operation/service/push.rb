@@ -20,10 +20,8 @@ module DTK::Client
     class Push < self
       def self.push(args = Args.new)
         wrap_operation(args) do |args|
-          post_body = PostBody.new(
-            :service_name   => args.required(:service_name)
-          )
-          rest_post("#{BaseRoute}/update_from_repo", post_body)
+          # TODO: wil be close to module push
+          raise Error, "Not implemented yet"
         end
       end
 
