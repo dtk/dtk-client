@@ -36,7 +36,7 @@ module DTK::Client
       end
       
       def self.target_service_instance
-        Flag::Info.new(:t, 'TARGET-SERVICE-INTANCE', 'Target service instance name')
+        Flag::Info.new(:t, 'TARGET-SERVICE-INSTANCE', 'Target service instance name')
       end
       
       def self.namespace_module_name

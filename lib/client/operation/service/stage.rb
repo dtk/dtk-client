@@ -21,6 +21,7 @@ module DTK::Client
       def self.stage(args = Args.new)
         wrap_operation(args) do |args|
           module_ref = args.required(:module_ref)
+          remove_existing = args[:remove_existing]
           post_body = PostBody.new(
             :namespace       => module_ref.namespace,
             :module_name     => module_ref.module_name,
@@ -35,7 +36,8 @@ module DTK::Client
             :module_ref      => module_ref,
             :repo_url        => response.required(:repo, :url),
             :branch          => response.required(:branch, :name),
-            :service_name    => response.required(:service, :name)
+            :service_name    => response.required(:service, :name),
+            :remove_existing => remove_existing
           } 
           ClientModuleDir::GitRepo.clone_service_repo(clone_args)
         end

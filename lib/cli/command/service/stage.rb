@@ -46,7 +46,7 @@ module DTK::Client; module CLI
               :service_name   => options[:service_instance],
               :version        => version,
               :target_service => options[:target_service_instance],
-              :force          => options[:force]
+              :remove_existing => options[:force]
             }
             Operation::Service.stage(args)
           end

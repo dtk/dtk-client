@@ -21,28 +21,28 @@ module DTK::Client
   class Operation
     # Operations for managing module folders
     class ClientModuleDir < self
-      require_relative('module_dir/git_repo')
+      require_relative('client_module_dir/git_repo')
       
-      def self.create_service_dir(service_name)
-        # since option, backup_if_exist is not set on create_service_dir, this will fail on
-        create_service_dir?(service_name)
-      end
-
       # opts can have keys
-      #  backup_if_exist (optional) - Boolean
-      def self.create_service_dir?(service_name, opts = {})
+      #   :backup_if_exist - Boolean (default: false)
+      #   :remove_existing - Boolean (default: false)
+      def self.create_service_dir(service_name, opts = {})
         path = "#{base_path(:service)}/#{service_name}"
         if File.exists?(path)
-          # TODO: put back in after refernced methods are ported over
-          # if local copy of module exists then move that module to backups location
-          # if opts[:backup_if_exist]
-          #  backup_dir = backup_dir(type, module_ref)
-          #  FileUtils.mv(target_repo_dir, backup_dir)
-          #  OsUtil.print_warning("Backup of existing module directory moved to '#{backup_dir}'")
-          # else
-          # raise Error::Usage, "Directory '#{path}' is not empty; it must be deleted or removed before retrying the command"
-          #end
-          raise Error::Usage, "Directory '#{path}' is not empty; it must be deleted or removed before retrying the command"
+          if opts[:remove_existing]
+            FileUtils.rm_rf(path)
+          else
+            # TODO: put back in after referenced methods are ported over
+            # if local copy of module exists then move that module to backups location
+            # if opts[:backup_if_exist]
+            #  backup_dir = backup_dir(type, module_ref)
+            #  FileUtils.mv(target_repo_dir, backup_dir)
+            #  OsUtil.print_warning("Backup of existing module directory moved to '#{backup_dir}'")
+            # else
+            # raise Error::Usage, "Directory '#{path}' is not empty; it must be deleted or removed before retrying the command"
+            #end
+            raise Error::Usage, "Directory '#{path}' is not empty; it must be deleted or removed before retrying the command"
+          end
         end
         FileUtils.mkdir_p(path)
         path
