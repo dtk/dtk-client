@@ -27,6 +27,11 @@ module DTK::Client
           key = Term::Flag.opt?(flag_name_or_opt) || flag_name_or_opt
           @opts_hash[key]
         end
+
+        def switch(switch_name_or_opt)
+          key = Term::Switch.opt?(switch_name_or_opt) || switch_name_or_opt
+          @opts_hash[key]
+        end
       end
     end
   end

@@ -26,6 +26,7 @@ module DTK::Client; module CLI
           end
           sc.flag Term::Flag.service_instance, :desc => 'If specified, new service instance name' 
           sc.flag Term::Flag.target_service_instance, :desc => 'Target service instance providing the context for the staged assembly' 
+          sc.switch Term::Switch.force, :desc => 'Overwrite any content that presently exists in the service instance directory to be created'
           unless context_attributes[:module_ref]
             sc.flag Term::Flag.version
           end
@@ -45,6 +46,7 @@ module DTK::Client; module CLI
               :service_name   => options[:service_instance],
               :version        => version,
               :target_service => options[:target_service_instance],
+              :force          => options.switch(:force)
             }
             Operation::Service.stage(args)
           end

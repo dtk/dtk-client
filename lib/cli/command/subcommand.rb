@@ -37,42 +37,12 @@ module DTK::Client; module CLI
       end
 
       def flag(*args)
-        flag_with_term?(*args) || gli_command_flag(*args) 
+        Term::Flag::Helper.flag(@gli_command, *args)
       end
 
-      private
-
-      def gli_command_flag(*args)
-        @gli_command.send(:flag, *args)
+      def switch(*args)
+        Term::Switch::Helper.switch(@gli_command, *args)
       end
-
-      def flag_with_term?(*args)
-        if args[0].kind_of?(Term::Flag::Info)
-          term_flag = args[0]
-          case args.size
-          when 1
-            gli_command_flag(term_flag.opt, :arg_name => term_flag.arg_name, :desc => term_flag.desc)
-          when 2
-            if args[1].kind_of?(::Array)
-              gli_command_flag(args[1], :arg_name => term_flag.arg_name, :desc => term_flag.desc)
-            elsif args[1].kind_of?(::Hash)
-              gli_command_flag(term_flag.opt, flag_merge_keys(term_flag, args[1]))
-            end
-          when 3
-            if args[1].kind_of?(::Array) and args[2].kind_of?(::Hash)
-              gli_command_flag(args[1], flag_merge_keys(term_flag, args[2]))
-            end
-          end
-        end
-      end
-
-      def flag_merge_keys(term_flag, flag_hash)
-        {
-          :arg_name => flag_hash[:arg_name] || term_flag.arg_name,
-          :desc => flag_hash[:desc] || term_flag.desc
-        }
-      end
-
     end
   end
 end; end
