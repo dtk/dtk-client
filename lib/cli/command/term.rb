@@ -22,6 +22,46 @@ module DTK::Client
     module Term
       require_relative('term/flag')
       require_relative('term/switch')
+
+      # Flags
+
+      # Flag::Info = Struct.new(:opt, :arg_name, :desc)
+
+      def self.version
+        Flag::Info.new(:v, 'VERSION', 'Version')
+      end
+      
+      def self.service_instance
+        Flag::Info.new(:s, 'SERVICE-INSTANCE', 'Service instance name')
+      end
+      
+      def self.target_service_instance
+        Flag::Info.new(:t, 'TARGET-SERVICE-INTANCE', 'Target service instance name')
+      end
+      
+      def self.namespace_module_name
+        Flag::Info.new(:m, 'NAMESPACE/MODULE-NAME', 'Module name with namespace')
+      end
+
+      # switches
+
+      # Switch::Info = Struct.new(:opt, :desc, :default_value)
+
+      def self.force
+        Switch::Info.new(:f, 'Force', false)
+      end
+
+      #### 
+      # general methods
+      def self.opt?(canonical_name)
+        send(canonical_name).opt if respond_to?(canonical_name) 
+      end
+      
+      def self.option_ref(canonical_name)
+        flag_info = send(canonical_name)
+        "-#{flag_info.opt} #{flag_info.arg__name}"
+      end
+
     end
   end
 end

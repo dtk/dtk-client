@@ -37,11 +37,11 @@ module DTK::Client; module CLI
       end
 
       def flag(*args)
-        Term::Flag::Helper.flag(@gli_command, *args)
+        Term::Flag.flag(@gli_command, *args)
       end
 
       def switch(*args)
-        Term::Switch::Helper.switch(@gli_command, *args)
+        Term::Switch.switch(@gli_command, *args)
       end
     end
   end

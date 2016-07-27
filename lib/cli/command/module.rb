@@ -56,7 +56,7 @@ module DTK::Client; module CLI
       subcommand_def 'delete' do |c|
         c.desc 'Delete DTK module'
         command_body c, :delete, 'Delete DTK module' do |sc|
-          sc.flag Term::Flag.namespace_module_name unless context_attributes[:module_ref]
+          sc.flag Term.namespace_module_name unless context_attributes[:module_ref]
           sc.switch [:y], :desc => 'Skip prompt'
           sc.action do |_global_options, options, args|
             unless module_ref = options[:namespace_module_name] || context_attributes[:module_ref]
