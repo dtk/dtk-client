@@ -62,3 +62,9 @@ module DTK::Client; module CLI
     end
   end
 end; end
+# monkey patch so that [global options] does not appear in help menu
+class GLI::Commands::HelpModules::FullSynopsisFormatter 
+  def global_flags_and_switches
+    {}
+  end
+end
