@@ -22,13 +22,13 @@ module DTK::Client; module CLI
         c.arg 'ASSEMBLY-NAME'
         command_body c, :stage, 'Stage a new service instance from an assembly' do |sc|
           unless context_attributes[:module_ref]
-            sc.flag Term.namespace_module_name
+            sc.flag Token.namespace_module_name
           end
-          sc.flag Term.service_instance, :desc => 'If specified, new service instance name' 
-          sc.flag Term.target_service_instance, :desc => 'Target service instance providing the context for the staged assembly' 
-          sc.switch Term.force, :desc => 'Overwrite any content that presently exists in the service instance directory to be created'
+          sc.flag Token.service_instance, :desc => 'If specified, new service instance name' 
+          sc.flag Token.target_service_instance, :desc => 'Target service instance providing the context for the staged assembly' 
+          sc.switch Token.force, :desc => 'Overwrite any content that presently exists in the service instance directory to be created'
           unless context_attributes[:module_ref]
-            sc.flag Term.version
+            sc.flag Token.version
           end
           # sc.switch ['auto-complete'], :default_value => true, :desc => 'If true, components with dependencies are automatically linked'
           sc.action do |_global_options, options, args|

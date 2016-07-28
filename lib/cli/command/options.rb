@@ -24,7 +24,7 @@ module DTK::Client
         end
         
         def [](canonical_name_or_opt)
-          key = Term.opt?(canonical_name_or_opt) || canonical_name_or_opt
+          key = Token.opt?(canonical_name_or_opt) || canonical_name_or_opt
           @opts_hash[key]
         end
       end

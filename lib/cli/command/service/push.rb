@@ -21,7 +21,7 @@ module DTK::Client; module CLI
       subcommand_def 'push' do |c|
         command_body c, :push, 'Push updates in service module folder to server' do |sc|
           unless context_attributes[:service_name]
-            sc.flag Term.service_instance, :desc => 'Name of service to push to server'
+            sc.flag Token.service_instance, :desc => 'Name of service to push to server'
           end
 
           sc.action do |_global_options, options, _args|

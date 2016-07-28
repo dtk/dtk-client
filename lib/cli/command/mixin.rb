@@ -38,11 +38,11 @@ module DTK::Client::CLI
       end
 
       def option_ref(flag_name)
-        Term::Flag.option_ref(flag_name)
+        Token::Flag.option_ref(flag_name)
       end
 
       def opt(flag_name)
-        options[Term::Flag.opt(flag_name)]
+        options[Token::Flag.opt(flag_name)]
       end
 
       private

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 module DTK::Client
-  module CLI::Command::Term
+  module CLI::Command::Token
     class Flag
       Info = Struct.new(:opt, :arg_name, :desc)
       

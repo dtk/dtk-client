@@ -19,7 +19,7 @@ module DTK::Client
   module CLI
     module Command
       require_relative('command/mixin')
-      require_relative('command/term')
+      require_relative('command/token')
       require_relative('command/subcommand')
       require_relative('command/options')
       # above must be included before below

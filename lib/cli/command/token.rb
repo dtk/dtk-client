@@ -19,9 +19,9 @@ module DTK::Client
   module CLI::Command
     ##
     # Common terms used in commands
-    module Term
-      require_relative('term/flag')
-      require_relative('term/switch')
+    module Token
+      require_relative('token/flag')
+      require_relative('token/switch')
 
       # Flags
 

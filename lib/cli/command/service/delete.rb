@@ -21,7 +21,7 @@ module DTK::Client; module CLI
       subcommand_def 'delete' do |c|
         c.arg 'SERVICE-INSTANCE'
         command_body c, :delete, 'Deletes all the infrastructure associated with a service module folder and the contents of the folder' do |sc|
-          sc.switch Term.skip_prompt
+          sc.switch Token.skip_prompt
           sc.action do |_global_options, options, args|
             service_instance =  args[0]
             Operation::Service.delete(:service_instance => service_instance, :skip_prompt => options[:skip_prompt])
