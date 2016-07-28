@@ -21,6 +21,7 @@ module DTK::Client
       require_relative('service/stage')
       require_relative('service/delete')
       require_relative('service/push')
+      require_relative('service/edit')
 
       BaseRoute = 'services'
 
@@ -34,6 +35,10 @@ module DTK::Client
 
       def self.push(args = Args.new)
         Push.push(args)
+      end
+
+      def self.edit(args = Args.new)
+        Edit.edit(args)
       end
     end
   end

@@ -49,6 +49,13 @@ module DTK::Client
         end
       end
 
+      def self.clone_exists?(args)
+        wrap_operation(args) do |args|
+          type = args.required(:type)
+          local_dir_exists?(type, args.required("#{type}_name".to_sym))
+        end
+      end
+
       private
 
       # All Internal do not have wrap_operation and can only be accessed by a method that wraps it

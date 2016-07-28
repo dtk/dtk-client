@@ -15,16 +15,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client
-  module CLI
-    module Command
-      module Service
-        include Command::Mixin
-        ALL_SUBCOMMANDS = ['stage', 'delete', 'push', 'edit']
-        command_def :desc => 'Subcommands for creating and interacting with DTK service instances'
-        ALL_SUBCOMMANDS.each { |subcommand| require_relative("service/#{subcommand.gsub(/-/,'_')}") } 
+module DTK::Client; module CLI
+  module Command
+    module Service
+      subcommand_def 'edit' do |c|
+        c.arg 'RELATIVE-PATH', :optional
+        command_body c, :edit, 'Edit service instance' do |sc|
+          sc.switch Token.push, :desc => 'Commit and push changes to server'
+          sc.flag Token.commit_message
+
+          sc.action do |_global_options, options, args|
+            args = {
+              :module_ref    => context_attributes[:module_ref],
+              :relative_path => args[0]
+            }
+            Operation::Service.edit(args)
+          end
+        end
       end
     end
   end
-end
-
+end; end

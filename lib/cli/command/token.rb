@@ -43,6 +43,10 @@ module DTK::Client
         Flag::Info.new(:m, 'NAMESPACE/MODULE-NAME', 'Module name with namespace')
       end
 
+      def self.commit_message
+        Flag::Info.new(:m, 'COMMIT-MSG', 'Commit message')
+      end
+
       # switches
 
       # Switch::Info = Struct.new(:opt, :desc, :default_value)
@@ -53,6 +57,10 @@ module DTK::Client
 
       def self.skip_prompt
         Switch::Info.new(:y, 'Skip prompt', false)
+      end
+
+      def self.push
+        Switch::Info.new(:p, 'Push changes', false)
       end
 
       #### 
