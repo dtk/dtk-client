@@ -51,6 +51,10 @@ module DTK::Client
         Switch::Info.new(:f, 'Force', false)
       end
 
+      def self.skip_prompt
+        Switch::Info.new(:y, 'Skip prompt', false)
+      end
+
       #### 
       # general methods
       def self.opt?(canonical_name)

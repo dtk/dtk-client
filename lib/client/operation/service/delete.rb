@@ -16,25 +16,26 @@
 # limitations under the License.
 #
 module DTK::Client
-  class Operation
-    class Service < self
-      require_relative('service/stage')
-      require_relative('service/delete')
-      require_relative('service/push')
-
-      BaseRoute = 'services'
-
-      def self.stage(args = Args.new)
-        Stage.stage(args)
-      end
-
+  class Operation::Service
+    class Delete < self
       def self.delete(args = Args.new)
-        Delete.delete(args)
+        wrap_operation(args) do |args|
+          service_instance  = args.required(:service_instance)
+
+          unless args[:skip_prompt]
+            return false unless Console.prompt_yes_no("Are you sure you want to delete DTK module '#{service_instance}'?", :add_options => true)
+          end
+
+          post_body = PostBody.new(
+            :service_instance => service_instance
+          )
+          rest_post("#{BaseRoute}/delete", post_body)
+          OsUtil.print_info("DTK module '#{service_instance}' has been deleted successfully.")
+        end
       end
 
-      def self.push(args = Args.new)
-        Push.push(args)
-      end
     end
   end
 end
+
+

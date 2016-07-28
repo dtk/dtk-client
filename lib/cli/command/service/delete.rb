@@ -15,26 +15,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client
-  class Operation
-    class Service < self
-      require_relative('service/stage')
-      require_relative('service/delete')
-      require_relative('service/push')
-
-      BaseRoute = 'services'
-
-      def self.stage(args = Args.new)
-        Stage.stage(args)
-      end
-
-      def self.delete(args = Args.new)
-        Delete.delete(args)
-      end
-
-      def self.push(args = Args.new)
-        Push.push(args)
+module DTK::Client; module CLI
+  module Command
+    module Service
+      subcommand_def 'delete' do |c|
+        c.arg 'SERVICE-INSTANCE'
+        command_body c, :delete, 'Deletes all the infrastructure associated with a service module folder and the contents of the folder' do |sc|
+          sc.switch Term.skip_prompt
+          sc.action do |_global_options, options, args|
+            service_instance =  args[0]
+            Operation::Service.delete(:service_instance => service_instance, :skip_prompt => options[:skip_prompt])
+          end
+        end
       end
     end
   end
-end
+end; end

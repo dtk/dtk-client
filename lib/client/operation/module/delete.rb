@@ -22,7 +22,7 @@ module DTK::Client
         wrap_operation(args) do |args|
           module_ref  = args.required(:module_ref)
 
-          unless args[:force]
+          unless args[:skip_prompt]
             return false unless Console.prompt_yes_no("Are you sure you want to delete DTK module '#{module_ref.print_form}'?", :add_options => true)
           end
 
