@@ -19,62 +19,33 @@ module DTK::Client
   module CLI::Command
     ##
     # Common terms used in commands
-    module Token
+    class Token < ::Hash
+      require_relative('token/mixin')
+      require_relative('token/class_mixin')
       require_relative('token/flag')
       require_relative('token/switch')
 
-      # Flags
-
-      # Flag::Info = Struct.new(:opt, :arg_name, :desc)
-
-      def self.version
-        Flag::Info.new(:v, 'VERSION', 'Version')
-      end
+      include Mixin
+      extend ClassMixin
       
-      def self.service_instance
-        Flag::Info.new(:s, 'SERVICE-INSTANCE', 'Service instance name')
-      end
+      TOKENS = {
+        # flags
+        # Flag constructor args order: key, arg_name, desc, opts={}
+        :commit_message          => Flag.new(:m, 'COMMIT-MSG', 'Commit message'),
+        :namespace_module_name   => Flag.new(:m, 'NAMESPACE/MODULE-NAME', 'Module name with namespace'),
+        :version                 => Flag.new(:v, 'VERSION', 'Version'),
+        :service_instance        => Flag.new(:s, 'SERVICE-INSTANCE', 'Service instance name'),
+        :target_service_instance => Flag.new(:t, 'TARGET-SERVICE-INSTANCE', 'Target service instance name'),
+        
+        # switches
+        # Switch constructor args order: key, desc, opts={}
+        
+        :force       => Switch.new(:f, 'Force'),
+        :purge       => Switch.new(:p, 'Purge'),
+        :push        => Switch.new(:p, 'Push changes'),
+        :skip_prompt => Switch.new(:y, 'Skip prompt')
+      }
       
-      def self.target_service_instance
-        Flag::Info.new(:t, 'TARGET-SERVICE-INSTANCE', 'Target service instance name')
-      end
-      
-      def self.namespace_module_name
-        Flag::Info.new(:m, 'NAMESPACE/MODULE-NAME', 'Module name with namespace')
-      end
-
-      def self.commit_message
-        Flag::Info.new(:m, 'COMMIT-MSG', 'Commit message')
-      end
-
-      # switches
-
-      # Switch::Info = Struct.new(:opt, :desc, :default_value)
-
-      def self.force
-        Switch::Info.new(:f, 'Force', false)
-      end
-
-      def self.skip_prompt
-        Switch::Info.new(:y, 'Skip prompt', false)
-      end
-
-      def self.push
-        Switch::Info.new(:p, 'Push changes', false)
-      end
-
-      #### 
-      # general methods
-      def self.opt?(canonical_name)
-        send(canonical_name).opt if respond_to?(canonical_name) 
-      end
-      
-      def self.option_ref(canonical_name)
-        flag_info = send(canonical_name)
-        "-#{flag_info.opt} #{flag_info.arg__name}"
-      end
-
     end
   end
 end
-

@@ -17,18 +17,24 @@
 #
 module DTK::Client
   class CLI::Command::Token
-    class Switch < self
-      def initialize(key, desc, opts = {})
-        super(key, {:desc => desc, :default_value => false}.merge(opts))
+    module Mixin
+      attr_reader :key
+      def initialize(key, hash = {})
+        super()
+        replace(hash)
+        @key = key
       end
-      
-      def self.token_type
-        :switch
+
+      # Each concrete class must define
+      # def ref - returns string
+      # end
+      # def token_type - symbol
+      # end
+
+      def add_overrides(overrides)
+        merge(overrides)
       end
-      
-      def ref
-        "-#{key}"
-      end
+
     end
   end
 end

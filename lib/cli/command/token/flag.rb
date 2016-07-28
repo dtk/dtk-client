@@ -16,54 +16,20 @@
 # limitations under the License.
 #
 module DTK::Client
-  module CLI::Command::Token
-    class Flag
-      Info = Struct.new(:opt, :arg_name, :desc)
-      
-      def self.flag(gli_command, *args)
-        new(gli_command).flag(*args)
-      end
-      
-      def initialize(gli_command)
-        @gli_command = gli_command
-      end
-      private :initialize
-      
-      def flag(*args)
-        flag_with_term?(*args) || gli_command_flag(*args) 
-      end
-      
-      private
-        
-      def gli_command_flag(*args)
-        @gli_command.send(:flag, *args)
-      end
-      
-      def flag_with_term?(*args)
-        if args[0].kind_of?(Flag::Info)
-          term_flag = args[0]
-          case args.size
-          when 1
-            gli_command_flag(term_flag.opt, :arg_name => term_flag.arg_name, :desc => term_flag.desc)
-          when 2
-            if args[1].kind_of?(::Array)
-              gli_command_flag(args[1], :arg_name => term_flag.arg_name, :desc => term_flag.desc)
-            elsif args[1].kind_of?(::Hash)
-              gli_command_flag(term_flag.opt, flag_merge_keys(term_flag, args[1]))
-            end
-          when 3
-            if args[1].kind_of?(::Array) and args[2].kind_of?(::Hash)
-              gli_command_flag(args[1], flag_merge_keys(term_flag, args[2]))
-            end
-          end
+  module CLI::Command
+    class Token
+      class Flag < self
+        def initialize(key, arg_name, desc, opts = {})
+          super(key, {:arg_name => arg_name, :desc => desc}.merge(opts))
         end
-      end
-      
-      def flag_merge_keys(term_flag, flag_hash)
-        {
-          :arg_name => flag_hash[:arg_name] || term_flag.arg_name,
-          :desc => flag_hash[:desc] || term_flag.desc
-        }
+
+        def self.token_type
+          :flag
+        end
+
+        def ref
+          "-#{key} #{self[:arg_name]}"
+        end
       end
     end
   end

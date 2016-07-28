@@ -19,10 +19,10 @@ module DTK::Client
   module CLI::Command
     module Module 
       subcommand_def 'delete' do |c|
-        c.desc 'Delete DTK module'
-        command_body c, :delete, 'Delete DTK module' do |sc|
-          sc.flag Token.namespace_module_name unless context_attributes[:module_ref]
-          sc.switch Token.skip_prompt
+        c.desc 'Delete DTK module from server'
+        command_body c, :delete, 'Delete DTK module from server' do |sc|
+          sc.flag Token.namespace_module_name, :default_value => "Directory where executing from"
+          sc.switch Token.skip_prompt, :desc => 'Skip prompt that checks if user wants to delete module'
           sc.action do |_global_options, options, args|
             unless module_ref = options[:namespace_module_name] || context_attributes[:module_ref]
               # This error only applicable if not in module
