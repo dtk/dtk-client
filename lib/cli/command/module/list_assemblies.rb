@@ -16,15 +16,16 @@
 # limitations under the License.
 #
 module DTK::Client
-  module CLI
-    module Command
-      module Service
-        include Command::Mixin
-        ALL_SUBCOMMANDS = ['stage', 'delete', 'push']
-        command_def :desc => 'Subcommands for creating and interacting with DTK service instances'
-        ALL_SUBCOMMANDS.each { |subcommand| require_relative("service/#{subcommand.gsub(/-/,'_')}") } 
+  module CLI::Command
+    module Module 
+      subcommand_def 'list-assemblies' do |c|
+        command_body c, 'list-assemblies', 'List assemblies' do |sc|
+          sc.action do 
+            Operation::Module.list_assemblies
+          end
+        end
       end
+
     end
   end
 end
-

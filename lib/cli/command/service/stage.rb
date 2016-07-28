@@ -15,8 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client; module CLI
-  module Command
+module DTK::Client
+  module CLI::Command
     module Service
       subcommand_def 'stage' do |c|
         c.arg 'ASSEMBLY-NAME'
@@ -54,4 +54,4 @@ module DTK::Client; module CLI
       end
     end
   end
-end; end
+end
