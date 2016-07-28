@@ -25,9 +25,12 @@ module DTK::Client; module CLI
           sc.flag Token.commit_message
 
           sc.action do |_global_options, options, args|
+            relative_path = args[0]
+            file_path = relative_path || @base_dsl_file_obj.path?
+
             args = {
-              :module_ref    => context_attributes[:module_ref],
-              :relative_path => args[0]
+              :module_ref => context_attributes[:module_ref],
+              :file_path  => file_path
             }
             Operation::Service.edit(args)
           end

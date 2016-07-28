@@ -21,14 +21,9 @@ module DTK::Client
       def self.edit(args = Args.new)
         wrap_operation(args) do |args|
           module_ref = args.required(:module_ref)
-          relative_path = args[:relative_path]
+          file_path  = args.required(:file_path)
 
-          clone_args = {
-            :type => :service,
-            :module_ref => module_ref
-          }
-
-          raise Error,"[ERROR] File does not exist" unless File.exists?(relative_path)
+          raise Error,"[ERROR] File does not exist" unless File.exists?(file_path)
           # post_body = PostBody.new(
           #   :namespace       => module_ref.namespace,
           #   :module_name     => module_ref.module_name,
