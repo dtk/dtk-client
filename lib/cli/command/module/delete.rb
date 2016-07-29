@@ -21,7 +21,7 @@ module DTK::Client
       subcommand_def 'delete' do |c|
         command_body c, :delete, 'Delete DTK module from server' do |sc|
           sc.flag Token.namespace_module_name
-          sc.switch Token.skip_prompt, :desc => 'Skip prompt that checks if user wants to delete module'
+          sc.switch Token.skip_prompt, :desc => 'Skip prompt that checks if user wants to delete module from server'
           sc.action do |_global_options, options, args|
             module_ref = module_ref_in_context_or_options(options)
             Operation::Module.delete(:module_ref => module_ref, :skip_prompt => options[:skip_prompt])

@@ -32,7 +32,7 @@ module DTK::Client
         # flags
         # Flag constructor args order: key, arg_name, desc, opts={}
         :commit_message          => Flag.new(:m, 'COMMIT-MSG', 'Commit message'),
-        :namespace_module_name   => Flag.new(:m, 'NAMESPACE/MODULE-NAME', 'Module name with namespace'),
+        :namespace_module_name   => Flag.new(:m, 'NAMESPACE/MODULE-NAME', 'Module name with namespace; not needed if command is executed from within the module'),
         :version                 => Flag.new(:v, 'VERSION', 'Version'),
         :service_instance        => Flag.new(:s, 'SERVICE-INSTANCE', 'Service instance name'),
         :target_service_instance => Flag.new(:t, 'TARGET-SERVICE-INSTANCE', 'Target service instance name'),

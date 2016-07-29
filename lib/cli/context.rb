@@ -24,9 +24,9 @@ module DTK::Client
 
       def self.determine_context
 #testing stub
-dir_path = File.expand_path('../../examples/spark', File.dirname(__FILE__))
-base_dsl_file_obj = base_dsl_file_obj(:dir_path => dir_path)
-#        base_dsl_file_obj = base_dsl_file_obj()
+#dir_path = File.expand_path('../../examples/spark', File.dirname(__FILE__))
+#base_dsl_file_obj = base_dsl_file_obj(:dir_path => dir_path)
+        base_dsl_file_obj = base_dsl_file_obj()
         Type.create_context!(base_dsl_file_obj)
       end
 
