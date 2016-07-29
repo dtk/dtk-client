@@ -151,6 +151,29 @@ module DTK::Client
       def head_commit_sha
         current_branch.gcommit.sha
       end
+
+      def pull(remote, branch)
+        @git_repo.pull(remote, branch)
+      end
+
+      def diff
+        @git_repo.diff
+      end
+
+      def changed?
+        (!(changed().empty? && untracked().empty? && deleted().empty?))
+      end
+
+      def print_status
+        changes = [changed(), untracked(), deleted()]
+        puts "\nModified files:\n".colorize(:green) unless changes[0].empty?
+        changes[0].each { |item| puts "\t#{item}" }
+        puts "\nAdded files:\n".colorize(:yellow) unless changes[1].empty?
+        changes[1].each { |item| puts "\t#{item}" }
+        puts "\nDeleted files:\n".colorize(:red) unless changes[2].empty?
+        changes[2].each { |item| puts "\t#{item}" }
+        puts ""
+      end
     end
   end
 end

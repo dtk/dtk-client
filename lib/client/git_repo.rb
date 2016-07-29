@@ -85,6 +85,22 @@ module DTK::Client
       @git_adapter.head_commit_sha
     end
 
+    def pull(remote, branch)
+      @git_adapter.pull(remote, branch)
+    end
+
+    def diff
+      @git_adapter.diff
+    end
+
+    def changed?
+      @git_adapter.changed?
+    end
+
+    def print_status
+      @git_adapter.print_status
+    end
+
     def self.unlink_local_clone?(dir)
       git_dir = "#{dir}/.git"
       if File.directory?(git_dir)

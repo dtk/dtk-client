@@ -56,6 +56,18 @@ module DTK::Client
         end
       end
 
+      def self.pull_from_remote(args)
+        wrap_operation(args) do |args|
+          { :target_repo_dir => Internal.pull_from_remote(args) }
+        end
+      end
+
+      def self.pull_and_edit(args)
+        wrap_operation(args) do |args|
+          { :push_needed => Internal.pull_and_edit(args) }
+        end
+      end
+
       private
 
       # All Internal do not have wrap_operation and can only be accessed by a method that wraps it
@@ -117,6 +129,46 @@ module DTK::Client
           end
           
           repo.head_commit_sha
+        end
+
+        def self.pull_from_remote(args)
+          repo_url      = args.required(:repo_url)
+          remote_branch = args.required(:branch)
+          service_name  = args.required(:service_name)
+          # repo_dir      = args.required(:repo_dir)
+          # using repo_dir based on service instance name because client commands are still executed from hardcoded rich:spark example
+          repo_dir = ret_base_path(:service, service_name)
+
+          repo = git_repo.new(repo_dir, :branch => remote_branch)
+          repo.pull(repo.remotes.first, remote_branch)
+        end
+
+        def self.pull_and_edit(args)
+          repo_url      = args.required(:repo_url)
+          remote_branch = args.required(:branch)
+          service_name  = args.required(:service_name)
+          file_path     = args.required(:file_path)
+          # repo_dir      = OsUtil.parent_dir(file_path)
+          # using repo_dir based on service instance name because client commands are still executed from hardcoded rich:spark example
+          repo_dir = ret_base_path(:service, service_name)
+
+          repo = git_repo.new(repo_dir, :branch => remote_branch)
+          repo.pull(repo.remotes.first, remote_branch)
+
+          OsUtil.edit(file_path)
+
+          unless repo.changed?
+            puts "No changes to repository"
+            return
+          end
+
+          confirmed_ok = Console.prompt_yes_no("Would you like to commit changes to the file?", :add_options => true)
+          return false unless confirmed_ok
+
+          commit_msg = OsUtil.user_input("Commit message")
+          commit_msg.gsub!(/\"/,'') unless commit_msg.count('"') % 2 ==0
+
+          return confirmed_ok
         end
         
         private

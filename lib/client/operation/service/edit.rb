@@ -20,28 +20,27 @@ module DTK::Client
     class Edit < self
       def self.edit(args = Args.new)
         wrap_operation(args) do |args|
-          module_ref = args.required(:module_ref)
-          file_path  = args.required(:file_path)
+          module_ref       = args.required(:module_ref)
+          relative_path    = args.required(:relative_path)
+          service_instance = args.required(:service_instance)
+          file_obj         = args.required(:base_dsl_file_obj).raise_error_if_no_content
+          file_path        = file_obj.path?
 
-          raise Error,"[ERROR] File does not exist" unless File.exists?(file_path)
-          # post_body = PostBody.new(
-          #   :namespace       => module_ref.namespace,
-          #   :module_name     => module_ref.module_name,
-          #   :assembly_name   => args.required(:assembly_name),
-          #   :service_name?   => args[:service_name],
-          #   :version?        => args[:version],
-          #   :target_service? => args[:target_service],
-          # )
-          # response = rest_post("#{BaseRoute}/create", post_body)
-          # pp [:debug, response.class, response]
-          # clone_args = {
-          #   :module_ref      => module_ref,
-          #   :repo_url        => response.required(:repo, :url),
-          #   :branch          => response.required(:branch, :name),
-          #   :service_name    => response.required(:service, :name),
-          #   :remove_existing => remove_existing
-          # } 
-          # ClientModuleDir::GitRepo.clone_service_repo(clone_args)
+          post_body = PostBody.new(
+            :service_instance => service_instance
+          )
+          response = rest_post("#{BaseRoute}/repo_info", post_body)
+
+          pull_args = {
+            :module_ref   => module_ref,
+            :repo_url     => response.required(:repo, :url),
+            :branch       => response.required(:branch, :name),
+            :service_name => response.required(:service, :name),
+            :file_path    => file_path
+          }
+          response = ClientModuleDir::GitRepo.pull_and_edit(pull_args)
+
+          Push.push(args) if response.data[:push_needed]
         end
       end
     end

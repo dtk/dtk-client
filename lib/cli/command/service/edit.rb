@@ -19,18 +19,19 @@ module DTK::Client; module CLI
   module Command
     module Service
       subcommand_def 'edit' do |c|
+        # since we are still using hardcoded path to spark module, we require service instance to be provided as parameter
+        c.arg 'SERVICE-INSTANCE'
         c.arg 'RELATIVE-PATH', :optional
         command_body c, :edit, 'Edit service instance' do |sc|
           sc.switch Token.push, :desc => 'Commit and push changes to server'
           sc.flag Token.commit_message
 
           sc.action do |_global_options, options, args|
-            relative_path = args[0]
-            file_path = relative_path || @base_dsl_file_obj.path?
-
             args = {
-              :module_ref => context_attributes[:module_ref],
-              :file_path  => file_path
+              :module_ref        => context_attributes[:module_ref],
+              :service_instance  => args[0],
+              :relative_path     => args[1],
+              :base_dsl_file_obj => @base_dsl_file_obj
             }
             Operation::Service.edit(args)
           end

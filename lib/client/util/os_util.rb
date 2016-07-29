@@ -17,6 +17,7 @@
 #
 module DTK::Client
   class OsUtil
+    require 'readline'
     require_relative('os_util/print')
     extend Auxiliary
     extend PrintMixin
@@ -64,6 +65,27 @@ module DTK::Client
 
     def self.delim
       is_windows? ? '\\' : '/'
+    end
+
+    def self.edit(file)
+      editor = ENV['EDITOR']
+      if is_windows?
+        raise Client::DtkError, "Environment variable EDITOR needs to be set; exit dtk-shell, set variable and log back into dtk-shell." unless editor
+      else
+        editor = 'vim' unless editor
+      end
+
+      system("#{editor} #{file}")
+    end
+
+    def self.user_input(message)
+      trap("INT", "SIG_IGN")
+      while line = Readline.readline("#{message}: ",true)
+        unless line.chomp.empty?
+          trap("INT", false)
+          return line
+        end
+      end
     end
 
     private

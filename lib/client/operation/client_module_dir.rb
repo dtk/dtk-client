@@ -51,6 +51,10 @@ module DTK::Client
       def self.local_dir_exists?(type, name, opts = {})
         File.exists?("#{base_path(type)}/#{name}")
       end
+
+      def self.ret_base_path(type, name)
+        "#{base_path(type)}/#{name}"
+      end
     
       private
 
