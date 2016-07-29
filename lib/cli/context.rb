@@ -54,7 +54,7 @@ module DTK::Client
         parsed_module = @base_dsl_file_obj.parse_content(:common_module_summary)
         namespace   = parsed_module.val(:Namespace)
         module_name = parsed_module.val(:ModuleName)
-        ModuleRef.new(namespace, module_name) if namespace and module_name
+        ModuleRef.new(:namespace => namespace, :module_name => module_name) if namespace and module_name
       end
 
       private
@@ -77,6 +77,17 @@ module DTK::Client
          ::DTK::DSL::FileType::CommonModule,
          ::DTK::DSL::FileType::ServiceInstance
         ]
+
+
+      def module_ref_in_context_or_options(options)
+        if options[:namespace_module_name]
+          ModuleRef.new(:namespace_module_name => options[:namespace_module_name])
+        elsif module_ref = context_attributes[:module_ref]
+          module_ref
+        else
+          raise Error::Usage, "This command must be executed from within a module or a module reference must be given using option '#{option_ref(:namespace_module_name)}'"
+        end
+      end
 
       # Methods related to adding cli command definitions 
       def add_command_defs!

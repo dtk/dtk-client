@@ -59,7 +59,7 @@ module DTK::Client
         (@parsed_module.val(:DependentModules) || []).map do |parsed_module_ref| 
           namespace   = parsed_module_ref.req(:Namespace)
           module_name = parsed_module_ref.req(:ModuleName)
-          ModuleRef.new(namespace, module_name)
+          ModuleRef.new(:namespace => namespace, :module_name => module_name)
         end
       end
 

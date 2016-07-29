@@ -20,20 +20,67 @@ module DTK::Client
 
     attr_reader :namespace, :module_name, :version
 
-    # opt scan have keys
+    # opts can have keys
+    #  :namespace
+    #  :module_name
+    #  :namespace_module_name
     #  :version
-    def initialize(namespace, module_name, opts = {})
-      @namespace   = namespace
-      @module_name = module_name
-      @version     = opts[:version] 
+    def initialize(opts = {})
+      if opts[:namespace] and opts[:module_name]
+        @namespace   = opts[:namespace]
+        @module_name = opts[:module_name]
+      elsif opts[:namespace_module_name]
+        namespace, module_name =  NamespaceModuleName.parse(opts[:namespace_module_name])
+        @namespace   = namespace
+        @module_name = module_name
+      else
+        raise Error, "Either :module_name and :namespace must be given or :namespace_module_name"
+      end
+      @version = opts[:version] 
     end
 
-    PRINT_FORM_DELIM = ':'
-
     def print_form
-      ret = "#{@namespace}#{PRINT_FORM_DELIM}#{@module_name}"
-      ret << "(#{version})" if @version
-      ret
+      NamespaceModuleName.print_form(@namespace, @module_name, :version => @version)
+    end
+
+    private
+
+    module NamespaceModuleName
+      PRINT_FORM_DELIM = ':'
+      PARSE_FORM_DELIM = [':', '/']
+
+      # opts can have keys
+      #   :version
+      def self.print_form(namespace, module_name, opts = {}) 
+        ret = "#{namespace}#{PRINT_FORM_DELIM}#{module_name}"
+        if version = opts[:version]
+          ret << "(#{version})" 
+        end
+        ret
+      end
+
+      # returns [namespace, module_name] or raises error
+      def self.parse(term)
+        parse?(term) || raise(Error::Usage, illegal_term_msg(term))
+      end
+      private
+
+      def self.parse?(term)
+        if match_delim = PARSE_FORM_DELIM.find { |delim| term =~ Regexp.new(delim) }
+          split = term.split(match_delim)
+          if split.size == 2
+            namespace   = split[0]
+            module_name = split[1]
+            [namespace, module_name]
+          end
+        end
+      end
+
+      # TODO: sleect delimeter based on whether external ref ('/') or installed ref (':')
+      def self.illegal_term_msg(term)
+        # TODO: not showing how version can be in this
+        "Illegal term '#{term}' for designating a module with a namespace; legal form is '#{print_form('NAMESPACE', 'MODULE-NAME')}'"
+      end
     end
   end
 end

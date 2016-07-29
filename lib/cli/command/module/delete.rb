@@ -20,13 +20,10 @@ module DTK::Client
     module Module 
       subcommand_def 'delete' do |c|
         command_body c, :delete, 'Delete DTK module from server' do |sc|
-          sc.flag Token.namespace_module_name, :default_value => "Directory where executing from"
+          sc.flag Token.namespace_module_name
           sc.switch Token.skip_prompt, :desc => 'Skip prompt that checks if user wants to delete module'
           sc.action do |_global_options, options, args|
-            unless module_ref = options[:namespace_module_name] || context_attributes[:module_ref]
-              # This error only applicable if not in module
-              raise Error::Usage, "The module reference must be given using option ''#{option_ref(:namespace_module_name)}'"
-            end
+            module_ref = module_ref_in_context_or_options(options)
             Operation::Module.delete(:module_ref => module_ref, :skip_prompt => options[:skip_prompt])
           end
         end

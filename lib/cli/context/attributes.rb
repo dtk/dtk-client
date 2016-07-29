@@ -39,7 +39,6 @@ module DTK::Client::CLI
 
       def module_ref
          if @special_keys.has_key?(:module_ref)
-           @special_keys[:module_ref] = (@context.base_module_ref? if @context.respond_to?(:base_module_ref?))
            @special_keys[:module_ref]
          else
            @special_keys[:module_ref] = (@context.base_module_ref? if @context.respond_to?(:base_module_ref?))
