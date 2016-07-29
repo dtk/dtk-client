@@ -19,11 +19,11 @@ module DTK::Client
   class CLI::Command::Token
     module ClassMixin
       def method_missing(method, *_args, &_body)
-        TOKENS[method] || super
+        tokens[method] || super
       end
 
       def respond_to?(method)
-        TOKENS.include?(method) or super
+        tokens.include?(method) or super
       end
       
       def opt?(canonical_name)
@@ -46,13 +46,29 @@ module DTK::Client
       
       private
 
+      # this can be overwritten
+      def tokens
+        TOKENS
+      end
+
+      def flag_tokens
+        #flag tokens in TOKENS
+        TOKENS
+      end
+
       def apply_gli_command(gli_command, *args)
         gli_command.send(token_type, *args)
       end
         
 
       def token(canonical_name)
-        TOKENS[canonical_name]
+        tokens[canonical_name]
+      end
+
+      def flag_token(canonical_name)
+        ret = flag_tokens[canonical_name]
+        raise Error, "flag_token called with non flag token '#{canonical_name}'" unless ret.kind_of?(Flag)
+        ret
       end
 
       def ret_when_token_obj?(gli_command, *args)

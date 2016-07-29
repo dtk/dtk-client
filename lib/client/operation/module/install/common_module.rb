@@ -33,7 +33,7 @@ module DTK::Client
         repo_url  = response.required(:repo, :url)
         repo_name = response.required(:repo, :name)
 
-        # making repo dir to be dircetory that directly holds the base file object file_obj
+        # making repo dir to be directory that directly holds the base file object file_obj
         repo_dir = parent_dir(file_obj)
 
         args = {

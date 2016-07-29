@@ -51,7 +51,7 @@ module DTK::Client
     end
 
     def self.parent_dir(path)
-      parent_dir?(path) || raise(Error::Usage, "Cannot find parent dircetory of '#{path}'")
+      parent_dir?(path) || raise(Error::Usage, "Cannot find parent directory of '#{path}'")
     end
 
     # Returns parent directory; if at root returns nil

@@ -19,9 +19,11 @@ module DTK::Client; module CLI
   module Command
     module Service
       subcommand_def 'edit' do |c|
+        # TODO: put in logic that infers service insatnce and convert below to falg
         # since we are still using hardcoded path to spark module, we require service instance to be provided as parameter
-        c.arg 'SERVICE-INSTANCE'
-        c.arg 'RELATIVE-PATH', :optional
+        c.arg Token::Arg.service_instance
+        # TODO: convert below to flag with key --path
+        c.arg Token::Arg.relative_path, :optional => true
         command_body c, :edit, 'Edit service instance' do |sc|
           sc.switch Token.push, :desc => 'Commit and push changes to server'
           sc.flag Token.commit_message

@@ -19,12 +19,12 @@ module DTK::Client
   module CLI::Command
     module Service
       subcommand_def 'stage' do |c|
-        c.arg 'ASSEMBLY-NAME'
+        c.arg Token::Arg.assembly_name
         command_body c, :stage, 'Stage a new service instance from an assembly' do |sc|
-          sc.flag Token.namespace_module_name
+          sc.flag Token.namespace_module_name, :desc => 'Module name with namespace from which to find assembly; not needed if command is executed from within the module'
           sc.flag Token.service_instance, :desc => 'If specified, new service instance name' 
-          sc.flag Token.target_service_instance, :desc => 'Target service instance providing the context for the staged assembly' 
-          sc.switch Token.force, :desc => 'Overwrite any content that presently exists in the service instance directory to be created'
+          sc.flag Token.parent_service_instance
+          sc.switch Token.purge, :desc => 'Overwrite any content that presently exists in the service instance directory to be created'
           unless context_attributes[:module_ref]
             sc.flag Token.version
           end
@@ -35,12 +35,12 @@ module DTK::Client
             assembly_name = args[0]
             version = options[:version] || (in_module ? 'master' : nil)
             args = {
-              :module_ref     => module_ref,
-              :assembly_name  => assembly_name,
-              :service_name   => options[:service_instance],
-              :version        => version,
-              :target_service => options[:target_service_instance],
-              :remove_existing => options[:force]
+              :module_ref      => module_ref,
+              :assembly_name   => assembly_name,
+              :service_name    => options[:service_instance],
+              :version         => version,
+              :target_service  => options[:parent_service_instance],
+              :remove_existing => options[:purge]
             }
             Operation::Service.stage(args)
           end

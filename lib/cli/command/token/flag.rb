@@ -19,8 +19,13 @@ module DTK::Client
   module CLI::Command
     class Token
       class Flag < self
+
         def initialize(key, arg_name, desc, opts = {})
           super(key, {:arg_name => arg_name, :desc => desc}.merge(opts))
+        end
+
+        def arg_name
+          self[:arg_name]
         end
 
         def self.token_type

@@ -18,8 +18,9 @@
 module DTK::Client
   class CLI::Command::Token
     class Switch < self
+      DEFAULT_OPTS = { :default_value => false, :negatable => false }
       def initialize(key, desc, opts = {})
-        super(key, {:desc => desc, :default_value => false}.merge(opts))
+        super(key, DEFAULT_OPTS.merge(:desc => desc).merge(opts))
       end
       
       def self.token_type

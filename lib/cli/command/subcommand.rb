@@ -43,6 +43,11 @@ module DTK::Client; module CLI
       def switch(*args)
         Token::Switch.ret(@gli_command, *args)
       end
+
+      def arg(*args)
+        Token::Arg.ret(@gli_command, *args)
+      end
+
     end
   end
 end; end
