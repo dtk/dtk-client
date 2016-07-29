@@ -23,18 +23,17 @@ module DTK::Client
       require_relative('context/attributes')
 
       def self.determine_context
-#stub
-dir_path = File.expand_path('../../examples/spark', File.dirname(__FILE__))
-
-#dir_path = nil
-        base_dsl_file_obj = base_dsl_file_obj(:dir_path => dir_path)
+#testing stub
+#dir_path = File.expand_path('../../examples/spark', File.dirname(__FILE__))
+#base_dsl_file_obj = base_dsl_file_obj(:dir_path => dir_path)
+        base_dsl_file_obj = base_dsl_file_obj()
         Type.create_context!(base_dsl_file_obj)
       end
 
       def initialize(base_dsl_file_obj)
         @base_dsl_file_obj   = base_dsl_file_obj
         @command_processor   = Processor.default
-        @context_attributes  = attributes
+        @context_attributes  = Attributes.new(self)
         add_command_defs_defaults_and_hooks!
       end
       private :initialize
@@ -50,14 +49,22 @@ dir_path = File.expand_path('../../examples/spark', File.dirname(__FILE__))
       def respond_to?(method)
         command_processor_object_methods.include?(method) or super
       end
-      
+
+      def base_module_ref?
+        parsed_module = @base_dsl_file_obj.parse_content(:common_module_summary)
+        namespace   = parsed_module.val(:Namespace)
+        module_name = parsed_module.val(:ModuleName)
+        ModuleRef.new(namespace, module_name) if namespace and module_name
+      end
+
       private
 
       attr_reader :context_attributes
 
-      # The method 'attributes' can be overwritten
-      def attributes
-        Attributes.new
+      # opts can have keys
+      #   :dir_path
+      def set_base_dsl_file_obj!(opts = {})
+        @base_dsl_file_obj = self.class.base_dsl_file_obj(opts)
       end
 
       # opts can have keys
@@ -70,14 +77,6 @@ dir_path = File.expand_path('../../examples/spark', File.dirname(__FILE__))
          ::DTK::DSL::FileType::CommonModule,
          ::DTK::DSL::FileType::ServiceInstance
         ]
-
-      def base_module_ref?
-        # TODO: might have a parse template that is even more sparse than :common_module_summary
-        parsed_module = @base_dsl_file_obj.parse_content(:common_module_summary)
-        namespace   = parsed_module.val(:Namespace)
-        module_name = parsed_module.val(:ModuleName)
-        ModuleRef.new(namespace, module_name) if namespace and module_name
-      end
 
       # Methods related to adding cli command definitions 
       def add_command_defs!

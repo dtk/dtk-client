@@ -29,15 +29,7 @@ module DTK::Client::CLI
           # add_command :service needed for stage and deploy commands
           add_command :service
         end
-        
-        def attributes
-          ret = super
-          if module_ref = base_module_ref?
-            ret.merge!(:module_ref => module_ref)
-          end
-          ret
-        end
-        
+
       end
     end
   end

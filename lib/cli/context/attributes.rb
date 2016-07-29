@@ -18,6 +18,34 @@
 module DTK::Client::CLI
   class Context
     class Attributes < ::Hash
+      def initialize(context)
+        @context = context
+
+        # special_keys computed on demand
+        @special_keys = {}
+      end
+
+      def [](key)
+        # special processing on demand
+        case key
+        when :module_ref
+          module_ref
+        else
+          super
+        end
+      end
+
+      private
+
+      def module_ref
+         if @special_keys.has_key?(:module_ref)
+           @special_keys[:module_ref] = (@context.base_module_ref? if @context.respond_to?(:base_module_ref?))
+           @special_keys[:module_ref]
+         else
+           @special_keys[:module_ref] = (@context.base_module_ref? if @context.respond_to?(:base_module_ref?))
+         end
+      end
+
     end
   end
 end

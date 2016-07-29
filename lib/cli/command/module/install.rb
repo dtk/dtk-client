@@ -19,11 +19,13 @@ module DTK::Client
   module CLI::Command
     module Module 
       subcommand_def 'install' do |c|
-        unless context_attributes[:module_name]
-        # TODO: put in later  c.arg 'NAMESPACE/MODULE-NAME', :optional
-        end
-        command_body c, :install, 'Install DTK module' do |sc|
-          sc.action do |_global_options, _options, _args|
+        c.arg 'MODULE-PATH', :optional => true
+        command_body c, :install, 'Install DTK module from local dirctory to server' do |sc|
+          sc.action do |_global_options, _options, args|
+            if module_dir_path = args[0]
+              set_base_dsl_file_obj!(:dir_path => module_dir_path)
+            end
+            module_ref = context_attributes[:module_ref]
             Operation::Module.install(:module_ref => context_attributes[:module_ref], :base_dsl_file_obj => @base_dsl_file_obj)
           end
         end
