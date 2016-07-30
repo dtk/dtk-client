@@ -23,17 +23,7 @@ module DTK::Client
 
       BaseRoute = 'modules'
 
-      def self.method_missing(method, *args, &body)
-        if OPERATIONS.include?(method)
-          operation_class(method).send(:execute, *args, &body)
-        else
-          super
-        end
-      end
-
-      def self.respond_to?(method)
-        OPERATIONS.include?(method) or super
-      end
+      extend ModuleServiceCommon::ClassMixin
         
       def self.parent_dir(file_obj)
         unless path = file_obj.path?
@@ -43,12 +33,6 @@ module DTK::Client
       end
 
       private
-
-      extend Auxiliary
-
-      def self.operation_class(operation)
-        const_get snake_to_camel_case(operation)
-      end
 
       def module_exists?(module_ref, opts = {})
         self.class.module_exists?(module_ref, opts)
