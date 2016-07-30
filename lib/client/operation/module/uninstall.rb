@@ -16,19 +16,27 @@
 # limitations under the License.
 #
 module DTK::Client
-  module CLI::Command
-    module Module 
-      subcommand_def 'delete' do |c|
-        command_body c, :delete, 'Delete DTK module from server' do |sc|
-          sc.flag Token.namespace_module_name
-          sc.switch Token.skip_prompt, :desc => 'Skip prompt that checks if user wants to delete module from server'
-          sc.action do |_global_options, options, args|
-            module_ref = module_ref_in_context_or_options(options)
-            Operation::Module.delete(:module_ref => module_ref, :skip_prompt => options[:skip_prompt])
+  class Operation::Module
+    class Uninstall < self
+      def self.execute(args = Args.new)
+        wrap_operation(args) do |args|
+          module_ref  = args.required(:module_ref)
+
+          unless args[:skip_prompt]
+            return false unless Console.prompt_yes_no("Are you sure you want to uninstall module '#{module_ref.print_form}' from the server?", :add_options => true)
           end
+
+          post_body = PostBody.new(
+            :module_name => module_ref.module_name,
+            :namespace   => module_ref.namespace
+          )
+          rest_post("#{BaseRoute}/delete", post_body)
+          OsUtil.print_info("DTK module '#{module_ref.print_form}' has been deleted successfully.")
         end
       end
 
     end
   end
 end
+
+

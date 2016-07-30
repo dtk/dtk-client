@@ -59,10 +59,15 @@ module DTK::Client
         ret
       end
 
+      def self.legal_form
+        print_form('NAMESPACE', 'MODULE-NAME')
+      end
+
       # returns [namespace, module_name] or raises error
       def self.parse(term)
         parse?(term) || raise(Error::Usage, illegal_term_msg(term))
       end
+
       private
 
       def self.parse?(term)
@@ -76,10 +81,9 @@ module DTK::Client
         end
       end
 
-      # TODO: sleect delimeter based on whether external ref ('/') or installed ref (':')
       def self.illegal_term_msg(term)
         # TODO: not showing how version can be in this
-        "Illegal term '#{term}' for designating a module with a namespace; legal form is '#{print_form('NAMESPACE', 'MODULE-NAME')}'"
+        "Illegal term '#{term}' for designating a module with a namespace; legal form is '#{legal_form}'"
       end
     end
   end

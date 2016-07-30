@@ -79,13 +79,18 @@ base_dsl_file_obj = base_dsl_file_obj(:dir_path => dir_path)
         ]
 
 
-      def module_ref_in_context_or_options(options)
-        if options[:namespace_module_name]
-          ModuleRef.new(:namespace_module_name => options[:namespace_module_name])
+      def module_ref_in_options_or_context(options)
+        unless ret = module_ref_in_options_or_context?(options)
+          raise Error::Usage, "This command must be executed from within a module or a module reference must be given using option '#{option_ref(:module_ref_in_options)}'"
+        end
+        ret
+      end
+
+      def module_ref_in_options_or_context?(options)
+        if options[:module_ref_in_options]
+          ModuleRef.new(:module_ref_in_options => options[:module_ref_in_options])
         elsif module_ref = context_attributes[:module_ref]
           module_ref
-        else
-          raise Error::Usage, "This command must be executed from within a module or a module reference must be given using option '#{option_ref(:namespace_module_name)}'"
         end
       end
 

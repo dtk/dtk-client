@@ -84,7 +84,7 @@ module DTK::Client
     end
 
     def self.create_adapter(render_type, opts = {})
-      klass = const_get cap_form(render_type) 
+      klass = const_get snake_to_camel_case(render_type) 
       klass.new(render_type, opts)
     end
     

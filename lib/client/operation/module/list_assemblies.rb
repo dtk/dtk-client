@@ -16,16 +16,19 @@
 # limitations under the License.
 #
 module DTK::Client
-  module CLI
-    module Command
-      module Module 
-        include Command::Mixin
-        
-        ALL_SUBCOMMANDS = ['install', 'list', 'list-assemblies', 'push', 'uninstall']
-        command_def :desc => 'Subcommands for interacting with DTK modules'
-        ALL_SUBCOMMANDS.each { |subcommand| require_relative("module/#{subcommand.gsub(/-/,'_')}") } 
+  class Operation::Module
+    class ListAssemblies < self
+      def self.execute(args = Args.new)
+        wrap_operation(args) do |args|
+          if module_ref  = args[:module_ref]
+            raise Error, 'Not yet written when module_ref given'
+          end
+          rest_get("#{BaseRoute}/list_assemblies").set_render_as_table!
+        end.set_render_as_table!
       end
+
     end
   end
 end
+
 

@@ -19,12 +19,11 @@ module DTK::Client
   module CLI::Command
     module Module 
       subcommand_def 'push' do |c|
-        unless context_attributes[:module_name]
-        # TODO: put in later  c.arg 'NAMESPACE/MODULE-NAME', :optional
-        end
-          command_body c, :push, 'Push DTK module' do |sc|
-          sc.action do |_global_options, _options, _args|
-            Operation::Module.push(:module_ref => context_attributes[:module_ref], :base_dsl_file_obj => @base_dsl_file_obj)
+        command_body c, :push, 'Push content from client module directory to server' do |sc|
+          sc.flag Token.module_ref_in_options
+          sc.action do |_global_options, options, _args|
+            module_ref = module_ref_in_options_or_context(options)
+            Operation::Module.push(:module_ref => module_ref, :base_dsl_file_obj => @base_dsl_file_obj)
           end
         end
       end

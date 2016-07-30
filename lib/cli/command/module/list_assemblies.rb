@@ -19,9 +19,17 @@ module DTK::Client
   module CLI::Command
     module Module 
       subcommand_def 'list-assemblies' do |c|
-        command_body c, 'list-assemblies', 'List assemblies' do |sc|
-          sc.action do 
-            Operation::Module.list_assemblies
+        command_body c, 'list-assemblies', 'List assemblies from all modules or specified module' do |sc|
+          sc.switch Token.all, :desc => 'List assemblies from all modules'
+          sc.flag Token.module_ref_in_options
+          sc.action do |_global_options, options, _args| 
+            opts = {}
+            unless options[:all]
+              if module_ref = module_ref_in_options_or_context?(options)
+                opts.merge!(:module_ref => module_ref)
+              end
+            end
+            Operation::Module.list_assemblies(opts)
           end
         end
       end

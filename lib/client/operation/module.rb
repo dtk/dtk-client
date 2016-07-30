@@ -18,28 +18,23 @@
 module DTK::Client
   class Operation
     class Module < self
-      require_relative('module/install')
-      require_relative('module/push')
-      require_relative('module/delete')
+      OPERATIONS = [:install, :list, :list_assemblies, :push, :uninstall]
+      OPERATIONS.each { |operation| require_relative("module/#{operation}") }
 
       BaseRoute = 'modules'
 
-      def self.install(args = Args.new)
-        Install.install(args)
+      def self.method_missing(method, *args, &body)
+        if OPERATIONS.include?(method)
+          operation_class(method).send(:execute, *args, &body)
+        else
+          super
+        end
       end
 
-      def self.push(args = Args.new)
-        Push.push(args)
+      def self.respond_to?(method)
+        OPERATIONS.include?(method) or super
       end
-
-      def self.list_assemblies
-        rest_get("#{BaseRoute}/list_assemblies").set_render_as_table!
-      end
-
-      def self.delete(args = Args.new)
-        Delete.delete(args)
-      end
-
+        
       def self.parent_dir(file_obj)
         unless path = file_obj.path?
           raise Error, "Unexpected that 'file_obj.path?' is nil"
@@ -48,6 +43,12 @@ module DTK::Client
       end
 
       private
+
+      extend Auxiliary
+
+      def self.operation_class(operation)
+        const_get snake_to_camel_case(operation)
+      end
 
       def module_exists?(module_ref, opts = {})
         self.class.module_exists?(module_ref, opts)

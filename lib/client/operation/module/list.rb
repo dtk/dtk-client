@@ -17,24 +17,12 @@
 #
 module DTK::Client
   class Operation::Module
-    class Delete < self
-      def self.delete(args = Args.new)
+    class List < self
+      def self.execute(args = Args.new)
         wrap_operation(args) do |args|
-          module_ref  = args.required(:module_ref)
-
-          unless args[:skip_prompt]
-            return false unless Console.prompt_yes_no("Are you sure you want to delete DTK module '#{module_ref.print_form}'?", :add_options => true)
-          end
-
-          post_body = PostBody.new(
-            :module_name => module_ref.module_name,
-            :namespace   => module_ref.namespace
-          )
-          rest_post("#{BaseRoute}/delete", post_body)
-          OsUtil.print_info("DTK module '#{module_ref.print_form}' has been deleted successfully.")
+          raise Error, 'Not yet written'
         end
       end
-
     end
   end
 end

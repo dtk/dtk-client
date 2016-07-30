@@ -33,14 +33,15 @@ module DTK::Client
         # flags
         # Flag constructor args order: key, arg_name, desc, opts={}
         :commit_message          => Flag.new(:m, 'COMMIT-MSG', 'Commit message'),
-        :parent_service_instance => Flag.new(:p, 'PARENT', 'Parent service instance; if not specfied, the default target service instance serves as parent'),
-        :namespace_module_name   => Flag.new(:m, 'NAMESPACE/MODULE-NAME', 'Module name with namespace; not needed if command is executed from within the module'),
+        :directory_path          => Flag.new(:d, 'DIRECTORY-PATH', 'Directory path'),
+        :parent_service_instance => Flag.new(:parent, 'PARENT', 'Parent service instance; if not specfied, the default target service instance serves as parent'),
+        :module_ref_in_options   => Flag.new(:m, ModuleRef::NamespaceModuleName.legal_form, 'Module name with namespace; not needed if command is executed from within the module directory'),
         :service_instance        => Flag.new(:s, 'SERVICE-INSTANCE', 'Service instance name'),
         :version                 => Flag.new(:v, 'VERSION', 'Version'),
 
         # switches
         # Switch constructor args order: key, desc, opts={}
-        
+        :all         => Switch.new(:all, 'All'),
         :force       => Switch.new(:f, 'Force'),
         :purge       => Switch.new(:purge, 'Purge'),
         :push        => Switch.new(:push, 'Push changes'),
@@ -50,7 +51,6 @@ module DTK::Client
 
       ARG_TOKENS = {
         :assembly_name    => 'ASSEMBLY-NAME',
-        :module_path      => 'MODULE-PATH',
         :relative_path    => 'RELATIVE-PATH',
         :service_instance => flag_token(:service_instance).arg_name,  
       }
