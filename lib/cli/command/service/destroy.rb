@@ -18,15 +18,15 @@
 module DTK::Client; module CLI
   module Command
     module Service
-      subcommand_def 'delete' do |c|
+      subcommand_def 'destroy' do |c|
         c.arg Token::Arg.service_instance
-        command_body c, :delete, 'Deletes the running infrastructure associated with the service instance and uninstalls the service instance from the server' do |sc|
+        command_body c, :destroy, 'Destroys the running infrastructure associated with the service instance and uninstalls the service instance from the server' do |sc|
           sc.switch Token.skip_prompt, :desc => 'Skip prompt that checks if user wants to delete the service instance'
           sc.switch Token.purge, :desc => 'On the client deletes the directory add its contents associated with the service instance'
           sc.action do |_global_options, options, args|
             service_instance =  args[0]
             # TODO: put in options[:purge] to below
-            Operation::Service.delete(:service_instance => service_instance, :skip_prompt => options[:skip_prompt])
+            Operation::Service.destroy(:service_instance => service_instance, :skip_prompt => options[:skip_prompt])
           end
         end
       end

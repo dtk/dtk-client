@@ -18,10 +18,11 @@
 module DTK::Client
   class Operation::Service
     class Stage < self
-      def self.stage(args = Args.new)
+      def self.execute(args = Args.new)
         wrap_operation(args) do |args|
-          module_ref = args.required(:module_ref)
+          module_ref      = args.required(:module_ref)
           remove_existing = args[:remove_existing]
+          
           post_body = PostBody.new(
             :namespace       => module_ref.namespace,
             :module_name     => module_ref.module_name,

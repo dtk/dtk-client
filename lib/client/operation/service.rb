@@ -18,28 +18,13 @@
 module DTK::Client
   class Operation
     class Service < self
-      require_relative('service/stage')
-      require_relative('service/delete')
-      require_relative('service/push')
-      require_relative('service/edit')
+      OPERATIONS = [:destroy, :edit, :pull, :push, :stage]
+      OPERATIONS.each { |operation| require_relative("service/#{operation}") }
 
       BaseRoute = 'services'
 
-      def self.stage(args = Args.new)
-        Stage.stage(args)
-      end
+      extend ModuleServiceCommon::ClassMixin
 
-      def self.delete(args = Args.new)
-        Delete.delete(args)
-      end
-
-      def self.push(args = Args.new)
-        Push.push(args)
-      end
-
-      def self.edit(args = Args.new)
-        Edit.edit(args)
-      end
     end
   end
 end

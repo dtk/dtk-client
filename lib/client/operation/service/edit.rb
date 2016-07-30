@@ -18,31 +18,41 @@
 module DTK::Client
   class Operation::Service
     class Edit < self
-      def self.edit(args = Args.new)
+      def self.execute(args = Args.new)
+        ret = nil
         wrap_operation(args) do |args|
-          module_ref       = args.required(:module_ref)
-          relative_path    = args.required(:relative_path)
           service_instance = args.required(:service_instance)
+          #TODO: pass in file_path rather than base_dsl_file_obj
           file_obj         = args.required(:base_dsl_file_obj).raise_error_if_no_content
           file_path        = file_obj.path?
+          push_after_edit  = args[:push_after_edit]
+          commit_message   = args[:commit_message]
 
-          post_body = PostBody.new(
-            :service_instance => service_instance
-          )
-          response = rest_post("#{BaseRoute}/repo_info", post_body)
+          response = Pull.execute(:service_instance => service_instance)
+          repo = response.required(:repo)
 
-          pull_args = {
-            :module_ref   => module_ref,
-            :repo_url     => response.required(:repo, :url),
-            :branch       => response.required(:branch, :name),
-            :service_name => response.required(:service, :name),
-            :file_path    => file_path
+          OsUtil.edit(file_path)
+          return ret unless push_after_edit and repo.changed?
+
+          commit_message ||= Internal.prompt_for_commit_message
+
+          push_args = {
+            # TODO: put in needed args
+            :commit_message => commit_message
           }
-          response = ClientModuleDir::GitRepo.pull_and_edit(pull_args)
-
-          Push.push(args) if response.data[:push_needed]
+          Push.execute(args)
+          ret
         end
       end
+
+      module Internal
+        def self.prompt_for_commit_message
+          commit_msg = OsUtil.user_input("Commit message")
+          commit_msg.gsub!(/\"/,'') unless commit_msg.count('"') % 2 ==0
+          commit_msg
+        end
+      end
+
     end
   end
 end

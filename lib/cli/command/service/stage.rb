@@ -20,15 +20,15 @@ module DTK::Client
     module Service
       subcommand_def 'stage' do |c|
         c.arg Token::Arg.assembly_name
-        command_body c, :stage, 'Stage a new service instance from an assembly' do |sc|
+        command_body c, :stage, 'Create a new service instance to refer to staged infrastructure that then can be deployed' do |sc|
           sc.flag Token.module_ref_in_options, :desc => 'Module name with namespace from which to find assembly; not needed if command is executed from within the module'
-          sc.flag Token.service_instance, :desc => 'If specified, new service instance name' 
+          sc.flag Token.service_name, :desc => 'If specified, name to use for new service instance; otherwise service insatnce name is auto-generated' 
           sc.flag Token.parent_service_instance
-          sc.switch Token.purge, :desc => 'Overwrite any content that presently exists in the service instance directory to be created'
+          # on useful for testing in dev mode
+          # sc.switch Token.purge, :desc => 'Overwrite any content that presently exists in the service instance directory to be created'
           unless context_attributes[:module_ref]
             sc.flag Token.version
           end
-          # sc.switch ['auto-complete'], :default_value => true, :desc => 'If true, components with dependencies are automatically linked'
           sc.action do |_global_options, options, args|
             in_module =  !!context_attributes[:module_ref]
             module_ref = module_ref_in_options_or_context(options)
@@ -37,7 +37,7 @@ module DTK::Client
             args = {
               :module_ref      => module_ref,
               :assembly_name   => assembly_name,
-              :service_name    => options[:service_instance],
+              :service_name    => options[:service_name],
               :version         => version,
               :target_service  => options[:parent_service_instance],
               :remove_existing => options[:purge]

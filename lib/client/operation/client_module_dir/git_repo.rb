@@ -62,9 +62,9 @@ module DTK::Client
         end
       end
 
-      def self.pull_and_edit(args)
-        wrap_operation(args) do |args|
-          { :push_needed => Internal.pull_and_edit(args) }
+      def self.pull_from_service_repo(args)
+        wrap_operation(args) do |args| 
+          {:repo => Internal.pull_from_service_repo(args) } 
         end
       end
 
@@ -111,14 +111,13 @@ module DTK::Client
           
           head_sha 
         end
-
+        
         def self.create_add_remote_and_push(repo_dir, repo_url, remote_branch)
           repo = git_repo.new(repo_dir)
           add_remote_and_push(repo, repo_url, remote_branch)
           repo.head_commit_sha
         end
         
-
         def self.init_and_push_from_existing_repo(repo_dir, repo_url, remote_branch)
           repo = git_repo.new(repo_dir)
           
@@ -130,7 +129,7 @@ module DTK::Client
           
           repo.head_commit_sha
         end
-
+        
         def self.pull_from_remote(args)
           repo_url      = args.required(:repo_url)
           remote_branch = args.required(:branch)
@@ -138,40 +137,23 @@ module DTK::Client
           # repo_dir      = args.required(:repo_dir)
           # using repo_dir based on service instance name because client commands are still executed from hardcoded rich:spark example
           repo_dir = ret_base_path(:service, service_name)
-
+          
           repo = git_repo.new(repo_dir, :branch => remote_branch)
           repo.pull(repo.remotes.first, remote_branch)
         end
-
-        def self.pull_and_edit(args)
+        
+        # returns the repo
+        def self.pull_from_service_repo(args)
           repo_url      = args.required(:repo_url)
           remote_branch = args.required(:branch)
           service_name  = args.required(:service_name)
-          file_path     = args.required(:file_path)
-          # repo_dir      = OsUtil.parent_dir(file_path)
-          # using repo_dir based on service instance name because client commands are still executed from hardcoded rich:spark example
+          
           repo_dir = ret_base_path(:service, service_name)
-
           repo = git_repo.new(repo_dir, :branch => remote_branch)
+          
           repo.pull(repo.remotes.first, remote_branch)
-
-          OsUtil.edit(file_path)
-
-          unless repo.changed?
-            puts "No changes to repository"
-            return
-          end
-
-          confirmed_ok = Console.prompt_yes_no("Would you like to commit changes to the file?", :add_options => true)
-          return false unless confirmed_ok
-
-          commit_msg = OsUtil.user_input("Commit message")
-          commit_msg.gsub!(/\"/,'') unless commit_msg.count('"') % 2 ==0
-
-          return confirmed_ok
+          repo
         end
-        
-        private
 
         def self.push_when_there_is_dtk_remote(repo, repo_dir, repo_url, remote_branch)
           # if there is only one remote and it is dtk-server; remove .git and initialize and push as new repo to dtk-server remote

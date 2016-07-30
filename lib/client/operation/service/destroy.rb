@@ -17,19 +17,18 @@
 #
 module DTK::Client
   class Operation::Service
-    class Delete < self
-      def self.delete(args = Args.new)
+    class Destroy < self
+      def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           service_instance  = args.required(:service_instance)
 
           unless args[:skip_prompt]
-            return false unless Console.prompt_yes_no("Are you sure you want to delete DTK module '#{service_instance}'?", :add_options => true)
+            return false unless Console.prompt_yes_no("Are you sure you want to destroy the infrastructure associated with '#{service_instance}' and delete this service instance from the server?", :add_options => true)
           end
 
-          post_body = PostBody.new(
-            :service_instance => service_instance
-          )
+          post_body = PostBody.new(:service_instance => service_instance)
           rest_post("#{BaseRoute}/delete", post_body)
+
           OsUtil.print_info("DTK module '#{service_instance}' has been deleted successfully.")
         end
       end

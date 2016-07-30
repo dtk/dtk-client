@@ -18,7 +18,7 @@
 module DTK::Client
   class Operation::Service
     class Push < self
-      def self.push(args = Args.new)
+      def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           # TODO: wil be close to module push
           raise Error, "Not implemented yet"

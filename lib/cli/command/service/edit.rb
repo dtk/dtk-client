@@ -19,21 +19,20 @@ module DTK::Client; module CLI
   module Command
     module Service
       subcommand_def 'edit' do |c|
-        # TODO: put in logic that infers service insatnce and convert below to falg
-        # since we are still using hardcoded path to spark module, we require service instance to be provided as parameter
-        c.arg Token::Arg.service_instance
-        # TODO: convert below to flag with key --path
-        c.arg Token::Arg.relative_path, :optional => true
-        command_body c, :edit, 'Edit service instance' do |sc|
-          sc.switch Token.push, :desc => 'Commit and push changes to server'
+        EDIT_DEFAULT_FILE = 'dtk.service.yaml'
+        command_body c, :edit, "Call editor on selected file in service instance" do |sc|
+          sc.flag Token.service_instance
+          sc.flag Token.relative_path, :desc => "Relative path in service instance directory of file to edit; if omitted then main dsl file '#{EDIT_DEFAULT_FILE}' is openned"
           sc.flag Token.commit_message
-
-          sc.action do |_global_options, options, args|
+          sc.switch Token.push, :desc => 'Commit and push changes made from editing to server'
+          
+          sc.action do |_global_options, _options, _args|
+            relative_path = options[:relative_path] || EDIT_DEFAULT_FILE
             args = {
-              :module_ref        => context_attributes[:module_ref],
-              :service_instance  => args[0],
-              :relative_path     => args[1],
-              :base_dsl_file_obj => @base_dsl_file_obj
+              :service_instance => service_instance,
+              :relative_path    => relative_path,
+              :commit_message   => opts[:commit_message],
+              :push_after_edit  => options[:push]
             }
             Operation::Service.edit(args)
           end

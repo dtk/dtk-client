@@ -16,15 +16,25 @@
 # limitations under the License.
 #
 module DTK::Client
-  module CLI
-    module Command
-      module Service
-        include Command::Mixin
-        ALL_SUBCOMMANDS = ['stage', 'destroy', 'edit', 'push', 'pull']
-        command_def :desc => 'Subcommands for creating and interacting with DTK service instances'
-        ALL_SUBCOMMANDS.each { |subcommand| require_relative("service/#{subcommand.gsub(/-/,'_')}") } 
+  class Operation::Service
+    class Pull < self
+      def self.execute(args = Args.new)
+        wrap_operation(args) do |args|
+          service_instance = args.required(:service_instance)
+          post_body = PostBody.new(
+            :service_instance => service_instance
+          )
+          response = rest_post("#{BaseRoute}/repo_info", post_body)
+
+          pull_args = {
+            :repo_url     => response.required(:repo, :url),
+            :branch       => response.required(:branch, :name),
+            :service_name => response.required(:service, :name),
+          }
+          ClientModuleDir::GitRepo.pull_from_service_repo(pull_args)
+        end
+
       end
     end
   end
 end
-
