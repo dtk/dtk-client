@@ -35,7 +35,10 @@ module DTK::Client; module CLI
           parsed_module = base_dsl_file_obj.parse_content(:common_module_summary)
           namespace   = parsed_module.val(:Namespace)
           module_name = parsed_module.val(:ModuleName)
-          ModuleRef.new(:namespace => namespace, :module_name => module_name) if namespace and module_name
+          if namespace and module_name
+            client_dir_path = base_dsl_file_obj.parent_dir?
+            ModuleRef.new(:namespace => namespace, :module_name => module_name, :client_dir_path => client_dir_path)
+          end
         end
 
         def add_command_defs!

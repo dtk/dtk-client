@@ -18,13 +18,14 @@
 module DTK::Client
   class ModuleRef
 
-    attr_reader :namespace, :module_name, :version
+    attr_reader :namespace, :module_name, :version, :client_dir_path
 
     # opts can have keys
     #  :namespace
     #  :module_name
     #  :namespace_module_name
     #  :version
+    #  :client_dir_path
     def initialize(opts = {})
       if opts[:namespace] and opts[:module_name]
         @namespace   = opts[:namespace]
@@ -36,7 +37,8 @@ module DTK::Client
       else
         raise Error, "Either :module_name and :namespace must be given or :namespace_module_name"
       end
-      @version = opts[:version] 
+      @version         = opts[:version] 
+      @client_dir_path = opts[:client_dir_path]
     end
 
     def print_form

@@ -16,22 +16,18 @@
 # limitations under the License.
 #
 
-module DTK::Client::CLI
-  class DirectoryParser < ::DTK::DSL::DirectoryParser
-    require_relative('directory_parser/file_system')
-    # file_types - a single or array of FileObj objects
-    # opts can have keys
-    #   :file_path - string
-    #   :dir_path - string
-    # Returns FileObj that matches a file_typeo bject that matches a file_type in file_types
-    #   or returns nil if no match found
-    def self.matching_file_obj?(file_types, opts = {})
-      adapter.matching_file_obj?(file_types, opts)
-    end
-
-    def self.adapter
-      @adapter ||= FileSystem.new
+module DTK::Client
+  module CLI
+    class FileObj < ::DTK::DSL::FileObj
+      def parent_dir
+        parent_dir? || raise(Error, "Unexpected that 'file_obj.path?' is nil")
+      end
+      
+      def parent_dir?
+        if path = path?
+          OsUtil.parent_dir(path)
+        end
+      end
     end
   end
 end
-

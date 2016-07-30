@@ -21,7 +21,10 @@ module DTK::Client
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           module_ref = args.required(:module_ref)
-          file_obj   = args.required(:base_dsl_file_obj).raise_error_if_no_content
+
+          unless client_dir_path = module_ref.client_dir_path
+            raise Error, "Not implemented yet; need to make sure module_ref.client_dir_path is set when client_dir_path given"
+          end
 
           unless module_info = module_exists?(module_ref, :type => :common_module)
             raise Error::Usage, "DTK module '#{module_ref.print_form}' does not exist."
@@ -32,7 +35,7 @@ module DTK::Client
           repo_name = module_info.required(:repo, :name)
 
           git_repo_args = {
-            :repo_dir      => parent_dir(file_obj),
+            :repo_dir      => module_ref.client_dir_path,
             :repo_url      => repo_url,
             :remote_branch => branch
           }

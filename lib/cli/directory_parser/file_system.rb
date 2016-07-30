@@ -20,11 +20,11 @@ module DTK::Client; module CLI
   class DirectoryParser
     # For Finding relevant content when files in a vanilla file system
     class FileSystem < self 
-      # file_types - a single or array of :DTK::DSL::FileObj objects
+      # file_types - a single or array of FileObj objects
       # opts can have keys
       #   :file_path - string
       #   :dir_path - string
-      # Returns :DTK::DSL::FileObj object or nil that match a file_type
+      # Returns FileObj object or nil that match a file_type
       def matching_file_obj?(file_types, opts = {})
         ret = nil
         file_types = [file_types] unless file_types.kind_of?(Array)
@@ -35,7 +35,7 @@ module DTK::Client; module CLI
           current_dir: OsUtil.current_dir,
           content: get_content?(file_path)
         }
-        ::DTK::DSL::FileObj.new(file_type, file_path, file_obj_opts)
+        FileObj.new(file_type, file_path, file_obj_opts)
       end
       
       private

@@ -25,13 +25,6 @@ module DTK::Client
 
       extend ModuleServiceCommon::ClassMixin
         
-      def self.parent_dir(file_obj)
-        unless path = file_obj.path?
-          raise Error, "Unexpected that 'file_obj.path?' is nil"
-        end
-        OsUtil.parent_dir(path)
-      end
-
       private
 
       def module_exists?(module_ref, opts = {})

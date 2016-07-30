@@ -26,6 +26,7 @@ module DTK
       # processor and command must go before context
       require_relative('cli/context')
       require_relative('cli/directory_parser')
+      require_relative('cli/file_obj')
     end
   end
 end
