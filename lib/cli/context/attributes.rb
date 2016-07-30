@@ -28,8 +28,8 @@ module DTK::Client::CLI
       def [](key)
         # special processing on demand
         case key
-        when :module_ref
-          module_ref
+        when :module_ref, :service_instance
+          value_from_base_dsl_file(key)
         else
           super
         end
@@ -37,14 +37,13 @@ module DTK::Client::CLI
 
       private
 
-      def module_ref
-         if @special_keys.has_key?(:module_ref)
-           @special_keys[:module_ref]
+      def value_from_base_dsl_file(key)
+         if @special_keys.has_key?(key)
+           @special_keys[key]
          else
-           @special_keys[:module_ref] = (@context.base_module_ref? if @context.respond_to?(:base_module_ref?))
+           @special_keys[key] = @context.value_from_base_dsl_file?(key)
          end
       end
-
     end
   end
 end

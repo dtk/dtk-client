@@ -21,7 +21,18 @@ module DTK::Client::CLI
       class Service < Context
         include Command::Service
 
+        def value_from_base_dsl_file?(key)
+         case key
+           when :service_instance 
+           service_instance_from_base_dsl_file?
+         end
+        end
+
         private
+
+        def service_instance_from_base_dsl_file?        
+          base_dsl_file_obj.parse_content(:service_module_summary).req(:Name)
+        end
         
         def add_command_defs!
           add_command :service

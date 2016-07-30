@@ -20,7 +20,7 @@ module DTK::Client
     module Module 
       subcommand_def 'push' do |c|
         command_body c, :push, 'Push content from client module directory to server' do |sc|
-          sc.flag Token.module_ref_in_options
+          sc.flag Token.module_ref
           sc.action do |_global_options, options, _args|
             module_ref = module_ref_in_options_or_context(options)
             Operation::Module.push(:module_ref => module_ref, :base_dsl_file_obj => @base_dsl_file_obj)

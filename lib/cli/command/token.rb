@@ -35,7 +35,7 @@ module DTK::Client
         :commit_message          => Flag.new(:m, 'COMMIT-MSG', 'Commit message'),
         :directory_path          => Flag.new(:d, 'DIRECTORY-PATH', 'Directory path'),
         :parent_service_instance => Flag.new(:parent, 'PARENT', 'Parent service instance; if not specfied, the default target service instance serves as parent'),
-        :module_ref_in_options   => Flag.new(:m, ModuleRef::NamespaceModuleName.legal_form, 'Module name with namespace; not needed if command is executed from within the module directory'),
+        :module_ref   => Flag.new(:m, ModuleRef::NamespaceModuleName.legal_form, 'Module name with namespace; not needed if command is executed from within the module directory'),
         :relative_path           => Flag.new(:f, 'RELATIVE-PATH', 'Relative path'),
 
         :service_instance        => Flag.new(:s, 'SERVICE-INSTANCE', 'Service instance name'),

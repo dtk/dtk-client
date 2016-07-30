@@ -24,13 +24,10 @@ module DTK::Client; module CLI
           sc.flag Token.commit_message
 
           sc.action do |_global_options, options, _args|
-            unless service_instance = options[:service_instance] || context_attributes[:service_instance]
-              # This error only applicable if not in module
-              raise Error::Usage, "The service instance reference must be given using option '#{option_ref(:service_instance)}'"
-            end
+            service_instance = service_instance_in_options_or_context(options)
             args = {
               :service_instance => service_instance,
-              :commit_message   => opts[:commit_message]
+              :commit_message   => options[:commit_message]
             }
             Operation::Service.push(args)
           end

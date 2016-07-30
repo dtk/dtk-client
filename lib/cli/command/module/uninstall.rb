@@ -21,7 +21,7 @@ module DTK::Client
       subcommand_def 'uninstall' do |c|
         command_body c, :uninstall, 'Uninstall module from server' do |sc|
           sc.switch Token.skip_prompt, :desc => 'Skip prompt that checks if user wants to uninstall module from server'
-          sc.flag Token.module_ref_in_options
+          sc.flag Token.module_ref
           sc.action do |_global_options, options, _args|
             module_ref = module_ref_in_options_or_context(options)
             Operation::Module.uninstall(:module_ref => module_ref, :skip_prompt => options[:skip_prompt])

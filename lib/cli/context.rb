@@ -24,9 +24,9 @@ module DTK::Client
 
       def self.determine_context
 #testing stub
-dir_path = File.expand_path('../../examples/spark', File.dirname(__FILE__))
-base_dsl_file_obj = base_dsl_file_obj(:dir_path => dir_path)
-#        base_dsl_file_obj = base_dsl_file_obj()
+#dir_path = File.expand_path('../../examples/spark', File.dirname(__FILE__))
+#base_dsl_file_obj = base_dsl_file_obj(:dir_path => dir_path)
+        base_dsl_file_obj = base_dsl_file_obj()
         Type.create_context!(base_dsl_file_obj)
       end
 
@@ -50,16 +50,14 @@ base_dsl_file_obj = base_dsl_file_obj(:dir_path => dir_path)
         command_processor_object_methods.include?(method) or super
       end
 
-      def base_module_ref?
-        parsed_module = @base_dsl_file_obj.parse_content(:common_module_summary)
-        namespace   = parsed_module.val(:Namespace)
-        module_name = parsed_module.val(:ModuleName)
-        ModuleRef.new(:namespace => namespace, :module_name => module_name) if namespace and module_name
+      # This can be overridden
+      def value_from_base_dsl_file?(_key)
+        nil
       end
 
       private
 
-      attr_reader :context_attributes
+      attr_reader :context_attributes, :base_dsl_file_obj
 
       # opts can have keys
       #   :dir_path
@@ -81,17 +79,28 @@ base_dsl_file_obj = base_dsl_file_obj(:dir_path => dir_path)
 
       def module_ref_in_options_or_context(options)
         unless ret = module_ref_in_options_or_context?(options)
-          raise Error::Usage, "This command must be executed from within a module or a module reference must be given using option '#{option_ref(:module_ref_in_options)}'"
+          raise Error::Usage, "This command must be executed from within a module directory or a module reference must be given using option '#{option_ref(:module_ref)}'"
         end
         ret
       end
 
       def module_ref_in_options_or_context?(options)
-        if options[:module_ref_in_options]
-          ModuleRef.new(:module_ref_in_options => options[:module_ref_in_options])
-        elsif module_ref = context_attributes[:module_ref]
-          module_ref
+        if options[:module_ref]
+          ModuleRef.new(:namespace_module_name => options[:module_ref])
+        else 
+          context_attributes[:module_ref]
         end
+      end
+
+      def service_instance_in_options_or_context(options)
+        unless ret = service_instance_in_options_or_context?(options)
+          raise Error::Usage, "This command must be executed from within a service instance directory or a service instance must be given using option '#{option_ref(:service_instance)}'"
+        end
+        ret
+      end
+
+      def service_instance_in_options_or_context?(options)
+        options[:service_instance] || context_attributes[:service_instance]
       end
 
       # Methods related to adding cli command definitions 
