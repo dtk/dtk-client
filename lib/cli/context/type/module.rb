@@ -22,25 +22,6 @@ module DTK::Client; module CLI
         include Command::Module
         include Command::Service        
 
-        def value_from_base_dsl_file?(key)
-         case key
-           when :module_ref 
-           module_ref_from_base_dsl_file?
-         end
-        end
-
-        private
-
-        def module_ref_from_base_dsl_file?        
-          parsed_module = base_dsl_file_obj.parse_content(:common_module_summary)
-          namespace   = parsed_module.val(:Namespace)
-          module_name = parsed_module.val(:ModuleName)
-          if namespace and module_name
-            client_dir_path = base_dsl_file_obj.parent_dir?
-            ModuleRef.new(:namespace => namespace, :module_name => module_name, :client_dir_path => client_dir_path)
-          end
-        end
-
         def add_command_defs!
           add_command :module
           # add_command :service needed for stage and deploy commands

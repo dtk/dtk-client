@@ -50,14 +50,32 @@ module DTK::Client
         command_processor_object_methods.include?(method) or super
       end
 
-      # This can be overridden
-      def value_from_base_dsl_file?(_key)
-        nil
+      def value_from_base_dsl_file?(key)
+        case key
+        when :module_ref 
+          module_ref_from_base_dsl_file?
+        when :service_instance 
+          service_instance_from_base_dsl_file?
+        end
       end
 
       private
 
       attr_reader :context_attributes, :base_dsl_file_obj
+
+      def module_ref_from_base_dsl_file?        
+        parsed_module = base_dsl_file_obj.parse_content(:common_module_summary)
+        namespace   = parsed_module.val(:Namespace)
+        module_name = parsed_module.val(:ModuleName)
+        if namespace and module_name
+          client_dir_path = base_dsl_file_obj.parent_dir?
+          ModuleRef.new(:namespace => namespace, :module_name => module_name, :client_dir_path => client_dir_path)
+        end
+      end
+
+      def service_instance_from_base_dsl_file?        
+        base_dsl_file_obj.parse_content(:service_module_summary).val(:Name)
+      end
 
       # opts can have keys
       #   :dir_path
@@ -79,7 +97,15 @@ module DTK::Client
 
       def module_ref_in_options_or_context(options)
         unless ret = module_ref_in_options_or_context?(options)
-          raise Error::Usage, "This command must be executed from within a module directory or a module reference must be given using option '#{option_ref(:module_ref)}'"
+          @base_dsl_file_obj.raise_error_if_no_content
+          # TODO: not sure if below can be reached
+          error_msg = 
+            if options[:directory_path]
+              "Bad module direcory path '#{options[:directory_path]}'"
+            else
+              "This command must be executed from within a module directory or a directory path must be given using option '#{option_ref(:directory_path)}'"
+            end
+              raise Error::Usage, error_msg
         end
         ret
       end
@@ -87,7 +113,10 @@ module DTK::Client
       def module_ref_in_options_or_context?(options)
         if options[:module_ref]
           ModuleRef.new(:namespace_module_name => options[:module_ref])
-        else 
+        else
+          if module_dir_path = options[:directory_path]
+            set_base_dsl_file_obj!(:dir_path => module_dir_path)
+          end
           context_attributes[:module_ref]
         end
       end

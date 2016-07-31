@@ -22,10 +22,7 @@ module DTK::Client
         command_body c, :install, 'Install contents of client directory to be a module on the server' do |sc|
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to directory containing content to install'
           sc.action do |_global_options, options, _args|
-            if module_dir_path = options[:directory_path]
-              set_base_dsl_file_obj!(:dir_path => module_dir_path)
-            end
-            module_ref = context_attributes[:module_ref]
+            module_ref = module_ref_in_options_or_context?(options)
             Operation::Module.install(:module_ref => context_attributes[:module_ref], :base_dsl_file_obj => @base_dsl_file_obj)
           end
         end
