@@ -21,17 +21,15 @@ module DTK::Client
       def self.execute(args = Args.new)
         ret = nil
         wrap_operation(args) do |args|
-          service_instance = args.required(:service_instance)
-          #TODO: pass in file_path rather than base_dsl_file_obj
-          file_obj         = args.required(:base_dsl_file_obj).raise_error_if_no_content
-          file_path        = file_obj.path?
-          push_after_edit  = args[:push_after_edit]
-          commit_message   = args[:commit_message]
+          service_instance   = args.required(:service_instance)
+          absolute_file_path = args.required(:absolute_file_path)
+          push_after_edit    = args[:push_after_edit]
+          commit_message     = args[:commit_message]
 
           response = Pull.execute(:service_instance => service_instance)
           repo = response.required(:repo)
 
-          OsUtil.edit(file_path)
+          OsUtil.edit(absolute_file_path)
           return ret unless push_after_edit and repo.changed?
 
           commit_message ||= Internal.prompt_for_commit_message

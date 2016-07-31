@@ -35,6 +35,12 @@ module DTK::Client
         merge(overrides)
       end
 
+      private
+
+      def key_prefix
+        key.to_s.size == 1 ? '-' : '--'
+      end
+
     end
   end
 end

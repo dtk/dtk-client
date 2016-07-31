@@ -28,7 +28,7 @@ module DTK::Client
       end
       
       def ref
-        "-#{key}"
+        "#{key_prefix}#{key}"
       end
     end
   end

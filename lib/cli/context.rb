@@ -94,20 +94,8 @@ module DTK::Client
          ::DTK::DSL::FileType::ServiceInstance
         ]
 
-
       def module_ref_in_options_or_context(options)
-        unless ret = module_ref_in_options_or_context?(options)
-          @base_dsl_file_obj.raise_error_if_no_content
-          # TODO: not sure if below can be reached
-          error_msg = 
-            if options[:directory_path]
-              "Bad module direcory path '#{options[:directory_path]}'"
-            else
-              "This command must be executed from within a module directory or a directory path must be given using option '#{option_ref(:directory_path)}'"
-            end
-              raise Error::Usage, error_msg
-        end
-        ret
+        module_ref_in_options_or_context?(options) || raise_error_when_missing_context(:module_ref)
       end
 
       def module_ref_in_options_or_context?(options)
@@ -122,14 +110,35 @@ module DTK::Client
       end
 
       def service_instance_in_options_or_context(options)
-        unless ret = service_instance_in_options_or_context?(options)
-          raise Error::Usage, "This command must be executed from within a service instance directory or a service instance must be given using option '#{option_ref(:service_instance)}'"
+        service_instance_in_options_or_context?(options) || raise_error_when_missing_context(:service_instance)
+      end
+      
+      def service_instance_in_options_or_context?(options)
+        if ret = options[:service_instance]
+          ret
+        else
+          if module_dir_path = options[:directory_path]
+            set_base_dsl_file_obj!(:dir_path => module_dir_path)
+          end
+          context_attributes[:service_instance]
         end
-        ret
       end
 
-      def service_instance_in_options_or_context?(options)
-        options[:service_instance] || context_attributes[:service_instance]
+
+      ERROR_MSG_MAPPING = {
+        :service_instance => 'service instance',
+        :module_ref       => 'mdoule'
+      }
+      def raise_error_when_missing_context(type)
+        @base_dsl_file_obj.raise_error_if_no_content
+        # TODO: not sure if below can be reached
+        error_msg = 
+          if options[:directory_path]
+            "Bad #{ERROR_MSG_MAPPING[type]} directory path '#{options[:directory_path]}'"
+          else
+            "This command must be executed from within a #{ERROR_MSG_MAPPING[type]} directory or a directory path must be given using option '#{option_ref(:directory_path)}'"
+          end
+        raise Error::Usage, error_msg
       end
 
       # Methods related to adding cli command definitions 

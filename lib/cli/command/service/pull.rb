@@ -20,12 +20,9 @@ module DTK::Client; module CLI
     module Service
       subcommand_def 'pull' do |c|
         command_body c, :pull, 'Pulls any updates server made to service instance on to client directory' do |sc|
-          sc.flag Token.service_instance, :desc => 'Name of service instance to pull from server; not needed if command is executed from within service instance directory'
+          sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory containing updates to pull; not need if in the service instance directory'
           sc.action do |_global_options, options, _args|
-            unless service_instance = options[:service_instance] || context_attributes[:service_instance]
-              # This error only applicable if not in module
-              raise Error::Usage, "The service instance reference must be given using option '#{option_ref(:service_instance)}'"
-            end
+            service_instance =  service_instance_in_options_or_context(options)
             Operation::Service.pull(:service_instance => service_instance)
           end
         end

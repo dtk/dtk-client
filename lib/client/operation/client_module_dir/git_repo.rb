@@ -19,6 +19,7 @@ module DTK::Client
   class Operation::ClientModuleDir
     # Operations for managing module folders that are git repos
     class GitRepo < self
+      # TODO: check if { :head_sha => ..} should be modified to 'head_sha'; similiarly for :target_repo_dir
       def self.fetch_merge_and_push(args)
         wrap_operation(args) do |args|
           { :head_sha => Internal.fetch_merge_and_push(args) }
@@ -64,7 +65,7 @@ module DTK::Client
 
       def self.pull_from_service_repo(args)
         wrap_operation(args) do |args| 
-          {:repo => Internal.pull_from_service_repo(args) } 
+          {'repo' => Internal.pull_from_service_repo(args) } 
         end
       end
 

@@ -26,9 +26,7 @@ module DTK::Client
           sc.flag Token.parent_service_instance
           # on useful for testing in dev mode
           # sc.switch Token.purge, :desc => 'Overwrite any content that presently exists in the service instance directory to be created'
-          unless context_attributes[:module_ref]
-            sc.flag Token.version
-          end
+          #  sc.flag Token.version
           sc.action do |_global_options, options, args|
             in_module =  !!context_attributes[:module_ref]
             module_ref = module_ref_in_options_or_context(options)

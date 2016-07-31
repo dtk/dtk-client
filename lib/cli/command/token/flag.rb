@@ -33,7 +33,7 @@ module DTK::Client
         end
 
         def ref
-          "-#{key} #{self[:arg_name]}"
+          "#{key_prefix}#{key} #{self[:arg_name]}"
         end
       end
     end
