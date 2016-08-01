@@ -19,7 +19,7 @@ require 'pp'
 module DTK
   module Client
     module CLI
-      # require_relative('cli/version')
+      require_relative('cli/version')
       require_relative('cli/runner')
       require_relative('cli/processor')
       require_relative('cli/command')
