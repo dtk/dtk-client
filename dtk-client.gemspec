@@ -1,7 +1,7 @@
 require File.expand_path('../lib/cli/version', __FILE__)
 
 Gem::Specification.new do |spec| 
-  spec.name        = 'dtk-cli'
+  spec.name        = 'dtk-client'
   spec.version     = DTK::Client::CLI::VERSION
   spec.author      = 'Reactor8'
   spec.email       = 'support@reactor8.com'
