@@ -15,16 +15,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client
-  module CLI
-    module Command
-      module Service
-        include Command::Mixin
-        ALL_SUBCOMMANDS = ['stage', 'destroy', 'edit', 'push', 'pull', 'converge']
-        command_def :desc => 'Subcommands for creating and interacting with DTK service instances'
-        ALL_SUBCOMMANDS.each { |subcommand| require_relative("service/#{subcommand.gsub(/-/,'_')}") } 
+module DTK::Client; module CLI
+  module Command
+    module Service
+      subcommand_def 'converge' do |c|
+        command_body c, :converge, "Converge service instance" do |sc|
+          sc.action do |_global_options, options, _args|
+            service_instance = service_instance_in_options_or_context(options)
+            args = {
+              :service_instance => service_instance
+            }
+            Operation::Service.converge(args)
+          end
+        end
       end
     end
   end
-end
-
+end; end
