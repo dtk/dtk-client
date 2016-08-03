@@ -27,7 +27,6 @@ module DTK::Client
           )
           rest_post("#{BaseRoute}/#{service_instance}/converge", post_body)
         end
-
       end
     end
   end
