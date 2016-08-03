@@ -21,12 +21,11 @@ module DTK::Client
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           service_instance = args.required(:service_instance)
+
           post_body = PostBody.new(
             :service_instance => service_instance
           )
-          response = rest_post("#{BaseRoute}/converge", post_body)
-
-          response
+          rest_post("#{BaseRoute}/#{service_instance}/converge", post_body)
         end
 
       end

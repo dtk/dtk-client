@@ -18,7 +18,7 @@
 module DTK::Client
   class Operation
     class Service < self
-      OPERATIONS = [:destroy, :edit, :pull, :push, :stage]
+      OPERATIONS = [:destroy, :edit, :pull, :push, :stage, :converge]
       OPERATIONS.each { |operation| require_relative("service/#{operation}") }
 
       BaseRoute = 'services'
