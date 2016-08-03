@@ -16,15 +16,18 @@
 # limitations under the License.
 #
 module DTK::Client
-  module CLI
-    module Command
-      module Service
-        include Command::Mixin
-        ALL_SUBCOMMANDS = ['stage', 'destroy', 'edit', 'push', 'pull', 'converge', 'task-status']
-        command_def :desc => 'Subcommands for creating and interacting with DTK service instances'
-        ALL_SUBCOMMANDS.each { |subcommand| require_relative("service/#{subcommand.gsub(/-/,'_')}") } 
+  class Operation::Service
+    class TaskStatus < self
+      def self.execute(args = Args.new)
+        wrap_operation(args) do |args|
+          service_instance = args.required(:service_instance)
+
+          post_body = PostBody.new(
+            :service_instance => service_instance
+          )
+          rest_post("#{BaseRoute}/task_status", post_body).set_render_as_table!
+        end
       end
     end
   end
 end
-
