@@ -46,13 +46,14 @@ module DTK::Client
 
         # switches
         # Switch constructor args order: key, desc, opts={}
-        :all         => Switch.new(:all, 'All'),
-        :force       => Switch.new(:f, 'Force'),
-        :purge       => Switch.new(:purge, 'Purge'),
-        :push        => Switch.new(:push, 'Push changes'),
-        :skip_prompt => Switch.new(:y, 'Skip prompt'),
-        :target      => Switch.new(:target, 'Create target service instance'),
-        :links       => Switch.new(:links, 'Links'),
+        :all          => Switch.new(:all, 'All'),
+        :force        => Switch.new(:f, 'Force'),
+        :purge        => Switch.new(:purge, 'Purge'),
+        :push         => Switch.new(:push, 'Push changes'),
+        :skip_prompt  => Switch.new(:y, 'Skip prompt'),
+        :target       => Switch.new(:target, 'Create target service instance'),
+        :links        => Switch.new(:links, 'Links'),
+        :dependencies => Switch.new(:deps, 'Dependencies'),
       }
 
       ARG_TOKENS = {
