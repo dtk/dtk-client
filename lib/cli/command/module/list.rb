@@ -17,7 +17,7 @@
 #
 module DTK::Client
   module CLI::Command
-    module Module 
+    module Module
       subcommand_def 'list' do |c|
         command_body c, 'list', 'List modules' do |sc|
           sc.action do 

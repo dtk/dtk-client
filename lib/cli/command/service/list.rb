@@ -15,16 +15,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client
-  class Operation
-    class Service < self
-      OPERATIONS = [:destroy, :edit, :pull, :push, :stage, :converge, :task_status, :list]
-      OPERATIONS.each { |operation| require_relative("service/#{operation}") }
-
-      BaseRoute = 'services'
-
-      extend ModuleServiceCommon::ClassMixin
-
+module DTK::Client; module CLI
+  module Command
+    module Service
+      subcommand_def 'list' do |c|
+        command_body c, :list, "List service instances" do |sc|
+          sc.action do
+            Operation::Service.list
+          end
+        end
+      end
     end
   end
-end
+end; end
