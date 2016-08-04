@@ -35,7 +35,8 @@ module DTK::Client
           'list-component-links',
           'list-dependent-modules',
           'list-components',
-          'list-nodes'
+          'list-nodes',
+          'list-violations'
         ]
         command_def :desc => 'Subcommands for creating and interacting with DTK service instances'
         ALL_SUBCOMMANDS.each { |subcommand| require_relative("service/#{subcommand.gsub(/-/,'_')}") } 

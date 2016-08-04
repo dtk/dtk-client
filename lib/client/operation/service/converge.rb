@@ -26,7 +26,7 @@ module DTK::Client
             :service_instance => service_instance
           )
 
-          violations = find_violations(service_instance, post_body)
+          violations = find_violations(service_instance)
           return violations if violations
 
           rest_post("#{BaseRoute}/#{service_instance}/converge", post_body)
@@ -35,8 +35,8 @@ module DTK::Client
 
       private
 
-      def self.find_violations(service_instance, post_body)
-        violations_response = rest_post("#{BaseRoute}/#{service_instance}/find_violations", post_body)
+      def self.find_violations(service_instance)
+        violations_response = rest_get("#{BaseRoute}/#{service_instance}/list_violations")
 
         if violations_response.data and violations_response.data.size > 0
           OsUtil.print_error("The following violations were found; they must be corrected before workspace can be converged")
