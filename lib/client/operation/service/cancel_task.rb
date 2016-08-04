@@ -16,35 +16,14 @@
 # limitations under the License.
 #
 module DTK::Client
-  class Operation
-    class Service < self
-      OPERATIONS = [
-        :destroy,
-        :edit,
-        :pull,
-        :push,
-        :stage,
-        :converge,
-        :task_status,
-        :list,
-        :info,
-        :list_actions,
-        :list_attributes,
-        :list_component_links,
-        :list_dependent_modules,
-        :list_components,
-        :list_nodes,
-        :list_violations,
-        :start,
-        :stop,
-        :cancel_task
-      ]
-      OPERATIONS.each { |operation| require_relative("service/#{operation}") }
-
-      BaseRoute = 'services'
-
-      extend ModuleServiceCommon::ClassMixin
-
+  class Operation::Service
+    class CancelTask < self
+      def self.execute(args = Args.new)
+        wrap_operation(args) do |args|
+          service_instance  = args.required(:service_instance)
+          rest_post("#{BaseRoute}/#{service_instance}/cancel_last_task")
+        end
+      end
     end
   end
 end

@@ -28,5 +28,3 @@ module DTK::Client
     end
   end
 end
-
-
