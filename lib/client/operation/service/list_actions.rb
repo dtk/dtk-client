@@ -21,8 +21,11 @@ module DTK::Client
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           service_instance = args.required(:service_instance)
+          type = args[:type]
+
           post_body = PostBody.new(
-            :service_instance => service_instance
+            :service_instance => service_instance,
+            :type? => type
           )
           rest_post("#{BaseRoute}/#{service_instance}/list_actions", post_body).set_render_as_table!
         end

@@ -35,11 +35,12 @@ module DTK::Client
         :commit_message          => Flag.new(:m, 'COMMIT-MSG', 'Commit message'),
         :directory_path          => Flag.new(:d, 'DIRECTORY-PATH', 'Directory path'),
         :parent_service_instance => Flag.new(:parent, 'PARENT', 'Parent service instance; if not specfied, the default target service instance serves as parent'),
-        :module_ref   => Flag.new(:m, ModuleRef::NamespaceModuleName.legal_form, 'Module name with namespace; not needed if command is executed from within the module directory'),
+        :module_ref              => Flag.new(:m, ModuleRef::NamespaceModuleName.legal_form, 'Module name with namespace; not needed if command is executed from within the module directory'),
         :relative_path           => Flag.new(:f, 'RELATIVE-FILE-PATH', 'Relative file path'),
         :service_instance        => Flag.new(:s, 'SERVICE-INSTANCE', 'Service instance name'),
         :service_name            => Flag.new(:n, 'SERVICE-NAME', 'Service name'),
         :version                 => Flag.new(:v, 'VERSION', 'Version'),
+        :type                    => Flag.new(:type, 'TYPE', 'Type'),
 
         # switches
         # Switch constructor args order: key, desc, opts={}
