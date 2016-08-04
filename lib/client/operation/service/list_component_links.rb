@@ -16,28 +16,14 @@
 # limitations under the License.
 #
 module DTK::Client
-  module CLI
-    module Command
-      module Service
-        include Command::Mixin
-        ALL_SUBCOMMANDS = [
-          'stage',
-          'destroy',
-          'edit',
-          'push',
-          'pull',
-          'converge',
-          'task-status',
-          'list',
-          'info',
-          'list-actions',
-          'list-attributes',
-          'list-component-links'
-        ]
-        command_def :desc => 'Subcommands for creating and interacting with DTK service instances'
-        ALL_SUBCOMMANDS.each { |subcommand| require_relative("service/#{subcommand.gsub(/-/,'_')}") } 
+  class Operation::Service
+    class ListComponentLinks < self
+      def self.execute(args = Args.new)
+        wrap_operation(args) do |args|
+          service_instance = args.required(:service_instance)
+          rest_get("#{BaseRoute}/#{service_instance}/list_component_links").set_render_as_table!
+        end
       end
     end
   end
 end
-
