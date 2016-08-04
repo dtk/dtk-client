@@ -20,7 +20,7 @@ module DTK::Client
     module Command
       module Service
         include Command::Mixin
-        ALL_SUBCOMMANDS = ['stage', 'destroy', 'edit', 'push', 'pull', 'converge', 'task-status', 'list']
+        ALL_SUBCOMMANDS = ['stage', 'destroy', 'edit', 'push', 'pull', 'converge', 'task-status', 'list', 'info', 'list-actions']
         command_def :desc => 'Subcommands for creating and interacting with DTK service instances'
         ALL_SUBCOMMANDS.each { |subcommand| require_relative("service/#{subcommand.gsub(/-/,'_')}") } 
       end

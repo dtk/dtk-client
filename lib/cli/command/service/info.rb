@@ -15,16 +15,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client
-  class Operation
-    class Service < self
-      OPERATIONS = [:destroy, :edit, :pull, :push, :stage, :converge, :task_status, :list, :info, :list_actions]
-      OPERATIONS.each { |operation| require_relative("service/#{operation}") }
-
-      BaseRoute = 'services'
-
-      extend ModuleServiceCommon::ClassMixin
-
+module DTK::Client; module CLI
+  module Command
+    module Service
+      subcommand_def 'info' do |c|
+        command_body c, :info, 'Get info about content of the service' do |sc|
+          sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory containing updates to pull; not need if in the service instance directory'
+          sc.action do |_global_options, options, _args|
+            service_instance =  service_instance_in_options_or_context(options)
+            Operation::Service.info(:service_instance => service_instance)
+          end
+        end
+      end
     end
   end
-end
+end; end

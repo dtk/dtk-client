@@ -16,15 +16,17 @@
 # limitations under the License.
 #
 module DTK::Client
-  class Operation
-    class Service < self
-      OPERATIONS = [:destroy, :edit, :pull, :push, :stage, :converge, :task_status, :list, :info, :list_actions]
-      OPERATIONS.each { |operation| require_relative("service/#{operation}") }
-
-      BaseRoute = 'services'
-
-      extend ModuleServiceCommon::ClassMixin
-
+  class Operation::Service
+    class ListActions < self
+      def self.execute(args = Args.new)
+        wrap_operation(args) do |args|
+          service_instance = args.required(:service_instance)
+          post_body = PostBody.new(
+            :service_instance => service_instance
+          )
+          rest_post("#{BaseRoute}/#{service_instance}/list_actions", post_body).set_render_as_table!
+        end
+      end
     end
   end
 end
