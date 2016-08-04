@@ -41,6 +41,8 @@ module DTK::Client
         :service_name            => Flag.new(:n, 'SERVICE-NAME', 'Service name'),
         :version                 => Flag.new(:v, 'VERSION', 'Version'),
         :type                    => Flag.new(:type, 'TYPE', 'Type'),
+        :node                    => Flag.new(:n, 'NODE', 'Node'),
+        :component               => Flag.new(:c, 'COMPONENT', 'Component'),
 
         # switches
         # Switch constructor args order: key, desc, opts={}
@@ -50,6 +52,7 @@ module DTK::Client
         :push        => Switch.new(:push, 'Push changes'),
         :skip_prompt => Switch.new(:y, 'Skip prompt'),
         :target      => Switch.new(:target, 'Create target service instance'),
+        :links       => Switch.new(:links, 'Links'),
       }
 
       ARG_TOKENS = {

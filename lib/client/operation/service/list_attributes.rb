@@ -17,17 +17,21 @@
 #
 module DTK::Client
   class Operation::Service
-    class ListActions < self
+    class ListAttributes < self
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           service_instance = args.required(:service_instance)
-          type = args[:type]
+          links            = args[:links]
+          node             = args[:node]
+          component        = args[:component]
 
           post_body = PostBody.new(
             :service_instance => service_instance,
-            :type? => type
+            :links?           => links,
+            :node_id?         => node,
+            :component_id?    => component
           )
-          rest_post("#{BaseRoute}/#{service_instance}/actions", post_body).set_render_as_table!
+          rest_post("#{BaseRoute}/#{service_instance}/attributes", post_body).set_render_as_table!
         end
       end
     end
