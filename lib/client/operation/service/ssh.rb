@@ -23,29 +23,34 @@ module DTK::Client
           service_instance = args.required(:service_instance)
           node_name        = args.required(:node_name)
           remote_user      = args[:remote_user]
-          identity_file    = args[:identity_file]
 
           if OsUtil.is_windows?
             OsUtil.print_info "[NOTICE] SSH functionality is currenly not supported on Windows."
             return
           end
 
-          if identity_file
-            unless File.exists?(identity_file)
-              fail Error::Usage, "Not able to find identity file, '#{identity_file}'"
-            end
-          elsif default_identity_file = OsUtil.dtk_identity_file_location
-            if File.exists?(default_identity_file)
-              identity_file = default_identity_file
-            end
-          end
+          identity_file = get_identity_file(args[:identity_file])
+          node_info     = get_node_info_for_ssh_login(node_name, service_instance)
 
-          node_info = get_node_info_for_ssh_login(node_name, service_instance)
           connect(node_info, identity_file, remote_user)
         end
       end
 
       private
+
+      def self.get_identity_file(identity_file)
+        if identity_file
+          unless File.exists?(identity_file)
+            fail Error::Usage, "Not able to find identity file, '#{identity_file}'"
+          end
+        elsif default_identity_file = OsUtil.dtk_identity_file_location
+          if File.exists?(default_identity_file)
+            identity_file = default_identity_file
+          end
+        end
+
+        identity_file
+      end
 
       def self.get_node_info_for_ssh_login(node_name, service_instance)
         response = rest_get("#{BaseRoute}/#{service_instance}")
