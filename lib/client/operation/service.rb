@@ -38,7 +38,8 @@ module DTK::Client
         :start,
         :stop,
         :cancel_task,
-        :ssh
+        :ssh,
+        :set_required_attributes
       ]
       OPERATIONS.each { |operation| require_relative("service/#{operation}") }
 

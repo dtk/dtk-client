@@ -13,4 +13,5 @@ module DTK
   require_relative('util/hash_with_optional_keys')
   require_relative('util/post_body')
   require_relative('util/query_params')
+  require_relative('util/interactive_wizard')
 end
