@@ -21,12 +21,14 @@ module DTK::Client; module CLI
       subcommand_def 'task-status' do |c|
         command_body c, 'task-status', "Get task status of the running or last running service instance task." do |sc|
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory; not needed if executed in the service instance directory'
+          sc.flag Token.mode, :desc => 'Task status mode.'
 
           sc.action do |_global_options, options, _args|
             service_instance = service_instance_in_options_or_context(options)
 
             args = {
-              :service_instance => service_instance
+              :service_instance => service_instance,
+              :mode             => options[:mode]
             }
             Operation::Service.task_status(args)
           end

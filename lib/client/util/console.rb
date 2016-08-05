@@ -32,6 +32,35 @@ module DTK::Client
       end
     end
 
+    def self.wait_animation(message, time_seconds)
+      print message
+      print " [     ]"
+      STDOUT.flush
+      time_seconds.downto(1) do
+        1.upto(4) do |i|
+          next_output = "\b\b\b\b\b\b\b"
+          case
+           when i % 4 == 0
+            next_output  += "[ =   ]"
+           when i % 3 == 0
+             next_output += "[  =  ]"
+           when i % 2 == 0
+            next_output  += "[   = ]"
+           else
+            next_output  += "[  =  ]"
+          end
+
+          print next_output
+          STDOUT.flush
+          sleep(0.25)
+        end
+      end
+      # remove loading animation
+      print "\b\b\b\b\b\b\bRefreshing..."
+      STDOUT.flush
+      puts
+    end
+
     private
 
     # opts can have keys

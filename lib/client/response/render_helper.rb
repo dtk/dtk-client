@@ -56,6 +56,10 @@ module DTK::Client
         self
       end
 
+      def skip_render(skip)
+        @skip_render = skip
+      end
+
       private
 
       def semantic_datatype_in_payload

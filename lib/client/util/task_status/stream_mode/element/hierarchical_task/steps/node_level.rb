@@ -15,26 +15,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client
-  class Operation::Service
-    class TaskStatus < self
-      extend TaskStatusMixin
-
-      def self.execute(args = Args.new)
-        wrap_operation(args) do |args|
-          service_instance = args.required(:service_instance)
-          task_status_mode = args[:mode]
-
-          if task_status_mode
-            task_status_aux(task_status_mode.to_sym, service_instance, :services)
-          else
-            post_body = PostBody.new(
-              :service_instance => service_instance
-            )
-            rest_post("#{BaseRoute}/task_status", post_body).set_render_as_table!
-          end
-        end
+module DTK::Client; class TaskStatus::StreamMode::Element::HierarchicalTask
+  class Steps
+    class NodeLevel < self
+      def render_steps(steps)
+        render_line node_operation_line(steps)
+        steps.each { |step| step.render }
       end
+      
+      def render
+        render_line node_term?, :tabs => 1
+      end
+
+      private
+
+      def node_operation_line(steps)
+        operation_term = @type
+        if steps.size > 1 and not operation_term =~ /s$/
+          operation_term += 's'
+        end
+        "OPERATION: #{operation_term}" 
+      end
+
     end
   end
-end
+end; end

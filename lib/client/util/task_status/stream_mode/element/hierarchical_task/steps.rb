@@ -15,26 +15,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client
-  class Operation::Service
-    class TaskStatus < self
-      extend TaskStatusMixin
+module DTK::Client; class TaskStatus::StreamMode::Element
+  class HierarchicalTask 
+    class Steps < self
+      require File.expand_path('steps/action', File.dirname(__FILE__))
+      require File.expand_path('steps/components', File.dirname(__FILE__))
+      require File.expand_path('steps/node_level', File.dirname(__FILE__))
+    
+      private
 
-      def self.execute(args = Args.new)
-        wrap_operation(args) do |args|
-          service_instance = args.required(:service_instance)
-          task_status_mode = args[:mode]
-
-          if task_status_mode
-            task_status_aux(task_status_mode.to_sym, service_instance, :services)
-          else
-            post_body = PostBody.new(
-              :service_instance => service_instance
-            )
-            rest_post("#{BaseRoute}/task_status", post_body).set_render_as_table!
-          end
-        end
+      def self.render(element, stage_subtasks)
+        steps = base_subtasks(element, stage_subtasks, :stop_at_node_group => true)
+        return if steps.empty?
+        steps.first.render_steps(steps)
       end
     end
   end
-end
+end; end

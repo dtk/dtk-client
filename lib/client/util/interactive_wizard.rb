@@ -19,16 +19,12 @@ module DTK::Client
   class InteractiveWizard
     require 'readline'
 
-    PP_LINE_HEAD  = '--------------------------------- DATA ---------------------------------'
-    PP_LINE       = '------------------------------------------------------------------------'
-    INVALID_INPUT = OsUtil.colorize(" Input is not valid. ", :yellow)
-
     class << self
       def resolve_missing_params(param_list, additional_message = nil)
         begin
           user_provided_params, checkup_hash = [], {}
 
-          puts "\nPlease fill in missing data.\n"
+          OsUtil.print("\nPlease fill in missing data.")
           param_list.each do |param_info|
             description =
               if param_info['display_name'] =~ Regexp.new(param_info['description'])
@@ -70,14 +66,15 @@ module DTK::Client
       private
 
       def pretty_print_provided_user_info(user_information)
-        puts PP_LINE_HEAD
+        OsUtil.print('--------------------------------- DATA ---------------------------------')
+
         user_information.each do |key,info|
           description = info[:description]
           value = info[:value]
           printf "%48s : %s\n", OsUtil.colorize(description, :green), OsUtil.colorize(value, :yellow)
         end
-        puts PP_LINE
-        puts
+
+        OsUtil.print('------------------------------------------------------------------------')
       end
 
     end
