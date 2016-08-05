@@ -40,34 +40,8 @@ module DTK::Client
             end
           end
 
-          response = get_node_info_for_ssh_login(node_name, service_instance)
-
-          unless public_dns = response[:public_dns]
-            raise Error::Usage, "Not able to resolve instance address, has instance been stopped?"
-          end
-          
-          unless remote_user ||= response[:default_login_user]
-            raise Error::Usage, "Retry command with a specfic login user (a default login user could not be computed)"
-          end
-
-          connection_string = "#{remote_user}@#{public_dns}"
-
-          ssh_command = 
-            if identity_file
-              # provided PEM key
-              "ssh -o \"StrictHostKeyChecking no\" -o \"UserKnownHostsFile /dev/null\" -i #{identity_file} #{connection_string}"
-            elsif SSHUtil.ssh_reachable?(remote_user, public_dns)
-              # it has PUB key access
-              "ssh -o \"StrictHostKeyChecking no\" -o \"UserKnownHostsFile /dev/null\" #{connection_string}"
-            end
-
-          unless ssh_command
-            raise Error::Usage, "No public key access or PEM provided, please grant access or provide valid PEM key" 
-          end
-          
-          OsUtil.print("You are entering SSH terminal (#{connection_string}) ...", :yellow)
-          Kernel.system(ssh_command)
-          OsUtil.print("You are leaving SSH terminal, and returning to DTK Shell ...", :yellow)
+          node_info = get_node_info_for_ssh_login(node_name, service_instance)
+          connect(node_info, identity_file, remote_user)
         end
       end
 
@@ -75,7 +49,7 @@ module DTK::Client
 
       def self.get_node_info_for_ssh_login(node_name, service_instance)
         response = rest_get("#{BaseRoute}/#{service_instance}")
-        
+
         unless node_info = response.data(:nodes).find{ |node| node_name == node['display_name'] }
           raise Error::Usage, "Cannot find info about node with id '#{node_id}'"
         end
@@ -104,6 +78,35 @@ module DTK::Client
         'ubuntu'       => 'ubuntu',
         'amazon-linux' => 'ec2-user'
       }
+
+      def self.connect(node_info, identity_file, remote_user)
+        unless public_dns = node_info[:public_dns]
+          raise Error::Usage, "Not able to resolve instance address, has instance been stopped?"
+        end
+
+        unless remote_user ||= node_info[:default_login_user]
+          raise Error::Usage, "Retry command with a specfic login user (a default login user could not be computed)"
+        end
+
+        connection_string = "#{remote_user}@#{public_dns}"
+
+        ssh_command =
+          if identity_file
+            # provided PEM key
+            "ssh -o \"StrictHostKeyChecking no\" -o \"UserKnownHostsFile /dev/null\" -i #{identity_file} #{connection_string}"
+          elsif SSHUtil.ssh_reachable?(remote_user, public_dns)
+            # it has PUB key access
+            "ssh -o \"StrictHostKeyChecking no\" -o \"UserKnownHostsFile /dev/null\" #{connection_string}"
+          end
+
+        unless ssh_command
+          raise Error::Usage, "No public key access or PEM provided, please grant access or provide valid PEM key"
+        end
+
+        OsUtil.print("You are entering SSH terminal (#{connection_string}) ...", :yellow)
+        Kernel.system(ssh_command)
+        OsUtil.print("You are leaving SSH terminal, and returning to DTK Shell ...", :yellow)
+      end
 
     end
   end
