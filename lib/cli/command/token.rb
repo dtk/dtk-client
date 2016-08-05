@@ -43,6 +43,8 @@ module DTK::Client
         :type                    => Flag.new(:type, 'TYPE', 'Type'),
         :node                    => Flag.new(:n, 'NODE', 'Node'),
         :component               => Flag.new(:c, 'COMPONENT', 'Component'),
+        :remote_user             => Flag.new(:u, 'REMOTE-USER', 'Remote user'),
+        :identity_file           => Flag.new(:i, 'PATH-TO-PEM', 'Path to pem file'),
 
         # switches
         # Switch constructor args order: key, desc, opts={}
@@ -58,7 +60,8 @@ module DTK::Client
 
       ARG_TOKENS = {
         :assembly_name    => 'ASSEMBLY-NAME',
-        :service_instance => flag_token(:service_instance).arg_name,  
+        :service_instance => flag_token(:service_instance).arg_name,
+        :node_name        => 'NODE',
       }
       
     end

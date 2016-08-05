@@ -88,6 +88,14 @@ module DTK::Client
       end
     end
 
+    DTK_IDENTITY_FILE = 'dtk.pem'
+    def self.dtk_identity_file_location
+      path_to_identity_file = "#{dtk_local_folder}/#{DTK_IDENTITY_FILE}"
+      return path_to_identity_file if File.exists?(path_to_identity_file)
+      print_warning("TIP: You can save your identity file as '#{path_to_identity_file}' and it will be used as default identityfile.")
+      nil
+    end
+
     private
     
     def self.genv(name)

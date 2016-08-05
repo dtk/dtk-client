@@ -37,7 +37,8 @@ module DTK::Client
         :list_violations,
         :start,
         :stop,
-        :cancel_task
+        :cancel_task,
+        :ssh
       ]
       OPERATIONS.each { |operation| require_relative("service/#{operation}") }
 
