@@ -23,7 +23,7 @@ module DTK::Client
           if module_ref  = args[:module_ref]
             raise Error, 'Not yet written when module_ref given'
           end
-          rest_get("#{BaseRoute}/list_assemblies").set_render_as_table!
+          rest_get("#{BaseRoute}/list_assemblies")
         end.set_render_as_table!
       end
 

@@ -30,8 +30,9 @@ module DTK::Client
             :module_name => module_ref.module_name,
             :namespace   => module_ref.namespace
           )
-          rest_post("#{BaseRoute}/delete", post_body)
+          ret = rest_post("#{BaseRoute}/delete", post_body)
           OsUtil.print_info("DTK module '#{module_ref.print_form}' has been deleted successfully.")
+          ret 
         end
       end
 

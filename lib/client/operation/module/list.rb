@@ -19,9 +19,13 @@ module DTK::Client
   class Operation::Module
     class List < self
       def self.execute(args = Args.new)
-        wrap_operation(args) do |args|
-          raise Error, 'Not yet written'
-        end
+        wrap_operation(args) do |_args|
+          # defaults
+          query_string_hash = {
+            :detail_to_include => ['remotes']
+          }
+          rest_get("#{BaseRoute}/list", query_string_hash)
+        end.set_render_as_table!
       end
     end
   end
