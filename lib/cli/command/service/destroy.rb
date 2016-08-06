@@ -22,7 +22,7 @@ module DTK::Client; module CLI
         command_body c, :destroy, 'Destroys the running infrastructure associated with the service instance and uninstalls the service instance from the server' do |sc|
         sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory associated; not needed if executed in service instance directory'
           sc.switch Token.skip_prompt, :desc => 'Skip prompt that checks if user wants to delete the service instance'
-          sc.switch Token.purge, :desc => 'Delete the client service instance directory add its contents'
+          sc.switch Token.purge, :desc => 'Delete the service instance directory on the client'
           sc.action do |_global_options, options, args|
             if options[:purge] and !options[:directory_path] 
               raise Error::Usage, "If use option '#{option_ref(:purge)}' then need to call from outside directory and use option '#{option_ref(:directory_path)}'"

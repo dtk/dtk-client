@@ -22,7 +22,7 @@ module DTK::Client
         c.arg Token::Arg.assembly_name
         command_body c, :stage, 'Create a new service instance to refer to staged infrastructure that then can be deployed' do |sc|
           sc.flag Token.module_ref, :desc => 'Module name with namespace from which to find assembly; not needed if command is executed from within the module'
-          sc.flag Token.service_name, :desc => 'If specified, name to use for new service instance; otherwise service insatnce name is auto-generated' 
+          sc.flag Token.service_name, :desc => 'If specified, name to use for new service instance; otherwise service instance name is auto-generated' 
           sc.flag Token.parent_service_instance
           # on useful for testing in dev mode
           # sc.switch Token.purge, :desc => 'Overwrite any content that presently exists in the service instance directory to be created'
