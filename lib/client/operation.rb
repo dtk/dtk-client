@@ -37,13 +37,13 @@ module DTK::Client
       self.class.rest_post(route, post_body)
     end
 
-    def self.rest_get(route, query_params_hash = {})
+    def self.rest_get(route, query_string_hash = {})
       raise_error_if_notok_response do
-        Session.rest_get(route, query_params_hash)
+        Session.rest_get(route, query_string_hash)
       end
     end
-    def rest_get(route, query_params_hash = {})
-      self.class.rest_get(route, query_params_hash)
+    def rest_get(route, query_string_hash = {})
+      self.class.rest_get(route, query_string_hash)
     end
 
     def self.wrap_operation(args = Args.new, &block)

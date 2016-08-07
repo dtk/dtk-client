@@ -33,12 +33,12 @@ module DTK::Client
 
       def self.module_exists?(module_ref, opts = {})
         type = opts[:type] || :common_module
-        query_params = QueryParams.new(
+        query_string = QueryParams.new(
           :namespace   => module_ref.namespace,
           :module_name => module_ref.module_name,
           :module_type => type
         )
-        response = rest_get(BaseRoute, query_params)
+        response = rest_get(BaseRoute, query_string)
         response.data.empty? ? nil : response
       end
 

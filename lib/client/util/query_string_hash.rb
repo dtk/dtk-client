@@ -16,6 +16,6 @@
 # limitations under the License.
 #
 module DTK::Client
-  class QueryParams < HashWithOptionalKeys
+  class QueryStringHash < HashWithOptionalKeys
   end
 end
