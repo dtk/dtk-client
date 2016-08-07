@@ -33,13 +33,21 @@ module DTK::Client
 
       def self.module_exists?(module_ref, opts = {})
         type = opts[:type] || :common_module
-        query_string = QueryParams.new(
-          :namespace   => module_ref.namespace,
-          :module_name => module_ref.module_name,
-          :module_type => type
-        )
-        response = rest_get(BaseRoute, query_string)
+        query_string_hash = QueryStringHash.new(module_ref_hash(module_ref).merge(:module_type => type))
+        response = rest_get(BaseRoute, query_string_hash)
         response.data.empty? ? nil : response
+      end
+
+      # Can be used as input hash for QueryParams and PostBody
+      def self.module_ref_hash(module_ref)
+        {
+          :namespace   => module_ref.namespace,
+          :module_name => module_ref.module_name
+        }
+      end
+
+      def self.module_ref_query_string_hash(module_ref)
+        QueryStringHash.new(module_ref_hash(module_ref))
       end
 
     end

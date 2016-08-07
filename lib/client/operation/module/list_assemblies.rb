@@ -20,10 +20,11 @@ module DTK::Client
     class ListAssemblies < self
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
+          query_string_hash = QueryStringHash.new
           if module_ref  = args[:module_ref]
-            raise Error, 'Not yet written when module_ref given'
+            query_string_hash = module_ref_query_string_hash(module_ref)
           end
-          rest_get("#{BaseRoute}/list_assemblies")
+          rest_get("#{BaseRoute}/list_assemblies", query_string_hash)
         end.set_render_as_table!
       end
 
