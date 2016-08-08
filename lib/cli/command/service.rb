@@ -41,7 +41,9 @@ module DTK::Client
           'stop',
           'cancel-task',
           'ssh',
-          'set-required-attributes'
+          'set-required-attributes',
+          'exec',
+          'exec-sync'
         ]
         command_def :desc => 'Subcommands for creating and interacting with DTK service instances'
         ALL_SUBCOMMANDS.each { |subcommand| require_relative("service/#{subcommand.gsub(/-/,'_')}") } 

@@ -63,6 +63,8 @@ module DTK::Client
         :assembly_name    => 'ASSEMBLY-NAME',
         :service_instance => flag_token(:service_instance).arg_name,
         :node_name        => 'NODE',
+        :action           => '[NODE/NODE-GROUP/]ACTION',
+        :action_params    => 'ACTION-PARAMS',
       }
       
     end
