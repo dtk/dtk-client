@@ -55,6 +55,10 @@ module DTK::Client
       def self.ret_base_path(type, name)
         "#{base_path(type)}/#{name}"
       end
+
+      def self.purge_service_instance_dir(dir_path)
+        FileUtils.rm_rf(dir_path)
+      end
     
       private
 
