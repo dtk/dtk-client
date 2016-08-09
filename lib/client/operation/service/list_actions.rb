@@ -23,12 +23,11 @@ module DTK::Client
           service_instance = args.required(:service_instance)
           type = args[:type]
 
-          post_body = PostBody.new(
-            :service_instance => service_instance,
+          query_string_hash = QueryStringHash.new(
             :type? => type
           )
-          rest_post("#{BaseRoute}/#{service_instance}/actions", post_body).set_render_as_table!
-        end
+          rest_get("#{BaseRoute}/#{service_instance}/actions", query_string_hash)
+        end.set_render_as_table!
       end
     end
   end

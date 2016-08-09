@@ -20,13 +20,12 @@ module DTK::Client
     class List < self
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
-          post_body = PostBody.new(
-            :subtype  => 'instance',
+          query_string_hash = QueryStringHash.new(
             :detail_level => 'nodes',
             :include_namespaces => true
           )
-          rest_post("#{BaseRoute}/list", post_body).set_render_as_table!
-        end
+          rest_get("#{BaseRoute}/list", query_string_hash)
+        end.set_render_as_table!
       end
     end
   end

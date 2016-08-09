@@ -23,12 +23,11 @@ module DTK::Client
           service_instance = args.required(:service_instance)
           dependencies = args[:dependencies]
 
-          post_body = PostBody.new(
-            :service_instance => service_instance,
+          query_string_hash = QueryStringHash.new(
             :dependencies? => dependencies
           )
-          rest_post("#{BaseRoute}/#{service_instance}/components", post_body).set_render_as_table!
-        end
+          rest_get("#{BaseRoute}/#{service_instance}/components", query_string_hash)
+        end.set_render_as_table!
       end
     end
   end

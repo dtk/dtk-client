@@ -25,14 +25,13 @@ module DTK::Client
           node             = args[:node]
           component        = args[:component]
 
-          post_body = PostBody.new(
-            :service_instance => service_instance,
+          query_string_hash = QueryStringHash.new(
             :links?           => links,
             :node_id?         => node,
             :component_id?    => component
           )
-          rest_post("#{BaseRoute}/#{service_instance}/attributes", post_body).set_render_as_table!
-        end
+          rest_get("#{BaseRoute}/#{service_instance}/attributes", query_string_hash)
+        end.set_render_as_table!
       end
     end
   end
