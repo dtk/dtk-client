@@ -29,7 +29,6 @@ module DTK::Client
           'converge',
           'task-status',
           'list',
-          'info',
           'list-actions',
           'list-attributes',
           'list-component-links',

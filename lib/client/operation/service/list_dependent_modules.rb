@@ -21,7 +21,7 @@ module DTK::Client
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           service_instance = args.required(:service_instance)
-          rest_get("#{BaseRoute}/#{service_instance}/list_dependent_modules")
+          rest_get("#{BaseRoute}/#{service_instance}/dependent_modules")
         end.set_render_as_table!
       end
     end
