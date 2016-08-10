@@ -27,7 +27,7 @@ module DTK::Client; module CLI
             directory_path = options[:directory_path]
             purge          = options[:purge]
 
-            if purge && (!directory_path || (directory_path == @base_dsl_file_obj.parent_dir))
+            if purge && (!directory_path || (directory_path == @base_dsl_file_obj.parent_dir?))
               raise Error::Usage, "If use option '#{option_ref(:purge)}' then need to call from outside directory and use option '#{option_ref(:directory_path)}'"
             end
             service_instance = service_instance_in_options_or_context(options)
