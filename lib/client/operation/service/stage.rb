@@ -30,6 +30,7 @@ module DTK::Client
             :service_name?   => args[:service_name],
             :version?        => args[:version],
             :target_service? => args[:target_service],
+            :is_target?      => args[:is_target]
           )
           response = rest_post("#{BaseRoute}/create", post_body)
           pp [:debug, response.class, response]

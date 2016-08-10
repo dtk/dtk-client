@@ -24,6 +24,8 @@ module DTK::Client
           sc.flag Token.module_ref, :desc => 'Module name with namespace from which to find assembly; not needed if command is executed from within the module'
           sc.flag Token.service_name, :desc => 'If specified, name to use for new service instance; otherwise service instance name is auto-generated' 
           sc.flag Token.parent_service_instance
+
+          sc.switch Token.target
           # on useful for testing in dev mode
           # sc.switch Token.purge, :desc => 'Overwrite any content that presently exists in the service instance directory to be created'
           #  sc.flag Token.version
@@ -42,7 +44,8 @@ module DTK::Client
               :service_name    => service_name,
               :version         => version,
               :target_service  => options[:parent_service_instance],
-              :remove_existing => options[:purge]
+              :remove_existing => options[:purge],
+              :is_target       => options[:target]
             }
             Operation::Service.stage(args)
           end
