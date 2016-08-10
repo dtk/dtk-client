@@ -33,7 +33,7 @@ module DTK::Client
             :is_target?      => args[:is_target]
           )
           response = rest_post("#{BaseRoute}/create", post_body)
-          pp [:debug, response.class, response]
+
           clone_args = {
             :module_ref      => module_ref,
             :repo_url        => response.required(:repo, :url),

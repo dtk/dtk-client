@@ -42,7 +42,8 @@ module DTK::Client
           'ssh',
           'set-required-attributes',
           'exec',
-          'exec-sync'
+          'exec-sync',
+          'set-default-target'
         ]
         command_def :desc => 'Subcommands for creating and interacting with DTK service instances'
         ALL_SUBCOMMANDS.each { |subcommand| require_relative("service/#{subcommand.gsub(/-/,'_')}") } 
