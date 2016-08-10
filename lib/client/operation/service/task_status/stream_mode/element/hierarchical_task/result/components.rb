@@ -15,20 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client; class TaskStatus::StreamMode
-  class Element
-    class TaskEnd < self
-      def task_end?()
-        true
-      end
-
-      def render
-        return if @ignore_stage_level_info
-        msg = "end: '#{field?(:display_name) || 'Workflow'}'"
-        if duration = formatted_duration?
-          msg << " (total duration: #{duration})"
-        end
-        render_line msg, :bracket => true
+module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element::HierarchicalTask
+  class Results
+    class Components < self
+      def render_results(results_per_node)
+        render_errors(results_per_node)
       end
     end
   end

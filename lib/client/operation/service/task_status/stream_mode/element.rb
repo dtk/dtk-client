@@ -15,15 +15,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client; class TaskStatus::StreamMode
+module DTK::Client; class Operation::Service::TaskStatus::StreamMode
   class Element
-    require File.expand_path('element/format', File.dirname(__FILE__))
-    require File.expand_path('element/render', File.dirname(__FILE__))
-    require File.expand_path('element/hierarchical_task', File.dirname(__FILE__))
-    require File.expand_path('element/task_start', File.dirname(__FILE__))
-    require File.expand_path('element/task_end', File.dirname(__FILE__))
-    require File.expand_path('element/stage', File.dirname(__FILE__))
-    require File.expand_path('element/no_results', File.dirname(__FILE__))
+    require_relative('element/format')
+    require_relative('element/render')
+    require_relative('element/hierarchical_task')
+    require_relative('element/task_start')
+    require_relative('element/task_end')
+    require_relative('element/stage')
+    require_relative('element/no_results')
     include RenderMixin
 
     def initialize(response_element, opts = {})
@@ -48,7 +48,7 @@ module DTK::Client; class TaskStatus::StreamMode
     # opts can have
     #   :ignore_stage_level_info - Boolean
     def self.get_task_status_elements(task_status_handle, element_type, opts = {})
-      response =  task_status_handle.post_call(opts.merge(:form => :stream_form))
+      response =  task_status_handle.rest_call(opts.merge(:form => :stream_form))
       create_elements(response, opts)
     end
 

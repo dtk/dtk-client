@@ -11,7 +11,7 @@ dependencies:
 - bigtop/bigtop_multiservice
 - bigtop-new/hadoop
 - bigtop-new/spark
-- bigtop/zookeeper
+#- bigtop/zookeeper
 - bigtop/zeppelin
 assemblies:
   cluster:

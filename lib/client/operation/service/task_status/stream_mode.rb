@@ -17,9 +17,9 @@
 #
 require 'hirb'
 module DTK::Client
-  class TaskStatus
+  class Operation::Service::TaskStatus
     class StreamMode < self
-      require File.expand_path('stream_mode/element', File.dirname(__FILE__))
+      require_relative('stream_mode/element')
 
       def get_and_render(opts = {})
         Element.get_and_render_task_start(self, opts)
@@ -28,9 +28,6 @@ module DTK::Client
       end
 
       WaitWhenNoResults = 5
-      def post_call(*args)
-        super
-      end
 
       private
       
@@ -38,7 +35,7 @@ module DTK::Client
       #    start_index: START_INDEX
       #    end_index: END_INDEX
       # convention is start_position = 0 and end_position = 0 means top level task with start time 
-      def post_body(opts = {})
+      def self.query_string_hash(opts = {})
         ret = super(opts)
         ret.merge(:start_index => opts[:start_index], :end_index => opts[:end_index])
       end

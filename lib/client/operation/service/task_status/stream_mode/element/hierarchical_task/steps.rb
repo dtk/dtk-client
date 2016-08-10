@@ -15,11 +15,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client; class TaskStatus::StreamMode::Element::HierarchicalTask
-  class Results
-    class NodeLevel < self
-      def render_results(results_per_node)
-        render_errors(results_per_node)
+module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element
+  class HierarchicalTask 
+    class Steps < self
+      require_relative('steps/action')
+      require_relative('steps/components')
+      require_relative('steps/node_level')
+    
+      private
+
+      def self.render(element, stage_subtasks)
+        steps = base_subtasks(element, stage_subtasks, :stop_at_node_group => true)
+        return if steps.empty?
+        steps.first.render_steps(steps)
       end
     end
   end

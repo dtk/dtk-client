@@ -36,7 +36,7 @@ module DTK::Client
       private
 
       def self.find_violations(service_instance)
-        violations_response = rest_get("#{BaseRoute}/#{service_instance}/list_violations")
+        violations_response = rest_get("#{BaseRoute}/#{service_instance}/violations")
 
         if violations_response.data and violations_response.data.size > 0
           OsUtil.print_error("The following violations were found; they must be corrected before workspace can be converged")

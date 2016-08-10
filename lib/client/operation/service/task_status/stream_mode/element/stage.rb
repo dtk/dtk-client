@@ -15,10 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client; class TaskStatus::StreamMode
+module DTK::Client; class Operation::Service::TaskStatus::StreamMode
   class Element
     class Stage < self
-      require File.expand_path('stage/render', File.dirname(__FILE__))
+      require_relative('stage/render')
       include Render::Mixin
 
       def initialize(response_element, opts = {})

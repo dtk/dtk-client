@@ -15,28 +15,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client; class TaskStatus::StreamMode::Element::HierarchicalTask
-  class Steps
-    class NodeLevel < self
-      def render_steps(steps)
-        render_line node_operation_line(steps)
-        steps.each { |step| step.render }
+module DTK::Client; class Operation::Service::TaskStatus::StreamMode
+  class Element
+    class TaskEnd < self
+      def task_end?()
+        true
       end
-      
+
       def render
-        render_line node_term?, :tabs => 1
-      end
-
-      private
-
-      def node_operation_line(steps)
-        operation_term = @type
-        if steps.size > 1 and not operation_term =~ /s$/
-          operation_term += 's'
+        return if @ignore_stage_level_info
+        msg = "end: '#{field?(:display_name) || 'Workflow'}'"
+        if duration = formatted_duration?
+          msg << " (total duration: #{duration})"
         end
-        "OPERATION: #{operation_term}" 
+        render_line msg, :bracket => true
       end
-
     end
   end
 end; end

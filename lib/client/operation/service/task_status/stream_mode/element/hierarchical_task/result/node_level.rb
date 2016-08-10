@@ -15,11 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client; class TaskStatus::StreamMode
-  class Element
-    class NoResults < self
-      def task_end?()
-        true
+module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element::HierarchicalTask
+  class Results
+    class NodeLevel < self
+      def render_results(results_per_node)
+        render_errors(results_per_node)
       end
     end
   end

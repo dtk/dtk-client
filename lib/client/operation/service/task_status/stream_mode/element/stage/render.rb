@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-class DTK::Client::TaskStatus::StreamMode::Element::Stage
+class DTK::Client::Operation::Service::TaskStatus::StreamMode::Element::Stage
   module Render
     module Mixin
       def render

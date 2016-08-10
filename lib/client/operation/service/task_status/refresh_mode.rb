@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 module DTK::Client
-  class TaskStatus
+  class Operation::Service::TaskStatus
     class RefreshMode < self
       DEBUG_SLEEP_TIME = 5 #DTK::Configuration.get(:debug_task_frequency)
 
-      def task_status(opts={})
+      def task_status(opts = {})
         begin
           response = nil
           loop do
-            response = post_call(opts)
+            response = rest_call(opts)
             return response unless response.ok?
             
             # stop pulling when top level task succeds, fails or timeout

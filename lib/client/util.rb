@@ -14,5 +14,4 @@ module DTK
   require_relative('util/post_body')
   require_relative('util/query_string_hash')
   require_relative('util/interactive_wizard')
-  require_relative('util/task_status')
 end

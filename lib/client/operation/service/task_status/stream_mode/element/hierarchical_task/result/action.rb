@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client; class TaskStatus::StreamMode::Element::HierarchicalTask
+module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element::HierarchicalTask
   class Results
     class Action < self
       def initialize(element, hash)

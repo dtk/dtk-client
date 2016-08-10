@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-class DTK::Client::TaskStatus::StreamMode::Element
+class DTK::Client::Operation::Service::TaskStatus::StreamMode::Element
   class Format < ::Hash
     Settings = {
       :task_start => {

@@ -15,10 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client; class TaskStatus::StreamMode::Element
+module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element
   class HierarchicalTask 
-    require File.expand_path('hierarchical_task/result', File.dirname(__FILE__))
-    require File.expand_path('hierarchical_task/steps', File.dirname(__FILE__))
+    require_relative('hierarchical_task/result')
+    require_relative('hierarchical_task/steps')
 
     def initialize(element, hash)
       @type          = self.class.type(hash)
