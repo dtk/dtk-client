@@ -57,7 +57,7 @@ module DTK::Client
           end
 
          rescue Interrupt => e
-          fail Error::Usage, "You have decided to skip correction wizard.#{additional_message}"
+          raise Error::Usage, "You have decided to skip correction wizard.#{additional_message}"
         end
 
         return user_provided_params

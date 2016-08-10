@@ -41,7 +41,7 @@ module DTK::Client
       def self.get_identity_file(identity_file)
         if identity_file
           unless File.exists?(identity_file)
-            fail Error::Usage, "Not able to find identity file, '#{identity_file}'"
+            raise Error::Usage, "Not able to find identity file, '#{identity_file}'"
           end
         elsif default_identity_file = OsUtil.dtk_identity_file_location
           if File.exists?(default_identity_file)
