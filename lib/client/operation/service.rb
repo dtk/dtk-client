@@ -40,8 +40,8 @@ module DTK::Client
         :ssh,
         :set_required_attributes,
         :exec,
-        :set_default_target,
-        :create_workspace
+        :set_default_target
+        # :create_workspace
       ]
       OPERATIONS.each { |operation| require_relative("service/#{operation}") }
 
