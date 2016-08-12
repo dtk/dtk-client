@@ -65,7 +65,8 @@ module DTK::Client
         :node_name        => 'NODE',
         :action           => '[NODE/NODE-GROUP/]ACTION',
         :action_params    => 'ACTION-PARAMS',
-        :workspace_name   => 'WORKSPACE-NAME'
+        :workspace_name   => 'WORKSPACE-NAME',
+        :target_instance  => 'TARGET-SERVICE-INSTANCE'
       }
       
     end
