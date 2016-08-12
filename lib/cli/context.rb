@@ -73,7 +73,8 @@ module DTK::Client
         end
       end
 
-      def service_instance_from_base_dsl_file?        
+      def service_instance_from_base_dsl_file?
+        raise_error_when_missing_context(:service_instance) unless base_dsl_file_obj.file_type == DTK::DSL::FileType::ServiceInstance
         base_dsl_file_obj.parse_content(:service_module_summary).val(:Name)
       end
 
@@ -95,7 +96,7 @@ module DTK::Client
         ]
 
       def module_ref_in_options_or_context(options)
-        module_ref_in_options_or_context?(options) || raise_error_when_missing_context(:module_ref)
+        module_ref_in_options_or_context?(options) || raise_error_when_missing_context(:module_ref, options)
       end
 
       def module_ref_in_options_or_context?(options)
@@ -110,7 +111,7 @@ module DTK::Client
       end
 
       def service_instance_in_options_or_context(options)
-        service_instance_in_options_or_context?(options) || raise_error_when_missing_context(:service_instance)
+        service_instance_in_options_or_context?(options) || raise_error_when_missing_context(:service_instance, options)
       end
       
       def service_instance_in_options_or_context?(options)
@@ -129,7 +130,7 @@ module DTK::Client
         :service_instance => 'service instance',
         :module_ref       => 'mdoule'
       }
-      def raise_error_when_missing_context(type)
+      def raise_error_when_missing_context(type, options = {})
         @base_dsl_file_obj.raise_error_if_no_content
         # TODO: not sure if below can be reached
         error_msg = 
