@@ -53,10 +53,9 @@ module DTK::Client
       end
 
       def self.get_node_info_for_ssh_login(node_name, service_instance)
-        # TODO: use another route since want to deprecate "#{BaseRoute}/#{service_instance}"
-        response = rest_get("#{BaseRoute}/#{service_instance}")
+        response = rest_get("#{BaseRoute}/#{service_instance}/nodes")
 
-        unless node_info = response.data(:nodes).find{ |node| node_name == node['display_name'] }
+        unless node_info = (response.data||[]).find{ |node| node_name == node['display_name'] }
           raise Error::Usage, "Cannot find info about node with id '#{node_id}'"
         end
 
