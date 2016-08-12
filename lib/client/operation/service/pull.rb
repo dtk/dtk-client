@@ -21,10 +21,7 @@ module DTK::Client
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           service_instance = args.required(:service_instance)
-          post_body = PostBody.new(
-            :service_instance => service_instance
-          )
-          response = rest_post("#{BaseRoute}/repo_info", post_body)
+          response = rest_get("#{BaseRoute}/#{service_instance}/repo_info")
 
           pull_args = {
             :repo_url     => response.required(:repo, :url),
