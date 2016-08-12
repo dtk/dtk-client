@@ -1,2 +1,4 @@
 *.gem
 sftp-config*.json
+.remote-sync.json
+.tags
