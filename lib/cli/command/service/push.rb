@@ -19,17 +19,16 @@ module DTK::Client; module CLI
   module Command
     module Service
       subcommand_def 'push' do |c|
-        command_body c, :push, 'Pushes any updated content in the client service instance directory to the server' do |sc|
+        command_body c, :push, 'Commits and pushes any updated content in the client service instance directory to the server' do |sc|
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory containing where updates will be pulled; not needed if in the service instance directory'
           sc.flag Token.commit_message
-
           sc.action do |_global_options, options, _args|
             service_instance = service_instance_in_options_or_context(options)
             args = {
               :service_instance => service_instance,
               :commit_message   => options[:commit_message]
             }
-            Operation::Service.push(args)
+            Operation::Service.commit_and_push(args)
           end
         end
       end

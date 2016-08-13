@@ -30,9 +30,29 @@ module DTK::Client
     def initialize(repo_dir, opts = {})
       @git_adapter = git_adapter_class.new(repo_dir, opts)
     end
-    
+
     def self.clone(repo_url, target_path, branch)
       git_adapter_class.clone(repo_url, target_path, branch)
+    end
+
+    def self.is_git_repo?(dir)
+      File.directory?("#{dir}/.git")
+    end
+
+    def self.unlink_local_clone?(dir)
+      git_dir = "#{dir}/.git"
+      if File.directory?(git_dir)
+        FileUtils.rm_rf(git_dir)
+      end
+    end
+
+    
+    def add_remote(name, url)
+      @git_adapter.add_remote(name, url)
+    end
+
+    def changed?
+      @git_adapter.changed?
     end
 
     # opts can have keys
@@ -41,71 +61,52 @@ module DTK::Client
       @git_adapter.checkout(branch, opts)
     end
 
-    def fetch(remote = 'origin')
-      @git_adapter.fetch(remote)
-    end
-
-    def add_remote(name, url)
-      @git_adapter.add_remote(name, url)
-    end
-
-    def remove_remote(name)
-      @git_adapter.remove_remote(name)
-    end
-
-    def push(remote, branch, opts = {})
-      @git_adapter.push(remote, branch, opts)
-    end
-
-    def stage_and_commit(commit_msg = nil)
-      @git_adapter.stage_and_commit(commit_msg)
-    end
-
-    def merge(branch_to_merge_from)
-      @git_adapter.merge(branch_to_merge_from)
-    end
-
-    def self.is_git_repo?(dir)
-      File.directory?("#{dir}/.git")
-    end
-
     def current_branch
       @git_adapter.current_branch
-    end
-
-    def is_there_remote?(remote_name)
-      @git_adapter.is_there_remote?(remote_name)
-    end
-
-    def remotes
-      @git_adapter.remotes
-    end
-
-    def head_commit_sha
-      @git_adapter.head_commit_sha
-    end
-
-    def pull(remote, branch)
-      @git_adapter.pull(remote, branch)
     end
 
     def diff
       @git_adapter.diff
     end
 
-    def changed?
-      @git_adapter.changed?
+    def fetch(remote = 'origin')
+      @git_adapter.fetch(remote)
+    end
+
+    def head_commit_sha
+      @git_adapter.head_commit_sha
+    end
+
+    def is_there_remote?(remote_name)
+      @git_adapter.is_there_remote?(remote_name)
+    end
+
+    def merge(branch_to_merge_from)
+      @git_adapter.merge(branch_to_merge_from)
     end
 
     def print_status
       @git_adapter.print_status
     end
 
-    def self.unlink_local_clone?(dir)
-      git_dir = "#{dir}/.git"
-      if File.directory?(git_dir)
-        FileUtils.rm_rf(git_dir)
-      end
+    def push(remote, branch, opts = {})
+      @git_adapter.push(remote, branch, opts)
+    end
+
+    def pull(remote, branch)
+      @git_adapter.pull(remote, branch)
+    end
+
+    def remotes
+      @git_adapter.remotes
+    end
+
+    def remove_remote(name)
+      @git_adapter.remove_remote(name)
+    end
+
+    def stage_and_commit(commit_msg = nil)
+      @git_adapter.stage_and_commit(commit_msg)
     end
 
     private

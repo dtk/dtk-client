@@ -19,10 +19,10 @@ module DTK::Client
   class Operation
     class Service < self
       OPERATIONS = [
+        :commit_and_push,
         :destroy,
         :edit,
         :pull,
-        :push,
         :stage,
         :converge,
         :task_status,

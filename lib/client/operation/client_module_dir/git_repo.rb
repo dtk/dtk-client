@@ -19,34 +19,9 @@ module DTK::Client
   class Operation::ClientModuleDir
     # Operations for managing module folders that are git repos
     class GitRepo < self
-      # TODO: check if { :head_sha => ..} should be modified to 'head_sha'; similiarly for :target_repo_dir
-      def self.fetch_merge_and_push(args)
-        wrap_operation(args) do |args|
-          { :head_sha => Internal.fetch_merge_and_push(args) }
-        end
-      end
-
-      def self.create_add_remote_and_push(args)
-        wrap_operation(args) do |args|
-          repo_dir      = args.required(:repo_dir)
-          repo_url      = args.required(:repo_url)
-          remote_branch = args.required(:remote_branch)
-          { :head_sha => Internal.create_add_remote_and_push(repo_dir, repo_url, remote_branch) }
-        end
-      end
-
-      def self.init_and_push_from_existing_repo(args)
-        wrap_operation(args) do |args|
-          repo_dir      = args.required(:repo_dir)
-          repo_url      = args.required(:repo_url)
-          remote_branch = args.required(:remote_branch)
-          { :head_sha => Internal.init_and_push_from_existing_repo(repo_dir, repo_url, remote_branch) }
-        end
-      end
-
-      def self.clone_service_repo(args)
-        wrap_operation(args) do |args|
-          { :target_repo_dir => Internal.clone_service_repo(args) }
+      def self.commit_and_push_to_service_repo(args)
+        wrap_operation(args) do |args| 
+          response_data_hash(:head_sha => Internal.commit_and_push_to_service_repo(args))
         end
       end
 
@@ -57,22 +32,81 @@ module DTK::Client
         end
       end
 
+      def self.clone_service_repo(args)
+        wrap_operation(args) do |args|
+          response_data_hash(:target_repo_dir => Internal.clone_service_repo(args))
+        end
+      end
+
+      def self.create_add_remote_and_push(args)
+        wrap_operation(args) do |args|
+          repo_dir      = args.required(:repo_dir)
+          repo_url      = args.required(:repo_url)
+          remote_branch = args.required(:remote_branch)
+          response_data_hash(:head_sha => Internal.create_add_remote_and_push(repo_dir, repo_url, remote_branch))
+        end
+      end
+
+      def self.fetch_merge_and_push(args)
+        wrap_operation(args) do |args|
+          response_data_hash(:head_sha => Internal.fetch_merge_and_push(args))
+        end
+      end
+
+      def self.init_and_push_from_existing_repo(args)
+        wrap_operation(args) do |args|
+          repo_dir      = args.required(:repo_dir)
+          repo_url      = args.required(:repo_url)
+          remote_branch = args.required(:remote_branch)
+          response_data_hash(:head_sha => Internal.init_and_push_from_existing_repo(repo_dir, repo_url, remote_branch))
+        end
+      end
+
       def self.pull_from_remote(args)
         wrap_operation(args) do |args|
-          { :target_repo_dir => Internal.pull_from_remote(args) }
+          response_data_hash(:target_repo_dir => Internal.pull_from_remote(args))
         end
       end
 
       def self.pull_from_service_repo(args)
         wrap_operation(args) do |args| 
-          {'repo' => Internal.pull_from_service_repo(args) } 
+          response_data_hash(:repo => Internal.pull_from_service_repo(args)) 
         end
       end
 
       private
 
-      # All Internal do not have wrap_operation and can only be accessed by a method that wraps it
+      def self.response_data_hash(hash)
+        hash.inject({}) { |h, (k, v)| h.merge(k.to_s => v) }
+      end
+
+      # All Internal methods do not have wrap_operation and can only be accessed by a method that wraps it
       class Internal < self
+        # Git Params for dtk server
+        module Dtk_Server
+          GIT_REMOTE   = 'dtk-server'
+        end
+        # Git params for dtkn
+        module Dtkn
+          LOCAL_BRANCH = 'master'
+        end
+
+        # returns head_sha
+        def self.commit_and_push_to_service_repo(args)
+          branch           = args.required(:branch)
+          remote_branch    = args[:remote_branch] || branch
+          service_instance = args.required(:service_instance)
+          commit_message   = args[:commit_message]
+
+          repo_dir = ret_base_path(:service, service_instance)
+          repo = git_repo.new(repo_dir, :branch => branch)
+          repo.stage_and_commit
+          # TODO: want to switch over to using Dtk_Server::GIT_REMOTE rather than 'origin'
+          dtk_server_remote = 'origin'
+          repo.push(dtk_server_remote, remote_branch)
+          repo.head_commit_sha
+        end
+
         def self.clone_service_repo(args)
           repo_url         = args.required(:repo_url)
           module_ref       = args.required(:module_ref)
@@ -96,8 +130,6 @@ module DTK::Client
           target_repo_dir
         end
         
-        DTK_SERVER_REMOTE = 'dtk-server'
-        LOCAL_BRANCH = 'master'
         def self.fetch_merge_and_push(args)
           repo_dir      = args.required(:repo_dir)
           repo_url      = args.required(:repo_url)
@@ -122,7 +154,7 @@ module DTK::Client
         def self.init_and_push_from_existing_repo(repo_dir, repo_url, remote_branch)
           repo = git_repo.new(repo_dir)
           
-          if repo.is_there_remote?(DTK_SERVER_REMOTE)
+          if repo.is_there_remote?(Dtk_Server::GIT_REMOTE)
             push_when_there_is_dtk_remote(repo, repo_dir, repo_url, remote_branch)
           else
             add_remote_and_push(repo, repo_url, remote_branch)
@@ -163,24 +195,24 @@ module DTK::Client
             git_repo.unlink_local_clone?(repo_dir)
             create_repo_from_remote(repo_dir, repo_url, remote_branch)
           else
-            repo.remove_remote(DTK_SERVER_REMOTE)
+            repo.remove_remote(Dtk_Server::GIT_REMOTE)
             add_remote_and_push(repo, repo_url, remote_branch)
           end
         end
 
         def self.create_repo_from_remote(repo_dir, repo_url, remote_branch)
-          repo = git_repo.new(repo_dir, :branch => LOCAL_BRANCH)
-          repo.checkout(LOCAL_BRANCH, :new_branch => true)
-          repo.add_remote(DTK_SERVER_REMOTE, repo_url)
+          repo = git_repo.new(repo_dir, :branch => Dtkn::LOCAL_BRANCH)
+          repo.checkout(Dtkn::LOCAL_BRANCH, :new_branch => true)
+          repo.add_remote(Dtk_Server::GIT_REMOTE, repo_url)
           repo.stage_and_commit
-          repo.push(DTK_SERVER_REMOTE, remote_branch, { :force => true })
+          repo.push(Dtk_Server::GIT_REMOTE, remote_branch, { :force => true })
           repo.head_commit_sha
         end
         
         def self.add_remote_and_push(repo, repo_url, remote_branch)
-          repo.add_remote(DTK_SERVER_REMOTE, repo_url)
+          repo.add_remote(Dtk_Server::GIT_REMOTE, repo_url)
           repo.stage_and_commit
-          repo.push(DTK_SERVER_REMOTE, remote_branch, { :force => true })
+          repo.push(Dtk_Server::GIT_REMOTE, remote_branch, { :force => true })
         end
         
         def self.git_repo

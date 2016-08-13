@@ -101,7 +101,7 @@ module DTK::Client
       def stage_and_commit(commit_msg = nil)
         add_all
         begin
-          commit(commit_msg || "Commit caused by module install command!")
+          commit(commit_msg || "DTK Commit from client")
         rescue
           # do not raise if nothing to commit
         end

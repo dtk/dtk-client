@@ -17,18 +17,35 @@
 #
 module DTK::Client
   class Operation::Service
-    class Push < self
+    class CommitAndPush < self
+      # Commits and pushes from service instance directory
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
-          # TODO: see if want to push in service instance path as well or make an object that has service instance name and path
           service_instance = args.required(:service_instance)
-          commit_sha =  head_commit_sha(service_instance)
-          rest_post("#{BaseRoute}/#{service_instance}/update_from_repo", :commit_sha => head_commit_sha)
+
+          response = rest_get("#{BaseRoute}/#{service_instance}/repo_info")
+
+          push_args = {
+            :service_instance => service_instance,
+            :commit_message   => args[:commit_message] || default_commit_message(service_instance),
+            :branch           => response.required(:branch, :name)
+          }
+
+          response = ClientModuleDir::GitRepo.commit_and_push_to_service_repo(push_args)
+          commit_sha = response.required(:head_sha)
+
+          rest_post("#{BaseRoute}/#{service_instance}/update_from_repo", :commit_sha => commit_sha)
+          nil
         end
       end
 
       private
-      def head_commit_sha(service_instance)
+
+      def self.default_commit_message(service_instance)
+        "Updating changes to service instance '#{service_instance}'"
+      end
+
+      def self.head_commit_sha(service_instance)
         raise Error, "Need to write"
       end
     end
