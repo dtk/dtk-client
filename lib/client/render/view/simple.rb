@@ -23,7 +23,7 @@ module DTK::Client
 
       def render(data, _opts = {})
         if data.kind_of?(Hash) or data.kind_of?(Array)
-          render_text(YAML.dump(data)) unless data.empty?
+          render_text(::DTK::DSL::YamlHelper.generate(data)) unless data.empty?
         end
       end
 
