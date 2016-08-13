@@ -26,8 +26,11 @@ module DTK::Client
         OsUtil.print_info('Auto-importing missing dependencies')
 
         module_refs.each do |module_ref|
-          next if module_exists?(module_ref, { :type => :component_module })
-          install_module(module_ref, opts)
+          if module_exists?(module_ref, { :type => :component_module })
+            # TODO: message indicating using imported module
+          else
+            install_module(module_ref, opts)
+          end
         end
       end
 
@@ -42,6 +45,7 @@ module DTK::Client
         import_msg += "(#{version})" if version
         import_msg += "' ... "
 
+        # TODO: OsUtil.print_info pust cr on end. want ... and done on same line
         OsUtil.print_info(import_msg)
 
         post_body = {
@@ -78,16 +82,13 @@ module DTK::Client
       end
 
       def self.get_module_dependencies(component_module)
-        post_body = {
+        query_string_hash = QueryStringHash.new(
           :module_name => component_module.module_name,
           :namespace   => component_module.namespace,
-          :rsa_pub_key => SSHUtil.rsa_pub_key_content()
-        }
-        if version = component_module.version
-          post_body.merge!(:version => version)
-        end
-
-        rest_post "#{BaseRoute}/get_module_dependencies", PostBody.new(post_body)
+          :rsa_pub_key => SSHUtil.rsa_pub_key_content,
+          :version?    => component_module.version
+        )
+        rest_get "#{BaseRoute}/module_dependencies", query_string_hash
       end
 
     end
