@@ -22,7 +22,7 @@ module DTK::Client
         c.arg Token::Arg.target_instance
         command_body c, 'set-default-target', 'Create a new service instance to refer to staged infrastructure that then can be deployed' do |sc|
           sc.action do |_global_options, options, args|
-            Operation::Service.set_default_target(:service_name => args[0])
+            Operation::Service.set_default_target(:service_instance => args[0])
           end
         end
       end

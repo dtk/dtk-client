@@ -74,13 +74,13 @@ module DTK::Client
       # All Internal do not have wrap_operation and can only be accessed by a method that wraps it
       class Internal < self
         def self.clone_service_repo(args)
-          repo_url        = args.required(:repo_url)
-          module_ref      = args.required(:module_ref)
-          branch          = args.required(:branch)
-          service_name    = args.required(:service_name)
-          remove_existing = args[:remove_existing]
+          repo_url         = args.required(:repo_url)
+          module_ref       = args.required(:module_ref)
+          branch           = args.required(:branch)
+          service_instance = args.required(:service_instance)
+          remove_existing  = args[:remove_existing]
 
-          target_repo_dir = create_service_dir(service_name, :remove_existing => remove_existing)
+          target_repo_dir = create_service_dir(service_instance, :remove_existing => remove_existing)
           begin
             git_repo.clone(repo_url, target_repo_dir,  branch)
           rescue => e
@@ -132,12 +132,12 @@ module DTK::Client
         end
         
         def self.pull_from_remote(args)
-          repo_url      = args.required(:repo_url)
-          remote_branch = args.required(:branch)
-          service_name  = args.required(:service_name)
-          # repo_dir      = args.required(:repo_dir)
+          repo_url         = args.required(:repo_url)
+          remote_branch    = args.required(:branch)
+          service_instance = args.required(:service_instance)
+          # repo_dir       = args.required(:repo_dir)
           # using repo_dir based on service instance name because client commands are still executed from hardcoded rich:spark example
-          repo_dir = ret_base_path(:service, service_name)
+          repo_dir = ret_base_path(:service, service_instance)
           
           repo = git_repo.new(repo_dir, :branch => remote_branch)
           repo.pull(repo.remotes.first, remote_branch)
@@ -145,11 +145,11 @@ module DTK::Client
         
         # returns the repo
         def self.pull_from_service_repo(args)
-          repo_url      = args.required(:repo_url)
-          remote_branch = args.required(:branch)
-          service_name  = args.required(:service_name)
+          repo_url         = args.required(:repo_url)
+          remote_branch    = args.required(:branch)
+          service_instance = args.required(:service_instance)
           
-          repo_dir = ret_base_path(:service, service_name)
+          repo_dir = ret_base_path(:service, service_instance)
           repo = git_repo.new(repo_dir, :branch => remote_branch)
           
           repo.pull(repo.remotes.first, remote_branch)
@@ -190,5 +190,4 @@ module DTK::Client
     end
   end
 end
-
 

@@ -21,7 +21,7 @@ module DTK::Client
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           post_body = PostBody.new(
-            :service_instance => args.required(:service_name)
+            :service_instance => args.required(:service_instance)
           )
           rest_post("#{BaseRoute}/set_default_target", post_body)
         end

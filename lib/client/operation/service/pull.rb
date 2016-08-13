@@ -24,9 +24,10 @@ module DTK::Client
           response = rest_get("#{BaseRoute}/#{service_instance}/repo_info")
 
           pull_args = {
-            :repo_url     => response.required(:repo, :url),
-            :branch       => response.required(:branch, :name),
-            :service_name => response.required(:service, :name),
+            :service_instance => service_instance,
+            :repo_url         => response.required(:repo, :url),
+            :branch           => response.required(:branch, :name)
+
           }
           ClientModuleDir::GitRepo.pull_from_service_repo(pull_args)
         end
