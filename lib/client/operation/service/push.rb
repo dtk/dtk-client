@@ -20,12 +20,17 @@ module DTK::Client
     class Push < self
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
-         pp args
-          # TODO: wil be close to module push
-          raise Error, "Not implemented yet"
+          # TODO: see if want to push in service instance path as well or make an object that has service instance name and path
+          service_instance = args.required(:service_instance)
+          commit_sha =  head_commit_sha(service_instance)
+          rest_post("#{BaseRoute}/#{service_instance}/update_from_repo", :commit_sha => head_commit_sha)
         end
       end
 
+      private
+      def head_commit_sha(service_instance)
+        raise Error, "Need to write"
+      end
     end
   end
 end

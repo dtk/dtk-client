@@ -34,11 +34,9 @@ module DTK::Client
 
           commit_message ||= Internal.prompt_for_commit_message
 
-          push_args = {
-            # TODO: put in needed args
-            :commit_message => commit_message
-          }
-          Push.execute(args)
+          # TODO: do commit
+
+          Push.execute(:service_instance => service_instance)
           ret
         end
       end
