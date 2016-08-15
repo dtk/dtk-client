@@ -43,7 +43,7 @@ module DTK::Client
           } 
           message = ClientModuleDir::GitRepo.clone_service_repo(clone_args)
 
-          DTK::Client::OsUtil.print("Service instance has been created. In order to work with service instance, please navigate to: #{message.data[:target_repo_dir]}",:yellow)
+          DTK::Client::OsUtil.print("Service instance has been created. In order to work with service instance, please navigate to: #{message.data["target_repo_dir"]}",:yellow)
         end
       end
     end
