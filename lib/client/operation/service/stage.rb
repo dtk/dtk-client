@@ -41,7 +41,9 @@ module DTK::Client
             :service_instance => response.required(:service, :name),
             :remove_existing  => remove_existing
           } 
-          ClientModuleDir::GitRepo.clone_service_repo(clone_args)
+          message = ClientModuleDir::GitRepo.clone_service_repo(clone_args)
+
+          DTK::Client::OsUtil.print("Service instance has been created. In order to work with service instance, please navigate to: #{message.data[:target_repo_dir]}",:yellow)
         end
       end
     end
