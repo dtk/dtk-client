@@ -21,7 +21,7 @@ module DTK::Client
       subcommand_def 'stage' do |c|
         c.arg Token::Arg.assembly_name
         command_body c, :stage, 'Create a new service instance to refer to staged infrastructure that then can be deployed' do |sc|
-          sc.flag Token.module_ref, :desc => 'Module name with namespace from which to find assembly; not needed if command is executed from within the module'
+          sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory containing where updates will be pulled; not needed if in the service instance directory'
           sc.flag Token.service_name, :desc => 'If specified, name to use for new service instance; otherwise service instance name is auto-generated' 
           sc.flag Token.parent_service_instance
 
