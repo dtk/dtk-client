@@ -22,7 +22,7 @@ module DTK::Client
         wrap_operation(args) do |args|
           module_ref      = args.required(:module_ref)
           remove_existing = args[:remove_existing]
-          
+
           post_body = PostBody.new(
             :namespace       => module_ref.namespace,
             :module_name     => module_ref.module_name,
@@ -43,7 +43,7 @@ module DTK::Client
           } 
           message = ClientModuleDir::GitRepo.clone_service_repo(clone_args)
 
-          DTK::Client::OsUtil.print("Service instance has been created. In order to work with service instance, please navigate to: #{message.data["target_repo_dir"]}",:yellow)
+          OsUtil.print("Service instance has been created. In order to work with service instance, please navigate to: #{message.data(:target_repo_dir)}", :yellow)
         end
       end
     end
