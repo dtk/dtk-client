@@ -21,7 +21,7 @@ module DTK::Client
       subcommand_def 'list-assemblies' do |c|
         command_body c, 'list-assemblies', 'List assemblies from all modules or specified module' do |sc|
           sc.switch Token.all, :desc => 'List assemblies from all modules'
-          sc.flag Token.module_ref
+          sc.flag Token.directory_path
           sc.action do |_global_options, options, _args| 
             opts = {}
             unless options[:all]
