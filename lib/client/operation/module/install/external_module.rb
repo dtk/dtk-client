@@ -21,13 +21,11 @@ module DTK::Client
       BaseRoute = "modules"
 
       def self.install_dependent_modules(module_refs, opts = {})
-        return if module_refs.empty?
-
-        OsUtil.print_info('Auto-importing missing dependencies')
-
         module_refs.each do |module_ref|
           if module_exists?(module_ref, { :type => :component_module })
-            # TODO: message indicating using imported module
+            OsUtil.print("Using module '#{module_ref.namespace}:#{module_ref.module_name}'")
+            # If component module is imported, still check to see if it's dependencies are imported
+            find_and_install_component_module_dependency(module_ref, opts)
           else
             install_module(module_ref, opts)
           end
@@ -42,11 +40,12 @@ module DTK::Client
         version     = component_module.version
 
         import_msg = "Importing module '#{namespace}:#{module_name}"
-        import_msg += "(#{version})" if version
+        import_msg += "(#{version})" if version && !version.eql?('master')
         import_msg += "' ... "
 
-        # TODO: OsUtil.print_info pust cr on end. want ... and done on same line
-        OsUtil.print_info(import_msg)
+        # Using print to avoid adding cr at the end.
+        print "\n" if opts[:add_newline]
+        print import_msg
 
         post_body = {
           :module_name => module_name,
@@ -56,23 +55,7 @@ module DTK::Client
         }
 
         unless opts[:skip_dependencies]
-          dependencies = get_module_dependencies(component_module)
-
-          are_there_warnings = RemoteDependency.check_permission_warnings(dependencies)
-          are_there_warnings ||= RemoteDependency.print_dependency_warnings(dependencies, nil, :ignore_permission_warnings => true)
-
-          if are_there_warnings
-            return false unless Console.prompt_yes_no("Do you still want to proceed with import?", :add_options => true)
-          end
-
-          if missing_modules = dependencies.data(:missing_module_components)
-            unless missing_modules.empty?
-              dep_module_refs = (missing_modules || []).map do |ref_hash| 
-                ModuleRef.new(:namespace => ref_hash['namespace'], :module_name => ref_hash['name'], :version => ref_hash['version']) 
-              end
-              install_dependent_modules(dep_module_refs, :skip_dependencies => true)
-            end
-          end
+          find_and_install_component_module_dependency(component_module, opts.merge(:add_newline => true))
         end
 
         response = rest_post "#{BaseRoute}/install_component_module", PostBody.new(post_body)
@@ -99,6 +82,26 @@ module DTK::Client
           :version?    => component_module.version
         )
         rest_get "#{BaseRoute}/module_dependencies", query_string_hash
+      end
+
+      def self.find_and_install_component_module_dependency(component_module, opts = {})
+        dependencies = get_module_dependencies(component_module)
+
+        are_there_warnings = RemoteDependency.check_permission_warnings(dependencies)
+        are_there_warnings ||= RemoteDependency.print_dependency_warnings(dependencies, nil, :ignore_permission_warnings => true)
+
+        if are_there_warnings
+          return false unless Console.prompt_yes_no("Do you still want to proceed with import?", :add_options => true)
+        end
+
+        if missing_modules = dependencies.data(:missing_module_components)
+          unless missing_modules.empty?
+            dep_module_refs = (missing_modules || []).map do |ref_hash|
+              ModuleRef.new(:namespace => ref_hash['namespace'], :module_name => ref_hash['name'], :version => ref_hash['version']) 
+            end
+            install_dependent_modules(dep_module_refs, opts.merge(:skip_dependencies => true))
+          end
+        end
       end
 
     end

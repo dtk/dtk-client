@@ -38,7 +38,11 @@ module DTK::Client
           raise Error::Usage, "Module #{@base_module_ref.print_form} exists already"
         end
 
-        ExternalModule.install_dependent_modules(dependent_modules)
+        unless dependent_modules.empty?
+          OsUtil.print_info('Auto-importing missing dependencies')
+          ExternalModule.install_dependent_modules(dependent_modules)
+        end
+
         CommonModule.install(@base_module_ref, components, @file_obj)
         nil
       end
