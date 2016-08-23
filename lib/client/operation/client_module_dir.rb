@@ -23,6 +23,7 @@ module DTK::Client
     class ClientModuleDir < self
       require_relative('client_module_dir/git_repo')
       
+      NAMESPACE_SEPERATOR = ':'
       # opts can have keys
       #   :backup_if_exist - Boolean (default: false)
       #   :remove_existing - Boolean (default: false)
@@ -44,6 +45,29 @@ module DTK::Client
             raise Error::Usage, "Directory '#{path}' is not empty; it must be deleted or removed before retrying the command"
           end
         end
+        FileUtils.mkdir_p(path)
+        path
+      end
+
+      def self.create_module_dir(module_type, module_name, opts = {})
+        base_module_path = base_path(module_type)
+
+        path_parts =
+          if (module_name.match(/(.*)#{NAMESPACE_SEPERATOR}(.*)/))
+            [base_module_path, "#{$1}", "#{$2}"]
+          else
+            [base_module_path, "#{module_name}"]
+          end
+
+        path = path_parts.compact.join('/')
+        if File.exists?(path)
+          if opts[:remove_existing]
+            FileUtils.rm_rf(path)
+          else
+            raise Error::Usage, "Directory '#{path}' is not empty; it must be deleted or removed before retrying the command"
+          end
+        end
+
         FileUtils.mkdir_p(path)
         path
       end

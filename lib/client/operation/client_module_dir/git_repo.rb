@@ -38,6 +38,12 @@ module DTK::Client
         end
       end
 
+      def self.clone_module_repo(args)
+        wrap_operation(args) do |args|
+          response_data_hash(:target_repo_dir => Internal.clone_module_repo(args))
+        end
+      end
+
       def self.create_add_remote_and_push(args)
         wrap_operation(args) do |args|
           repo_dir      = args.required(:repo_dir)
@@ -127,6 +133,26 @@ module DTK::Client
             # User-friendly error
             raise Error::Usage, "Clone to directory '#{target_repo_dir}' failed"
           end
+          target_repo_dir
+        end
+
+        def self.clone_module_repo(args)
+          module_type     = args.required(:module_type)
+          repo_url        = args.required(:repo_url)
+          branch          = args.required(:branch)
+          module_name     = args.required(:module_name)
+          remove_existing = args[:remove_existing]
+
+          target_repo_dir = create_module_dir(module_type, module_name, :remove_existing => remove_existing)
+          begin
+            git_repo.clone(repo_url, target_repo_dir,  branch)
+          rescue => e
+            FileUtils.rm_rf(target_repo_dir) if File.directory?(target_repo_dir)
+            Logger.instance.error_pp(e.message, e.backtrace)
+
+            raise Error::Usage, "Clone to directory '#{target_repo_dir}' failed"
+          end
+
           target_repo_dir
         end
         

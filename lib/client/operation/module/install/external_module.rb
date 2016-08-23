@@ -76,6 +76,16 @@ module DTK::Client
         end
 
         response = rest_post "#{BaseRoute}/install_component_module", PostBody.new(post_body)
+
+        clone_args = {
+          :module_type => :component_module,
+          :repo_url    => response.required(:repo_url),
+          :branch      => response.required(:workspace_branch),
+          :module_name => response.required(:full_module_name)
+          # :remove_existing  => remove_existing
+        }
+        ClientModuleDir::GitRepo.clone_module_repo(clone_args)
+
         OsUtil.print_info('Done.')
 
         response
