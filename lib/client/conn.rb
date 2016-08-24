@@ -177,7 +177,7 @@ module DTK::Client
         :timeout => timeout,
         :open_timeout => 10,
         :verify_ssl => OpenSSL::SSL::VERIFY_PEER,
-        :ssl_ca_file => File.expand_path('../lib/config/cacert.pem', File.dirname(__FILE__)),
+        :ssl_ca_file => File.expand_path('../client/config/cacert.pem', File.dirname(__FILE__)),
       }
     end
     
