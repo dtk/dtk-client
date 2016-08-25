@@ -50,16 +50,21 @@ module DTK::Client
       end
 
       def self.create_module_dir(module_type, module_name, opts = {})
-        base_module_path = base_path(module_type)
+        path = opts[:path]
 
-        path_parts =
-          if (module_name.match(/(.*)#{NAMESPACE_SEPERATOR}(.*)/))
-            [base_module_path, "#{$1}", "#{$2}"]
-          else
-            [base_module_path, "#{module_name}"]
-          end
+        unless path
+          base_module_path = base_path(module_type)
 
-        path = path_parts.compact.join('/')
+          path_parts =
+            if (module_name.match(/(.*)#{NAMESPACE_SEPERATOR}(.*)/))
+              [base_module_path, "#{$1}", "#{$2}"]
+            else
+              [base_module_path, "#{module_name}"]
+            end
+
+          path = path_parts.compact.join('/')
+        end
+
         if File.exists?(path)
           if opts[:remove_existing]
             FileUtils.rm_rf(path)
@@ -78,6 +83,10 @@ module DTK::Client
 
       def self.ret_base_path(type, name)
         "#{base_path(type)}/#{name}"
+      end
+
+      def self.ret_path_with_current_dir(name)
+        "#{OsUtil.current_dir}/#{name.gsub(':','/')}"
       end
 
       def self.purge_service_instance_dir(dir_path)

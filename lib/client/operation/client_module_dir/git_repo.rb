@@ -142,8 +142,9 @@ module DTK::Client
           branch          = args.required(:branch)
           module_name     = args.required(:module_name)
           remove_existing = args[:remove_existing]
+          repo_dir        = args[:repo_dir]
 
-          target_repo_dir = create_module_dir(module_type, module_name, :remove_existing => remove_existing)
+          target_repo_dir = create_module_dir(module_type, module_name, :remove_existing => remove_existing, :path => repo_dir)
           begin
             git_repo.clone(repo_url, target_repo_dir,  branch)
           rescue => e
