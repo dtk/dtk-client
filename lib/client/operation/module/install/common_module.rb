@@ -20,7 +20,7 @@ module DTK::Client
     class CommonModule < self
       BaseRoute = 'modules'
 
-      def self.install(module_ref, components, file_obj)
+      def self.install(module_ref, file_obj)
         post_body = PostBody.new(
           :module_name => module_ref.module_name,
           :namespace   => module_ref.namespace,

@@ -43,7 +43,7 @@ module DTK::Client
           ExternalModule.install_dependent_modules(dependent_modules)
         end
 
-        CommonModule.install(@base_module_ref, components, @file_obj)
+        CommonModule.install(@base_module_ref, @file_obj)
         nil
       end
       

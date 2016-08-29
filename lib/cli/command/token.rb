@@ -67,7 +67,7 @@ module DTK::Client
         :action_params    => 'ACTION-PARAMS',
         :workspace_name   => 'WORKSPACE-NAME',
         :target_instance  => 'TARGET-SERVICE-INSTANCE',
-        :module_name      => 'NAMESPACE/MODULE',
+        :module_name      => 'NAMESPACE/MODULE-NAME',
         :target_directory => 'TARGET-DIRECTORY'
       }
       
