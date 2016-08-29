@@ -25,7 +25,7 @@ module DTK::Client
           if module_exists?(module_ref, { :type => :component_module })
             OsUtil.print("Using module '#{module_ref.namespace}:#{module_ref.module_name}'")
             # If component module is imported, still check to see if it's dependencies are imported
-            find_and_install_component_module_dependency(module_ref, opts)
+            find_and_install_component_module_dependency(module_ref, opts.merge(:skip_if_no_remote => true))
           else
             install_module(module_ref, opts)
           end
@@ -85,7 +85,18 @@ module DTK::Client
       end
 
       def self.find_and_install_component_module_dependency(component_module, opts = {})
-        dependencies = get_module_dependencies(component_module)
+        begin
+          dependencies = get_module_dependencies(component_module)
+        rescue Error::ServerNotOkResponse => e
+          # temp fix for issue when dependent module is imported from puppet forge
+          if errors = e.response && e.response['errors']
+            dependencies = nil if errors.first.include?('not found')
+          else
+            raise e
+          end
+        end
+
+        return unless dependencies
 
         are_there_warnings = RemoteDependency.check_permission_warnings(dependencies)
         are_there_warnings ||= RemoteDependency.print_dependency_warnings(dependencies, nil, :ignore_permission_warnings => true)
