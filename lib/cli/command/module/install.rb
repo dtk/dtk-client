@@ -24,24 +24,14 @@ module DTK::Client
           sc.flag Token.version
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to directory containing content to install'
           sc.action do |_global_options, options, args|
-            # :module_ref => context_attributes[:module_ref]
-            # module_ref = module_ref_in_options_or_context?(options)
-
-            # args = {
-            #   :module_ref        => module_ref,
-            #   :base_dsl_file_obj => @base_dsl_file_obj,
-            #   :version           => options[:version],
-            #   :module_name       => module_name
-            # }
-
             # install from dtkn (later probably from other remote catalogs)
             if module_name = args[0]
               module_ref = module_ref_in_options_or_context?(:module_ref => module_name)
-              Operation::Module.install_from_catalog(:module_ref => module_ref, :version => options[:version])
-            else
-              module_ref = module_ref_in_options_or_context?(options)
-              Operation::Module.install(:module_ref => module_ref, :base_dsl_file_obj => @base_dsl_file_obj)
+              Operation::Module.install_from_catalog(:module_ref => module_ref, :version => options[:version], :directory_path => options[:directory_path])
             end
+
+            module_ref = module_ref_in_options_or_context?(options)
+            Operation::Module.install(:module_ref => module_ref, :base_dsl_file_obj => @base_dsl_file_obj)
           end
         end
       end

@@ -53,6 +53,15 @@ module DTK::Client
         end
       end
 
+      def self.create_add_remote_and_pull(args)
+        wrap_operation(args) do |args|
+          repo_dir      = args.required(:repo_dir)
+          repo_url      = args.required(:repo_url)
+          remote_branch = args.required(:remote_branch)
+          response_data_hash(:head_sha => Internal.create_add_remote_and_pull(repo_dir, repo_url, remote_branch))
+        end
+      end
+
       def self.fetch_merge_and_push(args)
         wrap_operation(args) do |args|
           response_data_hash(:head_sha => Internal.fetch_merge_and_push(args))
@@ -94,6 +103,7 @@ module DTK::Client
         end
         # Git params for dtkn
         module Dtkn
+          GIT_REMOTE   = 'dtkn'
           LOCAL_BRANCH = 'master'
         end
 
@@ -166,7 +176,7 @@ module DTK::Client
             if git_repo.is_git_repo?(repo_dir)
               init_and_push_from_existing_repo(repo_dir, repo_url, remote_branch)
             else
-              create_repo_from_remote(repo_dir, repo_url, remote_branch)
+              create_repo_from_remote_and_push(repo_dir, repo_url, remote_branch)
             end
           
           head_sha 
@@ -175,6 +185,12 @@ module DTK::Client
         def self.create_add_remote_and_push(repo_dir, repo_url, remote_branch)
           repo = git_repo.new(repo_dir)
           add_remote_and_push(repo, repo_url, remote_branch)
+          repo.head_commit_sha
+        end
+
+        def self.create_add_remote_and_pull(repo_dir, repo_url, remote_branch)
+          repo = create_repo_from_dtkn_remote(repo_dir, repo_url, remote_branch)
+          # add_dtkn_remote_and_pull(repo, repo_url, remote_branch)
           repo.head_commit_sha
         end
         
@@ -191,12 +207,9 @@ module DTK::Client
         end
         
         def self.pull_from_remote(args)
-          repo_url         = args.required(:repo_url)
-          remote_branch    = args.required(:branch)
-          service_instance = args.required(:service_instance)
-          # repo_dir       = args.required(:repo_dir)
-          # using repo_dir based on service instance name because client commands are still executed from hardcoded rich:spark example
-          repo_dir = ret_base_path(:service, service_instance)
+          repo_url       = args.required(:repo_url)
+          remote_branch  = args.required(:branch)
+          repo_dir       = args.required(:repo_dir)
           
           repo = git_repo.new(repo_dir, :branch => remote_branch)
           repo.pull(repo.remotes.first, remote_branch)
@@ -220,17 +233,36 @@ module DTK::Client
           # else if multiple remotes and dtk-server being one of them; remove dtk-server; add new dtk-server remote and push
           if repo.remotes.size == 1
             git_repo.unlink_local_clone?(repo_dir)
-            create_repo_from_remote(repo_dir, repo_url, remote_branch)
+            create_repo_from_remote_and_push(repo_dir, repo_url, remote_branch)
           else
             repo.remove_remote(Dtk_Server::GIT_REMOTE)
             add_remote_and_push(repo, repo_url, remote_branch)
           end
         end
 
-        def self.create_repo_from_remote(repo_dir, repo_url, remote_branch)
+        def self.create_repo_from_server_remote(repo_dir, repo_url, remote_branch)
           repo = git_repo.new(repo_dir, :branch => Dtkn::LOCAL_BRANCH)
           repo.checkout(Dtkn::LOCAL_BRANCH, :new_branch => true)
           repo.add_remote(Dtk_Server::GIT_REMOTE, repo_url)
+          repo
+        end
+
+        def self.create_repo_from_dtkn_remote(repo_dir, repo_url, remote_branch)
+          require 'debugger'
+          Debugger.start
+          debugger
+          repo = git_repo.new(repo_dir, :branch => Dtkn::LOCAL_BRANCH)
+          # repo.checkout(Dtkn::LOCAL_BRANCH, :new_branch => true)
+          repo.stage_and_commit
+          repo.add_remote(Dtkn::GIT_REMOTE, repo_url)
+          repo
+        end
+
+        def self.create_repo_from_remote_and_push(repo_dir, repo_url, remote_branch)
+          repo = create_repo_from_server_remote(repo_dir, repo_url, remote_branch)
+          # repo = git_repo.new(repo_dir, :branch => Dtkn::LOCAL_BRANCH)
+          # repo.checkout(Dtkn::LOCAL_BRANCH, :new_branch => true)
+          # repo.add_remote(Dtk_Server::GIT_REMOTE, repo_url)
           repo.stage_and_commit
           repo.push(Dtk_Server::GIT_REMOTE, remote_branch, { :force => true })
           repo.head_commit_sha
@@ -240,6 +272,11 @@ module DTK::Client
           repo.add_remote(Dtk_Server::GIT_REMOTE, repo_url)
           repo.stage_and_commit
           repo.push(Dtk_Server::GIT_REMOTE, remote_branch, { :force => true })
+        end
+
+        def self.add_dtkn_remote_and_pull(repo, repo_url, remote_branch)
+          repo.add_remote(Dtkn::GIT_REMOTE, repo_url)
+          repo.pull(Dtkn::GIT_REMOTE, remote_branch)
         end
         
         def self.git_repo

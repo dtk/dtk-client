@@ -77,6 +77,20 @@ module DTK::Client
         path
       end
 
+      def self.create_module_dir_from_path(path, opts = {})
+        if File.exists?(path)
+          if opts[:remove_existing]
+            FileUtils.rm_rf(path)
+          else
+            # raise Error::Usage, "Directory '#{path}' is not empty; it must be deleted or removed before retrying the command" unless Dir["#{path}/*"].empty?
+            return path
+          end
+        end
+
+        FileUtils.mkdir_p(path)
+        path
+      end
+
       def self.local_dir_exists?(type, name, opts = {})
         File.exists?("#{base_path(type)}/#{name}")
       end
