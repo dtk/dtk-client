@@ -190,7 +190,7 @@ module DTK::Client
 
         def self.create_add_remote_and_pull(repo_dir, repo_url, remote_branch)
           repo = create_repo_from_dtkn_remote(repo_dir, repo_url, remote_branch)
-          # add_dtkn_remote_and_pull(repo, repo_url, remote_branch)
+          add_dtkn_remote_and_pull(repo, repo_url, remote_branch)
           repo.head_commit_sha
         end
         
@@ -248,11 +248,8 @@ module DTK::Client
         end
 
         def self.create_repo_from_dtkn_remote(repo_dir, repo_url, remote_branch)
-          require 'debugger'
-          Debugger.start
-          debugger
           repo = git_repo.new(repo_dir, :branch => Dtkn::LOCAL_BRANCH)
-          # repo.checkout(Dtkn::LOCAL_BRANCH, :new_branch => true)
+          repo.checkout(Dtkn::LOCAL_BRANCH, :new_branch => true)
           repo.stage_and_commit
           repo.add_remote(Dtkn::GIT_REMOTE, repo_url)
           repo
