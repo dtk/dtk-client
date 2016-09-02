@@ -106,6 +106,14 @@ module DTK::Client
       def self.purge_service_instance_dir(dir_path)
         FileUtils.rm_rf(dir_path)
       end
+
+      def self.delete_directory_content(path)
+        FileUtils.rm_rf(Dir.glob("#{path}/*"))
+      end
+
+      def self.create_file_with_content(file_path, content)
+        File.open(file_path, 'w') { |f| f << content }
+      end
     
       private
 

@@ -19,7 +19,7 @@ module DTK::Client
   module CLI::Command
     module Module 
       subcommand_def 'install' do |c|
-        c.arg Token::Arg.module_name, :optional => true
+        # c.arg Token::Arg.module_name, :optional => true
         command_body c, :install, 'Install contents of client directory to be a module on the server' do |sc|
           sc.flag Token.version
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to directory containing content to install'
@@ -31,7 +31,7 @@ module DTK::Client
             end
 
             module_ref = module_ref_in_options_or_context?(options)
-            Operation::Module.install(:module_ref => module_ref, :base_dsl_file_obj => @base_dsl_file_obj)
+            Operation::Module.install(:module_ref => module_ref, :base_dsl_file_obj => @base_dsl_file_obj)#, :directory_path => options[:directory_path])
           end
         end
       end

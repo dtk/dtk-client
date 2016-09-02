@@ -30,6 +30,6 @@ module DTK
     require_relative('client/operation')
     require_relative('client/operation_args')
     require_relative('client/render')
-
+    require_relative('client/content_generator')
   end
 end

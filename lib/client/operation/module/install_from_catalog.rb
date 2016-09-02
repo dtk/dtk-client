@@ -51,7 +51,14 @@ module DTK::Client
         }
         ClientModuleDir::GitRepo.create_add_remote_and_pull(git_repo_args)
 
-        # TODO: Add dtk.module.yaml file generation from assemblies and module_refs
+        module_content_hash = ContentGenerator.new(target_repo_dir, @module_ref, @version).generate_module_content
+
+        # delete old files
+        Operation::ClientModuleDir.delete_directory_content(target_repo_dir)
+
+        # generate dtk.module.yaml file from parsed assemblies and module_refs
+        Operation::ClientModuleDir.create_file_with_content("#{target_repo_dir}/dtk.module.yaml", self.class.hash_to_yaml(module_content_hash))
+        nil
       end
       
       private
@@ -61,10 +68,6 @@ module DTK::Client
         @module_ref     = module_ref
         @directory_path = directory_path
         @version        = version
-      end
-
-      def create_path(namespace, name)
-
       end
     end
   end
