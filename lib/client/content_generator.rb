@@ -93,9 +93,8 @@ module DTK::Client
         assembly_content = content_hash['assembly']
         workflows        = ret_workflows_hash(content_hash['workflow'])
         
-        assembly_content.merge!(:workflows => workflows)
+        assembly_content.merge!('workflows' => workflows) if workflows
         assemblies.merge!(name => assembly_content)
-        # { name => assembly_content }
       end
 
       assemblies.empty? ? nil : assemblies

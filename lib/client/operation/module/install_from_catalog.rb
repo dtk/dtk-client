@@ -58,7 +58,7 @@ module DTK::Client
 
         # generate dtk.module.yaml file from parsed assemblies and module_refs
         Operation::ClientModuleDir.create_file_with_content("#{target_repo_dir}/dtk.module.yaml", self.class.hash_to_yaml(module_content_hash))
-        nil
+        {:target_repo_dir => target_repo_dir}
       end
       
       private
