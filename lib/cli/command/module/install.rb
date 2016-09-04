@@ -25,18 +25,21 @@ module DTK::Client
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to directory containing content to install'
           sc.action do |_global_options, options, args|
             directory_path = options[:directory_path]
+            version = options[:version]
 
             # install from dtkn (later probably from other remote catalogs)
             if module_name = args[0]
-              module_ref = module_ref_in_options_or_context?(:module_ref => module_name)
+              module_ref = module_ref_in_options_or_context?(:module_ref => module_name, :version => (version || 'master'))
               target_repo_dir = Operation::Module.install_from_catalog(:module_ref => module_ref, :version => options[:version], :directory_path => directory_path)
             end
+
+            raise Error::Usage, "You can use version only with 'namespace/name' provided" if version && module_name.nil?
 
             if target_repo_dir
               directory_path ||= target_repo_dir.data[:target_repo_dir]
             end
 
-            install_opts = directory_path ? { :directory_path => directory_path } : options
+            install_opts = directory_path ? { :directory_path => directory_path, :version => (version || 'master') } : options
             module_ref = module_ref_in_options_or_context?(install_opts)
             Operation::Module.install(:module_ref => module_ref, :base_dsl_file_obj => @base_dsl_file_obj)
           end

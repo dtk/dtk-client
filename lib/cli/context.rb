@@ -63,13 +63,14 @@ module DTK::Client
 
       attr_reader :context_attributes, :base_dsl_file_obj
 
-      def module_ref_from_base_dsl_file?        
+      def module_ref_from_base_dsl_file?
         parsed_module = base_dsl_file_obj.parse_content(:common_module_summary)
         namespace   = parsed_module.val(:Namespace)
         module_name = parsed_module.val(:ModuleName)
+        version     = parsed_module.val(:ModuleVersion) || 'master'
         if namespace and module_name
           client_dir_path = base_dsl_file_obj.parent_dir?
-          ModuleRef.new(:namespace => namespace, :module_name => module_name, :client_dir_path => client_dir_path)
+          ModuleRef.new(:namespace => namespace, :module_name => module_name, :version => version, :client_dir_path => client_dir_path)
         end
       end
 
@@ -101,7 +102,9 @@ module DTK::Client
 
       def module_ref_in_options_or_context?(options)
         if options[:module_ref]
-          ModuleRef.new(:namespace_module_name => options[:module_ref])
+          opts = {:namespace_module_name => options[:module_ref]}
+          opts.merge!(:version => options[:version]) if options[:version]
+          ModuleRef.new(opts)
         else
           if module_dir_path = options[:directory_path]
             set_base_dsl_file_obj!(:dir_path => module_dir_path)
