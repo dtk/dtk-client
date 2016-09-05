@@ -22,7 +22,7 @@ module DTK::Client
         wrap_operation(args) do |_args|
           # defaults
           query_string_hash = QueryStringHash.new(
-            :detail_to_include => ['remotes']
+            :detail_to_include => ['remotes', 'versions']
           )
           rest_get("#{BaseRoute}/list", query_string_hash)
         end.set_render_as_table!
