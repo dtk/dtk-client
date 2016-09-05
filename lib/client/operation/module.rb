@@ -42,7 +42,8 @@ module DTK::Client
       def self.module_ref_hash(module_ref)
         {
           :namespace   => module_ref.namespace,
-          :module_name => module_ref.module_name
+          :module_name => module_ref.module_name,
+          :version?    => module_ref.version
         }
       end
 
