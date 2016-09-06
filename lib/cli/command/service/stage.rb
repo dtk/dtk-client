@@ -30,10 +30,9 @@ module DTK::Client
           # sc.switch Token.purge, :desc => 'Overwrite any content that presently exists in the service instance directory to be created'
           #  sc.flag Token.version
           sc.action do |_global_options, options, args|
-            in_module     =  !!context_attributes[:module_ref]
             module_ref    = module_ref_in_options_or_context(options)
             assembly_name = args[0]
-            version       = options[:version] || (in_module ? 'master' : nil)
+            version       = options[:version] || module_ref.version
             service_name  = options[:service_name]
 
             Validation.validate_name(service_name) if service_name
