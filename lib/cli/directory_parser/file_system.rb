@@ -75,15 +75,16 @@ module DTK::Client; module CLI
       def most_nested_matching_file_path?(path_info, opts = {})
         base_dir = path_info.base_dir || OsUtil.home_dir
         current_dir = opts[:current_dir] || OsUtil.current_dir
-        check_match_recurse_on_failure?(path_info, current_dir, base_dir)
+        flag = opts[:flag]
+        check_match_recurse_on_failure?(path_info, current_dir, base_dir, flag)
       end
 
-      def check_match_recurse_on_failure?(path_info, current_dir, base_dir)
+      def check_match_recurse_on_failure?(path_info, current_dir, base_dir, flag)
         match = matching_file_paths(current_dir, path_info)
         if match.empty?
           unless current_dir == base_dir
             if parent_path = OsUtil.parent_dir?(current_dir)
-              check_match_recurse_on_failure?(path_info, parent_path, base_dir)
+              check_match_recurse_on_failure?(path_info, parent_path, base_dir, flag) if flag
             end
           end
         elsif match.size == 1

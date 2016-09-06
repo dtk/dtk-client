@@ -39,6 +39,7 @@ module DTK::Client
       private :initialize
 
       def run_and_return_response_object(argv)
+        @flag = true if argv.include?('-d')
         @command_processor.run_and_return_response_object(argv)
       end
       
@@ -82,12 +83,14 @@ module DTK::Client
       # opts can have keys
       #   :dir_path
       def set_base_dsl_file_obj!(opts = {})
+        opts[:flag] = @flag
         @base_dsl_file_obj = self.class.base_dsl_file_obj(opts)
       end
 
       # opts can have keys
       #   :dir_path
       def  self.base_dsl_file_obj(opts = {}) 
+        opts[:flag] = false if opts[:flag].nil?
         DirectoryParser.matching_file_obj?(FILE_TYPES, opts)
       end
       FILE_TYPES = 
