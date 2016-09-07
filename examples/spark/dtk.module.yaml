@@ -4,7 +4,7 @@ module: rich/spark
 keywords: spark, hdfs, zeppelin
 description: Spark cluster
 license: Apache 2.0
-version: master
+version: 0.1.2
 
 dependencies:
 - bigtop/bigtop_base
