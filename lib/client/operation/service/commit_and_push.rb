@@ -35,18 +35,12 @@ module DTK::Client
           commit_sha = response.required(:head_sha)
 
           response = rest_post("#{BaseRoute}/#{service_instance}/update_from_repo", :commit_sha => commit_sha)
-          if !response.data(:error_msgs).empty?
-            # If error messages dont write out warnings so warnings dont distract from errors
-            # There repo_updated wil be false
-            response.data(:error_msgs).each { |error_msg| OsUtil.print_error(error_msg) }
-          else
-            if !response.data(:warning_msgs).empty?
-              response.data(:warning_msgs).each { |warning_msg| OsUtil.print_warning(warning_msg) }
-            end
+          if !response.data(:warning_msgs).empty?
+            response.data(:warning_msgs).each { |warning_msg| OsUtil.print_warning(warning_msg) }
+          end
 
-            if response.data(:repo_updated)
-              # TODO: code to pull repo info
-            end
+          if response.data(:repo_updated)
+            # TODO: code to pull repo info
           end
           nil
         end
