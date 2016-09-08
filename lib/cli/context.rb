@@ -76,7 +76,8 @@ module DTK::Client
       end
 
       def service_instance_from_base_dsl_file?
-        raise_error_when_missing_context(:service_instance) unless base_dsl_file_obj.file_type == DTK::DSL::FileType::ServiceInstance
+        #raise_error_when_missing_context(:service_instance) unless base_dsl_file_obj.file_type == DTK::DSL::FileType::ServiceInstance
+        base_dsl_file_obj.file_type == DTK::DSL::FileType::ServiceInstance
         base_dsl_file_obj.parse_content(:service_module_summary).val(:Name)
       end
 
@@ -137,7 +138,11 @@ module DTK::Client
         :module_ref       => 'mdoule'
       }
       def raise_error_when_missing_context(type, options = {})
-        @base_dsl_file_obj.raise_error_if_no_content
+        if options["d"].nil?
+          @base_dsl_file_obj.raise_error_if_no_content
+        else
+          @base_dsl_file_obj.raise_error_if_no_content_flag(type)
+        end
         # TODO: not sure if below can be reached
         error_msg = 
           if options[:directory_path]
