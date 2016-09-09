@@ -107,14 +107,10 @@ module DTK::Client
           OsUtil.print(add_prefix(prefix, message), color)
         end
       end
-      
-      def self.already_has_prefix?(prefix, message)
-        prefix_regexps = [prefix, prefix.upcase].map { |p| [p, with_left_prefix(p)] }.flatten.map { |p| Regexp.new("^#{p}") }
-        !!prefix_regexps.find {|regexp| message =~ regexp}      
-      end
 
-      def self.with_left_prefix(prefix)
-        '\\' + LEFT_DELIM + prefix
+      LEFT_DELIM_AT_BEG_REGEXP = Regexp.new('^' + '\\' + LEFT_DELIM)
+      def self.already_has_prefix?(prefix, message)
+        !!(message =~ LEFT_DELIM_AT_BEG_REGEXP)
       end
 
       def self.add_prefix(prefix, message)
