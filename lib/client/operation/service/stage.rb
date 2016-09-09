@@ -26,7 +26,7 @@ module DTK::Client
           post_body = PostBody.new(
             :namespace       => module_ref.namespace,
             :module_name     => module_ref.module_name,
-            :assembly_name   => args.required(:assembly_name),
+            :assembly_name?  => args.required(:assembly_name),
             :service_name?   => args[:service_name],
             :version?        => args[:version],
             :target_service? => args[:target_service],
