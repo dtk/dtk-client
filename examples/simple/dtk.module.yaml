@@ -18,7 +18,7 @@ assemblies:
       n1:
         attributes:
           image: amazon_hvm
-          size: small
+          size: micro
         components:
         - host::hostname:
             attributes:
