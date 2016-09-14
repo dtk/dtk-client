@@ -1,14 +1,14 @@
 ---
 dsl_version: 1.0.0
 module: rich/simple
-version: 0.0.1
+version: 0.0.2
 keywords: DTK-2554
 description: Tests for DTK-2554
 license: Apache 2.0
 
 dependencies:
-- aws/ec2
-- dtk/host
+  aws/ec2:
+  dtk/host: 1.0.1
 assemblies:
   simple:
     description: Simple assembly for DTK-2554
@@ -18,7 +18,7 @@ assemblies:
       n1:
         attributes:
           image: amazon_hvm
-          size: small
+          size: micro
         components:
         - host::hostname:
             attributes:

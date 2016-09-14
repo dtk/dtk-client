@@ -33,9 +33,18 @@ module DTK::Client
               :action           => action,
               :action_params    => action_params
             }
-            Operation::Service.exec(args)
-
-            Operation::Service.task_status(args.merge(:mode => 'stream'))
+            response = Operation::Service.exec(args)
+            unless response.ok?
+              response
+            else
+              # TODO: break if any exceptions
+              if response.data(:empty_workflow)
+                Response::Ok.new 
+              #eslsif TODO: break if any violations
+              else
+                Operation::Service.task_status(args.merge(:mode => 'stream'))
+              end
+            end
           end
         end
       end

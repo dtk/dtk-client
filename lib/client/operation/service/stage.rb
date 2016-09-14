@@ -26,7 +26,7 @@ module DTK::Client
           post_body = PostBody.new(
             :namespace       => module_ref.namespace,
             :module_name     => module_ref.module_name,
-            :assembly_name   => args.required(:assembly_name),
+            :assembly_name?  => args.required(:assembly_name),
             :service_name?   => args[:service_name],
             :version?        => args[:version],
             :target_service? => args[:target_service],
@@ -34,16 +34,19 @@ module DTK::Client
           )
           response = rest_post("#{BaseRoute}/create", post_body)
 
+          service_instance = response.required(:service, :name)
+
           clone_args = {
             :module_ref       => module_ref,
             :repo_url         => response.required(:repo, :url),
             :branch           => response.required(:branch, :name),
-            :service_instance => response.required(:service, :name),
+            :service_instance => service_instance,
             :remove_existing  => remove_existing
           } 
           message = ClientModuleDir::GitRepo.clone_service_repo(clone_args)
+          target_dir = message.data(:target_repo_dir)
 
-          OsUtil.print("Service instance has been created. In order to work with service instance, please navigate to: #{message.data(:target_repo_dir)}", :yellow)
+          OsUtil.print_info("Service instance '#{service_instance}' has been created. In order to work with service instance, please navigate to: #{target_dir}") 
         end
       end
     end

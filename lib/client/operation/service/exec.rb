@@ -37,18 +37,18 @@ module DTK::Client
             :task_params? => task_params
           )
           response = rest_post("#{BaseRoute}/#{service_instance}/#{action}", post_body)
-          response_data = response.data
 
-          if confirmation_message = response_data["confirmation_message"]
-            return unless Console.prompt_yes_no("Service instance has been stopped, do you want to start it?", :add_options => true)
+          if confirmation_message = response.data(:confirmation_message)
+            unless Console.prompt_yes_no("Service instance has been stopped, do you want to start it?", :add_options => true)
+              return Response::Ok.new(:empty_workflow => true) 
+            end
 
             response = rest_post("#{BaseRoute}/#{service_instance}/#{action}", post_body.merge!(:start_assembly => true, :skip_violations => true))
-            response_data = response.data
           end
 
-          if message = response_data["message"]
-            OsUtil.print(message, :yellow)
-            return
+          if response.data(:empty_workflow)
+            OsUtil.print_warning("There are no steps in the workflow to execute")
+            return Response::Ok.new('empty_workflow' => true) 
           end
 
           response
@@ -58,16 +58,16 @@ module DTK::Client
       private
 
       def self.parse_params?(params_string)
-      if params_string
-        params_string.split(',').inject(Hash.new) do |h,av|
-          av_split = av.split('=')
-          unless av_split.size == 2
-            raise Error::Usage, "The parameter string (#{params_string}) is ill-formed"
+        if params_string
+          params_string.split(',').inject(Hash.new) do |h,av|
+            av_split = av.split('=')
+            unless av_split.size == 2
+              raise Error::Usage, "The parameter string (#{params_string}) is ill-formed"
+            end
+            h.merge(av_split[0] => av_split[1])
           end
-          h.merge(av_split[0] => av_split[1])
         end
       end
-    end
     end
   end
 end

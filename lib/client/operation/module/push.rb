@@ -40,10 +40,9 @@ module DTK::Client
             :remote_branch => branch
           }
           git_repo_response = ClientModuleDir::GitRepo.create_add_remote_and_push(git_repo_args)
-          # TODO: do we want below instea of above
+          # TODO: do we want below instead of above?
           # git_repo_response = ClientModuleDir::GitRepo.init_and_push_from_existing_repo(git_repo_args)
 
-          # TODO: look at using module_ref_hash(module_ref) below afetr utting version? in module_ref_hash
           post_body = PostBody.new(
             :module_name => module_info.required(:module, :name),
             :namespace   => module_info.required(:module, :namespace),

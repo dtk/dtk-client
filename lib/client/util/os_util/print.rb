@@ -31,15 +31,15 @@ module DTK::Client
       end
 
       def print_info(message)
-        print(message, :white)
+        print_with_prefix(:info, message, :yellow)
       end
 
       def print_warning(message)
-        print(message, :yellow)
+        print_with_prefix(:warning, message, :yellow)
       end
 
       def print_error(message)
-        print(message, :red)
+        print_with_prefix(:error, message, :red)
       end
       
       def put_warning(prefix, text, color)
@@ -88,6 +88,33 @@ module DTK::Client
       
       def actual_length(string_with_escapes)
         string_with_escapes.to_s.gsub(/\e\[\d{1,2}m/, "").length
+      end
+
+      def print_with_prefix(prefix, message, color)
+        PrintWithPrefix.print(prefix, message, color)
+      end
+    end
+
+    module PrintWithPrefix
+      LEFT_DELIM = '['
+      RIGHT_DELIM = ']'
+      def self.print(prefix, message, color)
+        prefix = prefix.to_s
+        # only add prefix if does not have it already
+        if already_has_prefix?(prefix, message)
+          OsUtil.print(message, color)
+        else
+          OsUtil.print(add_prefix(prefix, message), color)
+        end
+      end
+
+      LEFT_DELIM_AT_BEG_REGEXP = Regexp.new('^' + '\\' + LEFT_DELIM)
+      def self.already_has_prefix?(prefix, message)
+        !!(message =~ LEFT_DELIM_AT_BEG_REGEXP)
+      end
+
+      def self.add_prefix(prefix, message)
+        "#{LEFT_DELIM}#{prefix.upcase}#{RIGHT_DELIM} #{message}"
       end
     end
   end
