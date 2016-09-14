@@ -69,7 +69,8 @@ module DTK::Client
           if opts[:remove_existing]
             FileUtils.rm_rf(path)
           else
-            raise Error::Usage, "Directory '#{path}' is not empty; it must be deleted or removed before retrying the command"
+            raise Error::Usage, "Directory '#{path}' is not empty; it must be deleted or removed before retrying the command" unless (Dir.entries(path) - %w{ . .. }).empty?
+            return path
           end
         end
 
