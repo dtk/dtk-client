@@ -35,7 +35,7 @@ module DTK::Client
           commit_sha = response.required(:head_sha)
 
           response = rest_post("#{BaseRoute}/#{service_instance}/update_from_repo", :commit_sha => commit_sha)
-          process_response(response)
+          process_response(response, :service_instance => service_instance, :args => push_args)
           nil
         end
       end
@@ -50,22 +50,46 @@ module DTK::Client
         raise Error, "Need to write"
       end
 
-      def self.process_response(response)
+      def self.process_response(response, opts = {})
         print_msgs_of_type(:error_msgs, response)
         print_msgs_of_type(:warning_msgs, response)
         print_msgs_of_type(:info_msgs, response)
 
-        process_backup_files(response)
+        process_backup_files(response, opts)
         process_semantic_diffs(response)
       end
 
-      def self.process_backup_files(response)
+      def self.process_backup_files(response, opts = {})
         backup_files = response.data(:backup_files) || {}
         return if backup_files.empty?
-        backup_files.each_pair do |file_path, content|
-          # TODO: DTK-2663; write code that saves the content given by 'content' under 'file_path' which is a path relative to the service instance module.
-        end
+
+        service_instance_name = opts[:service_instance]
+        final_path = "#{OsUtil.dtk_local_folder}/#{service_instance_name}"
         all_backup_file_paths = backup_files.keys
+
+        if File.exists?(file_path = "#{final_path}/.gitignore")
+         has_backup = false
+         file = File.open(file_path, "r") do |f|
+           f.each_line do |line|
+             unless all_backup_file_paths.include?(line.strip)
+               write = File.open(file_path, "a")
+               write << line
+             end
+           end
+         end
+        else
+         File.open(".gitignore", "w") do |f|
+          all_backup_file_paths.each {|el| f.puts("#{el}\n")}
+         end
+        end
+
+        backup_files.each_pair do |file_path, content|
+          File.open("#{final_path}/#{file_path}", "a") {|f| f.write(content)}
+          File.open("#{final_path}/dtk.service.yaml", "w") {|f| f.write(content)}
+          # TODO: DTK-2663; write code that saves the content given by 'content' under 'file_path' which is a path relative to the service instance module. 
+        end
+        response = ClientModuleDir::GitRepo.commit_and_push_to_service_repo(opts[:args]) 
+
         # TODO: DTK-2663; write code that creates or updates .gitignore so that each file in all_backup_file_paths is aline in gitignore
         # TODO: write code that commits these changes to the service instance module.  
       end
