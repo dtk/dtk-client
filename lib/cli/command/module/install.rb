@@ -20,7 +20,7 @@ module DTK::Client
     module Module 
       subcommand_def 'install' do |c|
         c.arg Token::Arg.module_name, :optional => true
-        command_body c, :install, 'Install contents of client directory to be a module on the server' do |sc|
+        command_body c, :install, 'Install a module on the server from a client directory or from the DTK remote catalog (DTKN)' do |sc|
           sc.flag Token.version
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to directory containing content to install'
           sc.action do |_global_options, options, args|
