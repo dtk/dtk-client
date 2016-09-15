@@ -62,22 +62,21 @@ module DTK::Client
       def self.process_backup_files(response)
         backup_files = response.data(:backup_files) || {}
         return if backup_files.empty?
-        pp 'TODO: DTK-2663; write code that saves each file under the service module, commits it alomng with an update if needed to .gitignore'
-        pp 'DEBUG_PRINT_of_info'
         backup_files.each_pair do |file_path, content|
-          pp [:file_path, file_path]
-          STDOUT << content
-          pp '----'
+          # TODO: DTK-2663; write code that saves the content given by 'content' under 'file_path' which is a path relative to the service instance module.
         end
+        all_backup_file_paths = backup_files.keys
+        # TODO: DTK-2663; write code that creates or updates .gitignore so that each file in all_backup_file_paths is aline in gitignore
+        # TODO: write code that commits these changes to the service instance module.  
       end
 
       def self.process_semantic_diffs(response)
         semantic_diffs = response.data(:semantic_diffs) || {}
         return if semantic_diffs.empty?
-        pp 'TODO: DTK-2663; cleanup so pretty printed'
-        OsUtil.print('Diffs that were pushed:')
+        # TODO: DTK-2663; cleanup so pretty printed'
+        OsUtil.print_info("\nDiffs that were pushed:")
         # TODO: get rid of use of STDOUT
-        STDOUT << hash_to_yaml(semantic_diffs)
+        STDOUT << hash_to_yaml(semantic_diffs).gsub("---\n", "")
       end
 
       PRINT_FN = {
