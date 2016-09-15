@@ -28,7 +28,8 @@ module DTK::Client
           push_args = {
             :service_instance => service_instance,
             :commit_message   => args[:commit_message] || default_commit_message(service_instance),
-            :branch           => response.required(:branch, :name)
+            :branch           => response.required(:branch, :name),
+            :repo_url         => response.required(:repo, :url)
           }
 
           response = ClientModuleDir::GitRepo.commit_and_push_to_service_repo(push_args)
@@ -55,8 +56,13 @@ module DTK::Client
         print_msgs_of_type(:warning_msgs, response)
         print_msgs_of_type(:info_msgs, response)
 
+        pull_repo_updates?(response, opts)
         process_backup_files(response, opts)
         process_semantic_diffs(response)
+      end
+
+      def self.pull_repo_updates?(response, opts = {})
+        ClientModuleDir::GitRepo.pull_from_service_repo(opts[:args]) if response.data(:repo_updated)
       end
 
       # TODO: DTK-2663: This is fine for now, but in 0.10.1 want to move logic that writes files to be in

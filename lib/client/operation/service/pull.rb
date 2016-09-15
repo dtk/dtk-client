@@ -27,7 +27,6 @@ module DTK::Client
             :service_instance => service_instance,
             :repo_url         => response.required(:repo, :url),
             :branch           => response.required(:branch, :name)
-
           }
           ClientModuleDir::GitRepo.pull_from_service_repo(pull_args)
         end
