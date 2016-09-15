@@ -59,12 +59,14 @@ module DTK::Client
         process_semantic_diffs(response)
       end
 
+      # TODO: DTK-2663: This is fine for now, but in 0.10.1 want to move logic that writes files to be in
+      # a new method we write in ClientModuleDir::GitRepo.add_file
       def self.process_backup_files(response, opts = {})
         backup_files = response.data(:backup_files) || {}
         return if backup_files.empty?
 
         service_instance_name = opts[:service_instance]
-        final_path = "#{OsUtil.dtk_local_folder}/#{service_instance_name}"
+        final_path = "#{OsUtil.dtk_local_folder}/service/#{service_instance_name}"
         all_backup_file_paths = backup_files.keys
 
         if File.exists?(file_path = "#{final_path}/.gitignore")
