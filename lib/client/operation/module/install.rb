@@ -24,7 +24,11 @@ module DTK::Client
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           base_module_ref = args.required(:module_ref)
-          file_obj = args.required(:base_dsl_file_obj).raise_error_if_no_content
+          if args[:flag]
+              file_obj = args.required(:base_dsl_file_obj).raise_error_if_no_content_flag(:module_ref)
+          else
+              file_obj = args.required(:base_dsl_file_obj).raise_error_if_no_content
+          end
           new(file_obj, base_module_ref).install
         end
       end

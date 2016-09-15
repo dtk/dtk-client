@@ -39,6 +39,7 @@ module DTK::Client
       private :initialize
 
       def run_and_return_response_object(argv)
+        @flag = true if argv.include?('-d')
         @command_processor.run_and_return_response_object(argv)
       end
       
@@ -75,19 +76,22 @@ module DTK::Client
       end
 
       def service_instance_from_base_dsl_file?
-        raise_error_when_missing_context(:service_instance) unless base_dsl_file_obj.file_type == DTK::DSL::FileType::ServiceInstance
+        #raise_error_when_missing_context(:service_instance) unless base_dsl_file_obj.file_type == DTK::DSL::FileType::ServiceInstance
+        base_dsl_file_obj.file_type == DTK::DSL::FileType::ServiceInstance
         base_dsl_file_obj.parse_content(:service_module_summary).val(:Name)
       end
 
       # opts can have keys
       #   :dir_path
       def set_base_dsl_file_obj!(opts = {})
+        opts[:flag] = @flag
         @base_dsl_file_obj = self.class.base_dsl_file_obj(opts)
       end
 
       # opts can have keys
       #   :dir_path
       def  self.base_dsl_file_obj(opts = {}) 
+        opts[:flag] = false if opts[:flag].nil?
         DirectoryParser.matching_file_obj?(FILE_TYPES, opts)
       end
       FILE_TYPES = 
@@ -134,7 +138,11 @@ module DTK::Client
         :module_ref       => 'mdoule'
       }
       def raise_error_when_missing_context(type, options = {})
-        @base_dsl_file_obj.raise_error_if_no_content
+        if options["d"].nil?
+          @base_dsl_file_obj.raise_error_if_no_content
+        else
+          @base_dsl_file_obj.raise_error_if_no_content_flag(type)
+        end
         # TODO: not sure if below can be reached
         error_msg = 
           if options[:directory_path]

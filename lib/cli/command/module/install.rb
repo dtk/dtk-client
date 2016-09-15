@@ -41,7 +41,8 @@ module DTK::Client
 
             install_opts = directory_path ? { :directory_path => directory_path, :version => (version || 'master') } : options
             module_ref = module_ref_in_options_or_context?(install_opts)
-            Operation::Module.install(:module_ref => module_ref, :base_dsl_file_obj => @base_dsl_file_obj)
+            flag = true unless options["d"].nil?
+            Operation::Module.install(:module_ref => module_ref, :base_dsl_file_obj => @base_dsl_file_obj, :flag => flag)
           end
         end
       end

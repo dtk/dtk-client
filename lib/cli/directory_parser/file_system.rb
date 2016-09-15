@@ -51,6 +51,7 @@ module DTK::Client; module CLI
       # returns nil or [file_type, path]
       def matching_type_and_path?(file_types, opts = {})
         ret = nil
+        flag = opts[:flag]
         if path = opts[:file_path]
           file_types.each do | file_type |
             if file_type.matches?(path)
@@ -60,7 +61,7 @@ module DTK::Client; module CLI
         else
           file_types.each do | file_type |
             path_info = file_type.create_path_info
-            if path = most_nested_matching_file_path?(path_info, :current_dir => opts[:dir_path])
+            if path = most_nested_matching_file_path?(path_info, flag, :current_dir => opts[:dir_path])
               return [file_type, path]
             end
           end
@@ -72,18 +73,18 @@ module DTK::Client; module CLI
       # until base_path in path_info (if it exists)
       # opts can have keys
       #  :current_dir if set means start from this dir; otherwise start from computed current dir
-      def most_nested_matching_file_path?(path_info, opts = {})
+      def most_nested_matching_file_path?(path_info, flag, opts = {})
         base_dir = path_info.base_dir || OsUtil.home_dir
         current_dir = opts[:current_dir] || OsUtil.current_dir
-        check_match_recurse_on_failure?(path_info, current_dir, base_dir)
+        check_match_recurse_on_failure?(path_info, current_dir, base_dir, flag)
       end
 
-      def check_match_recurse_on_failure?(path_info, current_dir, base_dir)
+      def check_match_recurse_on_failure?(path_info, current_dir, base_dir, flag)
         match = matching_file_paths(current_dir, path_info)
         if match.empty?
           unless current_dir == base_dir
             if parent_path = OsUtil.parent_dir?(current_dir)
-              check_match_recurse_on_failure?(path_info, parent_path, base_dir)
+              check_match_recurse_on_failure?(path_info, parent_path, base_dir, flag) unless flag
             end
           end
         elsif match.size == 1
