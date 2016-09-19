@@ -82,6 +82,13 @@ module DTK::Client
           response_data_hash(:target_repo_dir => Internal.pull_from_remote(args))
         end
       end
+      
+      def self.add_file(args)
+        wrap_operation(args) do |args| 
+          response_data_hash(:repo => Internal.add_file(args)) 
+        end
+        
+      end
 
       def self.pull_from_service_repo(args)
         wrap_operation(args) do |args| 
@@ -276,6 +283,30 @@ module DTK::Client
           repo.pull(Dtkn::GIT_REMOTE, remote_branch)
         end
         
+        def self.add_file(args)
+          all_backup_file_paths = args.required(:backup_files).keys
+          final_path = args.required(:final_path)
+          if File.exists?(file_path = "#{final_path}/.gitignore")
+           has_backup = false
+           file = File.open(file_path, "r") do |f|
+             f.each_line do |line|
+               unless all_backup_file_paths.include?(line.strip)
+                 write = File.open(file_path, "a")
+                 write << line
+               end
+             end
+           end
+          else
+           File.open(".gitignore", "w") do |f|
+            all_backup_file_paths.each {|el| f.puts("#{el}\n")}
+           end
+          end
+          args[:backup_files].each_pair do |file_path, content|
+            File.open("#{final_path}/#{file_path}", "a") {|f| f.write(content)}
+            File.open("#{final_path}/dtk.service.yaml", "w") {|f| f.write(content)}
+          end
+        end
+
         def self.git_repo
           ::DTK::Client::GitRepo
         end

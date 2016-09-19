@@ -70,36 +70,12 @@ module DTK::Client
       def self.process_backup_files(response, opts = {})
         backup_files = response.data(:backup_files) || {}
         return if backup_files.empty?
-
         service_instance_name = opts[:service_instance]
-        final_path = "#{OsUtil.dtk_local_folder}/service/#{service_instance_name}"
-        all_backup_file_paths = backup_files.keys
+        final_path = "#{OsUtil.dtk_local_folder}/#{service_instance_name}" 
+        
+        ClientModuleDir::GitRepo.add_file(:backup_files => backup_files, :final_path => final_path)
 
-        if File.exists?(file_path = "#{final_path}/.gitignore")
-         has_backup = false
-         file = File.open(file_path, "r") do |f|
-           f.each_line do |line|
-             unless all_backup_file_paths.include?(line.strip)
-               write = File.open(file_path, "a")
-               write << line
-             end
-           end
-         end
-        else
-         File.open(".gitignore", "w") do |f|
-          all_backup_file_paths.each {|el| f.puts("#{el}\n")}
-         end
-        end
-
-        backup_files.each_pair do |file_path, content|
-          File.open("#{final_path}/#{file_path}", "a") {|f| f.write(content)}
-          File.open("#{final_path}/dtk.service.yaml", "w") {|f| f.write(content)}
-          # TODO: DTK-2663; write code that saves the content given by 'content' under 'file_path' which is a path relative to the service instance module. 
-        end
         response = ClientModuleDir::GitRepo.commit_and_push_to_service_repo(opts[:args]) 
-
-        # TODO: DTK-2663; write code that creates or updates .gitignore so that each file in all_backup_file_paths is aline in gitignore
-        # TODO: write code that commits these changes to the service instance module.  
       end
 
       def self.process_semantic_diffs(response)
@@ -108,7 +84,8 @@ module DTK::Client
         # TODO: DTK-2663; cleanup so pretty printed'
         OsUtil.print_info("\nDiffs that were pushed:")
         # TODO: get rid of use of STDOUT
-        STDOUT << hash_to_yaml(semantic_diffs).gsub("---\n", "")
+        #STDOUT << hash_to_yaml(semantic_diffs).gsub("---\n", "")
+        OsUtil.print(hash_to_yaml(semantic_diffs).gsub("---\n", ""))
       end
 
       PRINT_FN = {
