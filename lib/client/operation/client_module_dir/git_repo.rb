@@ -302,7 +302,7 @@ module DTK::Client
            end
           end
           args[:backup_files].each_pair do |file_path, content|
-            File.open("#{final_path}/#{file_path}", "a") {|f| f.write(content)}
+            File.open("#{final_path}/#{file_path}", "w") {|f| f.write(content)}
             File.open("#{final_path}/dtk.service.yaml", "w") {|f| f.write(content)}
           end
         end
