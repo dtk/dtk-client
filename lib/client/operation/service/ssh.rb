@@ -108,9 +108,9 @@ module DTK::Client
           raise Error::Usage, "No public key access or PEM provided, please grant access or provide valid PEM key"
         end
 
-        OsUtil.print("You are entering SSH terminal (#{connection_string}) ...", :yellow)
+        OsUtil.print_info("You are entering SSH terminal (#{connection_string}) ...")
         Kernel.system(ssh_command)
-        OsUtil.print("You are leaving SSH terminal, and returning to DTK Shell ...", :yellow)
+        OsUtil.print_info("You are leaving SSH terminal, and returning to DTK Shell ...")
       end
 
     end
