@@ -44,6 +44,11 @@ module DTK::Client
         )
         module_info = rest_get "#{BaseRoute}/remote_module_info", query_string_hash
 
+        # unless version is explicitly provided, use latest version instead of master
+        unless @version
+          @version = module_info.required(:latest_version)
+        end
+
         git_repo_args = {
           :repo_dir      => target_repo_dir,
           :repo_url      => module_info.required(:remote_repo_url),
