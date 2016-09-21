@@ -91,8 +91,8 @@ module DTK::Client
         content_hash     = convert_file_content_to_hash(assembly)
         name             = content_hash['name']
         assembly_content = content_hash['assembly']
-        workflows        = ret_workflows_hash(content_hash['workflow'])
-        
+        workflows        = ret_workflows_hash(content_hash)
+
         assembly_content.merge!('workflows' => workflows) if workflows
         assemblies.merge!(name => assembly_content)
       end
@@ -100,12 +100,15 @@ module DTK::Client
       assemblies.empty? ? nil : assemblies
     end
 
-    def ret_workflows_hash(workflow)
-      return if workflow.nil? || workflow.empty?
-      workflow_name = workflow.delete('assembly_action')
-      {
-        workflow_name => workflow
-      }
+    def ret_workflows_hash(content_hash)
+      if workflows = content_hash['workflow'] || content_hash['workflows']
+        # this is legacy workflow
+        if workflow_name = workflows.delete('assembly_action')
+          { workflow_name => workflows }
+        else
+          workflows
+        end
+      end
     end
 
     def ret_dependencies_hash
