@@ -1,7 +1,7 @@
 ---
 dsl_version: 1.0.0
 module: rich/simple
-version: 0.0.2
+version: 0.0.1
 keywords: DTK-2554
 description: Tests for DTK-2554
 license: Apache 2.0
