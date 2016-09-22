@@ -23,7 +23,7 @@ module DTK::Client
       def self.install_dependent_modules(module_refs, opts = {})
         module_refs.each do |module_ref|
           if module_exists?(module_ref, { :type => :component_module })
-            OsUtil.print("Using module '#{module_ref.namespace}:#{module_ref.module_name}'")
+            OsUtil.print("Using module '#{module_ref.namespace}:#{module_ref.module_name}'" + (module_ref.version.nil? ? "" : " version: #{module_ref.version} "))
             # If component module is imported, still check to see if it's dependencies are imported
             find_and_install_component_module_dependency(module_ref, opts.merge(:skip_if_no_remote => true))
           else
