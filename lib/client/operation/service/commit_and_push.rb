@@ -25,18 +25,24 @@ module DTK::Client
 
           response = rest_get("#{BaseRoute}/#{service_instance}/repo_info")
 
-          push_args = {
+          repo_info_args = Args.new(
             :service_instance => service_instance,
             :commit_message   => args[:commit_message] || default_commit_message(service_instance),
             :branch           => response.required(:branch, :name),
             :repo_url         => response.required(:repo, :url)
-          }
+          )
 
-          response = ClientModuleDir::GitRepo.commit_and_push_to_service_repo(push_args)
+          response = ClientModuleDir::GitRepo.commit_and_push_to_service_repo(repo_info_args)
           commit_sha = response.required(:head_sha)
 
           response = rest_post("#{BaseRoute}/#{service_instance}/update_from_repo", :commit_sha => commit_sha)
-          process_response(response, :service_instance => service_instance, :args => push_args)
+          print_msgs_of_type(:error_msgs, response)
+          print_msgs_of_type(:warning_msgs, response)
+          print_msgs_of_type(:info_msgs, response)
+
+          ClientModuleDir::GitRepo.pull_from_service_repo(repo_info_args) if response.data(:repo_updated)
+          process_backup_files(repo_info_args, response.data(:backup_files))
+          process_semantic_diffs(response.data(:semantic_diffs))
           nil
         end
       end
@@ -51,36 +57,37 @@ module DTK::Client
         raise Error, "Need to write"
       end
 
-      def self.process_response(response, opts = {})
-        print_msgs_of_type(:error_msgs, response)
-        print_msgs_of_type(:warning_msgs, response)
-        print_msgs_of_type(:info_msgs, response)
 
-        pull_repo_updates?(response, opts)
-        process_backup_files(response, opts)
-        process_semantic_diffs(response)
+      def self.process_backup_files(repo_info_args, backup_files)
+        return if (backup_files || {}).empty?
+        backup_files.each_pair do |path, content|
+          ClientModuleDir::GitRepo.add_service_repo_file(repo_info_args.merge(:path => path, :content => content))
+        end
+    
+        backup_file_paths = backup_files.keys
+        update_gitignore?(repo_info_args, backup_file_paths)
+
+        ClientModuleDir::GitRepo.commit_and_push_to_service_repo(repo_info_args)
       end
 
-      def self.pull_repo_updates?(response, opts = {})
-        ClientModuleDir::GitRepo.pull_from_service_repo(opts[:args]) if response.data(:repo_updated)
+      GITIGNORE_REL_PATH = '.gitignore'
+      def self.update_gitignore?(repo_info_args, backup_file_paths)
+        response = ClientModuleDir::GitRepo.get_service_repo_file_content(repo_info_args.merge(:path => GITIGNORE_REL_PATH))
+        gitignore_content = response.data(:content) || ''
+        gitignore_files = gitignore_content.split("\n")
+        to_add = ''
+        backup_file_paths.each do |backup_file_path|
+          to_add << "#{backup_file_path}\n" unless gitignore_files.include?(backup_file_path)
+        end
+        unless to_add.empty?
+          gitignore_content << "\n" unless gitignore_content.empty? or gitignore_content[-1] == "\n"
+          gitignore_content << to_add
+          ClientModuleDir::GitRepo.add_service_repo_file(repo_info_args.merge(:path => GITIGNORE_REL_PATH, :content => gitignore_content))
+        end
       end
-
-      # TODO: DTK-2663: This is fine for now, but in 0.10.1 want to move logic that writes files to be in
-      # a new method we write in ClientModuleDir::GitRepo.add_file
-      def self.process_backup_files(response, opts = {})
-        backup_files = response.data(:backup_files) || {}
-        return if backup_files.empty?
-        service_instance_name = opts[:service_instance]
-        final_path = "#{OsUtil.dtk_local_folder}/#{service_instance_name}" 
-        
-        ClientModuleDir::GitRepo.add_file(:backup_files => backup_files, :final_path => final_path)
-
-        response = ClientModuleDir::GitRepo.commit_and_push_to_service_repo(opts[:args]) 
-      end
-
-      def self.process_semantic_diffs(response)
-        semantic_diffs = response.data(:semantic_diffs) || {}
-        return if semantic_diffs.empty?
+      
+      def self.process_semantic_diffs(semantic_diffs)
+        return if (semantic_diffs || {}).empty?
         # TODO: DTK-2663; cleanup so pretty printed'
         OsUtil.print_info("\nDiffs that were pushed:")
         # TODO: get rid of use of STDOUT
@@ -91,7 +98,7 @@ module DTK::Client
       PRINT_FN = {
         :info_msgs    => lambda { |msg| OsUtil.print_info(msg) },
         :warning_msgs => lambda { |msg| OsUtil.print_warning(msg) },
-        :error_msgs => lambda { |msg| OsUtil.print_error(msg) }
+        :error_msgs   => lambda { |msg| OsUtil.print_error(msg) }
       }
       def self.print_msgs_of_type(msg_type, response)
         msgs = response.data(msg_type) || []

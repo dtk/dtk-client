@@ -83,11 +83,16 @@ module DTK::Client
         end
       end
       
-      def self.add_file(args)
+      def self.add_service_repo_file(args)
         wrap_operation(args) do |args| 
-          response_data_hash(:repo => Internal.add_file(args)) 
+          response_data_hash(:repo => Internal.add_service_repo_file(args)) 
         end
-        
+      end
+
+      def self.get_service_repo_file_content(args)
+        wrap_operation(args) do |args| 
+          response_data_hash(:content => Internal.get_service_repo_file_content(args))
+        end
       end
 
       def self.pull_from_service_repo(args)
@@ -283,33 +288,61 @@ module DTK::Client
           repo.pull(Dtkn::GIT_REMOTE, remote_branch)
         end
         
-        def self.add_file(args)
-          all_backup_file_paths = args.required(:backup_files).keys
-          final_path = args.required(:final_path)
-          if File.exists?(file_path = "#{final_path}/.gitignore")
-           has_backup = false
-           file = File.open(file_path, "r") do |f|
-             f.each_line do |line|
-               unless all_backup_file_paths.include?(line.strip)
-                 write = File.open(file_path, "a")
-                 write << line
-               end
-             end
-           end
-          else
-           File.open(".gitignore", "w") do |f|
-            all_backup_file_paths.each {|el| f.puts("#{el}\n")}
-           end
+        def self.add_service_repo_file(args)
+          branch           = args.required(:branch)
+          service_instance = args.required(:service_instance)
+          path             = args.required(:path)
+          content          = args.required(:content)
+          checkout_branch(service_instance, branch) do
+            File.open(qualified_path(service_instance, path), 'w') { |f| f.write(content) }
           end
-          args[:backup_files].each_pair do |file_path, content|
-            File.open("#{final_path}/#{file_path}", "w") {|f| f.write(content)}
-            File.open("#{final_path}/dtk.service.yaml", "w") {|f| f.write(content)}
+        end
+
+        # returns content if file exists
+        def self.get_service_repo_file_content(args)
+          branch           = args.required(:branch)
+          service_instance = args.required(:service_instance)
+          path             = args.required(:path)
+          checkout_branch(service_instance, branch) do
+            qualified_path = qualified_path(service_instance, path)
+            if File.exists?(qualified_path)
+              File.open(qualified_path, 'r').read
+            end
           end
         end
 
         def self.git_repo
           ::DTK::Client::GitRepo
         end
+
+        private
+
+        # relative_path is relative to top-leel repo directory
+        def self.qualified_path(service_instance, relative_path)
+          repo_dir = ret_base_path(:service, service_instance)
+          "#{repo_dir}/#{relative_path}"
+        end
+
+        CHECKOUT_LOCK = Mutex.new
+        def self.checkout_branch(service_instance, branch, &body)
+          ret = nil
+          CHECKOUT_LOCK.synchronize do
+            repo = git_repo.new(ret_base_path(:service, service_instance), :branch => branch)
+            current_branch = repo.current_branch.name
+            if current_branch == branch
+              ret = yield
+            else
+              begin
+                repo.checkout(branch) 
+                ret = yield
+              ensure
+                repo.checkout(current_branch)
+              end
+            end
+          end
+          ret
+        end
+
       end
     end
   end

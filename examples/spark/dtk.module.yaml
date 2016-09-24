@@ -1,6 +1,5 @@
 ---
-dsl_version: 1.0.0
-module: rich/spark
+module: test/spark
 keywords: spark, hdfs, zeppelin
 description: Spark cluster
 license: Apache 2.0
