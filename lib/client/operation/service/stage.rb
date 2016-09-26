@@ -23,6 +23,8 @@ module DTK::Client
           module_ref      = args.required(:module_ref)
           remove_existing = args[:remove_existing]
 
+          ClientModuleDir.local_dir_exists?(:service, module_ref.module_name) 
+
           post_body = PostBody.new(
             :namespace       => module_ref.namespace,
             :module_name     => module_ref.module_name,
@@ -42,7 +44,7 @@ module DTK::Client
             :branch           => response.required(:branch, :name),
             :service_instance => service_instance,
             :remove_existing  => remove_existing
-          } 
+          }
           message = ClientModuleDir::GitRepo.clone_service_repo(clone_args)
           target_dir = message.data(:target_repo_dir)
 
