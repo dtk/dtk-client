@@ -23,7 +23,7 @@ module DTK::Client
           module_ref      = args.required(:module_ref)
           remove_existing = args[:remove_existing]
 
-          ClientModuleDir.local_dir_exists?(:service, module_ref.module_name) 
+          raise Error::Usage, "Service '#{module_ref.module_name}' already exists" if ClientModuleDir.local_dir_exists?(:service, module_ref.module_name) 
 
           post_body = PostBody.new(
             :namespace       => module_ref.namespace,
