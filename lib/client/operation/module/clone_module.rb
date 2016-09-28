@@ -23,7 +23,6 @@ module DTK::Client
           module_ref       = args.required(:module_ref)
           module_name      = args.required(:module_name)
           target_directory = args[:target_directory]
-
           unless module_info = module_exists?(module_ref, :type => :common_module)
             raise Error::Usage, "DTK module '#{module_ref.print_form}' does not exist on server."
           end

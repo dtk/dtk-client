@@ -28,7 +28,8 @@ module DTK::Client
       #   :backup_if_exist - Boolean (default: false)
       #   :remove_existing - Boolean (default: false)
       def self.create_service_dir(service_instance, opts = {})
-        path = "#{base_path(:service)}/#{service_instance}"
+        path = opts[:path]
+        path = "#{base_path(:service)}/#{service_instance}" if path.nil?
         if File.exists?(path)
           if opts[:remove_existing]
             FileUtils.rm_rf(path)

@@ -20,6 +20,7 @@ module DTK::Client
     class Service < self
       OPERATIONS = [
         :commit_and_push,
+        :clone_service,
         :destroy,
         :edit,
         :pull,
@@ -49,6 +50,12 @@ module DTK::Client
 
       extend ModuleServiceCommon::ClassMixin
 
+      private
+
+      def self.service_exists?(service_ref, opts = {})
+        response = rest_get("#{BaseRoute}/#{service_ref}/repo_info")
+        response.data.empty? ? nil : response
+      end
     end
   end
 end
