@@ -137,12 +137,12 @@ module DTK::Client
 
         def self.clone_service_repo(args)
           repo_url         = args.required(:repo_url)
-          module_ref       = args.required(:module_ref)
           branch           = args.required(:branch)
           service_instance = args.required(:service_instance)
           remove_existing  = args[:remove_existing]
+          repo_dir         = args[:repo_dir]
 
-          target_repo_dir = create_service_dir(service_instance, :remove_existing => remove_existing)
+          target_repo_dir = create_service_dir(service_instance, :remove_existing => remove_existing, :path => repo_dir)
           begin
             git_repo.clone(repo_url, target_repo_dir,  branch)
           rescue => e
