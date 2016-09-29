@@ -20,7 +20,7 @@ module DTK::Client
     module Service
       subcommand_def 'ssh' do |c|
         c.arg Token::Arg.node_name
-        command_body c, :ssh, 'Ssh into service instance node.' do |sc|
+        command_body c, :ssh, 'SSH into service instance node.' do |sc|
           sc.flag Token.remote_user
           sc.flag Token.identity_file, :desc => 'Identity file used for connection, if not provided default is used'
 
