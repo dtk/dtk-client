@@ -24,7 +24,7 @@ module DTK::Client
           if module_ref  = args[:module_ref]
             query_string_hash = module_ref_query_string_hash(module_ref)
           end
-          rest_get("#{BaseRoute}/list_assemblies", query_string_hash)
+          rest_get("#{BaseRoute}/assemblies", query_string_hash)
         end.set_render_as_table!
       end
 
