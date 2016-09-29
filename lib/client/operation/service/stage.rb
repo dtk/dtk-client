@@ -22,18 +22,25 @@ module DTK::Client
         wrap_operation(args) do |args|
           module_ref      = args.required(:module_ref)
           remove_existing = args[:remove_existing]
-
-          raise Error::Usage, "Service '#{module_ref.module_name}' already exists" if ClientModuleDir.local_dir_exists?(:service, module_ref.module_name) 
-
+          service_name    = args[:service_name] 
+          
+             
+          
           post_body = PostBody.new(
             :namespace       => module_ref.namespace,
             :module_name     => module_ref.module_name,
             :assembly_name?  => args.required(:assembly_name),
-            :service_name?   => args[:service_name],
             :version?        => args[:version],
             :target_service? => args[:target_service],
             :is_target?      => args[:is_target]
           )
+
+          service_name ||= rest_post("#{BaseRoute}/generate_service_name", post_body).data
+          path = ClientModuleDir.ret_path_with_current_dir(service_name)
+          
+          raise Error::Usage, "Directory '#{path}' is not empty; it must be deleted or removed before retrying the command" if ClientModuleDir.local_dir_exists?(:service, service_name) 
+          
+          post_body.merge!(:service_name => service_name)
           response = rest_post("#{BaseRoute}/create", post_body)
 
           service_instance = response.required(:service, :name)
