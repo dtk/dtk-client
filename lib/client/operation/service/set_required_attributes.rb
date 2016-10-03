@@ -28,11 +28,21 @@ module DTK::Client
             OsUtil.print_info("No parameters to set.")
           else
             param_bindings = InteractiveWizard.resolve_missing_params(required_attributes)
+
             post_body = PostBody.new(
               :service_instance => service_instance,
               :av_pairs_hash    => param_bindings.inject(Hash.new){|h,r|h.merge(r[:id] => r[:value])}
             )
-            rest_post "#{BaseRoute}/#{service_instance}/set_attributes", post_body
+            response = rest_post "#{BaseRoute}/#{service_instance}/set_attributes", post_body
+
+            repo_info_args = Args.new(
+              :service_instance => service_instance,
+              :branch           => response.required(:branch, :name),
+              :repo_url         => response.required(:repo, :url)
+            )
+            ClientModuleDir::GitRepo.pull_from_service_repo(repo_info_args)
+
+            nil
           end
         end
       end
