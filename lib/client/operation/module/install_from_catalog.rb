@@ -52,7 +52,7 @@ module DTK::Client
         git_repo_args = {
           :repo_dir      => target_repo_dir,
           :repo_url      => module_info.required(:remote_repo_url),
-          :remote_branch => @version ? "v#{@version}" : 'master'
+          :remote_branch => (@version && !@version.eql?('master')) ? "v#{@version}" : 'master'
         }
         ClientModuleDir::GitRepo.create_add_remote_and_pull(git_repo_args)
 
