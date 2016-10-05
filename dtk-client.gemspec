@@ -24,6 +24,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'git', '1.2.9'
   spec.add_dependency 'hirb', '0.7.3'
   spec.add_dependency 'mime-types', '~> 2.99.3'
-  spec.add_dependency 'dtk-dsl', '1.0.0'
+  spec.add_dependency 'dtk-dsl', '~> 1.0.0'
   
 end
