@@ -46,6 +46,7 @@ module DTK::Client
         :remote_user             => Flag.new(:u, 'REMOTE-USER', 'Remote user'),
         :identity_file           => Flag.new(:i, 'PATH-TO-PEM', 'Path to pem file'),
         :mode                    => Flag.new(:mode, 'MODE', 'Mode'),
+        :namespace               => Flag.new(:n, 'NAMESPACE', 'Namespace'),
 
         # switches
         # Switch constructor args order: key, desc, opts={}
