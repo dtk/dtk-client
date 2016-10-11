@@ -47,6 +47,7 @@ module DTK::Client
         :identity_file           => Flag.new(:i, 'PATH-TO-PEM', 'Path to pem file'),
         :mode                    => Flag.new(:mode, 'MODE', 'Mode'),
         :namespace               => Flag.new(:n, 'NAMESPACE', 'Namespace'),
+        
 
         # switches
         # Switch constructor args order: key, desc, opts={}
@@ -58,6 +59,7 @@ module DTK::Client
         :target       => Switch.new(:target, 'Create target service instance'),
         :links        => Switch.new(:links, 'Links'),
         :dependencies => Switch.new(:deps, 'Dependencies'),
+        :unset        => Switch.new(:u, 'Unset')
       }
 
       ARG_TOKENS = {
@@ -69,7 +71,9 @@ module DTK::Client
         :workspace_name   => 'WORKSPACE-NAME',
         :target_instance  => 'TARGET-SERVICE-INSTANCE',
         :module_name      => 'NAMESPACE/MODULE-NAME',
-        :target_directory => 'TARGET-DIRECTORY'
+        :target_directory => 'TARGET-DIRECTORY',
+        :attribute_name   => 'ATTRIBUTE-NAME',
+        :attribute_value  => 'VALUE'
       }
       
     end

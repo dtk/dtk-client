@@ -40,6 +40,7 @@ module DTK::Client
         :cancel_task,
         :ssh,
         :set_required_attributes,
+        :set_attribute,
         :exec,
         :set_default_target
         # :create_workspace
