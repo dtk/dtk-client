@@ -114,11 +114,11 @@ module DTK::Client
     def ret_dependencies_hash
       if file_path = get_module_refs_file
         module_refs_content = convert_file_content_to_hash(file_path)
-        dependencies = []
+        dependencies = {}
 
         if cmp_dependencies = module_refs_content['component_modules']
           cmp_dependencies.each_pair do |name, namespace_h|
-            dependencies << "#{namespace_h['namespace']}/#{name}"
+            dependencies.merge!({ "#{namespace_h['namespace']}/#{name}" => namespace_h['version']||'master' })
           end
         end
 
