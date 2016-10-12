@@ -60,8 +60,7 @@ module DTK::Client; module CLI
           end
         else
           file_types.each do | file_type |
-            path_info = file_type.create_path_info
-            if path = most_nested_matching_file_path?(path_info, flag, :current_dir => opts[:dir_path])
+            if path = most_nested_matching_file_path?(file_type, flag, :current_dir => opts[:dir_path])
               return [file_type, path]
             end
           end
@@ -69,22 +68,22 @@ module DTK::Client; module CLI
         ret
       end
 
-      # return either a string file path or of match to path_info working from current directory and 'otwards'
-      # until base_path in path_info (if it exists)
+      # return either a string file path or of match to file_type working from current directory and 'outwards'
+      # until base_path in file_type (if it exists)
       # opts can have keys
       #  :current_dir if set means start from this dir; otherwise start from computed current dir
-      def most_nested_matching_file_path?(path_info, flag, opts = {})
-        base_dir = path_info.base_dir || OsUtil.home_dir
+      def most_nested_matching_file_path?(file_type, flag, opts = {})
+        base_dir = file_type.base_dir || OsUtil.home_dir
         current_dir = opts[:current_dir] || OsUtil.current_dir
-        check_match_recurse_on_failure?(path_info, current_dir, base_dir, flag)
+        check_match_recurse_on_failure?(file_type, current_dir, base_dir, flag)
       end
 
-      def check_match_recurse_on_failure?(path_info, current_dir, base_dir, flag)
-        match = matching_file_paths(current_dir, path_info)
+      def check_match_recurse_on_failure?(file_type, current_dir, base_dir, flag)
+        match = matching_file_paths(current_dir, file_type)
         if match.empty?
           unless current_dir == base_dir
             if parent_path = OsUtil.parent_dir?(current_dir)
-              check_match_recurse_on_failure?(path_info, parent_path, base_dir, flag) unless flag
+              check_match_recurse_on_failure?(file_type, parent_path, base_dir, flag) unless flag
             end
           end
         elsif match.size == 1
@@ -95,8 +94,8 @@ module DTK::Client; module CLI
       end
 
       # returns an array of strings that are file paths
-      def matching_file_paths(dir_path, path_info)
-        Dir.glob("#{dir_path}/*").select { |file_path| File.file?(file_path) and path_info.matches?(file_path) }
+      def matching_file_paths(dir_path, file_type)
+        Dir.glob("#{dir_path}/*").select { |file_path| File.file?(file_path) and file_type.matches?(file_path) }
       end
     end
   end
