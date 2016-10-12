@@ -42,6 +42,7 @@ module DTK::Client
           'cancel-task',
           'ssh',
           'set-required-attributes',
+          'set-attribute',
           'exec',
           'exec-sync',
           'set-default-target'
