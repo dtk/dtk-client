@@ -21,7 +21,8 @@ module DTK::Client
       OPERATIONS = [
         :commit_and_push,
         :clone_service,
-        :destroy,
+        :delete,
+        :uninstall,
         :edit,
         :pull,
         :stage,

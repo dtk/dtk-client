@@ -23,7 +23,8 @@ module DTK::Client
         ALL_SUBCOMMANDS = [
           'clone',
           'stage',
-          'destroy',
+          'delete',
+          'uninstall',
           'edit',
           'push',
           'pull',
