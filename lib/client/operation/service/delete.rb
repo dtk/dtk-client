@@ -28,9 +28,6 @@ module DTK::Client
           post_body = PostBody.new(:service_instance => service_instance)
 
           rest_post("#{BaseRoute}/delete", post_body)
-          require 'debugger'
-          Debugger.start
-          debugger
           OsUtil.print_info("DTK module '#{service_instance}' has been deleted successfully.")
         end
       end
