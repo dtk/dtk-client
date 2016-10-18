@@ -22,7 +22,7 @@ module DTK::Client; module CLI
         c.arg Token::Arg.attribute_name
         c.arg Token::Arg.attribute_value, :optional => true
         command_body c, 'set-attribute',  'Edit specific attribute.' do |sc|
-          sc.switch Token.unset 
+          sc.switch Token.u
           sc.action do |_global_options, options, _args|
 
             service_instance = service_instance_in_options_or_context(options)
