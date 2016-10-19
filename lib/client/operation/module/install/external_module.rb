@@ -67,7 +67,6 @@ module DTK::Client
           :module_name => response.required(:full_module_name)
           # :remove_existing  => remove_existing
         }
-        ClientModuleDir::GitRepo.clone_module_repo(clone_args)
 
         OsUtil.print_info('Done.')
 
