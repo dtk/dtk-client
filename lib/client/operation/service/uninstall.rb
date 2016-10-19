@@ -23,13 +23,13 @@ module DTK::Client
           service_instance = args.required(:service_instance)
 
           unless args[:skip_prompt]
-            return false unless Console.prompt_yes_no("Are you sure you want to destroy the infrastructure associated with '#{service_instance}' and delete this service instance from the server?", :add_options => true)
+            return false unless Console.prompt_yes_no("Are you sure you want to uninstall the infrastructure associated with '#{service_instance}' and delete this service instance from the server?", :add_options => true)
           end
 
           post_body = PostBody.new(:service_instance => service_instance)
-          post_body.merge!(:uninstall => true)
+          #post_body.merge!(:uninstall => true)
           
-          rest_post("#{BaseRoute}/delete", post_body)
+          rest_post("#{BaseRoute}/uninstall", post_body)
 
           ClientModuleDir.purge_service_instance_dir(args[:directory_path]) if args[:purge]
 
