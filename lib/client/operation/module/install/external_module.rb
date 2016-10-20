@@ -68,7 +68,6 @@ module DTK::Client
           # :remove_existing  => remove_existing
         }
 
-        OsUtil.print_info('Done.')
 
         response
       end
