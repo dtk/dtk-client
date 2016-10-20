@@ -26,7 +26,6 @@ module DTK::Client; module CLI
           sc.action do |_global_options, options, args|
             directory_path = options[:directory_path]
             purge          = options[:purge]
-            new_client     = true 
             # if purge && (!directory_path || (directory_path == @base_dsl_file_obj.parent_dir?))
             #   raise Error::Usage, "If use option '#{option_ref(:purge)}' then need to call from outside directory and use option '#{option_ref(:directory_path)}'"
             # end
@@ -35,8 +34,7 @@ module DTK::Client; module CLI
             args = {
               :service_instance => service_instance,
               :skip_prompt      => options[:skip_prompt],
-              :directory_path   => directory_path,
-              :new_client       => new_client
+              :directory_path   => directory_path
             }
             Operation::Service.delete(args)
           end
