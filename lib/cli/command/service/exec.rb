@@ -33,7 +33,14 @@ module DTK::Client
               :action           => action,
               :action_params    => action_params
             }
-            Operation::Service.exec(args)
+            
+            response = Operation::Service.exec(args)
+
+            if violations = response.data(:violations)
+              response.set_data(violations)
+              response.data.flatten!
+              response.set_render_as_table!
+            end
           end
         end
       end
