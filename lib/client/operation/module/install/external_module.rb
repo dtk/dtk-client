@@ -24,6 +24,10 @@ module DTK::Client
         @print_dependency_newline = false
         module_refs.each do |module_ref|
           if module_exists?(module_ref, { :type => :component_module })
+            if opts[:add_newline]
+              print "\n"
+              @print_dependency_newline = false
+            end
             OsUtil.print("#{opts[:indent]}Using module '#{module_ref.namespace}:#{module_ref.module_name}'" + (module_ref.version.nil? ? "" : " version: #{module_ref.version} "))
             # If component module is imported, still check to see if it's dependencies are imported
             find_and_install_component_module_dependency(module_ref, opts.merge(:skip_if_no_remote => true, indent: "  "))
@@ -117,7 +121,7 @@ module DTK::Client
             dep_module_refs = (missing_modules || []).map do |ref_hash|
               ModuleRef.new(:namespace => ref_hash['namespace'], :module_name => ref_hash['name'], :version => ref_hash['version']) 
             end
-            install_dependent_modules(dep_module_refs, opts.merge(:skip_dependencies => true, test: true))
+            install_dependent_modules(dep_module_refs, opts.merge(:skip_dependencies => true))
           end
         end
       end
