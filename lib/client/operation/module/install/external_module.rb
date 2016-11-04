@@ -21,11 +21,12 @@ module DTK::Client
       BaseRoute = "modules"
 
       def self.install_dependent_modules(module_refs, opts = {})
+        @print_dependency_newline = false
         module_refs.each do |module_ref|
           if module_exists?(module_ref, { :type => :component_module })
-            OsUtil.print("Using module '#{module_ref.namespace}:#{module_ref.module_name}'" + (module_ref.version.nil? ? "" : " version: #{module_ref.version} "))
+            OsUtil.print("#{opts[:indent]}Using module '#{module_ref.namespace}:#{module_ref.module_name}'" + (module_ref.version.nil? ? "" : " version: #{module_ref.version} "))
             # If component module is imported, still check to see if it's dependencies are imported
-            find_and_install_component_module_dependency(module_ref, opts.merge(:skip_if_no_remote => true))
+            find_and_install_component_module_dependency(module_ref, opts.merge(:skip_if_no_remote => true, indent: "  "))
           else
             install_module(module_ref, opts)
           end
@@ -39,7 +40,7 @@ module DTK::Client
         module_name = component_module.module_name
         version     = component_module.version
 
-        import_msg = "Importing module '#{namespace}:#{module_name}"
+        import_msg = "#{opts[:indent]}Importing module '#{namespace}:#{module_name}"
         import_msg += "(#{version})" if version && !version.eql?('master')
         import_msg += "' ... "
 
@@ -55,7 +56,7 @@ module DTK::Client
         }
 
         unless opts[:skip_dependencies]
-          find_and_install_component_module_dependency(component_module, opts.merge(:add_newline => true))
+          find_and_install_component_module_dependency(component_module, opts.merge(:add_newline => true, indent: "  "))
         end
 
         response = rest_post "#{BaseRoute}/install_component_module", PostBody.new(post_body)
@@ -68,7 +69,14 @@ module DTK::Client
           # :remove_existing  => remove_existing
         }
 
-        OsUtil.print_info('Done.')
+        if opts[:add_newline]
+          print OsUtil.colorize("Done.", :yellow)
+          @print_dependency_newline = true
+        else
+          print "\n" if @print_dependency_newline
+          OsUtil.print('Done.', :yellow)
+          @print_dependency_newline = false
+        end
 
         response
       end
@@ -109,7 +117,7 @@ module DTK::Client
             dep_module_refs = (missing_modules || []).map do |ref_hash|
               ModuleRef.new(:namespace => ref_hash['namespace'], :module_name => ref_hash['name'], :version => ref_hash['version']) 
             end
-            install_dependent_modules(dep_module_refs, opts.merge(:skip_dependencies => true))
+            install_dependent_modules(dep_module_refs, opts.merge(:skip_dependencies => true, test: true))
           end
         end
       end
