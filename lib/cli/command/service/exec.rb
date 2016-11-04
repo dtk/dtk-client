@@ -22,7 +22,7 @@ module DTK::Client
         c.arg Token::Arg.action
         c.arg Token::Arg.action_params, :optional => true
         command_body c, :exec, 'Execute action asynchronously' do |sc|
-            sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory containing updates to pull; not need if in the service instance directory'
+          sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory containing updates to pull; not need if in the service instance directory'
           sc.action do |_global_options, options, args|
           
             service_instance = service_instance_in_options_or_context(options)
