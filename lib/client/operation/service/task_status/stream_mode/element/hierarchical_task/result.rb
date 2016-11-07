@@ -27,6 +27,10 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element
         @errors = hash['errors'] || []
       end
 
+      # This can be over-written
+      def action_results
+        []
+      end
 
       def self.render(element, stage_subtasks)
         results_per_node = base_subtasks(element, stage_subtasks)
