@@ -24,12 +24,8 @@ module DTK::Client
         @print_dependency_newline = false
         module_refs.each do |module_ref|
           if module_exists?(module_ref, { :type => :component_module })
-            if opts[:add_newline]
-              print "\n"
-              @print_dependency_newline = false
-            end
-            OsUtil.print("#{opts[:indent]}Using module '#{module_ref.namespace}:#{module_ref.module_name}'" + (module_ref.version.nil? ? "" : " version: #{module_ref.version} "))
-            # If component module is imported, still check to see if it's dependencies are imported
+            print_using_message(module_ref, opts)
+            pull_module?(module_ref, opts)
             find_and_install_component_module_dependency(module_ref, opts.merge(:skip_if_no_remote => true, indent: "  "))
           else
             install_module(module_ref, opts)
@@ -37,7 +33,43 @@ module DTK::Client
         end
       end
 
+      def self.pull_dependent_modules?(module_refs, opts = {})
+        module_refs.each do |module_ref|
+          print_using_message(module_ref, opts)
+          pull_module?(module_ref, opts)
+        end
+      end
+
       private
+
+      def self.pull_module?(component_module, opts = {})
+        namespace   = component_module.namespace
+        module_name = component_module.module_name
+        version     = component_module.version
+        full_module_name = "#{namespace}:#{module_name}"
+
+        return unless Console.prompt_yes_no("#{opts[:indent]}Do you want to update dependent module '#{full_module_name}' from the catalog?", :add_options => true)
+
+        print "#{opts[:indent]}Pulling component module content for '#{full_module_name}' ..."
+
+        post_body = {
+          :module_name => module_name,
+          :namespace   => namespace,
+          :rsa_pub_key => SSHUtil.rsa_pub_key_content,
+          :version?    => version,
+          :full_module_name => full_module_name,
+          :json_diffs  => ""
+        }
+        response = rest_post "#{BaseRoute}/update_dependency_from_remote", PostBody.new(post_body)
+
+        if custom_message = response.data[:custom_message]
+          OsUtil.print(custom_message)
+        elsif (response.data[:diffs].nil? || response.data[:diffs].empty?)
+          OsUtil.print("No changes to pull from remote.", :yellow) unless response['errors']
+        else
+          OsUtil.print("Changes pulled from remote", :green)
+        end
+      end
 
       def self.install_module(component_module, opts = {})
         namespace   = component_module.namespace
@@ -55,7 +87,7 @@ module DTK::Client
         post_body = {
           :module_name => module_name,
           :namespace   => namespace,
-          :rsa_pub_key => SSHUtil.rsa_pub_key_content(),
+          :rsa_pub_key => SSHUtil.rsa_pub_key_content,
           :version?    => version
         }
 
@@ -70,7 +102,6 @@ module DTK::Client
           :repo_url    => response.required(:repo_url),
           :branch      => response.required(:workspace_branch),
           :module_name => response.required(:full_module_name)
-          # :remove_existing  => remove_existing
         }
 
         if opts[:add_newline]
@@ -116,14 +147,28 @@ module DTK::Client
           return false unless Console.prompt_yes_no("Do you still want to proceed with import?", :add_options => true)
         end
 
-        if missing_modules = dependencies.data(:missing_module_components)
-          unless missing_modules.empty?
-            dep_module_refs = (missing_modules || []).map do |ref_hash|
-              ModuleRef.new(:namespace => ref_hash['namespace'], :module_name => ref_hash['name'], :version => ref_hash['version']) 
-            end
-            install_dependent_modules(dep_module_refs, opts.merge(:skip_dependencies => true))
+        if (missing_modules = dependencies.data(:missing_module_components)) && !missing_modules.empty?
+          dep_module_refs = (missing_modules || []).map do |ref_hash|
+            ModuleRef.new(:namespace => ref_hash['namespace'], :module_name => ref_hash['name'], :version => ref_hash['version']) 
           end
+          install_dependent_modules(dep_module_refs, opts.merge(:skip_dependencies => true))
         end
+
+        if (required_modules = dependencies.data(:required_modules)) && !required_modules.empty?
+          dep_module_refs = (required_modules || []).map do |ref_hash|
+            ModuleRef.new(:namespace => ref_hash['namespace'], :module_name => ref_hash['name'], :version => ref_hash['version']) 
+          end
+          pull_dependent_modules?(dep_module_refs, opts.merge(:skip_dependencies => true))
+        end
+      end
+
+      def self.print_using_message(module_ref, opts = {})
+        # special case where, after importing dependencies of dependency, comes a using message
+        if opts[:add_newline]
+          print "\n"
+          @print_dependency_newline = false
+        end
+        OsUtil.print("#{opts[:indent]}Using module '#{module_ref.namespace}:#{module_ref.module_name}'" + (module_ref.version.nil? ? "" : " version: #{module_ref.version} "))
       end
 
     end
