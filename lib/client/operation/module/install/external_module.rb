@@ -19,7 +19,8 @@ module DTK::Client
   class Operation::Module::Install
     class ExternalModule < self
       BaseRoute = "modules"
-
+      @update_all = false
+      @update_none = false
       def self.install_dependent_modules(module_refs, opts = {})
         @print_dependency_newline = false
         module_refs.each do |module_ref|
@@ -48,9 +49,22 @@ module DTK::Client
         version     = component_module.version
         full_module_name = "#{namespace}:#{module_name}"
 
-        return unless Console.prompt_yes_no("#{opts[:indent]}Do you want to update dependent module '#{full_module_name}' from the catalog?", :add_options => true)
+        return if @update_none
+        options = %w(all none)
+        unless @update_all
+          update = Console.confirmation_prompt_additional_options("\n Do you want to update dependent module '#{full_module_name}' from the catalog?", options) 
 
-        print "#{opts[:indent]}Pulling component module content for '#{full_module_name}' ..."
+          return unless update
+
+          if update.eql?('all')
+            @update_all = true
+          elsif update.eql?('none')
+            @update_none = true
+            return
+          end
+        end
+
+        print "#{opts[:indent]}Pulling component module content for '#{full_module_name}' ... "
 
         post_body = {
           :module_name => module_name,
@@ -156,6 +170,7 @@ module DTK::Client
 
         if (required_modules = dependencies.data(:required_modules)) && !required_modules.empty?
           dep_module_refs = (required_modules || []).map do |ref_hash|
+            required_modules.uniq!
             ModuleRef.new(:namespace => ref_hash['namespace'], :module_name => ref_hash['name'], :version => ref_hash['version']) 
           end
           pull_dependent_modules?(dep_module_refs, opts.merge(:skip_dependencies => true))
