@@ -52,7 +52,7 @@ module DTK::Client
         return if @update_none
         options = %w(all none)
         unless @update_all
-          update = Console.confirmation_prompt_additional_options("\n Do you want to update dependent module '#{full_module_name}' from the catalog?", options) 
+          update = Console.confirmation_prompt_additional_options("Do you want to update dependent module '#{full_module_name}' from the catalog?", options) 
 
           return unless update
 
