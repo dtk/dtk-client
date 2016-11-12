@@ -91,9 +91,14 @@ module DTK::Client
         content_hash     = convert_file_content_to_hash(assembly)
         name             = content_hash['name']
         assembly_content = content_hash['assembly']
-        workflows        = ret_workflows_hash(content_hash)
 
+        workflows = ret_workflows_hash(content_hash)
         assembly_content.merge!('workflows' => workflows) if workflows
+
+        # convert node_bindings to node attributes
+        node_bindings = content_hash['node_bindings']
+        create_node_properties_from_node_bindings?(node_bindings, assembly_content)
+
         assemblies.merge!(name => assembly_content)
       end
 
@@ -124,6 +129,60 @@ module DTK::Client
 
         dependencies
       end
+    end
+
+    def create_node_properties_from_node_bindings?(node_bindings, assembly_content = {})
+      return unless node_bindings
+
+      nodes = assembly_content['nodes']
+      return if nodes.empty?
+
+      node_bindings.each do |node, node_binding|
+        image, size = get_ec2_properties_from_node_binding(node_binding)
+        new_attrs = { 'image' => image, 'size' => size }
+
+        if node_content = nodes[node]
+          components = node_content['components']
+          components = components.is_a?(Array) ? components : [components]
+
+          if index = include_node_property_component?(components)
+            ec2_properties = components[index]
+            if ec2_properties.is_a?(Hash)
+              if attributes = ec2_properties.values.first['attributes']
+                attributes['image'] = image unless attributes['image']
+                attributes['size'] = size unless attributes['size']
+              else
+                ec2_properties.merge!('attributes' => new_attrs)
+              end
+            else
+              components[index] = { ec2_properties => { 'attributes' => new_attrs } }
+            end
+          elsif node_attributes = node_content['attributes']
+            node_attributes['image'] = image unless node_attributes['image']
+            node_attributes['size'] = size unless node_attributes['size']
+          else
+            node_content['attributes'] = new_attrs
+          end
+        end
+      end
+    end
+
+    def get_ec2_properties_from_node_binding(node_binding)
+      image, size = node_binding.split('-')
+      [image, size]
+    end
+
+    def include_node_property_component?(components)
+      property_component = 'ec2::properties'
+      components.each do |component|
+        if component.is_a?(Hash)
+          return components.index(component) if component.keys.first.eql?(property_component)
+        else
+          return components.index(component) if component.eql?(property_component)
+        end
+      end
+
+      false
     end
   end
 end
