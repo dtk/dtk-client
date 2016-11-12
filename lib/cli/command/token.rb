@@ -59,7 +59,8 @@ module DTK::Client
         :target       => Switch.new(:target, 'Create target service instance'),
         :links        => Switch.new(:links, 'Links'),
         :dependencies => Switch.new(:deps, 'Dependencies'),
-        :u            => Switch.new([:u, :unset], 'Unset attribute')
+        :u            => Switch.new([:u, :unset], 'Unset attribute'),
+        :recursive    => Switch.new(:r, 'Recursive')
       }
 
       ARG_TOKENS = {
