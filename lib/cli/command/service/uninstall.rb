@@ -24,10 +24,12 @@ module DTK::Client; module CLI
           sc.switch Token.skip_prompt, :desc => 'Skip prompt that checks if user wants to delete the service instance'
           sc.switch Token.purge, :desc => 'Delete the service instance directory on the client'
           sc.switch Token.force
+          sc.switch Token.recursive
           sc.action do |_global_options, options, args|
             directory_path = options[:directory_path]
             purge          = options[:purge]
             force          = options[:force]
+            recursive      = options[:recursive]
 
             if purge && (!directory_path || (directory_path == @base_dsl_file_obj.parent_dir?))
               raise Error::Usage, "If use option '#{option_ref(:purge)}' then need to call from outside directory and use option '#{option_ref(:directory_path)}'"
@@ -39,7 +41,8 @@ module DTK::Client; module CLI
               :skip_prompt      => options[:skip_prompt],
               :directory_path   => directory_path,
               :purge            => purge,
-              :force            => force
+              :force            => force,
+              :recursive        => recursive
             }
             Operation::Service.uninstall(args)
           end

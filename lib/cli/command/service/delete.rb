@@ -22,10 +22,12 @@ module DTK::Client; module CLI
         command_body c, :delete, 'Destroys the running infrastructure associated with the service instance' do |sc|
         sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory associated; not needed if executed in service instance directory'
           sc.switch Token.skip_prompt, :desc => 'Skip prompt that checks if user wants to delete the service instance'
+          sc.switch Token.recursive
           # sc.switch Token.purge, :desc => 'Delete the service instance directory on the client'
           sc.action do |_global_options, options, args|
             directory_path = options[:directory_path]
             purge          = options[:purge]
+            recursive      = options[:recursive]
             # if purge && (!directory_path || (directory_path == @base_dsl_file_obj.parent_dir?))
             #   raise Error::Usage, "If use option '#{option_ref(:purge)}' then need to call from outside directory and use option '#{option_ref(:directory_path)}'"
             # end
@@ -34,7 +36,8 @@ module DTK::Client; module CLI
             args = {
               :service_instance => service_instance,
               :skip_prompt      => options[:skip_prompt],
-              :directory_path   => directory_path
+              :directory_path   => directory_path,
+              :recursive        => recursive
             }
             Operation::Service.delete(args)
           end

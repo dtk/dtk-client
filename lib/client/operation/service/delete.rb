@@ -21,12 +21,18 @@ module DTK::Client
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           service_instance = args.required(:service_instance)
+          recursive        = args.required(:recursive)
+
           unless args[:skip_prompt]
             return false unless Console.prompt_yes_no("Are you sure you want to delete the content of service instance '#{service_instance}' ?", :add_options => true)
           end
-          post_body = PostBody.new(:service_instance => service_instance)
 
+          post_body = PostBody.new(
+            :service_instance => service_instance,
+            :recursive? => recursive
+          )
           rest_post("#{BaseRoute}/delete", post_body)
+
           OsUtil.print_info("DTK module '#{service_instance}' has been deleted successfully.")
         end
       end
