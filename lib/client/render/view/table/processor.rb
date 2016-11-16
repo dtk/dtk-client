@@ -97,7 +97,7 @@ module DTK::Client
                   # original table takes that index
                   evaluated_element.send("#{k}=", error_index)
                   # we set new error element
-                  set_error_element!(error_element)
+                  set_error_element!(error_element, error_index, error_type, error_message)
                   
                   # add it with other
                   @error_data << error_element
@@ -122,7 +122,7 @@ module DTK::Client
         end
       end
       
-      def set_error_element!(error_element)
+      def set_error_element!(error_element, error_index, error_type, error_message)
         error_element.id = error_index
         case error_type
         when 'user_error'

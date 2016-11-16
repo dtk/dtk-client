@@ -60,6 +60,10 @@ module DTK::Client
         @skip_render = skip
       end
 
+      def print_error_table!(value)
+        @print_error_table = value
+      end
+
       private
 
       def semantic_datatype_in_payload

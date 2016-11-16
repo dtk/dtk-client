@@ -41,6 +41,7 @@ module DTK::Client
                 system('clear')
                 # response.print_error_table = true
                 # response.render_table(:task_status)
+                response.print_error_table!(true)
                 return response.set_render_as_table!
               end
             end
