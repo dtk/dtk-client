@@ -35,7 +35,9 @@ module DTK::Client
           if task_status_mode
             task_status_with_mode(task_status_mode.to_sym, service_instance)
           else
-            rest_call(service_instance).set_render_as_table!
+            response = rest_call(service_instance)
+            response.print_error_table!(true)
+            response.set_render_as_table!
           end
         end
       end

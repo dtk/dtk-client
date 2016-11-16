@@ -20,6 +20,7 @@ module DTK::Client
     class SnapshotMode < self
       def task_status(opts = {})
         response = rest_call(opts)
+        response.print_error_table!(true)
         response.set_render_as_table!
       end
     end
