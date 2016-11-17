@@ -68,6 +68,12 @@ module DTK::Client
         end
       end
 
+      def self.modified(args)
+        wrap_operation(args) do |args|
+          response_data_hash(:modified => Internal.modified(args))
+        end
+      end
+
       def self.init_and_push_from_existing_repo(args)
         wrap_operation(args) do |args|
           repo_dir      = args.required(:repo_dir)
@@ -194,6 +200,15 @@ module DTK::Client
           head_sha 
         end
         
+        def self.modified(args)
+          repo_url = args.required(:path)
+          branch   = args.required(:branch)
+          repo     = git_repo.new(repo_url, :branch => branch)
+
+          repo.print_status
+          repo.changed?
+        end
+
         def self.create_add_remote_and_push(repo_dir, repo_url, remote_branch)
           repo = git_repo.new(repo_dir)
           add_remote_and_push(repo, repo_url, remote_branch)

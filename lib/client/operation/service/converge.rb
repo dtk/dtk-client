@@ -21,11 +21,13 @@ module DTK::Client
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           service_instance = args.required(:service_instance)
+          force            = args[:force]
 
           post_body = PostBody.new(
             :service_instance => service_instance
           )
 
+          DTK::Client::GitRepo.modified?(OsUtil.current_dir) unless force
           violations = find_violations(service_instance)
           return violations if violations
 

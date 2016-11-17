@@ -23,11 +23,15 @@ module DTK::Client; module CLI
         sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory associated; not needed if executed in service instance directory'
           sc.switch Token.skip_prompt, :desc => 'Skip prompt that checks if user wants to delete the service instance'
           sc.switch Token.recursive
+          sc.switch Token.force
           # sc.switch Token.purge, :desc => 'Delete the service instance directory on the client'
           sc.action do |_global_options, options, args|
             directory_path = options[:directory_path]
             purge          = options[:purge]
             recursive      = options[:recursive]
+            force          = options[:force]
+
+            DTK::Client::GitRepo.modified?(OsUtil.current_dir) unless force
             # if purge && (!directory_path || (directory_path == @base_dsl_file_obj.parent_dir?))
             #   raise Error::Usage, "If use option '#{option_ref(:purge)}' then need to call from outside directory and use option '#{option_ref(:directory_path)}'"
             # end
@@ -37,7 +41,8 @@ module DTK::Client; module CLI
               :service_instance => service_instance,
               :skip_prompt      => options[:skip_prompt],
               :directory_path   => directory_path,
-              :recursive        => recursive
+              :recursive        => recursive,
+              :force            => force
             }
             Operation::Service.delete(args)
           end
