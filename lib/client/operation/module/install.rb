@@ -23,17 +23,17 @@ module DTK::Client
 
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
-          base_module_ref = args.required(:module_ref)
           if args[:flag]
-              file_obj = args.required(:base_dsl_file_obj).raise_error_if_no_content_flag(:module_ref)
+            file_obj = args.required(:base_dsl_file_obj).raise_error_if_no_content_flag(:module_ref)
           else
-              file_obj = args.required(:base_dsl_file_obj).raise_error_if_no_content
+            file_obj = args.required(:base_dsl_file_obj).raise_error_if_no_content
           end
-          new(file_obj, base_module_ref).install
+
+          new(file_obj, args.required(:module_ref)).install(:skip_prompt => args[:skip_prompt])
         end
       end
       
-      def install
+      def install(opts = {})
         unless @base_module_ref
           raise Error::Usage, "No base module reference #{dsl_path_ref}"
         end
@@ -44,7 +44,7 @@ module DTK::Client
 
         unless dependent_modules.empty?
           OsUtil.print_info('Auto-importing dependencies')
-          ExternalModule.install_dependent_modules(dependent_modules)
+          ExternalModule.install_dependent_modules(dependent_modules, opts)
           OsUtil.print_info("Successfully imported '#{@base_module_ref.namespace}:#{@base_module_ref.module_name}' version #{@base_module_ref.version}")
         end
 
