@@ -45,10 +45,10 @@ module DTK::Client
         unless dependent_modules.empty?
           OsUtil.print_info('Auto-importing dependencies')
           ExternalModule.install_dependent_modules(dependent_modules, opts)
-          OsUtil.print_info("Successfully imported '#{@base_module_ref.namespace}:#{@base_module_ref.module_name}' version #{@base_module_ref.version}")
         end
 
         CommonModule.install(@base_module_ref, @file_obj)
+        OsUtil.print_info("Successfully imported '#{@base_module_ref.namespace}:#{@base_module_ref.module_name}' version #{@base_module_ref.version}")
         nil
       end
       
