@@ -42,6 +42,8 @@ module DTK::Client
           :rsa_pub_key => SSHUtil.rsa_pub_key_content,
           :version?    => @version
         )
+        #TODO: DTK-2746: chenage what is returned by remote_module_info to be about the component and/or service info
+        # we wil add them under different git remote names
         module_info = rest_get "#{BaseRoute}/remote_module_info", query_string_hash
 
         # unless version is explicitly provided, use latest version instead of master
