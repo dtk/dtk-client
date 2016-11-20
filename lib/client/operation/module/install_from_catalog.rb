@@ -42,18 +42,17 @@ module DTK::Client
           :rsa_pub_key => SSHUtil.rsa_pub_key_content,
           :version?    => @version
         )
-        #TODO: DTK-2746: chenage what is returned by remote_module_info to be about the component and/or service info
-        # we wil add them under different git remote names
         module_info = rest_get "#{BaseRoute}/remote_module_info", query_string_hash
 
+
+        #TODO: DTK-2746: need to put latest_version at top level
+        #TODO: DTK-2746 stub: module_info set to service_info
         # unless version is explicitly provided, use latest version instead of master
-        unless @version
-          @version = module_info.required(:latest_version)
-        end
+        @version ||= module_info.required(:service_info)['latest_version']
 
         git_repo_args = {
           :repo_dir      => target_repo_dir,
-          :repo_url      => module_info.required(:remote_repo_url),
+          :repo_url      => module_info.required(:service_info)['remote_repo_url'],
           :remote_branch => (@version && !@version.eql?('master')) ? "v#{@version}" : 'master'
         }
         ClientModuleDir::GitRepo.create_add_remote_and_pull(git_repo_args)
