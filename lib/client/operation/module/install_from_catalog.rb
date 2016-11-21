@@ -18,6 +18,18 @@
 module DTK::Client
   class Operation::Module
     class InstallFromCatalog < self
+      require_relative('install_from_catalog/service_info')
+      # require_relative('install_from_catalog/component_info')
+
+      attr_reader :catalog, :module_ref, :directory_path, :version
+      def initialize(catalog, module_ref, directory_path, version)
+        @catalog        = catalog
+        @module_ref     = module_ref
+        @directory_path = directory_path
+        @version        = version
+      end
+      private :initialize
+
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           module_ref     = args.required(:module_ref)
@@ -42,39 +54,30 @@ module DTK::Client
           :rsa_pub_key => SSHUtil.rsa_pub_key_content,
           :version?    => @version
         )
-        module_info = rest_get "#{BaseRoute}/remote_module_info", query_string_hash
 
+        remote_module_info = rest_get "#{BaseRoute}/remote_module_info", query_string_hash
 
-        #TODO: DTK-2746: need to put latest_version at top level
-        #TODO: DTK-2746 stub: module_info set to service_info
-        # unless version is explicitly provided, use latest version instead of master
-        @version ||= module_info.required(:service_info)['latest_version']
+        @version ||= remote_module_info.required(:version)
 
-        git_repo_args = {
-          :repo_dir      => target_repo_dir,
-          :repo_url      => module_info.required(:service_info)['remote_repo_url'],
-          :remote_branch => (@version && !@version.eql?('master')) ? "v#{@version}" : 'master'
-        }
-        ClientModuleDir::GitRepo.create_add_remote_and_pull(git_repo_args)
+        #git_repo = Operation::ClientModuleDir::GitRepo.create_empty(:repo_dir => target_repo_dir).data(:repo)
 
-        module_content_hash = ContentGenerator.new(target_repo_dir, @module_ref, @version).generate_module_content
+        if service_info = remote_module_info.data(:service_info)
+          ServiceInfo.install_from_catalog(service_info['remote_repo_url'], target_repo_dir, self)
+        end
 
-        # delete old files
-        Operation::ClientModuleDir.delete_directory_content(target_repo_dir)
+        #if component_info = remote_module_info.data(:component_info)
+        #  ComponentInfo.install_from_catalog(component_info['remote_repo_url'], target_repo_dir, self)
+        #end
 
-        # generate dtk.module.yaml file from parsed assemblies and module_refs
-        Operation::ClientModuleDir.create_file_with_content("#{target_repo_dir}/dtk.module.yaml", self.class.hash_to_yaml(module_content_hash))
         {:target_repo_dir => target_repo_dir}
       end
       
       private
 
-      def initialize(catalog, module_ref, directory_path, version)
-        @catalog        = catalog
-        @module_ref     = module_ref
-        @directory_path = directory_path
-        @version        = version
+      def git_repo_remote_branch
+        (@version && !@version.eql?('master')) ? "v#{@version}" : 'master'
       end
+
     end
   end
 end
