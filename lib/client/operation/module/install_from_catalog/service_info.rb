@@ -31,13 +31,14 @@ module DTK::Client
 
       def install_from_catalog
         git_repo_args = {
+          :info_type     => :service_info,
           :repo_dir      => @target_repo_dir,
           :repo_url      => @remote_repo_url,
           :remote_branch => git_repo_remote_branch
         }
 
         # TODO: convert to use fetch_transform_merge
-        Operation::ClientModuleDir::GitRepo.create_add_remote_and_pull(git_repo_args)
+        Operation::ClientModuleDir::GitRepo.create_add_remote_and_pull_from_dtkn(git_repo_args)
 
         module_content_hash = ContentGenerator.new(@target_repo_dir, @module_ref, @version).generate_module_content
 
