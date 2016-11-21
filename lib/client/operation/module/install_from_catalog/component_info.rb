@@ -17,15 +17,10 @@
 #
 module DTK::Client
   class Operation::Module::InstallFromCatalog
-    class ServiceInfo < Common
+    class ComponentInfo < Common
       def install_from_catalog
-        fetch_remote(:service_info) 
-
-        module_content_hash = ContentGenerator.new(@target_repo_dir, @module_ref, @version).generate_module_content
-        # delete old files
-        Operation::ClientModuleDir.delete_directory_content(@target_repo_dir)
-        # generate dtk.module.yaml file from parsed assemblies and module_refs
-        Operation::ClientModuleDir.create_file_with_content("#{@target_repo_dir}/dtk.module.yaml", self.class.hash_to_yaml(module_content_hash))
+        fetch_remote(:component_info) #TODO: calling this fetch because will change to using fetch and transform_merg
+        # TODO: stub
         nil
       end
 

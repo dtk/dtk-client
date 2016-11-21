@@ -18,8 +18,10 @@
 module DTK::Client
   class Operation::Module
     class InstallFromCatalog < self
+      require_relative('install_from_catalog/common')
+      # common needs to go first
       require_relative('install_from_catalog/service_info')
-      # require_relative('install_from_catalog/component_info')
+      require_relative('install_from_catalog/component_info')
 
       attr_reader :catalog, :module_ref, :directory_path, :version
       def initialize(catalog, module_ref, directory_path, version)
@@ -59,15 +61,15 @@ module DTK::Client
 
         @version ||= remote_module_info.required(:version)
 
-        #git_repo = Operation::ClientModuleDir::GitRepo.create_empty(:repo_dir => target_repo_dir).data(:repo)
+        Operation::ClientModuleDir::GitRepo.create_empty_repo?(:repo_dir => target_repo_dir)
 
         if service_info = remote_module_info.data(:service_info)
           ServiceInfo.install_from_catalog(service_info['remote_repo_url'], target_repo_dir, self)
         end
 
-        #if component_info = remote_module_info.data(:component_info)
-        #  ComponentInfo.install_from_catalog(component_info['remote_repo_url'], target_repo_dir, self)
-        #end
+        if component_info = remote_module_info.data(:component_info)
+          ComponentInfo.install_from_catalog(component_info['remote_repo_url'], target_repo_dir, self)
+        end
 
         {:target_repo_dir => target_repo_dir}
       end

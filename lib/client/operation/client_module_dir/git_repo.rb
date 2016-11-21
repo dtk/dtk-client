@@ -55,16 +55,24 @@ module DTK::Client
         end
       end
 
-      def self.create_add_remote_and_pull_from_dtkn(args)
+      def self.create_empty_repo?(args)
+        wrap_operation(args) do |args|
+          repo_dir  = args.required(:repo_dir)
+          Internal.create_empty_git_repo?(repo_dir)
+          response_data_hash
+        end
+      end
+      
+      def self.pull_from_dtkn(args)
         wrap_operation(args) do |args|
           info_type     = args.required(:info_type)
           repo_dir      = args.required(:repo_dir)
-          repo_url      = args.required(:repo_url)
+          remote_url    = args[:add_remote]
           remote_branch = args.required(:remote_branch)
 
-          repo = Internal.create_empty_repo(repo_dir, :branch_type => :dtkn)
-          Internal.add_dtkn_remote(info_type, repo, repo_url)
-          response_data_hash(:head_sha => Internal.pull_from_dtkn(info_type, repo, remote_branch))
+          dtkn_repo = Internal::Dtkn.repo(info_type, repo_dir)
+          dtkn_repo.add_remote(remote_url) if remote_url
+          response_data_hash(:head_sha => dtkn_repo.pull(remote_branch))
         end
       end
 
@@ -109,7 +117,7 @@ module DTK::Client
 
       private
 
-      def self.response_data_hash(hash)
+      def self.response_data_hash(hash ={})
         hash.inject({}) { |h, (k, v)| h.merge(k.to_s => v) }
       end
 

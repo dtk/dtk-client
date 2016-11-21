@@ -20,23 +20,30 @@ module DTK::Client
     class GitRepo
       # All Internal methods do not have wrap_operation and can only be accessed by a method that wraps it
       class Internal < self
+        require_relative('internal/dtkn')
+
+        # TODO: move dtkn methods to Internal::Dtkn; might make also Internal::DtkServer class
+
         # Git Params for dtk server
         module Dtk_Server
           GIT_REMOTE   = 'dtk-server'
         end
-        # Git params for dtkn
-        module Dtkn
-          GIT_REMOTE   = 'dtkn'
-          LOCAL_BRANCH = 'master'
 
-          # TODO: Deprecate GIT_REMOTE for below
-          GIT_REMOTES = {
-            :service_info   => GIT_REMOTE,
-            :component_info => 'dtkn-component-info'
-          }
-          def self.remote_name(info_type)
-            GIT_REMOTES[info_type] || raise(Error, "Bad info_type '#{info_type}'")
-          end
+        # opts can have keys
+        #   :branch
+        # returns object of type DTK::Client::GitRepo
+        def self.create_empty_git_repo?(repo_dir, opts = {})
+          git_repo.new(repo_dir, :branch => opts[:branch])
+        end
+
+        def self.add_remote(remote_name, repo, remote_url)
+          repo.add_remote(remote_name, remote_url)
+          remote_name
+        end
+
+        def self.pull(remote_name, repo, remote_branch)
+          repo.pull(remote_name, remote_branch)
+          repo.head_commit_sha
         end
 
         # returns head_sha
@@ -120,31 +127,6 @@ module DTK::Client
           repo.head_commit_sha
         end
 
-        # opts can have keys
-        #   :local_branch_type
-        def self.create_empty_repo(repo_dir, opts = {})
-          branch = 
-            if branch_type = opts[:branch_type]
-              LOCAL_BRANCH_TYPES[branch_type] || raise(Error, "Bad branch type '#{branch_type}'")
-            end
-          git_repo.new(repo_dir, :branch => branch)
-        end
-        LOCAL_BRANCH_TYPES = {
-          :dtkn => Dtkn::LOCAL_BRANCH
-        }
-
-        def self.add_dtkn_remote(info_type, repo, repo_url)
-          remote_name = Dtkn.remote_name(info_type)
-          repo.add_remote(remote_name, repo_url)
-          remote_name
-        end
-
-        def self.pull_from_dtkn(info_type, repo, remote_branch)
-          remote_name = Dtkn.remote_name(info_type)
-          repo.pull(remote_name, remote_branch)
-          repo.head_commit_sha
-        end
-        
         def self.init_and_push_from_existing_repo(repo_dir, repo_url, remote_branch)
           repo = git_repo.new(repo_dir)
           
