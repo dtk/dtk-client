@@ -46,21 +46,21 @@ module DTK::Client
         :remote_user             => Flag.new(:u, 'REMOTE-USER', 'Remote user'),
         :identity_file           => Flag.new(:i, 'PATH-TO-PEM', 'Path to pem file'),
         :mode                    => Flag.new(:mode, 'MODE', 'Mode'),
-        :namespace               => Flag.new(:n, 'NAMESPACE', 'Namespace'),
+        :namespace               => Flag.new(:n, 'NAMESPACE', 'Namespace'), 
         
 
         # switches
         # Switch constructor args order: key, desc, opts={}
-        :all          => Switch.new(:all, 'All'),
-        :force        => Switch.new(:f, 'Force'),
-        :purge        => Switch.new(:purge, 'Purge'),
-        :push         => Switch.new(:push, 'Push changes'),
-        :skip_prompt  => Switch.new(:y, 'Skip prompt'),
-        :target       => Switch.new(:target, 'Create target service instance'),
-        :links        => Switch.new(:links, 'Links'),
-        :dependencies => Switch.new(:deps, 'Dependencies'),
-        :u            => Switch.new([:u, :unset], 'Unset attribute'),
-        :recursive    => Switch.new(:r, 'Recursive')
+        :all             => Switch.new(:all, 'All'),
+        :force           => Switch.new(:f, 'Force'),
+        :purge           => Switch.new(:purge, 'Purge'),
+        :push            => Switch.new(:push, 'Push changes'),
+        :skip_prompt     => Switch.new(:y, 'Skip prompt'),
+        :target          => Switch.new(:target, 'Create target service instance'),
+        :links           => Switch.new(:links, 'Links'),
+        :dependencies    => Switch.new(:deps, 'Dependencies'),
+        :u               => Switch.new([:u, :unset], 'Unset attribute'),
+        :recursive       => Switch.new(:r, 'Recursive')
       }
 
       ARG_TOKENS = {

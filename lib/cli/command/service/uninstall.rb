@@ -23,12 +23,12 @@ module DTK::Client; module CLI
         sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory associated; not needed if executed in service instance directory'
           sc.switch Token.skip_prompt, :desc => 'Skip prompt that checks if user wants to delete the service instance'
           sc.switch Token.purge, :desc => 'Delete the service instance directory on the client'
-          sc.switch Token.force
           sc.switch Token.recursive
+          sc.switch Token.force
           sc.action do |_global_options, options, args|
             directory_path = options[:directory_path]
             purge          = options[:purge]
-            force          = options[:force]
+            force          = options[:f]
             recursive      = options[:recursive]
 
             if purge && (!directory_path || (directory_path == @base_dsl_file_obj.parent_dir?))
