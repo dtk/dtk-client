@@ -18,8 +18,8 @@
 module DTK::Client
   class Operation::Module
     class InstallFromCatalog < self
-      require_relative('install_from_catalog/common')
-      # common needs to go first
+      require_relative('install_from_catalog/base')
+      # base needs to go first
       require_relative('install_from_catalog/service_info')
       require_relative('install_from_catalog/component_info')
 

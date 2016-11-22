@@ -17,13 +17,18 @@
 #
 module DTK::Client
   class Operation::Module::InstallFromCatalog
-    class ComponentInfo < Common
+    class ComponentInfo < Base
       def install_from_catalog
-        fetch_remote(:component_info) #TODO: calling this fetch because will change to using fetch and transform_merg
+        fetch_remote
         # TODO: stub
         nil
       end
 
+      private
+
+      def self.info_type
+        :component_info
+      end
     end
   end
 end

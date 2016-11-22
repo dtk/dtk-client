@@ -19,29 +19,39 @@ module DTK::Client
   class Operation::ClientModuleDir::GitRepo
     class Internal
       class Dtkn 
-        def initialize(info_type, repo)
+        def initialize(info_type, repo_dir)
           @info_type = validate_info_type(info_type)
-          @repo      = repo # object of type DTK::Client::GitRepo
+          @repo      = Internal.create_empty_git_repo?(repo_dir, :branch => local_branch)
         end
         private :initialize
 
-        # returns object of type Dtkn
-        def self.repo(info_type, repo_dir)
-          git_repo = Internal.create_empty_git_repo?(repo_dir, :branch => local_branch)
-          new(info_type, git_repo)
+        # returns object of type self
+        # opts can have keys
+        #   :add_remote - if set has the remote url
+        def self.repo_with_remote(info_type, repo_dir, opts = {})
+          remote_url = opts[:add_remote]
+
+          repo_with_remote = new(info_type, repo_dir)
+          repo_with_remote.add_remote(remote_url) if remote_url
+          repo_with_remote
         end
 
         def add_remote(remote_url)
-          Internal.add_remote(remote_name, @repo, remote_url)
+          Internal.add_remote(@repo, remote_name, remote_url)
         end
 
-        def pull(remote_branch)
-          Internal.pull(remote_name, @repo, remote_branch)
+        def fetch
+          Internal.fetch(@repo, remote_name)
+        end
+
+        def merge_from_remote(remote_branch)
+          merge_from_ref = "#{remote_name}/#{remote_branch}"
+          Internal.merge(@repo, merge_from_ref)
         end
 
         private
 
-        # TODO: Deprecate GIT_REMOTE for below and LOCAL_BRANCH for below
+        # TODO: These constants used in Internal; Deprecate GIT_REMOTE amd LOCAL_BRANCH for remote_name and local_branch
         GIT_REMOTE   = 'dtkn'
         LOCAL_BRANCH = 'master'
 
@@ -50,20 +60,16 @@ module DTK::Client
           :component_info => 'dtkn-component-info'
         }
         def remote_name
-          GIT_REMOTES[@info_type] || raise(Error, "Bad info_type '#{@info_type}'")
+          GIT_REMOTES[@info_type]
+        end
+
+        def local_branch
+          LOCAL_BRANCH
         end
 
         def validate_info_type(info_type)
           raise Error, "Bad info_type '#{info_type}'" unless GIT_REMOTES.keys.include?(info_type)
           info_type
-        end
-
-        def self.remote_name
-          GIT_REMOTES[@info_type]
-        end
-
-        def self.local_branch
-          LOCAL_BRANCH
         end
 
       end

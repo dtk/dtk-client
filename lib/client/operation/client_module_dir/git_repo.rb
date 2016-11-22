@@ -63,16 +63,21 @@ module DTK::Client
         end
       end
       
-      def self.pull_from_dtkn(args)
+      def self.fetch_dtkn_remote(args)
         wrap_operation(args) do |args|
-          info_type     = args.required(:info_type)
-          repo_dir      = args.required(:repo_dir)
-          remote_url    = args[:add_remote]
-          remote_branch = args.required(:remote_branch)
+          repo_with_remote = repo_with_dtkn_remote(args)
 
-          dtkn_repo = Internal::Dtkn.repo(info_type, repo_dir)
-          dtkn_repo.add_remote(remote_url) if remote_url
-          response_data_hash(:head_sha => dtkn_repo.pull(remote_branch))
+          repo_with_remote.fetch
+          response_data_hash
+        end
+      end
+
+      def self.merge_from_dtkn_remote(args)
+        wrap_operation(args) do |args|
+          remote_branch = args.required(:remote_branch)
+          repo_with_remote  = repo_with_dtkn_remote(args)
+
+          response_data_hash(:head_sha => repo_with_remote.merge_from_remote(remote_branch))
         end
       end
 
@@ -116,6 +121,12 @@ module DTK::Client
       end
 
       private
+
+      def self.repo_with_dtkn_remote(args)
+        info_type = args.required(:info_type)
+        repo_dir  = args.required(:repo_dir)
+        Internal::Dtkn.repo_with_remote(info_type, repo_dir, add_remote: args[:add_remote])
+      end
 
       def self.response_data_hash(hash ={})
         hash.inject({}) { |h, (k, v)| h.merge(k.to_s => v) }

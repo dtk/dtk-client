@@ -36,14 +36,17 @@ module DTK::Client
           git_repo.new(repo_dir, :branch => opts[:branch])
         end
 
-        def self.add_remote(remote_name, repo, remote_url)
+        def self.add_remote(repo, remote_name, remote_url)
           repo.add_remote(remote_name, remote_url)
           remote_name
         end
 
-        def self.pull(remote_name, repo, remote_branch)
-          repo.pull(remote_name, remote_branch)
-          repo.head_commit_sha
+        def self.fetch(repo, remote_name)
+          repo.fetch(remote_name)
+        end
+
+        def self.merge(repo, merge_from_ref)
+          repo.merge(merge_from_ref)
         end
 
         # returns head_sha
