@@ -63,8 +63,11 @@ module DTK::Client
           GIT_REMOTES[@info_type]
         end
 
-        def local_branch
+        def self.local_branch
           LOCAL_BRANCH
+        end
+        def local_branch
+          self.class.local_branch
         end
 
         def validate_info_type(info_type)

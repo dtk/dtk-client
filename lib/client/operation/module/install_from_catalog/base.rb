@@ -34,12 +34,20 @@ module DTK::Client
       
       def fetch_remote
         git_repo_args = common_git_repo_args.merge(:add_remote => @remote_repo_url)
-        Operation::ClientModuleDir::GitRepo.fetch_dtkn_remote(git_repo_args)
+        git_repo_operation.fetch_dtkn_remote(git_repo_args)
       end
 
       def merge_from_remote
         git_repo_args = common_git_repo_args.merge(:remote_branch => git_repo_remote_branch)
-        Operation::ClientModuleDir::GitRepo.merge_from_dtkn_remote(git_repo_args)
+        git_repo_operation.merge_from_dtkn_remote(git_repo_args)
+      end
+
+      def stage_and_commit(commit_msg = nil)
+        git_repo_args = common_git_repo_args.merge(
+          :commit_msg        => commit_msg,
+          :local_branch_type => :dtkn
+        )
+        git_repo_operation.stage_and_commit(git_repo_args)
       end
 
       def common_git_repo_args
@@ -47,6 +55,10 @@ module DTK::Client
           :info_type => @info_type,
           :repo_dir  => @target_repo_dir
         }
+      end
+
+      def git_repo_operation
+        Operation::ClientModuleDir::GitRepo
       end
 
     end

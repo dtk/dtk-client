@@ -49,6 +49,16 @@ module DTK::Client
           repo.merge(merge_from_ref)
         end
 
+        # opts can have keys:
+        #   :commit_msg
+        # returns head_sha
+        def self.stage_and_commit(repo_dir,local_branch_type, opts = {})
+          local_branch = branch_from_local_branch_type(local_branch_type)
+          repo = create_empty_git_repo?(repo_dir, :branch => local_branch)
+          repo.stage_and_commit(opts[:commit_msg])
+          repo.head_commit_sha
+        end
+
         # returns head_sha
         def self.commit_and_push_to_service_repo(args)
           branch           = args.required(:branch)
@@ -227,6 +237,14 @@ module DTK::Client
         end
 
         private
+
+        def self.branch_from_local_branch_type(local_branch_type)
+         case local_branch_type
+         when :dtkn then Dtkn.local_branch
+         else
+           raise Error, "Illegal local_branch_type '#{local_branch_type}'"
+         end
+        end
 
         # relative_path is relative to top-leel repo directory
         def self.qualified_path(service_instance, relative_path)

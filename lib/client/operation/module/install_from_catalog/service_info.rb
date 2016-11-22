@@ -20,14 +20,9 @@ module DTK::Client
     class ServiceInfo < Base
       def install_from_catalog
         fetch_remote
-
-        # TODO: might switch to using a transform merge rather than merging and then deleting and re-commiting
         merge_from_remote
-        module_content_hash = ContentGenerator.new(@target_repo_dir, @module_ref, @version).generate_module_content
-        # delete old files
-        Operation::ClientModuleDir.delete_directory_content(@target_repo_dir)
-        # generate dtk.module.yaml file from parsed assemblies and module_refs
-        Operation::ClientModuleDir.create_file_with_content("#{@target_repo_dir}/dtk.module.yaml", self.class.hash_to_yaml(module_content_hash))
+        transform_to_dtk_client_form
+        stage_and_commit("Added service info")
         nil
       end
 
@@ -35,6 +30,14 @@ module DTK::Client
 
       def self.info_type
         :service_info
+      end
+
+      def transform_to_dtk_client_form
+        module_content_hash = ContentGenerator.new(@target_repo_dir, @module_ref, @version).generate_module_content
+        # delete old files
+        Operation::ClientModuleDir.delete_directory_content(@target_repo_dir)
+        # generate dtk.module.yaml file from parsed assemblies and module_refs
+        Operation::ClientModuleDir.create_file_with_content("#{@target_repo_dir}/dtk.module.yaml", self.class.hash_to_yaml(module_content_hash))
       end
 
     end

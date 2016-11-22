@@ -81,6 +81,15 @@ module DTK::Client
         end
       end
 
+      def self.stage_and_commit(args)
+        wrap_operation(args) do |args| 
+          repo_dir          = args.required(:repo_dir)
+          local_branch_type = args.required(:local_branch_type)
+          commit_msg        = args[:commit_msg]
+          response_data_hash(:head_sha => Internal.stage_and_commit(repo_dir, local_branch_type, :commit_msg => commit_msg))
+        end
+      end
+
       def self.fetch_merge_and_push(args)
         wrap_operation(args) do |args|
           response_data_hash(:head_sha => Internal.fetch_merge_and_push(args))
@@ -125,6 +134,7 @@ module DTK::Client
           response_data_hash(:repo => Internal.pull_from_service_repo(args)) 
         end
       end
+
 
       private
 
