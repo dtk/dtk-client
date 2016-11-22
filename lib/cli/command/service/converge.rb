@@ -21,12 +21,13 @@ module DTK::Client; module CLI
       subcommand_def 'converge' do |c|
         command_body c, :converge, "Converge service instance" do |sc|
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory; not needed if executed in the service instance directory'
-
+          sc.switch Token.force
           sc.action do |_global_options, options, _args|
             service_instance = service_instance_in_options_or_context(options)
-
+            force            = options[:f]
             args = {
-              :service_instance => service_instance
+              :service_instance => service_instance,
+              :force            => force
             }
             Operation::Service.converge(args)
           end

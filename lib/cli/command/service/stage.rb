@@ -24,7 +24,7 @@ module DTK::Client
           sc.flag Token.directory_path, :desc => 'Path to module directory where assembly is being staged from; not needed if in the module directory'
           sc.flag Token.service_name, :desc => 'If specified, name to use for new service instance; otherwise service instance name is auto-generated' 
           sc.flag Token.parent_service_instance
-
+          sc.switch Token.force
           sc.switch Token.target
           # on useful for testing in dev mode
           # sc.switch Token.purge, :desc => 'Overwrite any content that presently exists in the service instance directory to be created'
@@ -34,6 +34,7 @@ module DTK::Client
             assembly_name = args[0]
             version       = options[:version] || module_ref.version
             service_name  = options[:service_name]
+            force         = options[:f]
 
             Validation.validate_name(service_name) if service_name
 
@@ -44,7 +45,8 @@ module DTK::Client
               :version         => version,
               :target_service  => options[:parent_service_instance],
               :remove_existing => options[:purge],
-              :is_target       => options[:target]
+              :is_target       => options[:target],
+              :force           => force
             }
             Operation::Service.stage(args)
           end

@@ -87,6 +87,12 @@ module DTK::Client
         end
       end
 
+      def self.modified(args)
+        wrap_operation(args) do |args|
+          response_data_hash(:modified => Internal.modified(args))
+        end
+      end
+
       def self.init_and_push_from_existing_repo(args)
         wrap_operation(args) do |args|
           repo_dir      = args.required(:repo_dir)
@@ -128,7 +134,7 @@ module DTK::Client
         Internal::Dtkn.repo_with_remote(info_type, repo_dir, add_remote: args[:add_remote])
       end
 
-      def self.response_data_hash(hash ={})
+      def self.response_data_hash(hash = {})
         hash.inject({}) { |h, (k, v)| h.merge(k.to_s => v) }
       end
 
