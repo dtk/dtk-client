@@ -46,7 +46,17 @@ module DTK::Client
       end
     end
 
-    
+    def self.modified?(dir)
+      repo_dir = {
+        :path    => dir,
+        :branch  => Git.open(dir).branches.local
+      }
+      message = DTK::Client::Operation::ClientModuleDir::GitRepo.modified(repo_dir)
+      if message.data(:modified)
+        raise Error::Usage, "Please push or revert changes."
+      end
+    end
+
     def add_remote(name, url)
       @git_adapter.add_remote(name, url)
     end
