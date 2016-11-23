@@ -140,6 +140,10 @@ module DTK::Client
           repo.head_commit_sha
         end
 
+        # TODO: DTK-2765: see what this does and subsume by create_add_remote_and_push
+        # For this and other methods in Internal that use Dtk_Server::GIT_REMOTE
+        # put a version in Internal taht takes remote_name as param and then have 
+        # method with same name in Dtk, that calss this with appropriate remote name
         def self.init_and_push_from_existing_repo(repo_dir, repo_url, remote_branch)
           repo = git_repo.new(repo_dir)
           

@@ -33,7 +33,8 @@ module DTK::Client
       end
 
       def transform_to_dtk_client_form
-        module_content_hash = ContentGenerator.new(@target_repo_dir, @module_ref, @version).generate_module_content
+        # TODO: fold all this logic under ServiceAndComponentInfo::TransformFrom
+        module_content_hash = ServiceAndComponentInfo::TransformFrom.new(@target_repo_dir, @module_ref, @version).generate_module_content
         # delete old files
         Operation::ClientModuleDir.delete_directory_content(@target_repo_dir)
         # generate dtk.module.yaml file from parsed assemblies and module_refs
