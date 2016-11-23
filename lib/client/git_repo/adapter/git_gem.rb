@@ -172,7 +172,7 @@ module DTK::Client
         changes[1].each { |item| puts "\t#{item}" }
         puts "\nDeleted files:\n".colorize(:red) unless changes[2].empty?
         changes[2].each { |item| puts "\t#{item}" }
-        puts ""
+        puts "" 
       end
     end
   end
