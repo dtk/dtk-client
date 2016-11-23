@@ -205,8 +205,9 @@ module DTK::Client
           branch   = args.required(:branch)
           repo     = git_repo.new(repo_url, :branch => branch)
 
-          repo.print_status
-          repo.changed?
+          changed = repo.changed?
+          repo.print_status if changed
+          changed
         end
 
         def self.create_add_remote_and_push(repo_dir, repo_url, remote_branch)
