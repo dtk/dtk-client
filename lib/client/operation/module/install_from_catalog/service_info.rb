@@ -33,12 +33,13 @@ module DTK::Client
       end
 
       def transform_to_dtk_client_form
-        # TODO: fold all this logic under ServiceAndComponentInfo::TransformFrom
-        module_content_hash = ServiceAndComponentInfo::TransformFrom.new(@target_repo_dir, @module_ref, @version).generate_module_content
+        output_files = ServiceAndComponentInfo::TransformFrom::ServiceInfo.new(@target_repo_dir, @module_ref, @version).compute_output_files
         # delete old files
         Operation::ClientModuleDir.delete_directory_content(@target_repo_dir)
-        # generate dtk.module.yaml file from parsed assemblies and module_refs
-        Operation::ClientModuleDir.create_file_with_content("#{@target_repo_dir}/dtk.module.yaml", self.class.hash_to_yaml(module_content_hash))
+
+        output_files.each do |output_file|
+          Operation::ClientModuleDir.create_file_with_content("#{@target_repo_dir}/#{output_file.path}", output_file.text_content)
+        end
       end
 
     end
