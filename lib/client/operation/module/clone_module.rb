@@ -23,8 +23,14 @@ module DTK::Client
           module_ref       = args.required(:module_ref)
           module_name      = args.required(:module_name)
           target_directory = args[:target_directory]
+          
+          opts = {
+            :namespace => module_ref.namespace, 
+            :version => module_ref.version
+          }
+
           unless module_info = module_exists?(module_ref, :type => :common_module)
-            raise Error::Usage, "DTK module '#{module_ref.print_form}' does not exist on server."
+            raise Error::Usage, "DTK module '#{DTK::Common::PrettyPrintForm.module_ref(module_ref.module_name, opts)}' does not exist on server."
           end
 
           branch    = module_info.required(:branch, :name)
@@ -41,7 +47,7 @@ module DTK::Client
           }
 
           ret = ClientModuleDir::GitRepo.clone_module_repo(clone_args)
-          OsUtil.print_info("DTK module '#{module_ref.print_form}' has been successfully cloned into '#{ret.required(:target_repo_dir)}'")
+          OsUtil.print_info("DTK module '#{DTK::Common::PrettyPrintForm.module_ref(module_ref.module_name, opts)}' has been successfully cloned into '#{ret.required(:target_repo_dir)}'")
         end
       end
     end
