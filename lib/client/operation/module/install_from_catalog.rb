@@ -18,19 +18,23 @@
 module DTK::Client
   class Operation::Module
     class InstallFromCatalog < self
-      require_relative('install_from_catalog/base')
-      # base needs to go first
-      require_relative('install_from_catalog/service_info')
-      require_relative('install_from_catalog/component_info')
+      require_relative('install_from_catalog/transform')
 
-      attr_reader :catalog, :module_ref, :directory_path, :version
+      attr_reader :version
       def initialize(catalog, module_ref, directory_path, version)
         @catalog        = catalog
         @module_ref     = module_ref
         @directory_path = directory_path
-        @version        = version
+        @version        = version # if nil wil be dynamically updated
+
+        # dynamically set
+        @target_repo_dir = nil
       end
       private :initialize
+
+      def target_repo_dir
+        @target_repo_dir || raise(Error, "Unexpected that @target_repo_dir is nil" )
+      end
 
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
@@ -48,7 +52,7 @@ module DTK::Client
           raise Error::Usage, "Module #{@module_ref.print_form} exists already"
         end
 
-        target_repo_dir = ClientModuleDir.create_module_dir_from_path(@directory_path || OsUtil.current_dir)
+        @target_repo_dir = ClientModuleDir.create_module_dir_from_path(@directory_path || OsUtil.current_dir)
 
         query_string_hash = QueryStringHash.new(
           :module_name => @module_ref.module_name,
@@ -61,23 +65,18 @@ module DTK::Client
 
         @version ||= remote_module_info.required(:version)
 
-        Operation::ClientModuleDir::GitRepo.create_empty_repo?(:repo_dir => target_repo_dir)
+        Operation::ClientModuleDir::GitRepo.create_empty_repo?(:repo_dir => @target_repo_dir)
 
-        if service_info = remote_module_info.data(:service_info)
-          ServiceInfo.install_from_catalog(service_info['remote_repo_url'], target_repo_dir, self)
-        end
+        transform_helper = transform_helper()
+        Transform.fetch_transform_merge(transform_helper, remote_module_info, self)
 
-        if component_info = remote_module_info.data(:component_info)
-          ComponentInfo.install_from_catalog(component_info['remote_repo_url'], target_repo_dir, self)
-        end
-
-        {:target_repo_dir => target_repo_dir}
+        {:target_repo_dir => @target_repo_dir}
       end
-      
+
       private
 
-      def git_repo_remote_branch
-        (@version && !@version.eql?('master')) ? "v#{@version}" : 'master'
+      def transform_helper
+        ServiceAndComponentInfo::TransformFrom.new(@target_repo_dir, @module_ref, @version)
       end
 
     end

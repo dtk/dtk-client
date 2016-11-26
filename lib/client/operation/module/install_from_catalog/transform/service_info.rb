@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 module DTK::Client
-  class Operation::Module::InstallFromCatalog
-    class ServiceInfo < Base
-      def install_from_catalog
+  class Operation::Module::InstallFromCatalog::Transform
+    class ServiceInfo < self
+      def fetch_transform_merge_info
         fetch_remote
         merge_from_remote
-        transform_to_dtk_client_form
+        transform_from_service_info
         stage_and_commit("Added service info")
         nil
       end
@@ -32,13 +32,13 @@ module DTK::Client
         :service_info
       end
 
-      def transform_to_dtk_client_form
-        output_files = ServiceAndComponentInfo::TransformFrom::ServiceInfo.new(@target_repo_dir, @module_ref, @version).compute_output_files
+      def transform_from_service_info
+        output_files = info_processor.compute_output_files
         # delete old files
-        Operation::ClientModuleDir.delete_directory_content(@target_repo_dir)
+        Operation::ClientModuleDir.delete_directory_content(target_repo_dir)
 
         output_files.each do |output_file|
-          Operation::ClientModuleDir.create_file_with_content("#{@target_repo_dir}/#{output_file.path}", output_file.text_content)
+          Operation::ClientModuleDir.create_file_with_content("#{target_repo_dir}/#{output_file.path}", output_file.text_content)
         end
       end
 

@@ -15,24 +15,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 module DTK::Client
-  module ServiceAndComponentInfo
-    class TransformFrom
-      require_relative('transform_from/info')
-
-      def initialize(content_dir, module_ref, version)
-        @content_dir          = content_dir
-        @module_ref           = module_ref
-        @version              = version
-        @dtk_dsl_parse_helper = ::DTK::DSL::ServiceAndComponentInfo::TransformFrom.new(module_ref.namespace, module_ref.module_name, version)
-
+  class Operation::Module::InstallFromCatalog::Transform
+    class ComponentInfo < self
+      def fetch_transform_merge_info
+        fetch_remote
+        merge_from_remote
+        transform_from_component_info
+        stage_and_commit("Added component info")
+        nil
       end
-      
-      def info_processor(info_type)
-        Info.create(info_type, @content_dir, @dtk_dsl_parse_helper)
+
+      private
+
+      def self.info_type
+        :component_info
       end
-      
+
+      def transform_from_component_info
+        # TODO: stub
+      end
+
     end
   end
 end

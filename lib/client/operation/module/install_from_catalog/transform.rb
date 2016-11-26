@@ -17,21 +17,37 @@
 #
 module DTK::Client
   class Operation::Module::InstallFromCatalog
-    class Base < self
-      def initialize(info_type, remote_repo_url, target_repo_dir, parent)
-        super(parent.catalog, parent.module_ref, parent.directory_path, parent.version)
-        @info_type       = info_type
-        @remote_repo_url = remote_repo_url
-        @target_repo_dir = target_repo_dir
+    class Transform
+      require_relative('transform/service_info')
+      require_relative('transform/component_info')
+
+      def initialize(transform_helper, info_type, remote_repo_url, parent)
+        @info_processor   = transform_helper.info_processor(info_type)
+        @info_type        = info_type
+        @remote_repo_url  = remote_repo_url
+        @target_repo_dir  = parent.target_repo_dir
+        @version          = parent.version
       end
       private :initialize
 
-      def self.install_from_catalog(remote_repo_url, target_repo_dir, parent)
-        wrap_operation { new(info_type, remote_repo_url, target_repo_dir, parent).install_from_catalog }
+      def self.fetch_transform_merge_info(transform_helper, remote_repo_url,  parent)
+        new(transform_helper, info_type, remote_repo_url, parent).fetch_transform_merge_info
       end
 
-      private
+      def self.fetch_transform_merge(transform_helper, remote_module_info, parent)
+        if service_info = remote_module_info.data(:service_info)
+          ServiceInfo.fetch_transform_merge_info(transform_helper, service_info['remote_repo_url'], parent)
+        end
+
+        if component_info = remote_module_info.data(:component_info)
+          ComponentInfo.fetch_transform_merge_info(transform_helper, component_info['remote_repo_url'], parent)
+        end
+      end
       
+      private
+
+      attr_reader :info_processor, :target_repo_dir
+
       def fetch_remote
         git_repo_args = common_git_repo_args.merge(:add_remote => @remote_repo_url)
         git_repo_operation.fetch_dtkn_remote(git_repo_args)
@@ -59,6 +75,10 @@ module DTK::Client
 
       def git_repo_operation
         Operation::ClientModuleDir::GitRepo
+      end
+
+      def git_repo_remote_branch
+        (@version && !@version.eql?('master')) ? "v#{@version}" : 'master'
       end
 
     end
