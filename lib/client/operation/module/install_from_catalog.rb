@@ -20,21 +20,15 @@ module DTK::Client
     class InstallFromCatalog < self
       require_relative('install_from_catalog/transform')
 
-      attr_reader :version
+      attr_reader :version, :module_ref, :target_repo_dir
       def initialize(catalog, module_ref, directory_path, version)
-        @catalog        = catalog
-        @module_ref     = module_ref
-        @directory_path = directory_path
-        @version        = version # if nil wil be dynamically updated
-
-        # dynamically set
-        @target_repo_dir = nil
+        @catalog          = catalog
+        @module_ref       = module_ref
+        @directory_path   = directory_path
+        @version          = version # if nil wil be dynamically updated
+        @target_repo_dir  = ClientModuleDir.create_module_dir_from_path(directory_path || OsUtil.current_dir)
       end
       private :initialize
-
-      def target_repo_dir
-        @target_repo_dir || raise(Error, "Unexpected that @target_repo_dir is nil" )
-      end
 
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
@@ -43,16 +37,14 @@ module DTK::Client
           directory_path = args[:directory_path]
 
           # will create different classes for different catalog types when we add support for them
-          new('dtkn', module_ref, directory_path, version).install
+          new('dtkn', module_ref, directory_path, version).install_from_catalog
         end
       end
       
-      def install
+      def install_from_catalog
         if module_exists?(@module_ref, :type => :common_module)
           raise Error::Usage, "Module #{@module_ref.print_form} exists already"
         end
-
-        @target_repo_dir = ClientModuleDir.create_module_dir_from_path(@directory_path || OsUtil.current_dir)
 
         query_string_hash = QueryStringHash.new(
           :module_name => @module_ref.module_name,
@@ -65,18 +57,12 @@ module DTK::Client
 
         @version ||= remote_module_info.required(:version)
 
+        ## TODO: put in 'transaction that deletes repo if any of below fails to get to clean state
         Operation::ClientModuleDir::GitRepo.create_empty_repo?(:repo_dir => @target_repo_dir)
 
-        transform_helper = transform_helper()
-        Transform.fetch_transform_merge(transform_helper, remote_module_info, self)
+        Transform.fetch_transform_and_merge(remote_module_info, self)
 
         {:target_repo_dir => @target_repo_dir}
-      end
-
-      private
-
-      def transform_helper
-        ServiceAndComponentInfo::TransformFrom.new(@target_repo_dir, @module_ref, @version)
       end
 
     end

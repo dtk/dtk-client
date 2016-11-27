@@ -18,7 +18,7 @@
 module DTK::Client
   class ServiceAndComponentInfo::TransformFrom::Info
     class Service < self
-      def compute_output_files
+      def read_inputs_and_compute_outputs!
         # Input assemblies and module_ref files
         assembly_file_paths.each { |path| add_content!(assembly_input_files_processor, path) }
 
@@ -26,14 +26,18 @@ module DTK::Client
           add_content!(module_ref_input_files_processor, module_refs_path)
         end
 
-        # compute top_level_dsl_file and return results
-        dtk_dsl_info_processor.compute_output_file_array!
+        # compute and cache outputs
+        dtk_dsl_service_info_processor.compute_outputs!
       end
 
       private
 
       def info_type
         :service_info
+      end
+
+      def dtk_dsl_service_info_processor
+        @dtk_dsl_info_processor
       end
 
       def assembly_file_paths

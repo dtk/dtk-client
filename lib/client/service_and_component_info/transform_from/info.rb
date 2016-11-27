@@ -42,8 +42,6 @@ module DTK::Client
 
       private
 
-      attr_reader :dtk_dsl_info_processor
-
       def add_content!(input_files_processor, path)
         input_files_processor.add_content!(path, get_raw_content?(path))
       end

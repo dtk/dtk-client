@@ -18,12 +18,10 @@
 module DTK::Client
   class Operation::Module::InstallFromCatalog::Transform
     class ComponentInfo < self
-      def fetch_transform_merge_info
+      def fetch_and_cache_info
         fetch_remote
         merge_from_remote
         transform_from_component_info
-        stage_and_commit("Added component info")
-        nil
       end
 
       private

@@ -18,7 +18,7 @@
 module DTK::Client
   class ServiceAndComponentInfo::TransformFrom::Info
     class Component < self
-      def compute_output_files
+      def read_inputs_and_compute_outputs!
         # TODO: stub
       end
 

@@ -25,12 +25,22 @@ module DTK::Client
         @content_dir          = content_dir
         @module_ref           = module_ref
         @version              = version
-        @dtk_dsl_parse_helper = ::DTK::DSL::ServiceAndComponentInfo::TransformFrom.new(module_ref.namespace, module_ref.module_name, version)
+        @dtk_dsl_parse_helper = dtk_dsl_transform_class.new(module_ref.namespace, module_ref.module_name, version)
 
       end
       
       def info_processor(info_type)
         Info.create(info_type, @content_dir, @dtk_dsl_parse_helper)
+      end
+
+      def output_path_text_pairs
+        @dtk_dsl_parse_helper.output_path_text_pairs
+      end
+
+      private
+
+      def dtk_dsl_transform_class
+        ::DTK::DSL::ServiceAndComponentInfo::TransformFrom
       end
       
     end
