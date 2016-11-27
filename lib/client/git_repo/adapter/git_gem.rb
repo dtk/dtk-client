@@ -99,14 +99,24 @@ module DTK::Client
       end
 
       def stage_and_commit(commit_msg = nil)
+        commit_msg ||= default_commit_message
         add_all
         begin
-          commit(commit_msg || "DTK Commit from client")
+          commit(commit_msg)
         rescue
           # do not raise if nothing to commit
         end
       end
 
+      def empty_commit(commit_msg = nil)
+        commit_msg ||= default_commit_message
+        commit(commit_msg, :allow_empty => true)
+      end
+
+      def reset_soft(sha)
+        @git_repo.reset(sha)
+      end
+        
       def stage_changes()
         handle_git_error do
           @git_repo.add(untracked())
@@ -124,8 +134,10 @@ module DTK::Client
         end
       end
 
-      def commit(commit_msg = "")
-        @git_repo.commit(commit_msg)
+      # opts can have keys
+      #   :allow_empty
+      def commit(commit_msg = "", opts = {})
+        @git_repo.commit(commit_msg, :allow_empty => opts[:allow_empty])
       end
 
       def add(*files)
@@ -174,6 +186,13 @@ module DTK::Client
         changes[2].each { |item| puts "\t#{item}" }
         puts "" 
       end
+
+      private
+
+      def default_commit_message
+        "DTK Commit from client"
+      end
+
     end
   end
 end

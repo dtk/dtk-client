@@ -29,7 +29,7 @@ module DTK::Client
           post_body = PostBody.new(:service_instance => service_instance)
           rest_post("#{BaseRoute}/delete", post_body)
 
-          ClientModuleDir.purge_service_instance_dir(args[:directory_path]) if args[:purge]
+          ClientModuleDir.rm_f(args[:directory_path]) if args[:purge]
 
           OsUtil.print_info("DTK module '#{service_instance}' has been deleted successfully.")
         end

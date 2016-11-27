@@ -25,8 +25,8 @@ module DTK::Client
         @catalog          = catalog
         @module_ref       = module_ref
         @directory_path   = directory_path
-        @version          = version # if nil wil be dynamically updated
         @target_repo_dir  = ClientModuleDir.create_module_dir_from_path(directory_path || OsUtil.current_dir)
+        @version          = version # if nil wil be dynamically updated
       end
       private :initialize
 
@@ -57,10 +57,14 @@ module DTK::Client
 
         @version ||= remote_module_info.required(:version)
 
-        ## TODO: put in 'transaction that deletes repo if any of below fails to get to clean state
-        Operation::ClientModuleDir::GitRepo.create_empty_repo?(:repo_dir => @target_repo_dir)
-
-        Transform.fetch_transform_and_merge(remote_module_info, self)
+        begin 
+          create_repo_opts = { :repo_dir => @target_repo_dir, :commit_msg => "DTK client initialize" }
+          Operation::ClientModuleDir::GitRepo.create_repo_with_empty_commit(create_repo_opts)
+          Transform.fetch_transform_and_merge(remote_module_info, self)
+        rescue => e
+          Operation::ClientModuleDir::rm_f(@target_repo_dir)
+          raise e
+        end
 
         {:target_repo_dir => @target_repo_dir}
       end

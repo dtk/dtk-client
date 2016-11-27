@@ -33,7 +33,7 @@ module DTK::Client
           )
           rest_post("#{BaseRoute}/uninstall", post_body)
 
-          ClientModuleDir.purge_service_instance_dir(args[:directory_path]) if args[:purge]
+          ClientModuleDir.rm_f(args[:directory_path]) if args[:purge]
 
           OsUtil.print_info("DTK module '#{service_instance}' has been uninstalled successfully.")
         end

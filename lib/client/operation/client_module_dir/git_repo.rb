@@ -62,7 +62,16 @@ module DTK::Client
           response_data_hash
         end
       end
-      
+
+      def self.create_repo_with_empty_commit(args)
+        wrap_operation(args) do |args|
+          repo_dir   = args.required(:repo_dir)
+          commit_msg = args[:commit_msg]
+          repo = Internal.create_empty_git_repo?(repo_dir)
+          response_data_hash(:head_sha => Internal.empty_commit(repo, commit_msg))
+        end
+      end
+
       def self.fetch_dtkn_remote(args)
         wrap_operation(args) do |args|
           repo_with_remote = repo_with_dtkn_remote(args)
@@ -75,9 +84,10 @@ module DTK::Client
       def self.merge_from_dtkn_remote(args)
         wrap_operation(args) do |args|
           remote_branch = args.required(:remote_branch)
+          no_commit     = args[:no_commit]
           repo_with_remote  = repo_with_dtkn_remote(args)
 
-          response_data_hash(:head_sha => repo_with_remote.merge_from_remote(remote_branch))
+          response_data_hash(:head_sha => repo_with_remote.merge_from_remote(remote_branch, :no_commit => no_commit))
         end
       end
 

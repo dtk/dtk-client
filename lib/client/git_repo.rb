@@ -57,6 +57,8 @@ module DTK::Client
       end
     end
 
+    # TODO: can handle below using method missing
+
     def add_remote(name, url)
       @git_adapter.add_remote(name, url)
     end
@@ -117,6 +119,14 @@ module DTK::Client
 
     def stage_and_commit(commit_msg = nil)
       @git_adapter.stage_and_commit(commit_msg)
+    end
+
+    def empty_commit(commit_msg = nil)
+      @git_adapter.empty_commit(commit_msg)
+    end
+
+    def reset_soft(sha)
+      @git_adapter.reset_soft(sha)
     end
 
     private

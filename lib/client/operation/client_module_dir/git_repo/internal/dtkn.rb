@@ -44,9 +44,11 @@ module DTK::Client
           Internal.fetch(@repo, remote_name)
         end
 
-        def merge_from_remote(remote_branch)
+        # opts can have keys
+        #   :no_commit
+        def merge_from_remote(remote_branch, opts = {})
           merge_from_ref = "#{remote_name}/#{remote_branch}"
-          Internal.merge(@repo, merge_from_ref)
+          Internal.merge(@repo, merge_from_ref, :no_commit => opts[:no_commit])
         end
 
         private

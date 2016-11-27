@@ -36,6 +36,12 @@ module DTK::Client
           git_repo.new(repo_dir, :branch => opts[:branch])
         end
 
+        # returns head_sha
+        def self.empty_commit(repo, commit_msg = nil)
+          repo.empty_commit(commit_msg)
+          repo.head_commit_sha
+        end
+
         def self.add_remote(repo, remote_name, remote_url)
           repo.add_remote(remote_name, remote_url)
           remote_name
@@ -44,9 +50,15 @@ module DTK::Client
         def self.fetch(repo, remote_name)
           repo.fetch(remote_name)
         end
-
-        def self.merge(repo, merge_from_ref)
+        
+        # opts can have keys
+        #   :no_commit
+        def self.merge(repo, merge_from_ref, opts = {})
+          base_sha = repo.head_commit_sha
           repo.merge(merge_from_ref)
+          # the git gem does not take no_commit as merge argument; so doing it with soft reset
+          repo.reset_soft(base_sha) if opts[:no_commit]
+          repo.head_commit_sha
         end
 
         # opts can have keys:
