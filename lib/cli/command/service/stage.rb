@@ -36,9 +36,7 @@ module DTK::Client
             service_name  = options[:service_name]
             force         = options[:f]
             path          = options[:d]
-            require 'debugger'
-            Debugger.start
-            debugger
+
             Validation.validate_name(service_name) if service_name
 
             args = {
