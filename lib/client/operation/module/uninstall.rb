@@ -21,9 +21,14 @@ module DTK::Client
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           module_ref  = args.required(:module_ref)
+          
+          opts = {
+            :namespace => module_ref.namespace,
+            :version   => module_ref.version
+          }
 
           unless args[:skip_prompt]
-            return false unless Console.prompt_yes_no("Are you sure you want to uninstall module '#{module_ref.print_form}' from the server?", :add_options => true)
+            return false unless Console.prompt_yes_no("Are you sure you want to uninstall module '#{DTK::Common::PrettyPrintForm.module_ref(module_ref.module_name, opts)}' from the server?", :add_options => true)
           end
 
           post_body = PostBody.new(
@@ -32,7 +37,7 @@ module DTK::Client
             :version?    => module_ref.version
           )
           rest_post("#{BaseRoute}/delete", post_body)
-          OsUtil.print_info("DTK module '#{module_ref.print_form}' has been deleted successfully.")
+          OsUtil.print_info("DTK module '#{DTK::Common::PrettyPrintForm.module_ref(module_ref.module_name, opts)}' has been deleted successfully.")
           nil
         end
       end

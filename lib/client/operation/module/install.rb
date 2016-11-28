@@ -47,8 +47,12 @@ module DTK::Client
           ExternalModule.install_dependent_modules(dependent_modules, opts)
         end
 
+        opts = {
+          :namespace   => @base_module_ref.namespace,
+          :version     => @base_module_ref.version
+        }
         CommonModule.install(@base_module_ref, @file_obj)
-        OsUtil.print_info("Successfully imported '#{@base_module_ref.namespace}:#{@base_module_ref.module_name}' version #{@base_module_ref.version}")
+        OsUtil.print_info("Successfully imported '#{DTK::Common::PrettyPrintForm.module_ref(@base_module_ref.module_name, opts)}'")
         nil
       end
       
