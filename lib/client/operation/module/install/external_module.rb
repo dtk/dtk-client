@@ -22,7 +22,6 @@ module DTK::Client
       @update_all  = false
       @update_none = false
       def self.install_dependent_modules(module_refs, opts = {})
-        # if skip_prompt option is sent it means user wants to update_all
         @print_dependency_newline = false
 
         module_refs.each do |module_ref|
