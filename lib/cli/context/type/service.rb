@@ -20,9 +20,11 @@ module DTK::Client::CLI
     module Type
       class Service < Context
         include Command::Service
+        include Command::Module
 
         def add_command_defs!
           add_command :service
+          add_command :module
         end
       end
     end
