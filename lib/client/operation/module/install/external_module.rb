@@ -92,12 +92,12 @@ module DTK::Client
         version     = component_module.version
 
         opts = {
-          :module_name => @base_module_ref.module_name,
-          :namespace   => @base_module_ref.namespace,
-          :version     => @base_module_ref.version
+          :module_name => module_name,
+          :namespace   => namespace,
+          :version     => version
         }
 
-        import_msg = "#{opts[:indent]}Importing module '#{DTK::Common::PrettyPrintForm.module_ref(@base_module_ref.module_name, opts)}' ..."
+        import_msg = "#{opts[:indent]}Importing module '#{DTK::Common::PrettyPrintForm.module_ref(module_name, opts)}' ..."
 
         # Using print to avoid adding cr at the end.
         print "\n" if opts[:add_newline]
