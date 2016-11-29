@@ -17,9 +17,9 @@
 #
 module DTK::Client; class Operation::Module
   class InstallFromCatalog
-    class Transform
-      require_relative('transform/service_info')
-      require_relative('transform/component_info')
+    class LoadSource
+      require_relative('load_source/service_info')
+      require_relative('load_source/component_info')
 
       def initialize(transform_helper, info_type, remote_repo_url, parent)
         @info_processor   = transform_helper.info_processor(info_type)
@@ -97,11 +97,11 @@ module DTK::Client; class Operation::Module
         msg = "Added "
         count = 0
         types = info_types_processed #info
-        if types.include?(Transform::ServiceInfo.info_type)
+        if types.include?(ServiceInfo.info_type)
           msg << 'service '
           count +=1
         end
-        if types.include?(Transform::ComponentInfo.info_type)
+        if types.include?(ComponentInfo.info_type)
           msg << 'and ' if count > 0
           msg << 'component'
           count +=1

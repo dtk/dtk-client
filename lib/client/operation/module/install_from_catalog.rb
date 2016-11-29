@@ -18,7 +18,7 @@
 module DTK::Client
   class Operation::Module
     class InstallFromCatalog < self
-      require_relative('install_from_catalog/transform')
+      require_relative('install_from_catalog/load_source')
 
       attr_reader :version, :module_ref, :target_repo_dir
       def initialize(catalog, module_ref, directory_path, version)
@@ -60,7 +60,7 @@ module DTK::Client
         begin 
           create_repo_opts = { :repo_dir => @target_repo_dir, :commit_msg => "DTK client initialize" }
           Operation::ClientModuleDir::GitRepo.create_repo_with_empty_commit(create_repo_opts)
-          Transform.fetch_transform_and_merge(remote_module_info, self)
+          LoadSource.fetch_transform_and_merge(remote_module_info, self)
         rescue => e
           Operation::ClientModuleDir::rm_f(@target_repo_dir)
           raise e

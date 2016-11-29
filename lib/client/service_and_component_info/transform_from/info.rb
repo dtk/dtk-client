@@ -50,6 +50,16 @@ module DTK::Client
         @dtk_dsl_info_processor.indexed_input_files[type] || raise_missing_type_error(type)
       end      
 
+      def module_refs_path
+        matches = directory_file_paths.select { |path| module_ref_input_files_processor.match?(path) }
+        raise Error, "Unexpected that multiple module ref files" if matches.size > 1
+        matches.first
+      end
+
+      def module_ref_input_files_processor
+        @module_ref_input_files_processor = input_files_processor(:module_refs)
+      end
+
       def directory_file_paths
         @directory_file_paths ||= Dir.glob("#{@content_dir}/**/*")
       end

@@ -19,7 +19,7 @@ module DTK::Client
   class ServiceAndComponentInfo::TransformFrom::Info
     class Service < self
       def read_inputs_and_compute_outputs!
-        # Input assemblies and module_ref files
+        # Input assemblies and module_ref file
         assembly_file_paths.each { |path| add_content!(assembly_input_files_processor, path) }
 
         if module_refs_path = module_refs_path()
@@ -44,18 +44,8 @@ module DTK::Client
         directory_file_paths.select { |path| assembly_input_files_processor.match?(path) }
       end
       
-      def module_refs_path
-        matches = directory_file_paths.select { |path| module_ref_input_files_processor.match?(path) }
-        raise Error, "Unexpected that multiple module ref files" if matches.size > 1
-        matches.first
-      end
-      
       def assembly_input_files_processor 
         @assembly_input_files_processor = input_files_processor(:assemblies)
-      end
-
-      def module_ref_input_files_processor
-        @module_ref_input_files_processor = input_files_processor(:module_refs)
       end
 
     end
