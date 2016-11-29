@@ -19,11 +19,9 @@ module DTK::Client
   class Operation::Module::Install
     class ExternalModule < self
       BaseRoute = "modules"
-
+      @update_all  = false
+      @update_none = false
       def self.install_dependent_modules(module_refs, opts = {})
-        # if skip_prompt option is sent it means user wants to update_all
-        @update_all  = opts[:skip_prompt]
-        @update_none = false
         @print_dependency_newline = false
 
         module_refs.each do |module_ref|
@@ -93,9 +91,13 @@ module DTK::Client
         module_name = component_module.module_name
         version     = component_module.version
 
-        import_msg = "#{opts[:indent]}Importing module '#{namespace}:#{module_name}"
-        import_msg += "(#{version})" if version && !version.eql?('master')
-        import_msg += "' ... "
+        print_opts = {
+          :module_name => module_name,
+          :namespace   => namespace,
+          :version     => version
+        }
+
+        import_msg = "#{opts[:indent]}Importing module '#{DTK::Common::PrettyPrintForm.module_ref(module_name, print_opts)}' ..."
 
         # Using print to avoid adding cr at the end.
         print "\n" if opts[:add_newline]
@@ -186,7 +188,12 @@ module DTK::Client
           print "\n"
           @print_dependency_newline = false
         end
-        OsUtil.print("#{opts[:indent]}Using module '#{module_ref.namespace}:#{module_ref.module_name}'" + (module_ref.version.nil? ? "" : " version: #{module_ref.version} "))
+
+        opts = {
+          :namespace => module_ref.namespace,
+          :version   => module_ref.version
+        }
+        OsUtil.print("#{opts[:indent]}Using module '#{DTK::Common::PrettyPrintForm.module_ref(module_ref.module_name, opts)}'")
       end
 
     end

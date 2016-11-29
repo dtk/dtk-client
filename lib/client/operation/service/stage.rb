@@ -24,6 +24,9 @@ module DTK::Client
           remove_existing = args[:remove_existing]
           service_name    = args[:service_name] 
           force           = args[:force]
+          path            = args[:path]
+
+          current_dir = path.nil? ? OsUtil.current_dir : path
 
           post_body = PostBody.new(
             :namespace       => module_ref.namespace,
@@ -34,11 +37,11 @@ module DTK::Client
             :is_target?      => args[:is_target]
           )
 
-          DTK::Client::GitRepo.modified?(OsUtil.current_dir) unless force
+          DTK::Client::GitRepo.modified?(current_dir) unless force
           service_name ||= rest_post("#{BaseRoute}/generate_service_name", post_body).data
-          path = ClientModuleDir.ret_base_path(:service, service_name)
+          base_path = ClientModuleDir.ret_base_path(:service, service_name)
           
-          raise Error::Usage, "Directory '#{path}' is not empty; it must be deleted or removed before retrying the command" if ClientModuleDir.local_dir_exists?(:service, service_name) 
+          raise Error::Usage, "Directory '#{base_path}' is not empty; it must be deleted or removed before retrying the command" if ClientModuleDir.local_dir_exists?(:service, service_name) 
 
           post_body.merge!(:service_name => service_name)
           response = rest_post("#{BaseRoute}/create", post_body)

@@ -35,6 +35,7 @@ module DTK::Client
             version       = options[:version] || module_ref.version
             service_name  = options[:service_name]
             force         = options[:f]
+            path          = options[:d]
 
             Validation.validate_name(service_name) if service_name
 
@@ -46,7 +47,8 @@ module DTK::Client
               :target_service  => options[:parent_service_instance],
               :remove_existing => options[:purge],
               :is_target       => options[:target],
-              :force           => force
+              :force           => force,
+              :path            => path
             }
             Operation::Service.stage(args)
           end
