@@ -27,7 +27,8 @@ module DTK::Client; module CLI
             force            = options[:f]
             args = {
               :service_instance => service_instance,
-              :force            => force
+              :force            => force,
+              :directory_path   => options[:directory_path]
             }
             Operation::Service.converge(args)
           end
