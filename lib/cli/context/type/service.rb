@@ -20,9 +20,20 @@ module DTK::Client::CLI
     module Type
       class Service < Context
         include Command::Service
+        include Command::Module
+
+        COMMAND_DEFS = [:service, :module]
 
         def add_command_defs!
-          add_command :service
+         COMMAND_DEFS.each {|cmd| add_command(cmd)}
+        end
+
+        def context_type
+          'service'
+        end
+
+        def allowed_commands_defs
+          ['service', 'module']
         end
       end
     end

@@ -35,6 +35,7 @@ module DTK::Client
           DTKNAccess.resolve_direct_access(config_existed)
 
           context =  Context.determine_context
+          add_missing_context(argv, context)
           if response_obj = context.run_and_return_response_object(argv)
             # render_response will raise Error in case of error response
             render_response(response_obj)
@@ -52,6 +53,17 @@ module DTK::Client
       def self.render_response(response_obj)
         Response::ErrorHandler.raise_if_error(response_obj)
         response_obj.render_data
+      end
+
+      def self.add_missing_context(argv, context)
+        add_context = true
+
+        context_type = context.context_type
+        allowed_commands = context.allowed_commands_defs
+
+        allowed_commands.each {|cmd| add_context = false if argv.include?(cmd)}
+
+        argv.unshift(context_type) if add_context
       end
     end
   end
