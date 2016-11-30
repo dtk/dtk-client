@@ -58,12 +58,11 @@ module DTK::Client
       def self.add_missing_context(argv, context)
         add_context = true
 
-        context_type = context.context_type
-        allowed_commands = context.allowed_commands_defs
-
-        allowed_commands.each {|cmd| add_context = false if argv.include?(cmd)}
-
-        argv.unshift(context_type) if add_context
+        if context_type = context.context_type
+          allowed_commands = context.allowed_commands_defs
+          allowed_commands.each {|cmd| add_context = false if argv.include?(cmd)}
+          argv.unshift(context_type) if add_context
+        end
       end
     end
   end
