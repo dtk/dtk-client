@@ -34,10 +34,8 @@ module DTK::Client
           # check if .add_direct_access file exists, if not then add direct access and create .add_direct_access file
           DTKNAccess.resolve_direct_access(config_existed)
 
-          contains = argv.include?("module") || argv.include?("service")
-          add_missing_context(argv) unless contains
-
           context =  Context.determine_context
+          add_missing_context(argv, context)
           if response_obj = context.run_and_return_response_object(argv)
             # render_response will raise Error in case of error response
             render_response(response_obj)
@@ -57,12 +55,15 @@ module DTK::Client
         response_obj.render_data
       end
 
-      def self.add_missing_context(argv)
-        if File.exist?("dtk.module.yaml")
-          argv.unshift("module")
-        elsif File.exist?("dtk.service.yaml")
-          argv.unshift("service")
-        end
+      def self.add_missing_context(argv, context)
+        add_context = true
+
+        context_type = context.context_type
+        allowed_commands = context.allowed_commands_defs
+
+        allowed_commands.each {|cmd| add_context = false if argv.include?(cmd)}
+
+        argv.unshift(context_type) if add_context
       end
     end
   end

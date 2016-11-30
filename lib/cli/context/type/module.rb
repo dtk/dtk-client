@@ -22,10 +22,18 @@ module DTK::Client; module CLI
         include Command::Module
         include Command::Service        
 
+        COMMAND_DEFS = [:service, :module]
+
         def add_command_defs!
-          add_command :module
-          # add_command :service needed for stage and deploy commands
-          add_command :service
+         COMMAND_DEFS.each {|cmd| add_command(cmd)}
+        end
+
+        def context_type
+          'module'
+        end
+
+        def allowed_commands_defs
+          ['service', 'module']
         end
 
       end
