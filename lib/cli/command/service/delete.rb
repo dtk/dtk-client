@@ -26,15 +26,10 @@ module DTK::Client; module CLI
           sc.switch Token.force
           # sc.switch Token.purge, :desc => 'Delete the service instance directory on the client'
           sc.action do |_global_options, options, args|
-            directory_path = options[:directory_path]
-            purge          = options[:purge]
-            recursive      = options[:recursive]
-            force          = options[:force]
-
-            DTK::Client::GitRepo.modified?(OsUtil.current_dir) unless force
-            # if purge && (!directory_path || (directory_path == @base_dsl_file_obj.parent_dir?))
-            #   raise Error::Usage, "If use option '#{option_ref(:purge)}' then need to call from outside directory and use option '#{option_ref(:directory_path)}'"
-            # end
+            directory_path   = options[:directory_path]
+            purge            = options[:purge]
+            recursive        = options[:recursive]
+            force            = options[:force]
             service_instance = service_instance_in_options_or_context(options)
 
             args = {

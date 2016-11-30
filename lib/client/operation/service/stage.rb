@@ -24,9 +24,7 @@ module DTK::Client
           remove_existing = args[:remove_existing]
           service_name    = args[:service_name] 
           force           = args[:force]
-          path            = args[:path]
-
-          current_dir = path.nil? ? OsUtil.current_dir : path
+          directory_path  = args[:directory_path]
 
           post_body = PostBody.new(
             :namespace       => module_ref.namespace,
@@ -37,7 +35,7 @@ module DTK::Client
             :is_target?      => args[:is_target]
           )
 
-          DTK::Client::GitRepo.modified?(current_dir) unless force
+          DTK::Client::GitRepo.modified?(directory_path || OsUtil.current_dir) unless force
           service_name ||= rest_post("#{BaseRoute}/generate_service_name", post_body).data
           base_path = ClientModuleDir.ret_base_path(:service, service_name)
           

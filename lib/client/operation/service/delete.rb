@@ -23,12 +23,13 @@ module DTK::Client
           service_instance = args.required(:service_instance)
           recursive        = args.required(:recursive)
           force            = args[:force]
+          directory_path   = args[:directory_path]
 
           unless args[:skip_prompt]
             return false unless Console.prompt_yes_no("Are you sure you want to delete the content of service instance '#{service_instance}' ?", :add_options => true)
           end
 
-          DTK::Client::GitRepo.modified?(OsUtil.current_dir) unless force
+          DTK::Client::GitRepo.modified?(directory_path || OsUtil.current_dir) unless force
           post_body = PostBody.new(
             :service_instance => service_instance,
             :recursive? => recursive
