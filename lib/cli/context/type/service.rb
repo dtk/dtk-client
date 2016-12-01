@@ -33,7 +33,7 @@ module DTK::Client::CLI
         end
 
         def allowed_commands_defs
-          ['service', 'module']
+          COMMAND_DEFS.each { |cmd| cmd.to_s }
         end
       end
     end
