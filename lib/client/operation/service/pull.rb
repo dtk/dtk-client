@@ -30,7 +30,7 @@ module DTK::Client
           }
           ClientModuleDir::GitRepo.pull_from_service_repo(pull_args)
         end
-
+        nil
       end
     end
   end
