@@ -17,7 +17,7 @@
 #
 module DTK::Client
   module CLI::Command
-    module Service
+    module Module
       subcommand_def 'stage' do |c|
         c.arg Token::Arg.assembly_name, :optional => true
         command_body c, :stage, 'Create a new service instance to refer to staged infrastructure that then can be deployed' do |sc|
@@ -50,7 +50,7 @@ module DTK::Client
               :force           => force,
               :directory_path  => directory_path
             }
-            Operation::Service.stage(args)
+            Operation::Module.stage(args)
           end
         end
       end

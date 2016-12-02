@@ -22,7 +22,6 @@ module DTK::Client
         include Command::Mixin
         ALL_SUBCOMMANDS = [
           'clone',
-          'stage',
           'delete',
           'uninstall',
           'edit',

@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 module DTK::Client
-  class Operation::Service
+  class Operation::Module
     class Stage < self
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
@@ -42,7 +42,7 @@ module DTK::Client
           raise Error::Usage, "Directory '#{base_path}' is not empty; it must be deleted or removed before retrying the command" if ClientModuleDir.local_dir_exists?(:service, service_name) 
 
           post_body.merge!(:service_name => service_name)
-          response = rest_post("#{BaseRoute}/create", post_body)
+          response = rest_post("#{BaseRoute}/stage", post_body)
 
           service_instance = response.required(:service, :name)
 
