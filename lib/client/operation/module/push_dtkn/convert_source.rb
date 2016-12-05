@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 module DTK::Client; class Operation::Module
-  class InstallFromCatalog
-    class LoadSource
-      require_relative('load_source/service_info')
-      require_relative('load_source/component_info')
+  class PushDtkn
+    class ConvertSource
+      require_relative('convert_source/service_info')
+      require_relative('convert_source/component_info')
 
       def initialize(transform_helper, info_type, remote_repo_url, parent)
         @info_processor   = transform_helper.info_processor(info_type)
@@ -30,18 +30,17 @@ module DTK::Client; class Operation::Module
       end
       private :initialize
 
-      def self.fetch_transform_and_merge(remote_module_info, parent)
+      def self.transform_and_commit(remote_module_info, parent)
         target_repo_dir  = parent.target_repo_dir
-        transform_helper = ServiceAndComponentInfo::TransformFrom.new(target_repo_dir, parent.module_ref, parent.version)
+        transform_helper = ServiceAndComponentInfo::TransformTo.new(target_repo_dir, parent.module_ref, parent.version)
         info_types_processed = []
         if service_info = remote_module_info.data(:service_info)
-          pp "SERVICE INFO \n #{service_info}"
-          ServiceInfo.fetch_and_cache_info(transform_helper, service_info['remote_repo_url'], parent)
+          ServiceInfo.transform_info(transform_helper, service_info['remote_repo_url'], parent)
           info_types_processed << ServiceInfo.info_type
         end
 
         if component_info = remote_module_info.data(:component_info)
-          ComponentInfo.fetch_and_cache_info(transform_helper, component_info['remote_repo_url'], parent)
+          ComponentInfo.transform_info(transform_helper, component_info['remote_repo_url'], parent)
           info_types_processed << ComponentInfo.info_type
         end
 
@@ -53,8 +52,8 @@ module DTK::Client; class Operation::Module
         end
       end
 
-      def self.fetch_and_cache_info(transform_helper, remote_repo_url, parent)
-        new(transform_helper, info_type, remote_repo_url, parent).fetch_and_cache_info
+      def self.transform_info(transform_helper, remote_repo_url, parent)
+        new(transform_helper, info_type, remote_repo_url, parent).transform_info
       end
       
       private

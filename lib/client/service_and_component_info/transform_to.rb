@@ -20,6 +20,28 @@ module DTK::Client
     # TODO: DTK-2765: methods use wen pushing to dtkn that transform to component and info form
     # This wil call functions that parse in :DTK::DSL::ServiceAndComponentInfo::TransformTO
     class TransformTo
+      require_relative('transform_to/info')
+
+      def initialize(content_dir, module_ref, version)
+        @content_dir          = content_dir
+        @module_ref           = module_ref
+        @version              = version
+        @dtk_dsl_parse_helper = dtk_dsl_transform_class.new(module_ref.namespace, module_ref.module_name, version)
+      end
+
+      def info_processor(info_type)
+        Info.create(info_type, @content_dir, @dtk_dsl_parse_helper)
+      end
+
+      def output_path_text_pairs
+        @dtk_dsl_parse_helper.output_path_text_pairs
+      end
+
+      private
+
+      def dtk_dsl_transform_class
+        ::DTK::DSL::ServiceAndComponentInfo::TransformTo
+      end
     end
   end
 end

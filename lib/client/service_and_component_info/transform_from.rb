@@ -26,7 +26,6 @@ module DTK::Client
         @module_ref           = module_ref
         @version              = version
         @dtk_dsl_parse_helper = dtk_dsl_transform_class.new(module_ref.namespace, module_ref.module_name, version)
-
       end
       
       def info_processor(info_type)
