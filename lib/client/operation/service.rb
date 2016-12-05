@@ -25,7 +25,6 @@ module DTK::Client
         :uninstall,
         :edit,
         :pull,
-        :stage,
         :converge,
         :task_status,
         :list,

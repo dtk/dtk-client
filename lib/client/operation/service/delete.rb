@@ -36,7 +36,7 @@ module DTK::Client
           )
           rest_post("#{BaseRoute}/delete", post_body)
 
-          OsUtil.print_info("DTK module '#{service_instance}' has been deleted successfully.")
+          OsUtil.print_info("Delete procedure started. For more information use 'dtk task-status'.")
         end
       end
 
