@@ -22,8 +22,8 @@ module DTK::Client; module CLI
         command_body c, :delete, 'Destroys the running infrastructure associated with the service instance' do |sc|
         sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory associated; not needed if executed in service instance directory'
           sc.switch Token.skip_prompt, :desc => 'Skip prompt that checks if user wants to delete the service instance'
-          sc.switch Token.recursive
-          sc.switch Token.force
+          sc.switch Token.recursive, :desc => 'Delete all service instances staged into specified target'
+          sc.switch Token.force, :desc => ''
           # sc.switch Token.purge, :desc => 'Delete the service instance directory on the client'
           sc.action do |_global_options, options, args|
             directory_path   = options[:directory_path]
