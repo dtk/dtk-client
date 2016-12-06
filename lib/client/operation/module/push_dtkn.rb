@@ -35,8 +35,6 @@ module DTK::Client
           module_ref     = args.required(:module_ref)
           version        = args[:version]
           directory_path = args[:directory_path]
-
-          # will create different classes for different catalog types when we add support for them
           new('dtkn', module_ref, directory_path, version).push_dtkn
         end
       end

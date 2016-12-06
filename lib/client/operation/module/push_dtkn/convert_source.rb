@@ -31,9 +31,10 @@ module DTK::Client; class Operation::Module
       private :initialize
 
       def self.transform_and_commit(remote_module_info, parent)
-        target_repo_dir  = parent.target_repo_dir
-        transform_helper = ServiceAndComponentInfo::TransformTo.new(target_repo_dir, parent.module_ref, parent.version)
+        target_repo_dir      = parent.target_repo_dir
+        transform_helper     = ServiceAndComponentInfo::TransformTo.new(target_repo_dir, parent.module_ref, parent.version)
         info_types_processed = []
+
         if service_info = remote_module_info.data(:service_info)
           ServiceInfo.transform_info(transform_helper, service_info['remote_repo_url'], parent)
           info_types_processed << ServiceInfo.info_type
