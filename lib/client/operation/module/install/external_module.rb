@@ -18,10 +18,12 @@
 module DTK::Client
   class Operation::Module::Install
     class ExternalModule < self
-      BaseRoute = "modules"
+      BaseRoute    = "modules"
       @update_all  = false
       @update_none = false
+
       def self.install_dependent_modules(module_refs, opts = {})
+        @update_all = opts[:skip_prompt] if opts[:skip_prompt]
         @print_dependency_newline = false
 
         module_refs.each do |module_ref|

@@ -20,7 +20,10 @@ module DTK::Client::CLI
     module Type
       class Top < Context
         include Command::All
-
+        
+        def context_type
+          nil
+        end
         private
 
         def add_command_defs!

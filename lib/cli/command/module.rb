@@ -21,7 +21,7 @@ module DTK::Client
       module Module 
         include Command::Mixin
 
-        ALL_SUBCOMMANDS = ['install', 'list', 'list-assemblies', 'push', 'uninstall', 'clone', 'list-remotes', 'push-dtkn']
+        ALL_SUBCOMMANDS = ['install', 'list', 'list-assemblies', 'push', 'uninstall', 'clone', 'list-remotes', 'push-dtkn', 'stage']
         command_def :desc => 'Subcommands for interacting with DTK modules'
         ALL_SUBCOMMANDS.each { |subcommand| require_relative("module/#{subcommand.gsub(/-/,'_')}") } 
       end
