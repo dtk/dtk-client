@@ -33,8 +33,7 @@ module DTK::Client
         
         def transform_from_component_info
           info_processor.read_inputs_and_compute_outputs!
-          # TODO: 
-          # Operation::ClientModuleDir.delete .. input files
+          info_processor.input_file_paths.map { |path| Operation::ClientModuleDir.rm_f(path) }
         end
 
       end

@@ -35,7 +35,7 @@ module DTK::Client
           info_processor.read_inputs_and_compute_outputs!
           
           # delete old files
-          # TODO: just delete the input files
+          # Assumed that this is done before ComponentInfo.transform_from_service_info
           Operation::ClientModuleDir.delete_directory_content(target_repo_dir)
         end
         

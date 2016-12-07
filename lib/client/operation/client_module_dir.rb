@@ -106,8 +106,8 @@ module DTK::Client
         "#{OsUtil.current_dir}/#{name.gsub(':','/')}"
       end
 
-      def self.rm_f(dir_path)
-        FileUtils.rm_rf(dir_path)
+      def self.rm_f(path)
+        FileUtils.rm_rf(path)
       end
 
       def self.delete_directory_content(path)

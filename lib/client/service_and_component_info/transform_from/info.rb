@@ -22,12 +22,14 @@ module DTK::Client
       require_relative('info/service')
       require_relative('info/component')
 
+      attr_reader :input_file_paths
       def initialize(content_dir, dtk_dsl_parse_helper)
         @content_dir            = content_dir
         @dtk_dsl_info_processor = dtk_dsl_parse_helper.info_processor(info_type)
 
         # dynamically computed
-        @directory_file_paths = nil
+        @input_file_paths     = [] 
+        @directory_file_paths = nil # this wil be all paths in module
       end
       private :initialize
 
@@ -43,6 +45,7 @@ module DTK::Client
       private
 
       def add_content!(input_files_processor, path)
+        @input_file_paths << path
         input_files_processor.add_content!(path, get_raw_content?(path))
       end
 
@@ -57,11 +60,7 @@ module DTK::Client
       end
 
       def module_ref_input_files_processor
-        @module_ref_input_files_processor = input_files_processor(:module_refs)
-      end
-
-      def directory_file_paths
-        @directory_file_paths ||= Dir.glob("#{@content_dir}/**/*")
+        @module_ref_input_files_processor ||= input_files_processor(:module_refs)
       end
 
       def get_raw_content?(file_path)
