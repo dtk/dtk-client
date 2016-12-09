@@ -86,6 +86,18 @@ module DTK::Client
       end
     end
 
+    def self.password_prompt(message, options = [])
+      begin
+        while line = Readline.readline("#{message} ", true)
+          raise Interrupt if line.empty?
+            return line
+          end
+        rescue Interrupt
+          return nil
+        ensure
+          puts "\n" if line.nil?
+        end
+      end
     # opts can have keys
     #   :disable_ctrl_c - Boolean (default: true)
     def self.prompt_context(opts = {}, &body)
