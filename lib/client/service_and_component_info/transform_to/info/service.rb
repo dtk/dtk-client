@@ -51,7 +51,7 @@ module DTK::Client
       end
       
       def module_input_files_processor
-        @module_input_files_processor = input_files_processor(:module)
+        @module_input_files_processor ||= input_files_processor(:module)
       end
 
     end

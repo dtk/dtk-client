@@ -45,7 +45,7 @@ module DTK::Client
       end
       
       def assembly_input_files_processor 
-        @assembly_input_files_processor = input_files_processor(:assemblies)
+        @assembly_input_files_processor ||= input_files_processor(:assemblies)
       end
 
     end

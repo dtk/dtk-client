@@ -51,7 +51,7 @@ module DTK::Client
       end
 
       def component_dsl_input_files_processor
-        @component_dsl_input_files_processor = input_files_processor(:module)
+        @component_dsl_input_files_processor ||= input_files_processor(:module)
       end
 
     end
