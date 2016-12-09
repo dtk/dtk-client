@@ -53,6 +53,7 @@ module DTK::Client
         # Switch constructor args order: key, desc, opts={}
         :all          => Switch.new(:all, 'All'),
         :force        => Switch.new(:f, 'Force'),
+        :force_flag        => Switch.new(:force, 'Force'),
         :purge        => Switch.new(:purge, 'Purge'),
         :push         => Switch.new(:push, 'Push changes'),
         :skip_prompt  => Switch.new(:y, 'Skip prompt'),
@@ -74,7 +75,8 @@ module DTK::Client
         :module_name      => 'NAMESPACE/MODULE-NAME',
         :target_directory => 'TARGET-DIRECTORY',
         :attribute_name   => 'ATTRIBUTE-NAME',
-        :attribute_value  => 'VALUE'
+        :attribute_value  => 'VALUE',
+        :keypair_name     => 'KEYPAIR-NAME'
       }
       
     end
