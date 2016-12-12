@@ -21,6 +21,7 @@ module DTK::Client
       def self.execute(args = Args.new)
         post_body = { :username => Configurator.client_username }
         response = rest_get("#{RoutePrefix}/list_ssh_keys", post_body)
+        response.set_render_as_table!
       end
       end
     end

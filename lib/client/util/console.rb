@@ -88,7 +88,7 @@ module DTK::Client
 
     def self.password_prompt(message, options = [])
       begin
-        while line = Readline.readline("#{message} ", true)
+        while line = (HighLine.ask("#{message}") { |q| q.echo = false})
           raise Interrupt if line.empty?
             return line
           end
