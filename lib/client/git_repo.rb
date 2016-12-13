@@ -65,7 +65,7 @@ module DTK::Client
 
       message = DTK::Client::Operation::ClientModuleDir::GitRepo.modified_with_diff(repo_dir)
       if message.data(:modified)
-        raise Error::Usage, "To allow push to go through us option '-f' or invoke 'dtk push' to push the chnages before involking stage again"
+        raise Error::Usage, "To allow push to go through, use option '-f' or invoke 'dtk push' to push the chnages before invoking stage again"
       end
     end
 
