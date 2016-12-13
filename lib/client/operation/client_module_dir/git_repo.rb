@@ -114,7 +114,7 @@ module DTK::Client
 
       def self.modified_with_diff(args)
         wrap_operation(args) do |args|
-          response_data_hash(:modified => Internal.modified_with_diff(args))
+          response_data_hash(:modified => Internal.modified(args, :with_diffs => true))
         end
       end
 

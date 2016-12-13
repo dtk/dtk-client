@@ -131,23 +131,15 @@ module DTK::Client
           target_repo_dir
         end
 
-        def self.modified(args)
+        # opts can have keys:
+        #   :with_diffs (Boolean)
+        def self.modified(args, opts = {})
           repo_url = args.required(:path)
           branch   = args.required(:branch)
           repo     = git_repo.new(repo_url, :branch => branch)
 
           changed = repo.changed?
-          repo.print_status if changed
-          changed
-        end
-
-        def self.modified_with_diff(args)
-          repo_url = args.required(:path)
-          branch   = args.required(:branch)
-          repo     = git_repo.new(repo_url, :branch => branch)
-
-          changed = repo.changed?
-          repo.print_status_with_diff if changed
+          repo.print_status(:with_diffs => opts[:with_diffs]) if changed
           changed
         end
 

@@ -176,7 +176,19 @@ module DTK::Client
         (!(changed().empty? && untracked().empty? && deleted().empty?))
       end
 
-      def print_status
+      # opts can have keys:
+        #   :with_diffs (Boolean)
+      def print_status(opts = {})
+        if opts[:with_diffs]
+          print_status_with_diffs
+        else
+          print_status_simple
+        end
+      end
+
+      private
+
+      def print_status_simple
         changes = [changed(), untracked(), deleted()]
         puts "\nModified files:\n".colorize(:green) unless changes[0].empty?
         changes[0].each { |item| puts "\t#{item}" }
@@ -187,13 +199,7 @@ module DTK::Client
         puts "" 
       end
 
-      private
-
-      def default_commit_message
-        "DTK Commit from client"
-      end
-
-      def print_status_with_diff
+      def print_status_with_diffs
         changes = [changed(), untracked(), deleted()]
         puts "\nTherere are changes that are not pushed to the server that will not be staged:\n".colorize(:green) unless changes[0].empty?
         diff = @git_repo.diff.stats[:files]
@@ -212,6 +218,11 @@ module DTK::Client
         changes[2].each { |item| puts "\t#{item}" }
         puts "" 
       end
+
+      def default_commit_message
+        "DTK Commit from client"
+      end
+
     end
   end
 end

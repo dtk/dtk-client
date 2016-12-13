@@ -107,12 +107,10 @@ module DTK::Client
       @git_adapter.merge(branch_to_merge_from)
     end
 
-    def print_status_with_diff
-      @git_adapter.print_status_with_diff
-    end
-
-    def print_status
-      @git_adapter.print_status
+    # opts can have keys:
+    #   :with_diffs (Boolean)
+    def print_status(opts = {})
+      @git_adapter.print_status(opts)
     end
 
     def push(remote, branch, opts = {})
