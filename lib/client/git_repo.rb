@@ -57,6 +57,18 @@ module DTK::Client
       end
     end
 
+    def self.modified_with_diff?(dir)
+      repo_dir = {
+        :path    => dir,
+        :branch  => Git.open(dir).branches.local
+      }
+
+      message = DTK::Client::Operation::ClientModuleDir::GitRepo.modified_with_diff(repo_dir)
+      if message.data(:modified)
+        raise Error::Usage, "To allow push to go through us option '-f' or invoke 'dtk push' to push the chnages before involking stage again"
+      end
+    end
+
     def add_remote(name, url)
       @git_adapter.add_remote(name, url)
     end
@@ -93,6 +105,10 @@ module DTK::Client
 
     def merge(branch_to_merge_from)
       @git_adapter.merge(branch_to_merge_from)
+    end
+
+    def print_status_with_diff
+      @git_adapter.print_status_with_diff
     end
 
     def print_status

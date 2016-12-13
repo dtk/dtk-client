@@ -74,6 +74,12 @@ module DTK::Client
         end
       end
 
+      def self.modified_with_diff(args)
+        wrap_operation(args) do |args|
+          response_data_hash(:modified => Internal.modified_with_diff(args))
+        end
+      end
+
       def self.init_and_push_from_existing_repo(args)
         wrap_operation(args) do |args|
           repo_dir      = args.required(:repo_dir)
@@ -207,6 +213,16 @@ module DTK::Client
 
           changed = repo.changed?
           repo.print_status if changed
+          changed
+        end
+
+        def self.modified_with_diff(args)
+          repo_url = args.required(:path)
+          branch   = args.required(:branch)
+          repo     = git_repo.new(repo_url, :branch => branch)
+
+          changed = repo.changed?
+          repo.print_status_with_diff if changed
           changed
         end
 

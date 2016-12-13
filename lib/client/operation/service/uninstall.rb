@@ -22,7 +22,7 @@ module DTK::Client
         wrap_operation(args) do |args|
           service_instance = args.required(:service_instance)
           recursive        = args.required(:recursive)
-          force            = args.required(:force)
+          delete            = args.required(:delete)
 
           unless args[:skip_prompt]
             return false unless Console.prompt_yes_no("Are you sure you want to uninstall the infrastructure associated with '#{service_instance}' and delete this service instance from the server?", :add_options => true)
@@ -31,7 +31,7 @@ module DTK::Client
           post_body = PostBody.new(
             :service_instance => service_instance,
             :recursive? => recursive,
-            :force      => force
+            :delete      => delete
           )
           rest_post("#{BaseRoute}/uninstall", post_body)
 
