@@ -174,6 +174,26 @@ module DTK::Client
         changes[2].each { |item| puts "\t#{item}" }
         puts "" 
       end
+
+      def print_status_with_diff
+        changes = [changed(), untracked(), deleted()]
+        puts "\nTherere are changes that are not pushed to the server that will not be staged:\n".colorize(:green) unless changes[0].empty?
+        diff = @git_repo.diff.stats[:files]
+        file_changed = changes[0].size
+        deletions = 0
+        insertions = 0
+        changes[0].each do |item|
+          deletions += diff[item][:deletions]
+          insertions += diff[item][:insertions]  
+          puts "\t#{item} | #{insertions + deletions} " + "+".colorize(:green) * insertions + "-".colorize(:red) * deletions
+        end
+        puts "\t#{file_changed} file changed, #{deletions} deletions(-), #{insertions} insertions(+)"
+        puts "\nAdded files:\n".colorize(:yellow) unless changes[1].empty?
+        changes[1].each { |item| puts "\t#{item}" }
+        puts "\nDeleted files:\n".colorize(:red) unless changes[2].empty?
+        changes[2].each { |item| puts "\t#{item}" }
+        puts "" 
+      end
     end
   end
 end
