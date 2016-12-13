@@ -29,7 +29,7 @@ module DTK::Client
 
         # dynamically computed
         @input_file_paths     = [] 
-        @directory_file_paths = nil # this wil be all paths in module
+        @directory_file_paths = nil # this will be all paths in module
       end
       private :initialize
 
