@@ -141,6 +141,16 @@ module DTK::Client
           changed
         end
 
+        def self.modified_with_diff(args)
+          repo_url = args.required(:path)
+          branch   = args.required(:branch)
+          repo     = git_repo.new(repo_url, :branch => branch)
+
+          changed = repo.changed?
+          repo.print_status_with_diff if changed
+          changed
+        end
+
         def self.fetch_merge_and_push(args)
           repo_dir      = args.required(:repo_dir)
           repo_url      = args.required(:repo_url)

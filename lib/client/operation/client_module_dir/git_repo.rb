@@ -112,6 +112,12 @@ module DTK::Client
         end
       end
 
+      def self.modified_with_diff(args)
+        wrap_operation(args) do |args|
+          response_data_hash(:modified => Internal.modified_with_diff(args))
+        end
+      end
+
       def self.init_and_push_from_existing_repo(args)
         wrap_operation(args) do |args|
           repo_dir      = args.required(:repo_dir)

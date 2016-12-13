@@ -52,6 +52,7 @@ module DTK::Client
         # switches
         # Switch constructor args order: key, desc, opts={}
         :all          => Switch.new(:all, 'All'),
+        :delete       => Switch.new(:delete, 'Delete'),
         :force        => Switch.new(:f, 'Force'),
         :purge        => Switch.new(:purge, 'Purge'),
         :push         => Switch.new(:push, 'Push changes'),
