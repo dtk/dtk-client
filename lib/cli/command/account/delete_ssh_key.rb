@@ -22,15 +22,16 @@ module DTK::Client
         c.arg Token::Arg.keypair_name
         command_body c, 'delete-ssh-key', 'Deletes SSH key for current user' do |sc|
           sc.flag Token.directory_path
+          sc.switch Token.skip_prompt
           sc.action do |_global_options, options, args|
-
+            skip_prompt    = options[:skip_prompt]
             directory_path = options[:directory_path]
             name = args[0]
-            
             args = {
               :directory_path => directory_path,
               :name           => name,
-              :username => Configurator.client_username
+              :skip_prompt    => skip_prompt,
+              :username       => Configurator.client_username
             }
             Operation::Account.delete_ssh_key(args)
           end

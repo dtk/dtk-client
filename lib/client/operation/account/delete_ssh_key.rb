@@ -20,10 +20,10 @@ module DTK::Client
     class DeleteSshKey < self
       def self.execute(args = Args.new)
         name = args[:name]
-        # unless args[:force]
-        #   is_go = Console.confirmation_prompt("Are you sure you want to delete SSH key '#{name}'"+"?")
-        #   return nil unless is_go
-        # end
+        unless args[:skip_prompt]
+          is_go = DTK::Client::Console.prompt_yes_no("Are you sure you want to delete SSH key '#{name}'"+"?")
+          return nil unless is_go
+        end
         post_body = {
           :username => name
         }
