@@ -74,6 +74,11 @@ module DTK::Client
         @git_repo.push(remote, branch_for_push, opts)
       end
 
+      def push_from_cached_branch(remote, branch, opts = {})
+        branch_for_push = "HEAD:#{branch}"
+        @git_repo.push(remote, branch_for_push, opts)
+      end
+
       def merge(branch_to_merge_from)
         @git_repo.merge(branch_to_merge_from)
       end

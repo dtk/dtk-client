@@ -91,6 +91,14 @@ module DTK::Client
         end
       end
 
+      def self.checkout_branch__return_repo(args)
+        wrap_operation(args) do |args|
+          repo_dir     = args.required(:repo_dir)
+          local_branch = args.required(:local_branch)
+          response_data_hash(:repo => Internal.checkout_branch__return_repo(repo_dir, local_branch))
+        end
+      end
+
       def self.stage_and_commit(args)
         wrap_operation(args) do |args| 
           repo_dir          = args.required(:repo_dir)

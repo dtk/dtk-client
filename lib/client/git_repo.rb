@@ -117,6 +117,10 @@ module DTK::Client
       @git_adapter.push(remote, branch, opts)
     end
 
+    def push_from_cached_branch(remote, branch, opts = {})
+      @git_adapter.push_from_cached_branch(remote, branch, opts)
+    end
+
     def pull(remote, branch)
       @git_adapter.pull(remote, branch)
     end

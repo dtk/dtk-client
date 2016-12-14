@@ -41,8 +41,6 @@ module DTK::Client; class Operation::Module
         if component_info = remote_module_info.data(:component_info)
           transform_component_info(target_repo_dir, parent, component_info, parsed_common_module)
         end
-
-        # stage_and_commit(target_repo_dir, commit_msg(info_types_processed))
       end
 
       def self.transform_info(transform_helper, remote_repo_url, parent)
@@ -53,14 +51,21 @@ module DTK::Client; class Operation::Module
         transform_helper = ServiceAndComponentInfo::TransformTo.new(target_repo_dir, parent.module_ref, parent.version, parsed_common_module)
         service_file_path__content_array = ServiceInfo.transform_info(transform_helper, service_info['remote_repo_url'], parent)
 
+        repo = checkout_branch__return_repo(target_repo_dir, "remotes/dtkn/master").data(:repo)
         FileUtils.mkdir_p("#{target_repo_dir}/assemblies") unless File.exists?("#{target_repo_dir}/assemblies")
+
         service_file_path__content_array.each { |file| Operation::ClientModuleDir.create_file_with_content("#{target_repo_dir}/#{file[:path]}", file[:content]) }
+        commit_and_push_to_remote(repo, target_repo_dir, "master", "dtkn")
       end
 
       def self.transform_component_info(target_repo_dir, parent, component_info, parsed_common_module)
         transform_helper = ServiceAndComponentInfo::TransformTo.new(target_repo_dir, parent.module_ref, parent.version, parsed_common_module)
         component_file_path__content_array = ComponentInfo.transform_info(transform_helper, component_info['remote_repo_url'], parent)
+
+        repo = checkout_branch__return_repo(target_repo_dir, "remotes/dtkn-component-info/master").data(:repo)
         component_file_path__content_array.each { |file| Operation::ClientModuleDir.create_file_with_content("#{target_repo_dir}/#{file[:path]}", file[:content]) }
+
+        commit_and_push_to_remote(repo, target_repo_dir, "master", "dtkn-component-info")
       end
       
       private
@@ -70,25 +75,18 @@ module DTK::Client; class Operation::Module
       def self.write_output_path_text_pairs(transform_helper, target_repo_dir, info_types_processed)
       end
 
-      def common_git_repo_args
-         {
-          :info_type => @info_type,
-          :repo_dir  => @target_repo_dir
+      def self.checkout_branch__return_repo(target_repo_dir, branch)
+        git_repo_args = {
+          :repo_dir     => target_repo_dir,
+          :local_branch => branch
         }
+        git_repo_operation.checkout_branch__return_repo(git_repo_args)
       end
 
-      def git_repo_remote_branch
-        (@version && !@version.eql?('master')) ? "v#{@version}" : 'master'
-      end
-
-      def fetch_remote
-        git_repo_args = common_git_repo_args.merge(:add_remote => @remote_repo_url)
-        git_repo_operation.fetch_dtkn_remote(git_repo_args)
-      end
-
-      def merge_from_remote
-        git_repo_args = common_git_repo_args.merge(:remote_branch => git_repo_remote_branch, :no_commit => true)
-        git_repo_operation.merge_from_dtkn_remote(git_repo_args)
+      def self.commit_and_push_to_remote(repo, target_repo_dir, branch, remote)
+        repo.stage_and_commit("Add auto-generated files from push-dtkn")
+        repo.push_from_cached_branch(remote, branch, { :force => true })
+        repo.checkout('master')
       end
 
       def self.stage_and_commit(target_repo_dir, commit_msg = nil)

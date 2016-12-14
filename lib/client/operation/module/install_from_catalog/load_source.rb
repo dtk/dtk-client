@@ -35,7 +35,6 @@ module DTK::Client; class Operation::Module
         transform_helper = ServiceAndComponentInfo::TransformFrom.new(target_repo_dir, parent.module_ref, parent.version)
         info_types_processed = []
         if service_info = remote_module_info.data(:service_info)
-          pp "SERVICE INFO \n #{service_info}"
           ServiceInfo.fetch_and_cache_info(transform_helper, service_info['remote_repo_url'], parent)
           info_types_processed << ServiceInfo.info_type
         end

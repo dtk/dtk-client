@@ -61,6 +61,12 @@ module DTK::Client
           repo.head_commit_sha
         end
 
+        def self.checkout_branch__return_repo(repo_dir, local_branch, opts = {})
+          repo = create_empty_git_repo?(repo_dir, :branch => local_branch)
+          repo.checkout(local_branch)
+          repo
+        end
+
         # opts can have keys:
         #   :commit_msg
         # returns head_sha
