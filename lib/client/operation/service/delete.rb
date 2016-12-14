@@ -29,14 +29,14 @@ module DTK::Client
             return false unless Console.prompt_yes_no("Are you sure you want to delete the content of service instance '#{service_instance}' ?", :add_options => true)
           end
 
-          DTK::Client::GitRepo.modified?(directory_path || OsUtil.current_dir) unless force
+          DTK::Client::GitRepo.modified_with_diff?(directory_path || OsUtil.current_dir) unless force
           post_body = PostBody.new(
             :service_instance => service_instance,
             :recursive? => recursive
           )
           rest_post("#{BaseRoute}/delete", post_body)
 
-          OsUtil.print_info("DTK module '#{service_instance}' has been deleted successfully.")
+          OsUtil.print_info("Delete procedure started. For more information use 'dtk task-status'.")
         end
       end
 
