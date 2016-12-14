@@ -22,28 +22,33 @@ module DTK::Client
       require_relative('info/service')
       require_relative('info/component')
 
-      def initialize(content_dir, dtk_dsl_parse_helper)
+      def initialize(content_dir, dtk_dsl_parse_helper, parsed_common_module)
         @content_dir            = content_dir
         @dtk_dsl_info_processor = dtk_dsl_parse_helper.info_processor(info_type)
+        @parsed_common_module   = parsed_common_module
 
         # dynamically computed
         @directory_file_paths = nil
       end
       private :initialize
 
-      def self.create(info_type, content_dir, dtk_dsl_parse_helper)
+      def self.create(info_type, content_dir, dtk_dsl_parse_helper, parsed_common_module)
         case info_type
-        when :service_info then Service.new(content_dir, dtk_dsl_parse_helper)
-        when :component_info then Component.new(content_dir, dtk_dsl_parse_helper)
+        when :service_info then Service.new(content_dir, dtk_dsl_parse_helper, parsed_common_module)
+        when :component_info then Component.new(content_dir, dtk_dsl_parse_helper, parsed_common_module)
         else
           fail Error, "Unexpected info_type '#{info_type}'"
         end
       end
 
+      def file_path__content_array
+        @dtk_dsl_info_processor.output_path_text_pairs.inject([]) { |a, (path, content)| a + [{ path: path, content: content }] }
+      end
+
       private
 
       def add_content!(input_files_processor, path)
-        input_files_processor.add_content!(path, get_raw_content?(path))
+        input_files_processor.add_canonical_hash_content!(path, @parsed_common_module)
       end
 
       def input_files_processor(type)

@@ -21,14 +21,8 @@ module DTK::Client
       def read_inputs_and_compute_outputs!
         # Input component dsl file and module_ref filedslpdslp
         if component_dsl_path = component_dsl_path()
-          pp "COMPONENT DSL PATH \n #{component_dsl_path}"
           add_content!(component_dsl_input_files_processor, component_dsl_path)
         end
-
-        # if module_refs_path = module_refs_path()
-          # pp "MODULE REFS PATH \n #{module_refs_path}"
-          # add_content!(module_ref_input_files_processor, module_refs_path)
-        # end
 
         # compute and cache outputs
         dtk_dsl_component_info_processor.compute_outputs!

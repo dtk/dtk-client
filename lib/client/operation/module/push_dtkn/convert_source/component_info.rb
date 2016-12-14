@@ -19,6 +19,8 @@ module DTK::Client
   class Operation::Module::PushDtkn
     class ConvertSource
       class ComponentInfo < self
+        # attr_reader :parsed_common_module
+
         def transform_info
           transform_to_component_info
         end
@@ -31,8 +33,7 @@ module DTK::Client
         
         def transform_to_component_info
           info_processor.read_inputs_and_compute_outputs!
-          # TODO: 
-          # Operation::ClientModuleDir.delete .. input files
+          info_processor.file_path__content_array
         end
 
       end

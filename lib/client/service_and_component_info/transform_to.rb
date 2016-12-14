@@ -22,15 +22,16 @@ module DTK::Client
     class TransformTo
       require_relative('transform_to/info')
 
-      def initialize(content_dir, module_ref, version)
+      def initialize(content_dir, module_ref, version, parsed_common_module)
         @content_dir          = content_dir
         @module_ref           = module_ref
         @version              = version
         @dtk_dsl_parse_helper = dtk_dsl_transform_class.new(module_ref.namespace, module_ref.module_name, version)
+        @parsed_common_module = parsed_common_module
       end
 
       def info_processor(info_type)
-        Info.create(info_type, @content_dir, @dtk_dsl_parse_helper)
+        Info.create(info_type, @content_dir, @dtk_dsl_parse_helper, @parsed_common_module)
       end
 
       def output_path_text_pairs

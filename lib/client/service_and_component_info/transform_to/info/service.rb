@@ -20,17 +20,7 @@ module DTK::Client
     class Service < self
       def read_inputs_and_compute_outputs!
         # Input assemblies and module_ref file
-
-        # assembly_file_paths.each { |path| add_content!(assembly_input_files_processor, path) }
-
-        module_file_paths.each do |path|
-          pp "ASSEMBLY PATHS \n #{path}"
-          add_content!(module_input_files_processor, path)
-        end
-
-        # if module_refs_path = module_refs_path()
-          # add_content!(module_ref_input_files_processor, module_refs_path)
-        # end
+        module_file_paths.each { |path| add_content!(module_input_files_processor, path) }
 
         # compute and cache outputs
         dtk_dsl_service_info_processor.compute_outputs!

@@ -20,22 +20,24 @@ module DTK::Client
     class PushDtkn < self
       require_relative('push_dtkn/convert_source')
 
-      attr_reader :version, :module_ref, :target_repo_dir
-      def initialize(catalog, module_ref, directory_path, version)
-        @catalog          = catalog
-        @module_ref       = module_ref
-        @directory_path   = directory_path
-        @target_repo_dir  = directory_path || OsUtil.current_dir
-        @version          = version # if nil wil be dynamically updated
+      attr_reader :version, :module_ref, :target_repo_dir, :base_dsl_file_obj
+      def initialize(catalog, module_ref, directory_path, version, base_dsl_file_obj)
+        @catalog           = catalog
+        @module_ref        = module_ref
+        @directory_path    = directory_path
+        @target_repo_dir   = directory_path || OsUtil.current_dir
+        @version           = version # if nil wil be dynamically updated
+        @base_dsl_file_obj = base_dsl_file_obj
       end
       private :initialize
 
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
-          module_ref     = args.required(:module_ref)
-          version        = args[:version]
-          directory_path = args[:directory_path]
-          new('dtkn', module_ref, directory_path, version).push_dtkn
+          module_ref        = args.required(:module_ref)
+          version           = args[:version]
+          directory_path    = args[:directory_path]
+          base_dsl_file_obj = args[:base_dsl_file_obj]
+          new('dtkn', module_ref, directory_path, version, base_dsl_file_obj).push_dtkn
         end
       end
       
