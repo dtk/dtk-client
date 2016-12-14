@@ -19,13 +19,16 @@ module DTK::Client
   class Operation
     class Account < self
       RoutePrefix = 'account'
+      OPERATIONS = [:list_ssh_keys, :delete_ssh_key, :add_ssh_key, :set_password, :set_catalog_credentials, :register_catalog_user]
+      OPERATIONS.each { |operation| require_relative("#{RoutePrefix}/#{operation}") }
 
+
+      extend ModuleServiceCommon::ClassMixin
       # opts can have keys
       #  :first_registration - Booelan (default: false)
       #  :name - (default: 'dtk-client')
       def self.add_key(path_to_key, opts = {})
         match, matched_username = nil, nil
-
         unless File.file?(path_to_key)
           raise Error,"[ERROR] No ssh key file found at (#{path_to_key}). Path is wrong or it is necessary to generate the public rsa key (e.g., run `ssh-keygen -t rsa`)."
         end
@@ -51,13 +54,13 @@ module DTK::Client
         name = opts[:name] || 'dtk-client'
 
         rsa_pub_key = SSHUtil.read_and_validate_pub_key(path_to_key)
-        
+
         post_body  = { 
           :rsa_pub_key        => rsa_pub_key.chomp,
-          :username?          => name && name.chomp,
+          :username           => name && name.chomp,
           :first_registration => first_registration,
         }
-        rest_post "#{RoutePrefix}/add_user_direct_access", PostBody.new(post_body)
+        response = rest_post("#{RoutePrefix}/add_user_direct_access", post_body)
       end
     end
   end

@@ -15,29 +15,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client::CLI
-  class Context
-    module Type
-      class Service < Context
-        include Command::Service
-        include Command::Module
-        include Command::Account
-
-        COMMAND_DEFS = [:service, :module, :account]
-
-        def add_command_defs!
-         COMMAND_DEFS.each {|cmd| add_command(cmd)}
-        end
-
-        def context_type
-          'service'
-        end
-
-        def allowed_commands_defs
-          COMMAND_DEFS.map { |cmd| cmd.to_s }
+module DTK::Client
+  module CLI::Command
+    module Account
+      subcommand_def 'set-catalog-credentials' do |c|
+        command_body c, 'set-catalog-credentials', 'Sets catalog credentials' do |sc|
+          sc.action do 
+            Operation::Account.set_catalog_credentials
+          end
         end
       end
+
     end
   end
 end
-
