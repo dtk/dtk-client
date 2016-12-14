@@ -54,7 +54,6 @@ module DTK::Client
         :all          => Switch.new(:all, 'All'),
         :delete       => Switch.new(:delete, 'Delete'),
         :force        => Switch.new(:f, 'Force'),
-        :force        => Switch.new(:force, 'Force'),
         :purge        => Switch.new(:purge, 'Purge'),
         :push         => Switch.new(:push, 'Push changes'),
         :skip_prompt  => Switch.new(:y, 'Skip prompt'),
