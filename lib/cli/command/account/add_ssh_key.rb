@@ -15,29 +15,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client::CLI
-  class Context
-    module Type
-      class Service < Context
-        include Command::Service
-        include Command::Module
-        include Command::Account
+module DTK::Client
+  module CLI::Command
+    module Account
+      subcommand_def 'add-ssh-key' do |c|
+        c.arg Token::Arg.keypair_name
+        command_body c, 'add-ssh-key', 'Adds SSH key for current user' do |sc|
+          sc.flag Token.directory_path
+          sc.action do |_global_options, options, args|
+            directory_path = options[:directory_path]
+            name           = args[0]
+            args = {
+              :diretory_path => directory_path,
+              :name          => name
+            }
 
-        COMMAND_DEFS = [:service, :module, :account]
-
-        def add_command_defs!
-         COMMAND_DEFS.each {|cmd| add_command(cmd)}
-        end
-
-        def context_type
-          'service'
-        end
-
-        def allowed_commands_defs
-          COMMAND_DEFS.map { |cmd| cmd.to_s }
+            Operation::Account.add_ssh_key(args)
+          end
         end
       end
+
     end
   end
 end
-

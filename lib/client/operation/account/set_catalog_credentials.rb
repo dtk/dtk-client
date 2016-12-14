@@ -15,29 +15,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client::CLI
-  class Context
-    module Type
-      class Service < Context
-        include Command::Service
-        include Command::Module
-        include Command::Account
+module DTK::Client
+  class Operation::Account
+    class SetCatalogCredentials < self
+      def self.execute(args = Args.new)
+        creds = DTK::Client::Configurator.enter_catalog_credentials()
 
-        COMMAND_DEFS = [:service, :module, :account]
+        post_body = { :username => creds[:username], :password => creds[:password], :validate => true }
+        response = rest_post("#{RoutePrefix}/set_catalog_credentials", post_body)
+        return response unless response.ok?
 
-        def add_command_defs!
-         COMMAND_DEFS.each {|cmd| add_command(cmd)}
-        end
-
-        def context_type
-          'service'
-        end
-
-        def allowed_commands_defs
-          COMMAND_DEFS.map { |cmd| cmd.to_s }
-        end
+        OsUtil.print("Your catalog credentials have been set!", :yellow)  
       end
     end
   end
 end
-

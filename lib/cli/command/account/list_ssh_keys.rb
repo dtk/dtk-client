@@ -15,29 +15,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client::CLI
-  class Context
-    module Type
-      class Service < Context
-        include Command::Service
-        include Command::Module
-        include Command::Account
-
-        COMMAND_DEFS = [:service, :module, :account]
-
-        def add_command_defs!
-         COMMAND_DEFS.each {|cmd| add_command(cmd)}
-        end
-
-        def context_type
-          'service'
-        end
-
-        def allowed_commands_defs
-          COMMAND_DEFS.map { |cmd| cmd.to_s }
+module DTK::Client
+  module CLI::Command
+    module Account
+      subcommand_def 'list-ssh-keys' do |c|
+        command_body c, 'list-ssh-keys', 'list-ssh-keys for current user' do |sc|
+          sc.action do 
+            Operation::Account.list_ssh_keys
+          end
         end
       end
+
     end
   end
 end
-
