@@ -21,8 +21,9 @@ module DTK::Client::CLI
       class Service < Context
         include Command::Service
         include Command::Module
+        include Command::Account
 
-        COMMAND_DEFS = [:service, :module]
+        COMMAND_DEFS = [:service, :module, :account]
 
         def add_command_defs!
          COMMAND_DEFS.each {|cmd| add_command(cmd)}
