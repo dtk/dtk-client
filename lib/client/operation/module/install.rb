@@ -70,11 +70,14 @@ module DTK::Client
 
       def compute_dependent_modules
         (@parsed_module.val(:DependentModules) || []).map do |parsed_module_ref| 
-          namespace   = parsed_module_ref.req(:Namespace)
           module_name = parsed_module_ref.req(:ModuleName)
-          version     = parsed_module_ref.val(:ModuleVersion)
-          ModuleRef.new(:namespace => namespace, :module_name => module_name, :version => version)
-        end
+          # Legacy might have a dependency to itself, so removing
+          unless module_name == @base_module_ref.module_name 
+            namespace   = parsed_module_ref.req(:Namespace)
+            version     = parsed_module_ref.val(:ModuleVersion)
+            ModuleRef.new(:namespace => namespace, :module_name => module_name, :version => version)
+          end
+        end.compact
       end
 
       def components
