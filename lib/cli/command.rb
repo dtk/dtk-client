@@ -23,7 +23,7 @@ module DTK::Client
       require_relative('command/subcommand')
       require_relative('command/options')
       # above must be included before below
-      ALL_COMMANDS = [:service, :module]
+      ALL_COMMANDS = [:service, :module, :account]
       ALL_COMMANDS.each { |command_name| require_relative("command/#{command_name}") }
       
       def self.command_module(command_name)

@@ -15,13 +15,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client::CLI
+module DTK::Client; module CLI
   class Context
     module Type
-      class Service < Context
+      class Account < Context
+        include Command::Account
         include Command::Service
         include Command::Module
-        include Command::Account
 
         COMMAND_DEFS = [:service, :module, :account]
 
@@ -39,5 +39,4 @@ module DTK::Client::CLI
       end
     end
   end
-end
-
+end; end
