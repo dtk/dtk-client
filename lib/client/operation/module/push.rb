@@ -51,7 +51,10 @@ module DTK::Client
             :commit_sha  => git_repo_response.data(:head_sha)
           )
 
-          rest_post("#{BaseRoute}/update_from_repo", post_body)
+          response = rest_post("#{BaseRoute}/update_from_repo", post_body)
+          # TODO: DTK-2786; uncomment out to see what diffs is returning for different examples of what is deleted, added or modified before push
+          # pp [:debug_diffs, response.data(:diffs)]
+          # if diffs is nil then indicate no diffs, otherwise render diffs in yaml
           nil
         end
       end
