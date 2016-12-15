@@ -47,6 +47,10 @@ module DTK::Client
           raise Error::Usage, "Module #{@module_ref.print_form} does not exist on server"
         end
 
+        if ref_version = @version || module_ref.version
+          raise Error::Usage, "You are not allowed to push module version '#{ref_version}'!" unless ref_version.eql?('master')
+        end
+
         query_string_hash = QueryStringHash.new(
           :module_name => @module_ref.module_name,
           :namespace   => @module_ref.namespace,
