@@ -55,7 +55,7 @@ module DTK::Client
 
         unless dependent_modules.empty?
           OsUtil.print_info('Auto-importing dependencies')
-          DependentModules.install(dependent_modules, :skip_prompt => opts[:skip_prompt])
+          DependentModules.install(@base_module_ref, dependent_modules, :skip_prompt => opts[:skip_prompt])
         end
 
         print_opts = {
