@@ -62,7 +62,8 @@ module DTK::Client
           Operation::ClientModuleDir::GitRepo.create_repo_with_empty_commit(create_repo_opts)
           LoadSource.fetch_transform_and_merge(remote_module_info, self)
         rescue => e
-          Operation::ClientModuleDir::rm_f(@target_repo_dir)
+          # TODO: Rich: per Bakir's suggestion we should not remove directory if import fails
+          # Operation::ClientModuleDir::rm_f(@target_repo_dir)
           raise e
         end
 

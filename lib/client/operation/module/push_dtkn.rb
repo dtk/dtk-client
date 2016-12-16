@@ -64,7 +64,7 @@ module DTK::Client
 
         ConvertSource.transform_and_commit(remote_module_info, self)
 
-        {:target_repo_dir => @target_repo_dir}
+        nil
       end
 
     end
