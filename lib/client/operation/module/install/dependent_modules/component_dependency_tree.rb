@@ -18,16 +18,19 @@
 module DTK::Client; class Operation::Module::Install
   class DependentModules
     class ComponentDependencyTree <  Operation::Module
+      require_relative('component_dependency_tree/cache')
       include DependentModules::Mixin
 
       BaseRoute  = "modules"
 
       # opts can have keys:
-      #   :children
+      #   :children_module_refs
+      #   :cached
       def initialize(module_ref, opts = {})
-        @module_ref        = module_ref
-        @children          = (opts[:children_module_refs] || []).map { |module_ref| self.class.new(module_ref) }
-        @first_level_added = !opts[:children].nil?
+        @module_ref         = module_ref
+        @children           = (opts[:children_module_refs] || []).map { |module_ref| self.class.new(module_ref) }
+        @first_level_added  = !opts[:children_module_refs].nil?
+        @cache              =  opts[:cache] || Cache.new
       end
       private :initialize
 
@@ -36,69 +39,134 @@ module DTK::Client; class Operation::Module::Install
       end
 
       def recursively_add_children!
-        add_children_first_level! unless @first_level_added
-        @first_level_added = true
+        unless @first_level_added
+          raise Error, "Unexpected that @children is not empty" unless @children.empty?
+          @children = get_children_module_refs.map { |module_ref| self.class.new(module_ref, cache: @cache) }        
+          @first_level_added = true
+        end
+
         @children.each { |child| child.recursively_add_children! }
         self
       end
 
+      def resolve_versions_and_return_all_module_refs
+        # TODO: change this simplistic method which does not take into accunt the nested structure.
+        resolve_conflicts(@cache.all_modules_refs)
+      end
+
       private
 
-      def add_children_first_level!
-        # TODO: stub
-        pp [:get_component_module_dependencies, get_component_module_dependencies]
+      # returns module refs array or raises error
+      def get_children_module_refs
+        @cache.lookup_dependencies?(@module_ref) || get_children_module_refs_aux
       end
-      
-      def get_component_module_dependencies
-        # TODO: meantain a cache so dont have to query dependencies twice
-        hash = {
-          :module_name => module_name,
-          :namespace   => namespace,
-          :rsa_pub_key => SSHUtil.rsa_pub_key_content,
-          :version?    => version
-        }
-        rest_get "#{BaseRoute}/module_dependencies", QueryStringHash.new(hash)
-      end
-    end
-  end
-end; end
-=begin 
-      # TODO: old that wil be used to some exten\t
-      def find_and_install_component_module_dependency(component_module, opts = {})
+
+      def get_children_module_refs_aux
+        response = nil
         begin
-          dependencies = get_module_dependencies(component_module)
+          hash = {
+            :module_name => module_name,
+            :namespace   => namespace,
+            :rsa_pub_key => SSHUtil.rsa_pub_key_content,
+            :version?    => version
+          }
+          response = rest_get "#{BaseRoute}/module_dependencies", QueryStringHash.new(hash)
         rescue Error::ServerNotOkResponse => e
           # temp fix for issue when dependent module is imported from puppet forge
           if errors = e.response && e.response['errors']
-            dependencies = nil if errors.first.include?('not found')
+            response = nil if errors.first.include?('not found')
           else
             raise e
           end
         end
 
-        return unless dependencies
+        dependencies = convert_to_module_refs_array(response)
+        @cache.add!(@module_ref, dependencies)
+        dependencies
+      end
 
-        are_there_warnings = RemoteDependency.check_permission_warnings(dependencies)
-        are_there_warnings ||= RemoteDependency.print_dependency_warnings(dependencies, nil, :ignore_permission_warnings => true)
+      def convert_to_module_refs_array(module_dependencies_response)
+        response = module_dependencies_response #alias
+        ret = []
+        return ret unless response
+        process_if_warnings(response)
 
-        if are_there_warnings
-          return false unless Console.prompt_yes_no("Do you still want to proceed with import?", :add_options => true)
+        # TODO: simplied version to stub for 'ncorporate this logic' code
+        if (missing_modules = response.data(:missing_module_components)) && !missing_modules.empty?
+          dep_module_refs = (missing_modules || []).map do |ref_hash|
+            ModuleRef.new(:namespace => ref_hash['namespace'], :module_name => ref_hash['name'], :version => ref_hash['version'])
+          end
+          ret += dep_module_refs
         end
-
-        if (missing_modules = dependencies.data(:missing_module_components)) && !missing_modules.empty?
+        if (required_modules = response.data(:required_modules)) && !required_modules.empty?
+          dep_module_refs = (required_modules || []).map do |ref_hash|
+            required_modules.uniq!
+            ModuleRef.new(:namespace => ref_hash['namespace'], :module_name => ref_hash['name'], :version => ref_hash['version']) 
+          end
+          ret += dep_module_refs
+        end
+        ret
+=begin
+       # TODO incorporate this logic
+        if (missing_modules = response.data(:missing_module_components)) && !missing_modules.empty?
           dep_module_refs = (missing_modules || []).map do |ref_hash|
             ModuleRef.new(:namespace => ref_hash['namespace'], :module_name => ref_hash['name'], :version => ref_hash['version']) 
           end
           install_module_refs(dep_module_refs, opts.merge(:skip_dependencies => true))
         end
 
-        if (required_modules = dependencies.data(:required_modules)) && !required_modules.empty?
+        if (required_modules = response.data(:required_modules)) && !required_modules.empty?
           dep_module_refs = (required_modules || []).map do |ref_hash|
             required_modules.uniq!
             ModuleRef.new(:namespace => ref_hash['namespace'], :module_name => ref_hash['name'], :version => ref_hash['version']) 
           end
           pull_module_refs?(dep_module_refs, opts.merge(:skip_dependencies => true))
         end
+=end
+      end
+
+      def process_if_warnings(module_dependencies_response)
+        are_there_warnings = RemoteDependency.check_permission_warnings(module_dependencies_response)
+        are_there_warnings ||= RemoteDependency.print_dependency_warnings(module_dependencies_response, nil, :ignore_permission_warnings => true)
+        if are_there_warnings
+          raise TerminateInstall unless Console.prompt_yes_no("Do you still want to proceed with install?", :add_options => true)
+        end
+      end
+
+      # TODO: DTK-2766: refine this very simple version of resolve_conflicts taking as input the nested structure, rather than flat list
+      def resolve_conflicts(modules_refs)
+        ret = []
+        modules_refs.each do |modules_ref|
+          # TODO: DTK-2766: handle version conflicts, initially by ignoring, but printing message about conflct and what is chosen
+          #       more advanced could replace what is in ret and choose modules_ref over it
+          ret << modules_ref unless is_conflict?(modules_ref, ret)
+        end
+        ret
+      end
+
+      def is_conflict?(modules_ref, existing_module_refs)
+        is_conflict = false
+        module_name = module_ref.module_name
+        if match = existing_module_refs.find { |existing_module_ref| existing_module_ref.module_name == module_name }
+          # see if the match is same version and namespace
+          unless existing_module_ref.namespace == module_ref.namespace and existing_module_ref.version == module_ref.version
+            is_conflict = true
+          end
+        end
+        is_conflict
+      end
+
+    end
+  end
+end; end
+=begin 
+
+            raise e
+          end
+        end
+
+        return unless dependencies
+
       end
 
       def pull_module_refs?(module_refs, opts = {})
