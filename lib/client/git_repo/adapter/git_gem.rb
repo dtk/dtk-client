@@ -206,7 +206,7 @@ module DTK::Client
 
       def print_status_with_diffs
         changes = [changed(), untracked(), deleted()]
-        puts "\nTherere are changes that are not pushed to the server that will not be staged:\n".colorize(:green) unless changes[0].empty?
+        puts "\nThere are changes that are not pushed to the server that will not be staged:\n".colorize(:green) unless changes[0].empty?
         diff = @git_repo.diff.stats[:files]
         file_changed = changes[0].size
         deletions = 0

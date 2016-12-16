@@ -57,7 +57,7 @@ module DTK::Client
       end
     end
 
-    def self.modified_with_diff?(dir)
+    def self.modified_with_diff?(dir, opts = {})
       repo_dir = {
         :path    => dir,
         :branch  => Git.open(dir).branches.local
@@ -65,7 +65,8 @@ module DTK::Client
 
       message = DTK::Client::Operation::ClientModuleDir::GitRepo.modified_with_diff(repo_dir)
       if message.data(:modified)
-        raise Error::Usage, "To allow push to go through, use option '-f' or invoke 'dtk push' to push the changes before invoking stage again"
+        error_msg = opts[:error_msg] || "To allow push to go through, use option '-f' or invoke 'dtk push' to push the changes before invoking stage again"
+        raise Error::Usage, error_msg
       end
     end
 
