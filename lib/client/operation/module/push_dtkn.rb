@@ -48,7 +48,7 @@ module DTK::Client
         end
 
         if ref_version = @version || module_ref.version
-          raise Error::Usage, "You are not allowed to push module version '#{ref_version}'!" unless ref_version.eql?('master')
+          # raise Error::Usage, "You are not allowed to push module version '#{ref_version}'!" unless ref_version.eql?('master')
         end
 
         query_string_hash = QueryStringHash.new(
