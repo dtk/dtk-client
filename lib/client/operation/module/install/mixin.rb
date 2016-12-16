@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 module DTK::Client
-  class Operation::Module::Install::DependentModules
+  class Operation::Module::Install
     module Mixin
       private
       

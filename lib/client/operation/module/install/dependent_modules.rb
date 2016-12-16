@@ -18,10 +18,7 @@
 module DTK::Client
   class Operation::Module::Install
     class DependentModules < Operation::Module
-      require_relative('dependent_modules/mixin')
-      # mixin must go before print_helper and install_module
       require_relative('dependent_modules/prompt_helper')
-      require_relative('dependent_modules/print_helper')
       require_relative('dependent_modules/component_dependency_tree')
       require_relative('dependent_modules/install_component_module')
 
@@ -33,20 +30,22 @@ module DTK::Client
         # not just component modules
         @base_module_ref       = base_module_ref
         @component_module_refs = component_module_refs 
-        @prompt_helper         = PromptHelper.new(:update_all  => opts[:skip_prompt])
         @print_helper          = PrintHelper.new
+        @prompt_helper         = PromptHelper.new(:update_all  => opts[:skip_prompt])
+
       end
       private :initialize
 
-      def self.install(base_module_ref, component_module_refs, opts = {})
-        new(base_module_ref, component_module_refs, opts).install
+      # same args as initialize
+      def self.install(*args)
+        new(*args).install
       end
 
       def install
         component_dependency_tree = ComponentDependencyTree.create(@base_module_ref, @component_module_refs)
         all_module_refs = component_dependency_tree.resolve_versions_and_return_all_module_refs        
         all_module_refs.each do |module_ref|
-          # Base module is installed when base is installed
+          # Base component module is installed when base is installed
           InstallComponentModule.install?(module_ref, @prompt_helper, @print_helper) unless module_ref.is_base_module?
         end
       end

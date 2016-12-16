@@ -18,13 +18,28 @@
 module DTK::Client
   class Operation::Module::Install
     class ModuleRef < ::DTK::Client::ModuleRef
+      # opts can have keys:
+      #  :namespace
+      #  :module_name
+      #  :version
+      #  :is_base_module
+      #  :module_installed
       def initialize(opts = {})
         super
-        @is_base_module = opts[:is_base_module]
+        @is_base_module   = opts[:is_base_module]
+        @module_installed = opts[:module_installed]
       end
 
       def is_base_module?
         @is_base_module
+      end
+
+      def module_installed?(parent)
+        if @module_installed.nil?
+          @module_installed ||= parent.query_if_component_module_is_installed?
+        else
+          @module_installed
+        end
       end
     end
   end

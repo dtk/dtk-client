@@ -18,6 +18,9 @@
 module DTK::Client
   class Operation::Module
     class Install < self
+      require_relative('install/mixin')
+      # mixin must go first
+      require_relative('install/print_helper')
       require_relative('install/module_ref')
       require_relative('install/dependent_modules')
       require_relative('install/common_module')
@@ -26,6 +29,7 @@ module DTK::Client
         @file_obj         = file_obj
         @base_module_ref  = module_ref
         @parsed_module    = file_obj.parse_content(:common_module_summary)
+        @print_helper     = PrintHelper.new(:module_ref => @base_module_ref)
       end
 
       private :initialize
@@ -49,25 +53,23 @@ module DTK::Client
           raise Error::Usage, "No base module reference #{dsl_path_ref}"
         end
 
-        # TODO: see if need to use both @base_module_ref.print_form and pretty_print_base_module
-
         if module_exists?(@base_module_ref, { :type => :common_module })
           raise Error::Usage, "Module '#{@base_module_ref.print_form}' exists already"
         end
 
         unless dependent_modules.empty?
-          OsUtil.print_info("Auto-importing dependencies ...")
+          @print_helper.print_installing_depedencies
           begin 
             DependentModules.install(@base_module_ref, dependent_modules, :skip_prompt => opts[:skip_prompt])
           rescue TerminateInstall
-            OsUtil.print_warning("Terminated installation of module '#{@base_module_ref.print_form}'")
+            @print_helper.print_terminated_installation
             return nil
           end
         end
 
-        OsUtil.print_info("Installing base module '#{pretty_print_base_module}' ...")
+        @print_helper.print_continuation_installing_base_module
         CommonModule.install(@base_module_ref, @file_obj)
-        OsUtil.print_info("Successfully installed '#{pretty_print_base_module}'")
+        @print_helper.print_done_message
         nil
       end
       
@@ -123,14 +125,6 @@ module DTK::Client
         else
           "in the dsl file"
         end
-      end
-
-      def pretty_print_base_module
-         print_opts = {
-          :namespace   => namespace,
-          :version     => version
-        }
-        ::DTK::Common::PrettyPrintForm.module_ref(module_name, print_opts)
       end
 
     end

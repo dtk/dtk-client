@@ -45,6 +45,11 @@ module DTK::Client
       NamespaceModuleName.print_form(@namespace, @module_name, :version => @version)
     end
 
+    MASTER_VERSION = 'master'
+    def is_master_version?
+      @version.nil? or @version == MASTER_VERSION
+    end
+
     private
 
     module NamespaceModuleName

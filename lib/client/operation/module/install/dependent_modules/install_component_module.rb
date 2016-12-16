@@ -15,10 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client; class Operation::Module::Install
-  class DependentModules
+module DTK::Client; class Operation::Module
+  class Install::DependentModules
     class InstallComponentModule < Operation::Module
-      include DependentModules::Mixin
+      include Install::Mixin
       BaseRoute  = "modules"
 
       def initialize(module_ref, prompt_helper, print_helper)
@@ -33,25 +33,26 @@ module DTK::Client; class Operation::Module::Install
       end
       
       def install?
-        if module_installed?
-          pull_module_update?
-          # find_and_install_component_module_dependency(:skip_if_no_remote => true, indent: "  ")
+        if @module_ref.module_installed?(self)
+          if @module_ref.is_master_version?
+            pull_module_update?
+          else
+            @print_helper.print_using_installed_dependent_module
+          end
         else
           install_module
         end
       end
 
-      private
-
-      def module_installed?
+      def query_if_component_module_is_installed?
         module_exists?(@module_ref, :type => :component_module)
       end
 
+      private
+
       def pull_module_update?
         return unless @prompt_helper.pull_module_update?(@print_helper)
-
-        # TODO: if locked version than want a print_using_installed_module messgage
-        @print_helper.print_pulling_update
+        @print_helper.print_continuation_pulling_dependency_update
 
         post_body = {
           :module_name => module_name,
@@ -73,7 +74,7 @@ module DTK::Client; class Operation::Module::Install
       end
 
       def install_module
-        @print_helper.print_install_msg
+        @print_helper.print_continuation_installing_dependency
 
         post_body = {
           :module_name => module_name,
@@ -81,10 +82,6 @@ module DTK::Client; class Operation::Module::Install
           :rsa_pub_key => SSHUtil.rsa_pub_key_content,
           :version?    => version
         }
-
-        # unless opts[:skip_dependencies]
-        #  find_and_install_component_module_dependency(component_module, opts.merge(:add_newline => true, indent: "  "))
-        # end
 
         response = rest_post "#{BaseRoute}/install_component_module", PostBody.new(post_body)
 

@@ -15,11 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-module DTK::Client; class Operation::Module::Install
-  class DependentModules
+module DTK::Client; class Operation::Module
+  class Install::DependentModules
     class ComponentDependencyTree <  Operation::Module
       require_relative('component_dependency_tree/cache')
-      include DependentModules::Mixin
+      include Install::Mixin
 
       BaseRoute  = "modules"
 
@@ -93,40 +93,19 @@ module DTK::Client; class Operation::Module::Install
         response = module_dependencies_response #alias
         ret = []
         return ret unless response
+
+        # processing warning messages, :missing_module_components and :required_modules
         process_if_warnings(response)
 
-        # TODO: simplied version to stub for 'ncorporate this logic' code
-        if (missing_modules = response.data(:missing_module_components)) && !missing_modules.empty?
-          dep_module_refs = (missing_modules || []).map do |ref_hash|
-            ModuleRef.new(:namespace => ref_hash['namespace'], :module_name => ref_hash['name'], :version => ref_hash['version'])
-          end
-          ret += dep_module_refs
-        end
-        if (required_modules = response.data(:required_modules)) && !required_modules.empty?
-          dep_module_refs = (required_modules || []).map do |ref_hash|
-            required_modules.uniq!
-            ModuleRef.new(:namespace => ref_hash['namespace'], :module_name => ref_hash['name'], :version => ref_hash['version']) 
-          end
-          ret += dep_module_refs
-        end
-        ret
-=begin
-       # TODO incorporate this logic
-        if (missing_modules = response.data(:missing_module_components)) && !missing_modules.empty?
-          dep_module_refs = (missing_modules || []).map do |ref_hash|
-            ModuleRef.new(:namespace => ref_hash['namespace'], :module_name => ref_hash['name'], :version => ref_hash['version']) 
-          end
-          install_module_refs(dep_module_refs, opts.merge(:skip_dependencies => true))
+        if missing_modules = response.data(:missing_module_components)
+          ret += missing_modules.map { |ref_hash| create_module_ref(ref_hash, :module_installed => false) }
         end
 
-        if (required_modules = response.data(:required_modules)) && !required_modules.empty?
-          dep_module_refs = (required_modules || []).map do |ref_hash|
-            required_modules.uniq!
-            ModuleRef.new(:namespace => ref_hash['namespace'], :module_name => ref_hash['name'], :version => ref_hash['version']) 
-          end
-          pull_module_refs?(dep_module_refs, opts.merge(:skip_dependencies => true))
+        if required_modules = response.data(:required_modules)
+          ret += required_modules.map { |ref_hash| create_module_ref(ref_hash, :module_installed => true) }
         end
-=end
+
+        ret
       end
 
       def process_if_warnings(module_dependencies_response)
@@ -135,6 +114,18 @@ module DTK::Client; class Operation::Module::Install
         if are_there_warnings
           raise TerminateInstall unless Console.prompt_yes_no("Do you still want to proceed with install?", :add_options => true)
         end
+      end
+
+      # opts can have keys:
+      #   :module_installed
+      def create_module_ref(ref_hash, opts = {})
+        module_ref_hash = {
+          :namespace => ref_hash['namespace'], 
+          :module_name => ref_hash['name'], 
+          :version => ref_hash['version']
+        }
+        module_ref_hash.merge!(:module_installed => opts[:module_installed]) if opts.has_key?(:module_installed)
+        Install::ModuleRef.new(module_ref_hash)
       end
 
       # TODO: DTK-2766: refine this very simple version of resolve_conflicts taking as input the nested structure, rather than flat list
