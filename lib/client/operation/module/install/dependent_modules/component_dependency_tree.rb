@@ -28,9 +28,9 @@ module DTK::Client; class Operation::Module::Install
       #   :cached
       def initialize(module_ref, opts = {})
         @module_ref         = module_ref
-        @children           = (opts[:children_module_refs] || []).map { |module_ref| self.class.new(module_ref) }
+        @cache              = opts[:cache] || Cache.new
+        @children           = children_from_module_refs(opts[:children_module_refs] || [], @cache)
         @first_level_added  = !opts[:children_module_refs].nil?
-        @cache              =  opts[:cache] || Cache.new
       end
       private :initialize
 
@@ -41,7 +41,7 @@ module DTK::Client; class Operation::Module::Install
       def recursively_add_children!
         unless @first_level_added
           raise Error, "Unexpected that @children is not empty" unless @children.empty?
-          @children = get_children_module_refs.map { |module_ref| self.class.new(module_ref, cache: @cache) }        
+          @children = children_from_module_refs(get_children_module_refs, @cache)
           @first_level_added = true
         end
 
@@ -55,6 +55,10 @@ module DTK::Client; class Operation::Module::Install
       end
 
       private
+
+      def children_from_module_refs(module_refs, cache)
+        module_refs.map { |module_ref| self.class.new(module_ref, cache: cache) }
+      end
 
       # returns module refs array or raises error
       def get_children_module_refs
@@ -134,17 +138,17 @@ module DTK::Client; class Operation::Module::Install
       end
 
       # TODO: DTK-2766: refine this very simple version of resolve_conflicts taking as input the nested structure, rather than flat list
-      def resolve_conflicts(modules_refs)
+      def resolve_conflicts(module_refs)
         ret = []
-        modules_refs.each do |modules_ref|
+        module_refs.each do |module_ref|
           # TODO: DTK-2766: handle version conflicts, initially by ignoring, but printing message about conflct and what is chosen
           #       more advanced could replace what is in ret and choose modules_ref over it
-          ret << modules_ref unless is_conflict?(modules_ref, ret)
+          ret << module_ref unless is_conflict?(module_ref, ret)
         end
         ret
       end
 
-      def is_conflict?(modules_ref, existing_module_refs)
+      def is_conflict?(module_ref, existing_module_refs)
         is_conflict = false
         module_name = module_ref.module_name
         if match = existing_module_refs.find { |existing_module_ref| existing_module_ref.module_name == module_name }
@@ -159,22 +163,3 @@ module DTK::Client; class Operation::Module::Install
     end
   end
 end; end
-=begin 
-
-            raise e
-          end
-        end
-
-        return unless dependencies
-
-      end
-
-      def pull_module_refs?(module_refs, opts = {})
-        module_refs.each do |module_ref|
-          print_using_message(opts)
-          pull_module?(opts)
-        end
-      end
-=end
-
-

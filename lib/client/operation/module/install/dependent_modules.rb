@@ -35,7 +35,6 @@ module DTK::Client
         @component_module_refs = component_module_refs 
         @prompt_helper         = PromptHelper.new(:update_all  => opts[:skip_prompt])
         @print_helper          = PrintHelper.new
-        @loaded_module_refs    = []
       end
       private :initialize
 
@@ -44,33 +43,14 @@ module DTK::Client
       end
 
       def install
-        # component_dependency_tree = ComponentDependencyTree.create(@base_module_ref, @component_module_refs)
-        # all_module_refs = component_dependency_tree.resolve_versions_and_return_all_module_refs        
-        # pp [:all_module_refs, all_module_refs]
-
-        # TODO: replace below with above
-        @component_module_refs.each do |module_ref|
-          unless loaded_already?(module_ref)
-            # Base module is installed when base is installed
-            InstallComponentModule.install?(module_ref, @prompt_helper, @print_helper) unless module_ref.is_base_module?
-            @loaded_module_refs << module_ref
-            # TODO: install recursive dependencies
-          end
+        component_dependency_tree = ComponentDependencyTree.create(@base_module_ref, @component_module_refs)
+        all_module_refs = component_dependency_tree.resolve_versions_and_return_all_module_refs        
+        all_module_refs.each do |module_ref|
+          # Base module is installed when base is installed
+          InstallComponentModule.install?(module_ref, @prompt_helper, @print_helper) unless module_ref.is_base_module?
         end
       end
 
-      private
-
-      def loaded_already?(module_ref)
-        module_name = module_ref.module_name
-        if match = @loaded_module_refs.find { |loaded_module_ref| loaded_module_ref.module_name == module_name }
-          # see if the match is same version and namespace
-          unless loaded_module_ref.namespace == module_ref.namespace and loaded_module_ref.version == module_ref.version
-            # TODO: DTK-2766: handle version conflicts, initially by ignoring, but printing message about conflct and what is chosen
-          end
-          true
-        end
-      end
     end
   end
 end
