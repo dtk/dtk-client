@@ -58,7 +58,6 @@ module DTK::Client
         end
 
         unless dependent_modules.empty?
-          @print_helper.print_installing_depedencies
           begin 
             DependentModules.install(@base_module_ref, dependent_modules, :skip_prompt => opts[:skip_prompt])
           rescue TerminateInstall

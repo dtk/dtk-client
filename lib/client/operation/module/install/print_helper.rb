@@ -35,21 +35,25 @@ module DTK::Client; class Operation::Module
       
       # Continuation messages, which dont have carriage return
       def print_continuation_installing_dependency
-        print_continuation "Installing dependent module '#{pretty_print_module}' from #{Term::DTKN_CATALOG}"
+        print_continuation "Installing dependent module '#{pretty_print_module}'"
       end
 
       def print_continuation_installing_base_module
-        print_continuation "Installing base module '#{pretty_print_module}'", :color => :yellow
+        print_continuation "Installing base module '#{pretty_print_module}' from #{Term::DTKN_CATALOG}", :color => :yellow
       end
 
       def print_continuation_pulling_dependency_update
-        print_continuation "Pulling update to dependent module '#{pretty_print_module}' from #{Term::DTKN_CATALOG}"
+        print_continuation "Pulling update to dependent module '#{pretty_print_module}'"
       end
 
       ###  End: Continuation messages
 
-      def print_installing_depedencies
-        OsUtil.print_info("Auto-importing dependencies ...")
+      def print_getting_dependencies
+        OsUtil.print_info("Getting dependent module info for '#{pretty_print_module}' from #{Term::DTKN_CATALOG} #{Term::CONTINUATION}")
+      end
+
+      def print_installing_dependencies
+        OsUtil.print_info("Installing dependent modules from #{Term::DTKN_CATALOG} #{Term::CONTINUATION}")
       end
 
       def print_using_installed_dependent_module
@@ -70,11 +74,12 @@ module DTK::Client; class Operation::Module
       end
 
       private
+      
 
       # opts can have keys:
       #   :color
       def print_continuation(msg, opts = {})
-        print_without_cr("#{@indent}#{msg} ... ", :color => opts[:color])
+        print_without_cr("#{@indent}#{msg} #{Term::CONTINUATION} ", :color => opts[:color])
       end
 
       # print without carriage return
@@ -104,6 +109,7 @@ module DTK::Client; class Operation::Module
       
       module Term
         DTKN_CATALOG = 'dtkn catalog'
+        CONTINUATION = '...'
       end
       
     end

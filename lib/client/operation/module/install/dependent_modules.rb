@@ -30,8 +30,8 @@ module DTK::Client
         # not just component modules
         @base_module_ref       = base_module_ref
         @component_module_refs = component_module_refs 
-        @print_helper          = PrintHelper.new
-        @prompt_helper         = PromptHelper.new(:update_all  => opts[:skip_prompt])
+        @print_helper          = PrintHelper.new(:module_ref => @base_module_ref)
+        @prompt_helper         = PromptHelper.new(:update_all => opts[:skip_prompt])
 
       end
       private :initialize
@@ -42,12 +42,20 @@ module DTK::Client
       end
 
       def install
-        component_dependency_tree = ComponentDependencyTree.create(@base_module_ref, @component_module_refs)
-        all_module_refs = component_dependency_tree.resolve_versions_and_return_all_module_refs        
-        all_module_refs.each do |module_ref|
-          # Base component module is installed when base is installed
-          InstallComponentModule.install?(module_ref, @prompt_helper, @print_helper) unless module_ref.is_base_module?
+        @print_helper.print_getting_dependencies
+        all_module_refs = get_all_dependent_module_refs
+        unless all_module_refs.empty?
+          @print_helper.print_installing_dependencies
+          all_module_refs.each do |module_ref|
+            # Using unless module_ref.is_base_module? because Base component module is installed when base is installed
+            InstallComponentModule.install?(module_ref, @prompt_helper, @print_helper) unless module_ref.is_base_module?
+          end
         end
+      end
+
+      def get_all_dependent_module_refs
+        component_dependency_tree = ComponentDependencyTree.create(@base_module_ref, @component_module_refs)
+        component_dependency_tree.resolve_versions_and_return_all_module_refs        
       end
 
     end

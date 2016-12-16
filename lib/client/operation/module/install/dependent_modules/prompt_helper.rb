@@ -27,12 +27,12 @@ module DTK::Client
         @update_none = opts[:update_none]
       end
 
+      PROMPT_OPTIONS = %w(all none)
       def pull_module_update?(print_helper)
         return false if @update_none
         return true if @update_all
 
-        options = %w(all none)
-        update = Console.confirmation_prompt_additional_options(print_helper.dependent_module_update_prompt, options) 
+        update = Console.confirmation_prompt_additional_options(print_helper.dependent_module_update_prompt, PROMPT_OPTIONS)
         return false unless update
         
         if update.eql?('all')
