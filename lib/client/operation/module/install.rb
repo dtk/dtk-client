@@ -49,24 +49,31 @@ module DTK::Client
           raise Error::Usage, "No base module reference #{dsl_path_ref}"
         end
 
+        # TODO: see if need to use both @base_module_ref.print_form and pretty_print_base_module
+
         if module_exists?(@base_module_ref, { :type => :common_module })
-          raise Error::Usage, "Module #{@base_module_ref.print_form} exists already"
+          raise Error::Usage, "Module '#{@base_module_ref.print_form}' exists already"
         end
 
         unless dependent_modules.empty?
-          OsUtil.print_info('Auto-importing dependencies')
-          DependentModules.install(@base_module_ref, dependent_modules, :skip_prompt => opts[:skip_prompt])
+          OsUtil.print_info("Auto-importing dependencies ...")
+          begin 
+            DependentModules.install(@base_module_ref, dependent_modules, :skip_prompt => opts[:skip_prompt])
+          rescue TerminateInstall
+            OsUtil.print_warning("Terminated installation of module '#{@base_module_ref.print_form}'")
+            return nil
+          end
         end
 
-        print_opts = {
-          :namespace   => namespace,
-          :version     => version
-        }
+        OsUtil.print_info("Installing base module '#{pretty_print_base_module}' ...")
         CommonModule.install(@base_module_ref, @file_obj)
-        OsUtil.print_info("Successfully imported '#{DTK::Common::PrettyPrintForm.module_ref(module_name, print_opts)}'")
+        OsUtil.print_info("Successfully installed '#{pretty_print_base_module}'")
         nil
       end
       
+      class TerminateInstall < ::Exception
+      end
+
       private
 
       def dependent_modules
@@ -117,6 +124,15 @@ module DTK::Client
           "in the dsl file"
         end
       end
+
+      def pretty_print_base_module
+         print_opts = {
+          :namespace   => namespace,
+          :version     => version
+        }
+        ::DTK::Common::PrettyPrintForm.module_ref(module_name, print_opts)
+      end
+
     end
   end
 end

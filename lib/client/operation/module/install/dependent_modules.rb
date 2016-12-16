@@ -29,7 +29,7 @@ module DTK::Client
       # opts can have keys:
       #   :skip_prompt
       def initialize(base_module_ref, component_module_refs, opts = {})
-        # TODO: in an later release will changes this so iterating over module_refs, which could have component and service info, 
+        # TODO: DTK-2766: in an later release will changes this so iterating over module_refs, which could have component and service info, 
         # not just component modules
         @base_module_ref       = base_module_ref
         @component_module_refs = component_module_refs 
@@ -45,8 +45,10 @@ module DTK::Client
 
       def install
         # component_dependency_tree = ComponentDependencyTree.create(@base_module_ref, @component_module_refs)
-        # pp [:component_dependency_tree, component_dependency_tree]
-        # TODO: replace below by using logic in component_dependency_tree
+        # all_module_refs = component_dependency_tree.resolve_versions_and_return_all_module_refs        
+        # pp [:all_module_refs, all_module_refs]
+
+        # TODO: replace below with above
         @component_module_refs.each do |module_ref|
           unless loaded_already?(module_ref)
             # Base module is installed when base is installed
@@ -61,9 +63,9 @@ module DTK::Client
 
       def loaded_already?(module_ref)
         module_name = module_ref.module_name
-        if match = @loaded_module_refs.find { |loded_module_ref| loded_module_ref.module_name == module_name }
+        if match = @loaded_module_refs.find { |loaded_module_ref| loaded_module_ref.module_name == module_name }
           # see if the match is same version and namespace
-          unless loded_module_ref.namespace == module_ref.namespace and loded_module_ref.version == module_ref.version
+          unless loaded_module_ref.namespace == module_ref.namespace and loaded_module_ref.version == module_ref.version
             # TODO: DTK-2766: handle version conflicts, initially by ignoring, but printing message about conflct and what is chosen
           end
           true
