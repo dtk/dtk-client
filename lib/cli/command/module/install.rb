@@ -30,11 +30,13 @@ module DTK::Client
             version        = options[:version]
             skip_prompt    = options[:skip_prompt]
 
+            has_remote_repo = false
             if module_name = args[0]
               # reached if installing from dtkn
               # installs content from dtkn (later probably from other remote catalogs) onto client machine
               # in so doing installes depedent modules onto teh dtk server; this step though does not install main module onto
               # server (the later step Operation::Module.install does this)
+              has_remote_repo = true
               module_ref = module_ref_in_options_or_context?(:module_ref => module_name, :version => (version || 'master'))
               target_repo_dir = Operation::Module.install_from_catalog(:module_ref => module_ref, :version => options[:version], :directory_path => directory_path)
             end
@@ -47,9 +49,14 @@ module DTK::Client
 
             install_opts = directory_path ? { :directory_path => directory_path, :version => (version || 'master') } : options
             module_ref   = module_ref_in_options_or_context?(install_opts)
-            flag         = true unless options["d"].nil?
-
-            Operation::Module.install(:module_ref => module_ref, :base_dsl_file_obj => @base_dsl_file_obj, :flag => flag, :skip_prompt => skip_prompt)
+            operation_args = {
+              :module_ref          => module_ref, 
+              :base_dsl_file_obj   => @base_dsl_file_obj, 
+              :has_directory_param => !options["d"].nil?,
+              :skip_prompt         => skip_prompt,
+              :has_remote_repo     => has_remote_repo
+            }
+            Operation::Module.install(operation_args)
           end
         end
       end

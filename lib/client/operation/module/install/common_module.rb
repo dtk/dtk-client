@@ -20,36 +20,27 @@ module DTK::Client
     class CommonModule < self
       BaseRoute = 'modules'
 
-      def self.install(module_ref, file_obj)
-        post_body = PostBody.new(
+      # opts can have keys:
+      #   :has_remote_repo
+      def self.install(module_ref, file_obj, opts = {})
+        common_post_body = PostBody.new(
           :module_name => module_ref.module_name,
           :namespace   => module_ref.namespace,
           :version?    => module_ref.version
         )
 
-        response = rest_post("#{BaseRoute}/create_empty_module", post_body)
+        create_post_body = common_post_body.merge(:has_remote_repo? => opts[:has_remote_repo]) 
+        response = rest_post("#{BaseRoute}/create_empty_module", create_post_body)
 
         branch    = response.required(:branch, :name)
         repo_url  = response.required(:repo, :url)
-        repo_name = response.required(:repo, :name)
 
-        # making repo dir to be directory that directly holds the base file object file_obj
-        repo_dir = file_obj.parent_dir
+        
+        repo_dir = file_obj.parent_dir # repo dir is directory that directly holds the base file object file_obj
+        git_response = ClientModuleDir::GitRepo.fetch_merge_and_push(:repo_dir => repo_dir, :repo_url => repo_url, :branch => branch)
+        commit_sha     = git_response.data(:head_sha)
 
-        args = {
-          :repo_dir => repo_dir,
-          :repo_url => repo_url,
-          :branch   => branch
-        }
-
-        git_response = ClientModuleDir::GitRepo.fetch_merge_and_push(args)
-
-        post_body.merge!(
-          :repo_name  => repo_name,
-          :commit_sha => git_response.data(:head_sha)
-        )
-
-        rest_post("#{BaseRoute}/update_from_repo", post_body)
+        rest_post("#{BaseRoute}/update_from_repo", common_post_body.merge(:commit_sha => commit_sha))
       end
     end
   end
