@@ -32,7 +32,6 @@ module DTK::Client
         @component_module_refs = component_module_refs 
         @print_helper          = PrintHelper.new(:module_ref => @base_module_ref)
         @prompt_helper         = PromptHelper.new(:update_all => opts[:skip_prompt])
-
       end
       private :initialize
 
@@ -43,19 +42,20 @@ module DTK::Client
 
       def install
         @print_helper.print_getting_dependencies
-        all_module_refs = get_all_dependent_module_refs
-        unless all_module_refs.empty?
+        unified_module_refs = get_unified_dependent_module_refs
+        unless unified_module_refs.empty?
           @print_helper.print_installing_dependencies
-          all_module_refs.each do |module_ref|
+          unified_module_refs.each do |module_ref|
             # Using unless module_ref.is_base_module? because Base component module is installed when base is installed
             InstallComponentModule.install?(module_ref, @prompt_helper, @print_helper) unless module_ref.is_base_module?
           end
         end
       end
 
-      def get_all_dependent_module_refs
-        component_dependency_tree = ComponentDependencyTree.create(@base_module_ref, @component_module_refs)
-        component_dependency_tree.resolve_versions_and_return_all_module_refs        
+      def get_unified_dependent_module_refs
+        component_dependency_tree = ComponentDependencyTree.create(@base_module_ref, @component_module_refs, @print_helper)
+        # returns an array of module_refs that have been unified so only one version and namespace per module name
+        component_dependency_tree.resolve_conflicts_and_versions
       end
 
     end

@@ -48,6 +48,10 @@ module DTK::Client; class Operation::Module
 
       ###  End: Continuation messages
 
+      def print_warning(msg)
+        OsUtil.print_warning(msg)
+      end
+
       def print_getting_dependencies
         OsUtil.print_info("Getting dependent module info for '#{pretty_print_module}' from #{Term::DTKN_CATALOG} #{Term::CONTINUATION}")
       end
@@ -91,11 +95,7 @@ module DTK::Client; class Operation::Module
       end
 
       def pretty_print_module
-         print_opts = {
-          :namespace   => namespace,
-          :version     => version
-        }
-        ::DTK::Common::PrettyPrintForm.module_ref(module_name, print_opts)
+        @module_ref.pretty_print
       end
 
       def indent

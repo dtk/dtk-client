@@ -19,6 +19,7 @@ module DTK::Client; class Operation::Module
   class Install::DependentModules
     class ComponentDependencyTree <  Operation::Module
       require_relative('component_dependency_tree/cache')
+      require_relative('component_dependency_tree/resolve_modules')
       include Install::Mixin
 
       BaseRoute  = "modules"
@@ -26,16 +27,18 @@ module DTK::Client; class Operation::Module
       # opts can have keys:
       #   :children_module_refs
       #   :cached
+      #   :print_helper
       def initialize(module_ref, opts = {})
         @module_ref         = module_ref
         @cache              = opts[:cache] || Cache.new
+        @print_helper       = opts[:print_helper]
         @children           = children_from_module_refs(opts[:children_module_refs] || [], @cache)
         @first_level_added  = !opts[:children_module_refs].nil?
       end
       private :initialize
-
-      def self.create(module_ref, children_module_refs)
-        new(module_ref, :children_module_refs => children_module_refs).recursively_add_children!
+      
+      def self.create(module_ref, children_module_refs, print_helper)
+        new(module_ref, :children_module_refs => children_module_refs, :print_helper => print_helper).recursively_add_children!
       end
 
       def recursively_add_children!
@@ -49,9 +52,16 @@ module DTK::Client; class Operation::Module
         self
       end
 
-      def resolve_versions_and_return_all_module_refs
-        # TODO: change this simplistic method which does not take into accunt the nested structure.
-        resolve_conflicts(@cache.all_modules_refs)
+      # resolves conflicts and returns an array of unified module_refs
+      def resolve_conflicts_and_versions
+        # TODO: currently module refs al nailed as opposed to version contraints; when there are
+        #       version contraints; this methdo will take care of them
+        ResolveModules.resolve_conflicts(self)
+      end
+
+      attr_reader :module_ref, :cache
+      def print_helper
+        @print_helper || raise(Error, "Unexepected that @print_helper is nil")
       end
 
       private
@@ -126,29 +136,6 @@ module DTK::Client; class Operation::Module
         }
         module_ref_hash.merge!(:module_installed => opts[:module_installed]) if opts.has_key?(:module_installed)
         Install::ModuleRef.new(module_ref_hash)
-      end
-
-      # TODO: DTK-2766: refine this very simple version of resolve_conflicts taking as input the nested structure, rather than flat list
-      def resolve_conflicts(module_refs)
-        ret = []
-        module_refs.each do |module_ref|
-          # TODO: DTK-2766: handle version conflicts, initially by ignoring, but printing message about conflct and what is chosen
-          #       more advanced could replace what is in ret and choose modules_ref over it
-          ret << module_ref unless is_conflict?(module_ref, ret)
-        end
-        ret
-      end
-
-      def is_conflict?(module_ref, existing_module_refs)
-        is_conflict = false
-        module_name = module_ref.module_name
-        if match = existing_module_refs.find { |existing_module_ref| existing_module_ref.module_name == module_name }
-          # see if the match is same version and namespace
-          unless existing_module_ref.namespace == module_ref.namespace and existing_module_ref.version == module_ref.version
-            is_conflict = true
-          end
-        end
-        is_conflict
       end
 
     end

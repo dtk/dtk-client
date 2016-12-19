@@ -41,6 +41,10 @@ module DTK::Client
       @client_dir_path = opts[:client_dir_path]
     end
 
+    def pretty_print
+      ::DTK::Common::PrettyPrintForm.module_ref(@module_name, :namespace => @namespace, :version => @version)
+    end
+    # TODO: look at deprecating print_form
     def print_form
       NamespaceModuleName.print_form(@namespace, @module_name, :version => @version)
     end
@@ -49,6 +53,15 @@ module DTK::Client
     def is_master_version?
       @version.nil? or @version == MASTER_VERSION
     end
+
+    def same_module?(module_ref)
+      @module_name == module_ref.module_name 
+    end
+      
+    def exact_match?(module_ref)
+      same_module?(module_ref) and @namespace == module_ref.namespace and @version == module_ref.version
+    end
+
 
     private
 
