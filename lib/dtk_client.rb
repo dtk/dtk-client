@@ -18,7 +18,9 @@
 module DTK
   module Client
     require_relative('client/util')
-    # util must be loaded first
+    require_relative('client/module_ref')
+
+    # util and module_ref must be loaded first
     require_relative('client/logger')
     require_relative('client/error')
     require_relative('client/config')

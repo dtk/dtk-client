@@ -45,7 +45,7 @@ module DTK::Client; class Operation::Module
       end
 
       def query_if_component_module_is_installed?
-        module_exists?(@module_ref, :type => :component_module)
+        module_version_exists?(@module_ref, :type => :component_module)
       end
 
       private

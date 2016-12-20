@@ -27,11 +27,11 @@ module DTK::Client
         
       private
 
-      def module_exists?(module_ref, opts = {})
-        self.class.module_exists?(module_ref, opts)
+      def module_version_exists?(module_ref, opts = {})
+        self.class.module_version_exists?(module_ref, opts)
       end
 
-      def self.module_exists?(module_ref, opts = {})
+      def self.module_version_exists?(module_ref, opts = {})
         type = opts[:type] || :common_module
         query_string_hash = QueryStringHash.new(module_ref_hash(module_ref).merge(:module_type => type))
         response = rest_get(BaseRoute, query_string_hash)

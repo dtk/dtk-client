@@ -29,7 +29,7 @@ module DTK::Client
             :version => module_ref.version
           }
 
-          unless module_info = module_exists?(module_ref, :type => :common_module)
+          unless module_info = module_version_exists?(module_ref, :type => :common_module)
             raise Error::Usage, "DTK module '#{DTK::Common::PrettyPrintForm.module_ref(module_ref.module_name, opts)}' does not exist on server."
           end
 

@@ -39,7 +39,7 @@ module DTK::Client
           base_dsl_file_obj      = args.required(:base_dsl_file_obj)
           has_directory_param    = args[:has_directory_param]
           skip_prompt            = args[:skip_prompt]
-          has_remote_repo  = args[:has_remote_repo]
+          has_remote_repo        = args[:has_remote_repo]
 
           if has_directory_param
             file_obj = args.required(:base_dsl_file_obj).raise_error_if_no_content_flag(:module_ref)
@@ -59,7 +59,7 @@ module DTK::Client
           raise Error::Usage, "No base module reference #{dsl_path_ref}"
         end
 
-        if module_exists?(@base_module_ref, { :type => :common_module })
+        if module_version_exists?(@base_module_ref, { :type => :common_module })
           raise Error::Usage, "Module '#{@base_module_ref.print_form}' exists already"
         end
 
@@ -100,7 +100,7 @@ module DTK::Client
           ModuleRef.new(:namespace => dep_namespace, :module_name => dep_module_name, :version => dep_version, :is_base_module => is_base_module)
         end
         unless base_component_module_found
-          if module_exists?(@base_module_ref, :type => :component_module)
+          if module_version_exists?(@base_module_ref, :type => :component_module)
             ret << ModuleRef.new(:namespace => namespace, :module_name => module_name, :version => version, :is_base_module => true)
           end
         end

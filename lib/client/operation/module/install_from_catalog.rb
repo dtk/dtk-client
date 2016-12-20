@@ -26,7 +26,7 @@ module DTK::Client
         @module_ref       = module_ref
         @directory_path   = directory_path
         @target_repo_dir  = ClientModuleDir.create_module_dir_from_path(directory_path || OsUtil.current_dir)
-        @version          = version # if nil wil be dynamically updated
+        @version          = version # if nil wil be dynamically updated along with version attribute of @module_ref
       end
       private :initialize
 
@@ -42,9 +42,6 @@ module DTK::Client
       end
       
       def install_from_catalog
-        if module_exists?(@module_ref, :type => :common_module)
-          raise Error::Usage, "Module #{@module_ref.print_form} exists already"
-        end
 
         query_string_hash = QueryStringHash.new(
           :module_name => @module_ref.module_name,
@@ -55,17 +52,18 @@ module DTK::Client
 
         remote_module_info = rest_get "#{BaseRoute}/remote_module_info", query_string_hash
 
-        @version ||= remote_module_info.required(:version)
-
-        begin 
-          create_repo_opts = { :repo_dir => @target_repo_dir, :commit_msg => "DTK client initialize" }
-          Operation::ClientModuleDir::GitRepo.create_repo_with_empty_commit(create_repo_opts)
-          LoadSource.fetch_transform_and_merge(remote_module_info, self)
-        rescue => e
-          # TODO: Rich: per Bakir's suggestion we should not remove directory if import fails
-          # Operation::ClientModuleDir::rm_f(@target_repo_dir)
-          raise e
+        unless @version 
+          @version = remote_module_info.required(:version)
+          @module_ref.version = @version
         end
+
+        if module_version_exists?(@module_ref, :type => :common_module)
+          raise Error::Usage, "Module '#{@module_ref.print_form}' exists already"
+        end
+
+        create_repo_opts = { :repo_dir => @target_repo_dir, :commit_msg => "DTK client initialize" }
+        Operation::ClientModuleDir::GitRepo.create_repo_with_empty_commit(create_repo_opts)
+        LoadSource.fetch_transform_and_merge(remote_module_info, self)
 
         {:target_repo_dir => @target_repo_dir}
       end

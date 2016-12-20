@@ -19,6 +19,7 @@ module DTK::Client
   class ModuleRef
 
     attr_reader :namespace, :module_name, :version, :client_dir_path
+    attr_accessor :version
 
     # opts can have keys
     #  :namespace
