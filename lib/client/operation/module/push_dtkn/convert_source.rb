@@ -54,7 +54,7 @@ module DTK::Client; class Operation::Module
         repo = checkout_branch__return_repo(target_repo_dir, "remotes/dtkn/master").data(:repo)
         FileUtils.mkdir_p("#{target_repo_dir}/assemblies") unless File.exists?("#{target_repo_dir}/assemblies")
 
-        service_file_path__content_array.each { |file| Operation::ClientModuleDir.create_file_with_content("#{target_repo_dir}/#{file[:path]}", file[:content]) }
+        service_file_path__content_array.each { |file| Operation::ClientModuleDir.create_file_with_content("#{file_path(target_repo_dir, file)}", file[:content]) }
         commit_and_push_to_remote(repo, target_repo_dir, "master", "dtkn")
       end
 
@@ -63,7 +63,7 @@ module DTK::Client; class Operation::Module
         component_file_path__content_array = ComponentInfo.transform_info(transform_helper, component_info['remote_repo_url'], parent)
 
         repo = checkout_branch__return_repo(target_repo_dir, "remotes/dtkn-component-info/master").data(:repo)
-        component_file_path__content_array.each { |file| Operation::ClientModuleDir.create_file_with_content("#{target_repo_dir}/#{file[:path]}", file[:content]) }
+        component_file_path__content_array.each { |file| Operation::ClientModuleDir.create_file_with_content("#{file_path(target_repo_dir, file)}", file[:content]) }
 
         commit_and_push_to_remote(repo, target_repo_dir, "master", "dtkn-component-info")
       end
@@ -73,6 +73,10 @@ module DTK::Client; class Operation::Module
       attr_reader :info_processor, :target_repo_dir, :parent
 
       def self.write_output_path_text_pairs(transform_helper, target_repo_dir, info_types_processed)
+      end
+
+      def self.file_path(target_repo_dir, file)
+        file[:full_path] ? file[:path] : "#{target_repo_dir}/#{file[:path]}"
       end
 
       def self.checkout_branch__return_repo(target_repo_dir, branch)

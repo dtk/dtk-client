@@ -42,7 +42,23 @@ module DTK::Client
       end
 
       def file_path__content_array
-        @dtk_dsl_info_processor.output_path_text_pairs.inject([]) { |a, (path, content)| a + [{ path: path, content: content }] }
+        files_array = @dtk_dsl_info_processor.output_path_text_pairs.inject([]) { |a, (path, content)| a + [{ path: path, content: content }] }
+
+        if info_type == :component_info
+          cmp_files_array = component_info_related_files.inject([]) { |a, (path, content)| a + [{ path: path, content: content, full_path: true }] }
+          files_array.concat(cmp_files_array)
+        end
+
+        files_array
+      end
+
+      def component_info_related_files
+        files = {}
+
+        matches = directory_file_paths.select { |path| !path.include?('dtk.module.yaml') && !path.include?('module_refs.yaml') }
+        matches.each { |file| files.merge!("#{file}" => get_raw_content?(file)) if File.file?(file) }
+
+        files
       end
 
       private
