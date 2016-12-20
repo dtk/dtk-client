@@ -17,7 +17,7 @@
 #
 module DTK::Client; class Operation::Module
   class Install::DependentModules
-    class InstallComponentModule < Operation::Module
+    class ComponentModule < Operation::Module
       include Install::Mixin
       BaseRoute  = "modules"
 
@@ -28,11 +28,11 @@ module DTK::Client; class Operation::Module
       end
       private :initialize
 
-      def self.install?(module_ref, prompt_helper, print_helper)
-        new(module_ref, prompt_helper, print_helper).install?
+      def self.install_or_pull?(module_ref, prompt_helper, print_helper)
+        new(module_ref, prompt_helper, print_helper).install_or_pull?
       end
       
-      def install?
+      def install_or_pull?
         if @module_ref.module_installed?(self)
           if @module_ref.is_master_version?
             pull_module_update?
@@ -62,7 +62,7 @@ module DTK::Client; class Operation::Module
           :full_module_name => full_module_name,
           :json_diffs  => ""
         }
-        response = rest_post "#{BaseRoute}/update_dependency_from_remote", PostBody.new(post_body)
+        response = rest_post "#{BaseRoute}/pull_component_module_from_remote", PostBody.new(post_body)
 
         if custom_message = response.data[:custom_message]
           OsUtil.print(custom_message)
