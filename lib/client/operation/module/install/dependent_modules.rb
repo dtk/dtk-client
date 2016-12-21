@@ -20,7 +20,7 @@ module DTK::Client
     class DependentModules < Operation::Module
       require_relative('dependent_modules/prompt_helper')
       require_relative('dependent_modules/component_dependency_tree')
-      require_relative('dependent_modules/install_component_module')
+      require_relative('dependent_modules/component_module')
 
       BaseRoute  = "modules"
       # opts can have keys:
@@ -47,7 +47,7 @@ module DTK::Client
           @print_helper.print_installing_dependencies
           unified_module_refs.each do |module_ref|
             # Using unless module_ref.is_base_module? because Base component module is installed when base is installed
-            InstallComponentModule.install?(module_ref, @prompt_helper, @print_helper) unless module_ref.is_base_module?
+            ComponentModule.install_or_pull?(module_ref, @prompt_helper, @print_helper) unless module_ref.is_base_module?
           end
         end
       end
