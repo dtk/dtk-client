@@ -54,7 +54,9 @@ module DTK::Client; class Operation::Module
         repo = checkout_branch__return_repo(target_repo_dir, "remotes/dtkn/master").data(:repo)
         FileUtils.mkdir_p("#{target_repo_dir}/assemblies") unless File.exists?("#{target_repo_dir}/assemblies")
 
-        service_file_path__content_array.each { |file| Operation::ClientModuleDir.create_file_with_content("#{file_path(target_repo_dir, file)}", file[:content]) }
+        args = [transform_helper, ServiceInfo.info_type, service_info['remote_repo_url'], parent]
+        service_file_path__content_array.each { |file| Operation::ClientModuleDir.create_file_with_content("#{service_file_path(target_repo_dir, file, *args)}", file[:content]) }
+
         commit_and_push_to_remote(repo, target_repo_dir, "master", "dtkn")
       end
 
@@ -77,6 +79,27 @@ module DTK::Client; class Operation::Module
 
       def self.file_path(target_repo_dir, file)
         file[:full_path] ? file[:path] : "#{target_repo_dir}/#{file[:path]}"
+      end
+
+      def self.service_file_path(target_repo_dir, file, *args)
+        @new_service_info  ||= ServiceInfo.new(*args)
+        @legacy_assemblies ||= @new_service_info.legacy_assemblies?
+
+        if @legacy_assemblies && !file[:path].include?('module_refs.yaml')
+          convert_to_legacy_assebmly(target_repo_dir, file)
+        else
+          file_path(target_repo_dir, file)
+        end
+      end
+
+      def self.convert_to_legacy_assebmly(target_repo_dir, file)
+        return file[:path] if file[:full_path]
+
+        file_path     = file[:path]
+        file_name     = file_path.split('/').last
+        assembly_name = file_name.split('.').first
+
+        "#{target_repo_dir}/assemblies/#{assembly_name}/assembly.yaml"
       end
 
       def self.checkout_branch__return_repo(target_repo_dir, branch)

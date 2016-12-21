@@ -22,6 +22,10 @@ module DTK::Client
         def transform_info
           transform_to_service_info
         end
+
+        def legacy_assemblies?
+          info_processor.legacy_assemblies?
+        end
         
         private
         

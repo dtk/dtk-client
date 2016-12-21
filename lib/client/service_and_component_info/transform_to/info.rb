@@ -61,6 +61,11 @@ module DTK::Client
         files
       end
 
+      def legacy_assemblies?
+        matches = directory_file_paths.select { |path| legacy_assemblies_input_files_processor.match?(path) }
+        !matches.empty?
+      end
+
       private
 
       def add_content!(input_files_processor, path)
@@ -81,6 +86,14 @@ module DTK::Client
         @module_ref_input_files_processor = input_files_processor(:module_refs)
       end
 
+      def assemblies_input_files_processor
+        @assemblies_input_files_processor = input_files_processor(:assemblies)
+      end
+
+      def legacy_assemblies_input_files_processor
+        @legacy_assemblies_input_files_processor = input_files_processor(:legacy_assemblies)
+      end
+
       def directory_file_paths
         @directory_file_paths ||= Dir.glob("#{@content_dir}/**/*")
       end
@@ -91,14 +104,6 @@ module DTK::Client
 
       def raise_missing_type_error(type)
         raise Error, "Unexpected that no indexed_input_files of type '#{type}'"
-      end
-
-      def directory_file_paths
-        @directory_file_paths ||= Dir.glob("#{@content_dir}/**/*")
-      end
-
-      def get_raw_content?(file_path)
-        File.open(file_path).read if file_path and File.exists?(file_path)
       end
 
     end
