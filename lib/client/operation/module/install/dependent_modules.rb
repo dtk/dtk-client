@@ -30,7 +30,7 @@ module DTK::Client
         # not just component modules
         @base_module_ref       = base_module_ref
         @component_module_refs = component_module_refs 
-        @print_helper          = PrintHelper.new(:module_ref => @base_module_ref)
+        @print_helper          = PrintHelper.new(:module_ref => @base_module_ref, :source => :remote)
         @prompt_helper         = PromptHelper.new(:update_all => opts[:skip_prompt])
       end
       private :initialize

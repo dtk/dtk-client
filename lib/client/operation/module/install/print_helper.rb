@@ -21,11 +21,13 @@ module DTK::Client; class Operation::Module
       include Install::Mixin
 
       # opts can have keys:
+      #   :source - required; can have values: :local or remote
       #   :indent_length
       #   :module_ref
       def initialize(opts = {})
         @indent_length = opts[:indent_length] || 0
         @module_ref    = opts[:module_ref]
+        @source_term   = Term.source(opts[:source])
       end
 
       def set_module_ref!(module_ref)
@@ -39,7 +41,7 @@ module DTK::Client; class Operation::Module
       end
 
       def print_continuation_installing_base_module
-        print_continuation "Installing base module '#{pretty_print_module}' from #{Term::DTKN_CATALOG}", :color => :yellow
+        print_continuation "Installing base module '#{pretty_print_module}' from #{source_term}", :color => :yellow
       end
 
       def print_continuation_pulling_dependency_update
@@ -78,7 +80,8 @@ module DTK::Client; class Operation::Module
       end
 
       private
-      
+
+      attr_reader :source_term
 
       # opts can have keys:
       #   :color
@@ -106,12 +109,19 @@ module DTK::Client; class Operation::Module
       def increase_indent!
         @indent_length += INDENT_BUMP
       end
-      
+
       module Term
+        def self.source(source)
+          SOURCE_MAPPING[source] || raise(Error, "Illegal source value '#{source}'")
+        end
+
         DTKN_CATALOG = 'dtkn catalog'
+        SOURCE_MAPPING = {
+          :remote => DTKN_CATALOG,
+          :local  => 'local directory'
+        }
         CONTINUATION = '...'
       end
-      
     end
   end
 end; end

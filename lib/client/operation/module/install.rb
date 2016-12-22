@@ -25,11 +25,12 @@ module DTK::Client
       require_relative('install/dependent_modules')
       require_relative('install/common_module')
 
-      def initialize(file_obj, module_ref)      
+      def initialize(file_obj, module_ref, has_remote_repo)
         @file_obj         = file_obj
         @base_module_ref  = module_ref
         @parsed_module    = file_obj.parse_content(:common_module_summary)
-        @print_helper     = PrintHelper.new(:module_ref => @base_module_ref)
+        @has_remote_repo  = has_remote_repo
+        @print_helper     = PrintHelper.new(:module_ref => @base_module_ref, :source => has_remote_repo ? :remote : :local)
       end
       private :initialize
 
@@ -47,13 +48,12 @@ module DTK::Client
             file_obj = args.required(:base_dsl_file_obj).raise_error_if_no_content
           end
 
-          new(file_obj, module_ref).install(:skip_prompt => skip_prompt, :has_remote_repo => has_remote_repo)
+          new(file_obj, module_ref, has_remote_repo).install(:skip_prompt => skip_prompt)
         end
       end
 
       # opts can have keys:
       #   :skip_prompt
-      #   :has_remote_repo
       def install(opts = {})
         unless @base_module_ref
           raise Error::Usage, "No base module reference #{dsl_path_ref}"
@@ -73,7 +73,7 @@ module DTK::Client
         end
 
         @print_helper.print_continuation_installing_base_module
-        CommonModule.install(@base_module_ref, @file_obj, :has_remote_repo => opts[:has_remote_repo])
+        CommonModule.install(@base_module_ref, @file_obj, :has_remote_repo => @has_remote_repo)
         @print_helper.print_done_message
         nil
       end
