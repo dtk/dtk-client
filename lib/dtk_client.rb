@@ -33,5 +33,6 @@ module DTK
     require_relative('client/operation_args')
     require_relative('client/render')
     require_relative('client/service_and_component_info')
+    require_relative('client/load_source')
   end
 end

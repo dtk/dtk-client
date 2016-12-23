@@ -16,27 +16,25 @@
 # limitations under the License.
 #
 module DTK::Client
-  class Operation::Module::InstallFromCatalog
-    class LoadSource
-      class ComponentInfo < self
-        def fetch_and_cache_info
-          fetch_remote
-          merge_from_remote
-          transform_from_component_info
-        end
-        
-        private
-        
-        def self.info_type
-          :component_info
-        end
-        
-        def transform_from_component_info
-          info_processor.read_inputs_and_compute_outputs!
-          info_processor.input_file_paths.map { |path| Operation::ClientModuleDir.rm_f(path) }
-        end
-
+  class LoadSource
+    class ComponentInfo < self
+      def fetch_and_cache_info
+        fetch_remote
+        merge_from_remote
+        transform_from_component_info
       end
+      
+      private
+      
+      def self.info_type
+        :component_info
+      end
+      
+      def transform_from_component_info
+        info_processor.read_inputs_and_compute_outputs!
+        info_processor.input_file_paths.map { |path| Operation::ClientModuleDir.rm_f(path) }
+      end
+
     end
   end
 end

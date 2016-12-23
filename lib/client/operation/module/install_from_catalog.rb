@@ -18,8 +18,6 @@
 module DTK::Client
   class Operation::Module
     class InstallFromCatalog < self
-      require_relative('install_from_catalog/load_source')
-
       attr_reader :version, :module_ref, :target_repo_dir
       def initialize(catalog, module_ref, directory_path, version)
         @catalog          = catalog
