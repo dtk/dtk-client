@@ -32,9 +32,9 @@ module DTK::Client
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           module_ref        = args.required(:module_ref)
-          version           = args[:version]
-          directory_path    = args[:directory_path]
+          version           = args[:version] || module_ref.version
           base_dsl_file_obj = args[:base_dsl_file_obj]
+          directory_path    = args[:directory_path]
           new('dtkn', module_ref, directory_path, version, base_dsl_file_obj).pull_dtkn
         end
       end
@@ -65,7 +65,7 @@ module DTK::Client
           @module_ref.version = @version
         end
 
-        LoadSource.fetch_transform_and_merge(remote_module_info, self)
+        LoadSource.fetch_transform_and_merge(remote_module_info, self, :stage_and_commit_steps => true)
         nil
       end
 

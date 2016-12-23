@@ -24,7 +24,7 @@ module DTK::Client
           sc.action do |_global_options, options, _args|
             module_ref = module_ref_in_options_or_context(options)
             Operation::Module.pull_dtkn(:module_ref => module_ref, :base_dsl_file_obj => @base_dsl_file_obj)
-            Operation::Module.push(:module_ref => module_ref, :base_dsl_file_obj => @base_dsl_file_obj)
+            Operation::Module.push(:module_ref => module_ref, :base_dsl_file_obj => @base_dsl_file_obj, :directory_path => options[:directory_path])
           end
         end
       end

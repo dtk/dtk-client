@@ -29,7 +29,9 @@ module DTK::Client
     end
     private :initialize
 
-    def self.fetch_transform_and_merge(remote_module_info, parent)
+    # opts can have keys
+    #   :stage_and_commit_steps - used to stage and commit every step for pull-dtkn
+    def self.fetch_transform_and_merge(remote_module_info, parent, opts = {})
       target_repo_dir      = parent.target_repo_dir
       transform_helper     = ServiceAndComponentInfo::TransformFrom.new(target_repo_dir, parent.module_ref, parent.version)
       info_types_processed = []
@@ -37,6 +39,7 @@ module DTK::Client
       if service_info = remote_module_info.data(:service_info)
         ServiceInfo.fetch_and_cache_info(transform_helper, service_info['remote_repo_url'], parent)
         info_types_processed << ServiceInfo.info_type
+        stage_and_commit(target_repo_dir, commit_msg(info_types_processed)) if opts[:stage_and_commit_steps]
       end
 
       if component_info = remote_module_info.data(:component_info)
