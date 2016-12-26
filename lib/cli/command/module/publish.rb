@@ -16,15 +16,18 @@
 # limitations under the License.
 #
 module DTK::Client
-  module CLI
-    module Command
-      module Module 
-        include Command::Mixin
-
-        ALL_SUBCOMMANDS = ['install', 'list', 'list-assemblies', 'push', 'uninstall', 'clone', 'list-remotes', 'push-dtkn', 'stage', 'pull-dtkn', 'publish']
-        command_def :desc => 'Subcommands for interacting with DTK modules'
-        ALL_SUBCOMMANDS.each { |subcommand| require_relative("module/#{subcommand.gsub(/-/,'_')}") } 
+  module CLI::Command
+    module Module 
+      subcommand_def 'publish' do |c|
+        command_body c, 'publish', 'Publish module installed on server to the repo manager' do |sc|
+          sc.flag Token.directory_path, :desc => 'Absolute or relative path to module directory containing updates to publish; not need if in the module directory'
+          sc.action do |_global_options, options, _args|
+            module_ref = module_ref_in_options_or_context(options)
+            Operation::Module.publish(:module_ref => module_ref, :directory_path => options[:directory_path])
+          end
+        end
       end
+
     end
   end
 end
