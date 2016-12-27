@@ -19,6 +19,8 @@ module DTK::Client
   module CLI
     module Command
       class Options
+        attr_reader :opts_hash
+
         def initialize(opts_hash)
           @opts_hash = opts_hash
         end

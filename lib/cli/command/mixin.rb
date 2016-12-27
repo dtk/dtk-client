@@ -67,7 +67,7 @@ module DTK::Client::CLI
             else
               desc opts[:desc] if opts[:desc]
               command command_name do |c|
-                subcommand_mangled_methods.each do |subcommand_mangled_method| 
+                subcommand_mangled_methods.each do |subcommand_mangled_method|
                   instance_eval { send(subcommand_mangled_method, c) }
                 end
               end

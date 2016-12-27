@@ -39,7 +39,7 @@ module DTK::Client::CLI
 
       def value_from_base_dsl_file(key)
          if @special_keys.has_key?(key)
-@special_keys[key] = @context.value_from_base_dsl_file?(key)
+           @special_keys[key] = @context.value_from_base_dsl_file?(key)
            @special_keys[key]
          else
            @special_keys[key] = @context.value_from_base_dsl_file?(key)

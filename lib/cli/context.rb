@@ -31,6 +31,7 @@ module DTK::Client
         @base_dsl_file_obj   = base_dsl_file_obj
         @command_processor   = Processor.default
         @context_attributes  = Attributes.new(self)
+        @options             = {}
         add_command_defs_defaults_and_hooks!
       end
       private :initialize
@@ -62,20 +63,83 @@ module DTK::Client
       attr_reader :context_attributes, :base_dsl_file_obj
 
       def module_ref_from_base_dsl_file?
-        parsed_module = base_dsl_file_obj.parse_content(:common_module_summary)
-        namespace   = parsed_module.val(:Namespace)
-        module_name = parsed_module.val(:ModuleName)
-        version     = parsed_module.val(:ModuleVersion) || 'master'
+        parsed_module_hash = parse_module_content_and_create_hash
+        namespace          = parsed_module_hash[:namespace]
+        module_name        = parsed_module_hash[:module_name]
+        version            = parsed_module_hash[:version] || 'master'
+
         if namespace and module_name
           client_dir_path = base_dsl_file_obj.parent_dir?
           ModuleRef.new(:namespace => namespace, :module_name => module_name, :version => version, :client_dir_path => client_dir_path)
         end
       end
 
+      def parse_module_content_and_create_hash
+        parsed_hash = {}
+
+        begin
+          parsed_module = base_dsl_file_obj.parse_content(:common_module_summary)
+          parsed_hash = {
+            :namespace   => parsed_module.val(:Namespace),
+            :module_name => parsed_module.val(:ModuleName),
+            :version     => parsed_module.val(:ModuleVersion)
+          }
+        rescue Error::Usage => error
+          # if there is syntax error in dsl, we still want to get namespace, name, and version
+          # will be used in commands like 'dtk module uninstall', ... where we want to uninstall module even if parsing errors in yaml
+          if content = @options[:ignore_parsing_errors] && base_dsl_file_obj.content
+            ret_module_info_from_raw_content(parsed_hash, content)
+          else
+            raise error
+          end
+        end
+
+        parsed_hash
+      end
+
+      # get namespace, name and version from raw file content and return as parsed_hash
+      def ret_module_info_from_raw_content(parsed_hash, content)
+        info_found = lambda {|input_hash| (input_hash[:namespace] && input_hash[:module_name] && input_hash[:version]) }
+
+        content.each_line do |line|
+          if line_match = line.match(/(^module:)(.*)/)
+            name_found      = true
+            full_name       = line_match[2].strip
+            namespace, name = full_name.split('/')
+            parsed_hash.merge!(:namespace => namespace, :module_name => name)
+          elsif line_match = line.match(/(^version:)(.*)/)
+            version_found = true
+            parsed_hash.merge!(:version => line_match[2].strip)
+          end
+
+          break if info_found.call(parsed_hash)
+        end
+      end
+
       def service_instance_from_base_dsl_file?
         #raise_error_when_missing_context(:service_instance) unless base_dsl_file_obj.file_type == DTK::DSL::FileType::ServiceInstance::DSLFile::Top
         base_dsl_file_obj.file_type == DTK::DSL::FileType::ServiceInstance::DSLFile::Top
-        base_dsl_file_obj.parse_content(:service_module_summary).val(:Name)
+        parse_conent_and_ret_service_name
+      end
+
+      def parse_conent_and_ret_service_name
+        begin
+          base_dsl_file_obj.parse_content(:service_module_summary).val(:Name)
+        rescue Error::Usage => error
+          if content = @options[:ignore_parsing_errors] && base_dsl_file_obj.content
+            ret_service_name_from_raw_content(content)
+          else
+            raise error
+          end
+        end
+      end
+
+      def ret_service_name_from_raw_content(content)
+        content.each_line do |line|
+          if line_match = line.match(/(^name:)(.*)/)
+            return line_match[2].strip
+          end
+        end
       end
 
       # opts can have keys
@@ -102,6 +166,9 @@ module DTK::Client
       end
 
       def module_ref_in_options_or_context?(options)
+        # using :ignore_parsing_errors to ret namespace, name and version from .yaml file even if there are parsing errors
+        @options.merge!(:ignore_parsing_errors => options[:ignore_parsing_errors])
+
         if options[:module_ref]
           opts = {:namespace_module_name => options[:module_ref]}
           opts.merge!(:version => options[:version]) if options[:version]
@@ -119,6 +186,9 @@ module DTK::Client
       end
       
       def service_instance_in_options_or_context?(options)
+        # using :ignore_parsing_errors to ret namespace, name and version from .yaml file even if there are parsing errors
+        @options.merge!(:ignore_parsing_errors => options[:ignore_parsing_errors])
+
         if ret = options[:service_instance]
           ret
         else
@@ -163,7 +233,7 @@ module DTK::Client
       end
 
       def command_processor_object_methods
-        @@command_processor_object_methods ||= Processor::Methods.all 
+        @@command_processor_object_methods ||= Processor::Methods.all
       end
 
     end

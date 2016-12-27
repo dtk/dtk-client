@@ -17,7 +17,7 @@
 #
 module DTK::Client
   module CLI::Command
-    module Module 
+    module Module
       subcommand_def 'uninstall' do |c|
         c.arg Token::Arg.module_name, :optional => true
         command_body c, :uninstall, 'Uninstall module from server' do |sc|
@@ -27,11 +27,12 @@ module DTK::Client
           sc.action do |_global_options, options, args|
             version = options[:version]
 
+            module_refs_opts = {:ignore_parsing_errors => true}
             module_ref =
               if module_name = args[0]
-                module_ref_in_options_or_context?(:module_ref => module_name, :version => (version || 'master'))
+                module_ref_in_options_or_context?(module_refs_opts.merge(:module_ref => module_name, :version => (version || 'master')))
               else
-                module_ref_in_options_or_context(options)
+                module_ref_in_options_or_context(module_refs_opts.merge(options.opts_hash))
               end
 
             raise Error::Usage, "You can use version only with 'namespace/name' provided" if version && module_name.nil?
