@@ -30,9 +30,9 @@ module DTK::Client
             module_refs_opts = {:ignore_parsing_errors => true}
             module_ref =
               if module_name = args[0]
-                module_ref_in_options_or_context?(module_refs_opts.merge(:module_ref => module_name, :version => (version || 'master')))
+                module_ref_in_options_or_context?({:module_ref => module_name, :version => (version || 'master')}, module_refs_opts)
               else
-                module_ref_in_options_or_context(module_refs_opts.merge(options.opts_hash))
+                module_ref_in_options_or_context(options, module_refs_opts)
               end
 
             raise Error::Usage, "You can use version only with 'namespace/name' provided" if version && module_name.nil?

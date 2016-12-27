@@ -161,13 +161,13 @@ module DTK::Client
          ::DTK::DSL::FileType::ServiceInstance::DSLFile::Top
         ]
 
-      def module_ref_in_options_or_context(options)
-        module_ref_in_options_or_context?(options) || raise_error_when_missing_context(:module_ref, options)
+      def module_ref_in_options_or_context(options, module_refs_opts = {})
+        module_ref_in_options_or_context?(options, module_refs_opts) || raise_error_when_missing_context(:module_ref, options)
       end
 
-      def module_ref_in_options_or_context?(options)
+      def module_ref_in_options_or_context?(options, module_refs_opts = {})
         # using :ignore_parsing_errors to ret namespace, name and version from .yaml file even if there are parsing errors
-        @options.merge!(:ignore_parsing_errors => options[:ignore_parsing_errors])
+        @options.merge!(:ignore_parsing_errors => module_refs_opts[:ignore_parsing_errors])
 
         if options[:module_ref]
           opts = {:namespace_module_name => options[:module_ref]}
@@ -181,13 +181,13 @@ module DTK::Client
         end
       end
 
-      def service_instance_in_options_or_context(options)
-        service_instance_in_options_or_context?(options) || raise_error_when_missing_context(:service_instance, options)
+      def service_instance_in_options_or_context(options, service_refs_opts = {})
+        service_instance_in_options_or_context?(options, service_refs_opts) || raise_error_when_missing_context(:service_instance, options)
       end
       
-      def service_instance_in_options_or_context?(options)
+      def service_instance_in_options_or_context?(options, service_refs_opts = {})
         # using :ignore_parsing_errors to ret namespace, name and version from .yaml file even if there are parsing errors
-        @options.merge!(:ignore_parsing_errors => options[:ignore_parsing_errors])
+        @options.merge!(:ignore_parsing_errors => service_refs_opts[:ignore_parsing_errors])
 
         if ret = options[:service_instance]
           ret

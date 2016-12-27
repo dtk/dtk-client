@@ -35,8 +35,7 @@ module DTK::Client; module CLI
               raise Error::Usage, "If use option '#{option_ref(:purge)}' then need to call from outside directory and use option '#{option_ref(:directory_path)}'"
             end
 
-            service_refs_opts = {:ignore_parsing_errors => true}
-            service_instance = service_instance_in_options_or_context(service_refs_opts.merge(options.opts_hash))
+            service_instance = service_instance_in_options_or_context(options, :ignore_parsing_errors => true)
 
             args = {
               :service_instance => service_instance,
