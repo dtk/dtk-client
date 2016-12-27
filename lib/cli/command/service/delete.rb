@@ -31,7 +31,7 @@ module DTK::Client; module CLI
             recursive        = options[:recursive]
             force            = options[:force]
 
-            module_refs_opts = {:ignore_parsing_errors => true}
+            service_refs_opts = {:ignore_parsing_errors => true}
             service_instance = service_instance_in_options_or_context(service_refs_opts.merge(options.opts_hash))
 
             args = {
