@@ -35,7 +35,7 @@ module DTK::Client; module CLI
             args = {
               :service_instance => service_instance,
               :skip_prompt      => options[:skip_prompt],
-              :directory_path   => directory_path,
+              :directory_path   => directory_path || base_dsl_file_obj.parent_dir,
               :recursive        => recursive,
               :force            => force
             }

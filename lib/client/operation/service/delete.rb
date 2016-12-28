@@ -24,21 +24,12 @@ module DTK::Client
           recursive        = args.required(:recursive)
           force            = args[:force]
           directory_path   = args[:directory_path]
-          default_path     = OsUtil.current_dir
-          files            = Dir.entries(default_path)
 
           unless args[:skip_prompt]
             return false unless Console.prompt_yes_no("Are you sure you want to delete the content of service instance '#{service_instance}' ?", :add_options => true)
           end
 
-          if directory_path.nil?
-            until files.include?("dtk.service.yaml") do
-              default_path = OsUtil.parent_dir(default_path)
-              files = Dir.entries(default_path)
-            end
-          end
-
-          DTK::Client::GitRepo.modified_with_diff?(directory_path || default_path) unless force
+          DTK::Client::GitRepo.modified_with_diff?(directory_path || OsUtil.current_dir) unless force
           post_body = PostBody.new(
             :service_instance => service_instance,
             :recursive? => recursive
