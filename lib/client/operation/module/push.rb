@@ -54,9 +54,20 @@ module DTK::Client
           response = rest_post("#{BaseRoute}/update_from_repo", post_body)
           # TODO: DTK-2786; uncomment out to see what diffs is returning for different examples of what is deleted, added or modified before push
           # pp [:debug_diffs, response.data(:diffs)]
+          process_semantic_diffs(response.data(:diffs))
+
           # if diffs is nil then indicate no diffs, otherwise render diffs in yaml
+          OsUtil.print_info("No Diffs to be pushed.") if response.data(:diffs).nil?
           nil
         end
+      end
+      
+      def self.process_semantic_diffs(diffs)
+        return if (diffs || {}).empty?
+        OsUtil.print_info("\nDiffs that were pushed:")
+
+        diffs.each { |v| diffs.delete(v[0]) if v[1].nil? }
+        OsUtil.print(hash_to_yaml(diffs).gsub("---\n", ""))
       end
     end
   end
