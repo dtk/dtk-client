@@ -21,14 +21,14 @@ module DTK::Client
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           service_instance = args.required(:service_instance)
+          module_dir   = args.required(:module_dir)
           force            = args[:force]
-          directory_path   = args[:directory_path]
 
           post_body = PostBody.new(
             :service_instance => service_instance
           )
 
-          DTK::Client::GitRepo.modified_with_diff?(directory_path || OsUtil.current_dir) unless force
+          DTK::Client::GitRepo.modified_with_diff?(module_dir) unless force
           violations = find_violations(service_instance)
           return violations if violations
 

@@ -28,7 +28,7 @@ module DTK::Client; module CLI
             args = {
               :service_instance => service_instance,
               :force            => force,
-              :directory_path   => options[:directory_path]
+              :module_dir       => @base_dsl_file_obj.parent_dir
             }
             Operation::Service.converge(args)
           end
