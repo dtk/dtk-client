@@ -98,6 +98,18 @@ module DTK::Client
           puts "\n" if line.nil?
         end
       end
+      
+    def self.version_prompt(versions, name)
+      cli = HighLine.new
+      name.gsub!(":", "/")
+      cli.choose do |menu|
+        menu.prompt = "Select which module version to uninstall:  "
+        versions.each do |ver|
+          menu.choices(ver)
+        end
+        menu.choice("All versions")
+      end
+    end
     # opts can have keys
     #   :disable_ctrl_c - Boolean (default: true)
     def self.prompt_context(opts = {}, &body)

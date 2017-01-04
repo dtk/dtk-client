@@ -24,20 +24,23 @@ module DTK::Client
           sc.switch Token.skip_prompt, :desc => 'Skip prompt that checks if user wants to uninstall module from server'
           sc.flag Token.directory_path
           sc.flag Token.version
+          sc.flag Token.names
           sc.action do |_global_options, options, args|
             version = options[:version]
 
             module_refs_opts = {:ignore_parsing_errors => true}
+            if options[:names].nil?
             module_ref =
               if module_name = args[0]
                 module_ref_in_options_or_context?({:module_ref => module_name, :version => (version || 'master')}, module_refs_opts)
               else
                 module_ref_in_options_or_context(options, module_refs_opts)
               end
+            end
 
             raise Error::Usage, "You can use version only with 'namespace/name' provided" if version && module_name.nil?
 
-            Operation::Module.uninstall(:module_ref => module_ref, :skip_prompt => options[:skip_prompt])
+            Operation::Module.uninstall(:module_ref => module_ref, :skip_prompt => options[:skip_prompt], :name => options[:names])
           end
         end
       end

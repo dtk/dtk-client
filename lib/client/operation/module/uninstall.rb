@@ -21,6 +21,33 @@ module DTK::Client
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           module_ref  = args.required(:module_ref)
+          name        = args.required(:name)
+
+          unless name.nil?
+            query_string_hash = QueryStringHash.new(
+              :detail_to_include => ['remotes', 'versions']
+            )
+            response = rest_get("#{BaseRoute}/list", query_string_hash)
+            installed_modules = response.data
+
+            name.gsub!("/", ":")
+            installed_modules.each do |module_val| 
+              if module_val["display_name"].eql? name
+                val = name.split(":")
+                
+                versions = module_val["versions"].split(",").map(&:strip)
+                version = Console.version_prompt(versions, name) if versions.size > 1
+                version = module_val["versions"] if version.eql? "All versions"
+
+                module_opts = {
+                  :module_name => val[1],
+                  :namespace   => val[0],
+                  :version     => version
+                }
+                module_ref = ModuleRef.new(module_opts)
+              end
+            end
+          end  
           
           opts = {
             :namespace => module_ref.namespace,
