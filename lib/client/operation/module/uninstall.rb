@@ -36,8 +36,12 @@ module DTK::Client
                 val = name.split(":")
                 
                 versions = module_val["versions"].split(",").map(&:strip)
-                version = Console.version_prompt(versions, name) if versions.size > 1
-                version = module_val["versions"] if version.eql? "All versions"
+                if versions.size > 1
+                  version = Console.version_prompt(versions, name) 
+                  version = module_val["versions"] if version.eql? "All versions"
+                else
+                  version = module_val["versions"]
+                end
 
                 module_opts = {
                   :module_name => val[1],
