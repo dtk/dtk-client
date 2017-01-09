@@ -21,7 +21,42 @@ module DTK::Client
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           module_ref  = args.required(:module_ref)
+          name        = args.required(:name)
+          version     = args.required(:version)
+
+          unless name.nil?
+            query_string_hash = QueryStringHash.new(
+              :detail_to_include => ['remotes', 'versions']
+            )
+            response = rest_get("#{BaseRoute}/list", query_string_hash)
+            installed_modules = response.data
+
+            name.gsub!("/", ":")
+            installed_modules.each do |module_val| 
+              if module_val["display_name"].eql? name
+                val = name.split(":")
+                if version.nil?
+                  versions = module_val["versions"].split(",").map(&:strip) 
+                  if versions.size > 1 
+                    version = Console.version_prompt(versions, name) 
+                    module_val["versions"] if version.eql? "All versions"
+                  else
+                    version = module_val["versions"]
+                  end
+                end
+
+                module_opts = {
+                  :module_name => val[1],
+                  :namespace   => val[0],
+                  :version     => version
+                }
+                module_ref = ModuleRef.new(module_opts)
+              end
+            end
+          end 
           
+          raise Error::Usage, "Invalid module name." if module_ref.nil?
+
           opts = {
             :namespace => module_ref.namespace,
             :version   => module_ref.version
@@ -36,6 +71,7 @@ module DTK::Client
             :namespace   => module_ref.namespace,
             :version?    => module_ref.version
           )
+
           rest_post("#{BaseRoute}/delete", post_body)
           OsUtil.print_info("DTK module '#{DTK::Common::PrettyPrintForm.module_ref(module_ref.module_name, opts)}' has been deleted successfully.")
           nil
