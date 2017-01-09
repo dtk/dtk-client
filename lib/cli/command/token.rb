@@ -47,7 +47,7 @@ module DTK::Client
         :identity_file           => Flag.new(:i, 'PATH-TO-PEM', 'Path to pem file'),
         :mode                    => Flag.new(:mode, 'MODE', 'Mode'),
         :namespace               => Flag.new(:n, 'NAMESPACE', 'Namespace'),
-        :names                   => Flag.new(:name, 'NAME', 'Module name to uninstall'),
+        :uninstall_name          => Flag.new(:name, 'NAME', 'Module name to uninstall'),
         
 
         # switches
