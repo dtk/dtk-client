@@ -35,7 +35,6 @@ module DTK::Client
             installed_modules.each do |module_val| 
               if module_val["display_name"].eql? name
                 val = name.split(":")
-
                 if version.nil?
                   versions = module_val["versions"].split(",").map(&:strip) 
                   if versions.size > 1 
@@ -56,6 +55,8 @@ module DTK::Client
             end
           end 
           
+          raise Error::Usage, "Invalid module name." if module_ref.nil?
+
           opts = {
             :namespace => module_ref.namespace,
             :version   => module_ref.version
