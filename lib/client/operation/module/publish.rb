@@ -21,7 +21,7 @@ module DTK::Client
       def initialize(catalog, module_ref, directory_path)
         @catalog           = catalog
         @module_ref        = module_ref
-        @target_repo_dir   = directory_path || OsUtil.current_dir
+        @target_repo_dir   = directory_path || @module_ref.client_dir_path
       end
       private :initialize
 

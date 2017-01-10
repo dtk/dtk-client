@@ -28,7 +28,7 @@ module DTK::Client
             :service_instance => service_instance
           )
 
-          DTK::Client::GitRepo.modified_with_diff?(module_dir) unless force
+          GitRepo.modified_with_diff?(module_dir) unless force
           violations = find_violations(service_instance)
           return violations if violations
 

@@ -29,7 +29,7 @@ module DTK::Client
             return false unless Console.prompt_yes_no("Are you sure you want to delete the content of service instance '#{service_instance}' ?", :add_options => true)
           end
 
-          GitRepo.modified_with_diff?(directory_path || OsUtil.current_dir) unless force
+          GitRepo.modified_with_diff?(directory_path || @module_ref.client_dir_path) unless force
           post_body = PostBody.new(
             :service_instance => service_instance,
             :recursive? => recursive

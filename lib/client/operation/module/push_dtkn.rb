@@ -25,7 +25,7 @@ module DTK::Client
         @catalog           = catalog
         @module_ref        = module_ref
         @directory_path    = directory_path
-        @target_repo_dir   = directory_path || OsUtil.current_dir
+        @target_repo_dir   = directory_path || base_dsl_file_obj.parent_dir
         @version           = version # if nil wil be dynamically updated
         @base_dsl_file_obj = base_dsl_file_obj
       end
