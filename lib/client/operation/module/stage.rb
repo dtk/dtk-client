@@ -34,8 +34,9 @@ module DTK::Client
             :target_service? => args[:target_service],
             :is_target?      => args[:is_target]
           )
-
-          DTK::Client::GitRepo.modified_with_diff?(directory_path || OsUtil.current_dir) unless force
+          
+          error_msg = "To allow stage to go through, invoke 'dtk push' to push the changes to server before invoking stage again"
+          GitRepo.modified_with_diff?(directory_path || OsUtil.current_dir, { :error_msg => error_msg }) unless force
           service_name ||= rest_post("#{BaseRoute}/generate_service_name", post_body).data
           base_path = ClientModuleDir.ret_base_path(:service, service_name)
           

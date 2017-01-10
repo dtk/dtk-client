@@ -50,7 +50,7 @@ module DTK::Client
         end
 
         error_msg = "To allow pull-dtkn to go through, invoke 'dtk push' to push the changes to server before invoking pull-dtkn again"
-        DTK::Client::GitRepo.modified_with_diff?(@target_repo_dir, { :error_msg => error_msg })
+        GitRepo.modified_with_diff?(@target_repo_dir, { :error_msg => error_msg })
 
         query_string_hash = QueryStringHash.new(
           :module_name => @module_ref.module_name,

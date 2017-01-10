@@ -35,7 +35,7 @@ module DTK::Client
             :is_target?      => args[:is_target]
           )
 
-          DTK::Client::GitRepo.modified?(directory_path || OsUtil.current_dir) unless force
+          GitRepo.modified?(directory_path || OsUtil.current_dir) unless force
           service_name ||= rest_post("#{BaseRoute}/generate_service_name", post_body).data
           base_path = ClientModuleDir.ret_base_path(:service, service_name)
           
