@@ -1,0 +1,56 @@
+#
+# Copyright (C) 2010-2016 dtk contributors
+#
+# This file is part of the dtk project.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+module DTK::Client
+  module CLI::Command
+    module Module 
+      subcommand_def 'delete-from-remote' do |c|
+        c.arg Token::Arg.module_name
+        command_body c, 'delete-from-remote', 'Delete module from the DTK remote catalog (DTKN)' do |sc|
+          sc.flag Token.version
+          sc.switch Token.skip_prompt
+
+          sc.action do |_global_options, options, args|
+            version     = options[:version]
+            skip_prompt = options[:skip_prompt]
+            module_ref  = module_ref_in_options_or_context?(:module_ref => args[0], :version => version)
+
+            Operation::Module.delete_from_remote(:module_ref => module_ref)
+
+            # raise Error::Usage, "You can use version only with 'namespace/name' provided" if version && module_name.nil?
+
+            # if target_repo_dir
+            #   directory_path ||= target_repo_dir.data[:target_repo_dir]
+            # end
+
+            # install_opts = directory_path ? { :directory_path => directory_path, :version => (version || 'master') } : options
+            # module_ref   = module_ref_in_options_or_context?(install_opts)
+            # operation_args = {
+            #   :module_ref          => module_ref, 
+            #   :base_dsl_file_obj   => @base_dsl_file_obj, 
+            #   :has_directory_param => !options["d"].nil?,
+            #   :skip_prompt         => skip_prompt,
+            #   :has_remote_repo     => has_remote_repo
+            # }
+            # Operation::Module.install(operation_args)
+          end
+        end
+      end
+    end
+  end
+end
+
