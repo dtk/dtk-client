@@ -35,7 +35,7 @@ module DTK::Client
               :action           => action,
               :action_params    => action_params,
               :directory_path   => directory_path,
-              :type             => 'exec-sync'
+              :command          => 'exec-sync'
             }
             response = Operation::Service.exec(args)
 

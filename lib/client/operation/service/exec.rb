@@ -34,7 +34,7 @@ module DTK::Client
             task_params.merge!("node" => node)
           end
           
-          error_msg = "To allow #{args[:type]} to go through, invoke 'dtk push' to push the changes to server before invoking #{args[:type]} again"
+          error_msg = "To allow #{args[:command]} to go through, invoke 'dtk push' to push the changes to server before invoking #{args[:command]} again"
           GitRepo.modified_with_diff?(directory_path, { :error_msg => error_msg })
 
           post_body = PostBody.new(

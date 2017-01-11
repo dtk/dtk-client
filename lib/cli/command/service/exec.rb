@@ -36,7 +36,7 @@ module DTK::Client
               :action           => action,
               :action_params    => action_params,
               :directory_path   => directory_path,
-              :type             => 'exec'
+              :command          => 'exec'
             }
             
             response = Operation::Service.exec(args)
