@@ -25,7 +25,7 @@ module DTK::Client
         @catalog           = catalog
         @module_ref        = module_ref
         @directory_path    = directory_path
-        @target_repo_dir   = directory_path || OsUtil.current_dir
+        @target_repo_dir   = directory_path || base_dsl_file_obj.parent_dir
         @version           = version # if nil wil be dynamically updated
         @base_dsl_file_obj = base_dsl_file_obj
       end
@@ -52,7 +52,7 @@ module DTK::Client
         end
 
         error_msg = "To allow push-dtkn to go through, invoke 'dtk push' to push the changes to server before invoking push-dtkn again"
-        DTK::Client::GitRepo.modified_with_diff?(@target_repo_dir, { :error_msg => error_msg })
+        GitRepo.modified_with_diff?(@target_repo_dir, { :error_msg => error_msg })
 
         query_string_hash = QueryStringHash.new(
           :module_name => @module_ref.module_name,

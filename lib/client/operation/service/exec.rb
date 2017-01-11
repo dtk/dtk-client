@@ -23,6 +23,7 @@ module DTK::Client
           service_instance = args.required(:service_instance)
           action           = args.required(:action)
           action_params    = args[:action_params]
+          directory_path   = args[:directory_path]
 
           # parse params and return format { 'p_name1' => 'p_value1' , 'p_name2' => 'p_value2' }
           task_params = parse_params?(action_params)||{}
@@ -33,6 +34,9 @@ module DTK::Client
             task_params.merge!("node" => node)
           end
           
+          error_msg = "To allow #{args[:command]} to go through, invoke 'dtk push' to push the changes to server before invoking #{args[:command]} again"
+          GitRepo.modified_with_diff?(directory_path, { :error_msg => error_msg })
+
           post_body = PostBody.new(
             :task_params? => task_params
           )

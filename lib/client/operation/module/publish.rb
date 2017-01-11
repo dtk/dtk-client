@@ -21,7 +21,7 @@ module DTK::Client
       def initialize(catalog, module_ref, directory_path)
         @catalog           = catalog
         @module_ref        = module_ref
-        @target_repo_dir   = directory_path || OsUtil.current_dir
+        @target_repo_dir   = directory_path || @module_ref.client_dir_path
       end
       private :initialize
 
@@ -39,7 +39,7 @@ module DTK::Client
         end
 
         error_msg = "To allow publish to go through, invoke 'dtk push' to push the changes to server before invoking publish again"
-        DTK::Client::GitRepo.modified_with_diff?(target_repo_dir, { :error_msg => error_msg })
+        GitRepo.modified_with_diff?(target_repo_dir, { :error_msg => error_msg })
 
         post_body = PostBody.new(
           :module_name => module_ref.module_name,
