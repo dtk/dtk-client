@@ -35,7 +35,7 @@ module DTK::Client
             version        = options[:version] || module_ref.version
             service_name   = options[:service_name]
             force          = options[:f]
-            directory_path = options[:directory_path]
+            directory_path = options[:directory_path] || @base_dsl_file_obj.parent_dir
 
             Validation.validate_name(service_name) if service_name
 

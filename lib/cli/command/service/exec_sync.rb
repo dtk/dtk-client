@@ -28,11 +28,14 @@ module DTK::Client
             
             action        = args[0]
             action_params = args[1]
+            directory_path = options[:d] || @base_dsl_file_obj.parent_dir
 
             args = {
               :service_instance => service_instance,
               :action           => action,
-              :action_params    => action_params
+              :action_params    => action_params,
+              :directory_path   => directory_path,
+              :type             => 'exec-sync'
             }
             response = Operation::Service.exec(args)
 
