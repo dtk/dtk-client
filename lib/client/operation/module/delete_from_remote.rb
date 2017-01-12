@@ -52,7 +52,7 @@ module DTK::Client
           remotes = Operation::Module.list_remotes({})
 
           selected_module = remotes.data.find{ |vr| vr['display_name'].eql?("#{module_ref.namespace}/#{module_ref.module_name}") }
-          raise DtkError, "Module '#{module_ref.namespace}/#{module_ref.module_name}'' does not exist on repo manager!" unless selected_module
+          raise Error::Usage, "Module '#{module_ref.namespace}/#{module_ref.module_name}' does not exist on repo manager!" unless selected_module
 
           versions = selected_module['versions']
           versions.map! { |v| v == 'base' ? 'master' : v }
