@@ -28,12 +28,20 @@ module DTK::Client
 
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
-          module_ref = args.required(:module_ref)
-          new('dtkn', module_ref).delete_from_remote
+          module_ref  = args.required(:module_ref)
+          new('dtkn', module_ref).delete_from_remote(:skip_prompt => args[:skip_prompt])
         end
       end
       
-      def delete_from_remote
+      def delete_from_remote(opts = {})
+        unless opts[:skip_prompt]
+          module_ref_opts = {
+            :namespace => module_ref.namespace,
+            :version   => module_ref.version
+          }
+          return unless Console.prompt_yes_no("Are you sure you want to delete module '#{DTK::Common::PrettyPrintForm.module_ref(module_ref.module_name, module_ref_opts)}' from repo manager?", :add_options => true)
+        end
+
         query_string_hash = QueryStringHash.new(
           :module_name => module_ref.module_name,
           :namespace   => module_ref.namespace,
@@ -47,14 +55,20 @@ module DTK::Client
           raise DtkError, "Module '#{module_ref.namespace}/#{module_ref.module_name}'' does not exist on repo manager!" unless selected_module
 
           versions = selected_module['versions']
+          versions.map! { |v| v == 'base' ? 'master' : v }
+
           if versions.size > 1
-            ret_version = Console.version_prompt(versions, module_ref.module_name) 
+            ret_version = Console.version_prompt(versions, "Select which module version to delete: ", { :add_all => true })
             return unless ret_version
             version = ret_version
+          else
+            version = versions.first
           end
         end
 
         query_string_hash.merge!(:version => version)
+        query_string_hash.merge!(:versions => versions) if version.eql?('all')
+
         rest_post "#{BaseRoute}/delete_from_remote", query_string_hash
 
         nil

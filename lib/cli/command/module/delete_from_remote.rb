@@ -25,28 +25,8 @@ module DTK::Client
           sc.switch Token.skip_prompt
 
           sc.action do |_global_options, options, args|
-            version     = options[:version]
-            skip_prompt = options[:skip_prompt]
-            module_ref  = module_ref_in_options_or_context?(:module_ref => args[0], :version => version)
-
-            Operation::Module.delete_from_remote(:module_ref => module_ref)
-
-            # raise Error::Usage, "You can use version only with 'namespace/name' provided" if version && module_name.nil?
-
-            # if target_repo_dir
-            #   directory_path ||= target_repo_dir.data[:target_repo_dir]
-            # end
-
-            # install_opts = directory_path ? { :directory_path => directory_path, :version => (version || 'master') } : options
-            # module_ref   = module_ref_in_options_or_context?(install_opts)
-            # operation_args = {
-            #   :module_ref          => module_ref, 
-            #   :base_dsl_file_obj   => @base_dsl_file_obj, 
-            #   :has_directory_param => !options["d"].nil?,
-            #   :skip_prompt         => skip_prompt,
-            #   :has_remote_repo     => has_remote_repo
-            # }
-            # Operation::Module.install(operation_args)
+            module_ref = module_ref_in_options_or_context?(:module_ref => args[0], :version => options[:version])
+            Operation::Module.delete_from_remote(:module_ref => module_ref, :skip_prompt => options[:skip_prompt])
           end
         end
       end

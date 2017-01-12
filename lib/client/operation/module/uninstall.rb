@@ -37,9 +37,9 @@ module DTK::Client
                 val = name.split(":")
                 if version.nil?
                   versions = module_val["versions"].split(",").map(&:strip) 
-                  if versions.size > 1 
-                    version = Console.version_prompt(versions, name) 
-                    module_val["versions"] if version.eql? "All versions"
+                  if versions.size > 1
+                    version = Console.version_prompt(versions, "Select which module version to uninstall: ", { :add_all => true})
+                    module_val["versions"] if version.eql? "all"
                   else
                     version = module_val["versions"]
                   end
