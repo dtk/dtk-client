@@ -34,14 +34,6 @@ module DTK::Client
       end
       
       def delete_from_remote(opts = {})
-        unless opts[:skip_prompt]
-          module_ref_opts = {
-            :namespace => module_ref.namespace,
-            :version   => module_ref.version
-          }
-          return unless Console.prompt_yes_no("Are you sure you want to delete module '#{DTK::Common::PrettyPrintForm.module_ref(module_ref.module_name, module_ref_opts)}' from repo manager?", :add_options => true)
-        end
-
         query_string_hash = QueryStringHash.new(
           :module_name => module_ref.module_name,
           :namespace   => module_ref.namespace,
@@ -68,6 +60,12 @@ module DTK::Client
 
         query_string_hash.merge!(:version => version)
         query_string_hash.merge!(:versions => versions) if version.eql?('all')
+
+        unless opts[:skip_prompt]
+          module_ref_opts = { :namespace => module_ref.namespace }
+          module_ref_opts.merge!(:version => version) unless version.eql?('all')
+          return unless Console.prompt_yes_no("Are you sure you want to delete module '#{DTK::Common::PrettyPrintForm.module_ref(module_ref.module_name, module_ref_opts)}' from repo manager?", :add_options => true)
+        end
 
         rest_post "#{BaseRoute}/delete_from_remote", query_string_hash
 
