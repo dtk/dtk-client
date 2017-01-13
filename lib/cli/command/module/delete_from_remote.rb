@@ -16,27 +16,19 @@
 # limitations under the License.
 #
 module DTK::Client
-  module CLI
-    module Command
-      module Module 
-        include Command::Mixin
+  module CLI::Command
+    module Module 
+      subcommand_def 'delete-from-remote' do |c|
+        c.arg Token::Arg.module_name
+        command_body c, 'delete-from-remote', 'Delete module from the DTK remote catalog (DTKN)' do |sc|
+          sc.flag Token.version
+          sc.switch Token.skip_prompt
 
-        ALL_SUBCOMMANDS = [
-          'install',
-          'list',
-          'list-assemblies',
-          'push',
-          'uninstall',
-          'clone',
-          'list-remotes',
-          'push-dtkn',
-          'stage',
-          'pull-dtkn',
-          'publish',
-          'delete-from-remote'
-        ]
-        command_def :desc => 'Subcommands for interacting with DTK modules'
-        ALL_SUBCOMMANDS.each { |subcommand| require_relative("module/#{subcommand.gsub(/-/,'_')}") } 
+          sc.action do |_global_options, options, args|
+            module_ref = module_ref_in_options_or_context?(:module_ref => args[0], :version => options[:version])
+            Operation::Module.delete_from_remote(:module_ref => module_ref, :skip_prompt => options[:skip_prompt])
+          end
+        end
       end
     end
   end

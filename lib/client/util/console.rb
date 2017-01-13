@@ -99,15 +99,13 @@ module DTK::Client
         end
       end
       
-    def self.version_prompt(versions, name)
-      cli = HighLine.new
-      name.gsub!(":", "/")
-      cli.choose do |menu|
-        menu.prompt = "Select which module version to uninstall:  "
-        versions.each do |ver|
-          menu.choices(ver)
+    def self.version_prompt(versions, message, opts = {})
+      prompt_context(opts) do
+        HighLine.choose do |menu|
+          menu.prompt = message
+          menu.choices(*versions)
+          menu.choice('all') if opts[:add_all]
         end
-        menu.choice("All versions")
       end
     end
     # opts can have keys

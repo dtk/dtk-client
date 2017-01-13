@@ -18,7 +18,21 @@
 module DTK::Client
   class Operation
     class Module < self
-      OPERATIONS = [:install, :list, :list_assemblies, :list_remotes, :push, :uninstall, :clone_module, :install_from_catalog, :push_dtkn, :stage, :pull_dtkn, :publish]
+      OPERATIONS = [
+        :install,
+        :list,
+        :list_assemblies,
+        :list_remotes,
+        :push,
+        :uninstall,
+        :clone_module,
+        :install_from_catalog,
+        :push_dtkn,
+        :stage,
+        :pull_dtkn,
+        :publish,
+        :delete_from_remote
+      ]
       OPERATIONS.each { |operation| require_relative("module/#{operation}") }
 
       BaseRoute = 'modules'
