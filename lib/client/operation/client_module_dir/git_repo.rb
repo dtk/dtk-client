@@ -159,6 +159,12 @@ module DTK::Client
         end
       end
 
+      def self.all_branches(args)
+        wrap_operation(args) do |args|
+          response_data_hash(:branches => Internal.all_branches(args))
+        end
+      end
+
 
       private
 

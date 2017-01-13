@@ -61,6 +61,13 @@ module DTK::Client
 
     def self.fetch_from_remote(remote_module_info, parent, opts = {})
       target_repo_dir  = parent.target_repo_dir
+
+      # if remotes added do not add them again
+      branches = Operation::ClientModuleDir::GitRepo.all_branches(:path => target_repo_dir).data(:branches)
+      remote_branches = branches.select { |branch| branch.full.include?('dtkn') || branch.full.include?('dtkn-component-info') }
+
+      return unless remote_branches.empty?
+
       transform_helper = ServiceAndComponentInfo::TransformFrom.new(target_repo_dir, parent.module_ref, parent.version)
 
       if service_info = remote_module_info.data(:service_info)

@@ -191,6 +191,10 @@ module DTK::Client
         end
       end
 
+      def all_branches
+        @git_repo.branches
+      end
+
       private
 
       def print_status_simple
