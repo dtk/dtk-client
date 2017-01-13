@@ -275,6 +275,12 @@ module DTK::Client
           repo.all_branches
         end
 
+        def self.current_branch(args)
+          repo_url = args.required(:path)
+          repo = git_repo.new(repo_url)
+          repo.current_branch.name
+        end
+
         def self.git_repo
           ::DTK::Client::GitRepo
         end

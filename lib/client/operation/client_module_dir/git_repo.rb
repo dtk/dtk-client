@@ -165,6 +165,12 @@ module DTK::Client
         end
       end
 
+      def self.current_branch(args)
+        wrap_operation(args) do |args|
+          response_data_hash(:branch => Internal.current_branch(args))
+        end
+      end
+
 
       private
 
