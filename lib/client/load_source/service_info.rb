@@ -23,6 +23,10 @@ module DTK::Client
         merge_from_remote
         transform_from_service_info
       end
+
+      def fetch_info
+        fetch_remote
+      end
       
       private
       

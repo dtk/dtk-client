@@ -40,7 +40,6 @@ module DTK::Client
       end
       
       def install_from_catalog
-
         query_string_hash = QueryStringHash.new(
           :module_name => @module_ref.module_name,
           :namespace   => @module_ref.namespace,
@@ -50,7 +49,7 @@ module DTK::Client
 
         remote_module_info = rest_get "#{BaseRoute}/remote_module_info", query_string_hash
 
-        unless @version 
+        unless @version
           @version = remote_module_info.required(:version)
           @module_ref.version = @version
         end

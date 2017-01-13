@@ -58,6 +58,23 @@ module DTK::Client
     def self.fetch_and_cache_info(transform_helper, remote_repo_url, parent)
       new(transform_helper, info_type, remote_repo_url, parent).fetch_and_cache_info
     end
+
+    def self.fetch_from_remote(remote_module_info, parent, opts = {})
+      target_repo_dir  = parent.target_repo_dir
+      transform_helper = ServiceAndComponentInfo::TransformFrom.new(target_repo_dir, parent.module_ref, parent.version)
+
+      if service_info = remote_module_info.data(:service_info)
+        srv_info = ServiceInfo.new(transform_helper, ServiceInfo.info_type, service_info['remote_repo_url'], parent)
+        srv_info.fetch_info
+      end
+
+      if component_info = remote_module_info.data(:component_info)
+        cmp_info = ComponentInfo.new(transform_helper, ComponentInfo.info_type, component_info['remote_repo_url'], parent)
+        cmp_info.fetch_info
+      end
+
+      nil
+    end
     
     private
 

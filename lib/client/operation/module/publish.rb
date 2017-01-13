@@ -18,10 +18,12 @@
 module DTK::Client
   class Operation::Module
     class Publish < self
+      attr_reader :module_ref, :target_repo_dir, :version
       def initialize(catalog, module_ref, directory_path)
-        @catalog           = catalog
-        @module_ref        = module_ref
-        @target_repo_dir   = directory_path || @module_ref.client_dir_path
+        @catalog         = catalog
+        @module_ref      = module_ref
+        @target_repo_dir = directory_path || module_ref.client_dir_path
+        @version         = module_ref.version
       end
       private :initialize
 
@@ -44,17 +46,31 @@ module DTK::Client
         post_body = PostBody.new(
           :module_name => module_ref.module_name,
           :namespace   => module_ref.namespace,
-          :version     => module_ref.version,
+          :version     => @version,
           :rsa_pub_key => SSHUtil.rsa_pub_key_content
         )
 
         response = rest_post "#{BaseRoute}/publish_to_remote", post_body
+
+        query_string_hash = QueryStringHash.new(
+          :module_name => module_ref.module_name,
+          :namespace   => module_ref.namespace,
+          :rsa_pub_key => SSHUtil.rsa_pub_key_content,
+          :version?    => @version
+        )
+        remote_module_info = rest_get "#{BaseRoute}/remote_module_info", query_string_hash
+
+        unless @version
+          @version = remote_module_info.required(:version)
+          @module_ref.version = @version
+        end
+
+        # this is temporary until we implement push-dtkn from server instead of from client
+        # this part will fetch remote branches from repo manager after publish from server is finished
+        LoadSource.fetch_from_remote(remote_module_info, self)
+
         nil
       end
-
-      private
-      attr_reader :module_ref, :target_repo_dir
-
     end
   end
 end
