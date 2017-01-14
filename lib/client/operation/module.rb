@@ -48,6 +48,11 @@ module DTK::Client
       def self.module_version_exists?(module_ref, opts = {})
         type = opts[:type] || :common_module
         query_string_hash = QueryStringHash.new(module_ref_hash(module_ref).merge(:module_type => type))
+
+        if ret_remote_info = opts[:remote_info]
+          query_string_hash.merge!(:remote_info => ret_remote_info, :rsa_pub_key => opts[:rsa_pub_key])
+        end
+
         response = rest_get(BaseRoute, query_string_hash)
         response.data.empty? ? nil : response
       end
