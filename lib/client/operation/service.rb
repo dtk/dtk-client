@@ -31,7 +31,7 @@ module DTK::Client
         :list_actions,
         :list_attributes,
         :list_component_links,
-        :list_dependent_modules,
+        :list_dependencies,
         :list_components,
         :list_nodes,
         :list_violations,

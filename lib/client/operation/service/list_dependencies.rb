@@ -17,7 +17,7 @@
 #
 module DTK::Client
   class Operation::Service
-    class ListDependentModules < self
+    class ListDependencies < self
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           service_instance = args.required(:service_instance)

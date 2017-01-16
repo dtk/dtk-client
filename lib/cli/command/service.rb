@@ -33,7 +33,7 @@ module DTK::Client
           'list-actions',
           'list-attributes',
           'list-component-links',
-          'list-dependent-modules',
+          'list-dependencies',
           'list-components',
           'list-nodes',
           'list-violations',

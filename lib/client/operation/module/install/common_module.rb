@@ -35,7 +35,6 @@ module DTK::Client
         branch    = response.required(:branch, :name)
         repo_url  = response.required(:repo, :url)
 
-        
         repo_dir = file_obj.parent_dir # repo dir is directory that directly holds the base file object file_obj
         git_response = ClientModuleDir::GitRepo.fetch_merge_and_push(:repo_dir => repo_dir, :repo_url => repo_url, :branch => branch)
         commit_sha     = git_response.data(:head_sha)
