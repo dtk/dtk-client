@@ -10,7 +10,7 @@ Rake::RDocTask.new do |rd|
   rd.title = 'Your application title'
 end
 
-spec = eval(File.read('dtk.gemspec'))
+spec = eval(File.read('dtk-client.gemspec'))
 
 Gem::PackageTask.new(spec) do |pkg|
 end
@@ -42,3 +42,19 @@ Rake::TestTask.new do |t|
 end
 
 task :default => [:test,:features]
+
+desc "Add copyright headers"
+task :headers do
+  require 'rubygems'
+  require 'copyright_header'
+
+  args = {
+    :license_file => '.license_header',
+    :add_path => 'bin/:lib/:puppet/',
+    :output_dir => '.',
+    :guess_extension => true,
+  }
+
+  command_line = CopyrightHeader::CommandLine.new( args )
+  command_line.execute
+end
