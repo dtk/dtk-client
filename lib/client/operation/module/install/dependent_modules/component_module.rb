@@ -83,14 +83,7 @@ module DTK::Client; class Operation::Module
           :version?    => version
         }
 
-        response = rest_post "#{BaseRoute}/install_component_module", PostBody.new(post_body)
-
-        clone_args = {
-          :module_type => :component_module,
-          :repo_url    => response.required(:repo_url),
-          :branch      => response.required(:workspace_branch),
-          :module_name => response.required(:full_module_name)
-        }
+        response = rest_post "#{BaseRoute}/install_component_info", PostBody.new(post_body)
 
         @print_helper.print_done_message
         response
