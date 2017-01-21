@@ -41,10 +41,13 @@ module DTK::Client
         
       private
 
+      # opts can have keys
+      #   :remote_info - Boolean
+      #   :type
+      #   :rsa_pub_key
       def module_version_exists?(module_ref, opts = {})
         self.class.module_version_exists?(module_ref, opts)
       end
-
       def self.module_version_exists?(module_ref, opts = {})
         type = opts[:type] || :common_module
         query_string_hash = QueryStringHash.new(module_ref_hash(module_ref).merge(:module_type => type))

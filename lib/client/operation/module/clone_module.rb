@@ -37,13 +37,8 @@ module DTK::Client
       end
 
       def clone_module
-        opts = {
-          :namespace => module_ref.namespace,
-          :version => version
-        }
-
         unless module_info = module_version_exists?(module_ref, :type => :common_module, :remote_info => true, :rsa_pub_key => SSHUtil.rsa_pub_key_content)
-          raise Error::Usage, "DTK module '#{DTK::Common::PrettyPrintForm.module_ref(module_ref.module_name, opts)}' does not exist on server."
+          raise Error::Usage, "DTK module '#{module_ref_pretty_print}' does not exist on the DTK Server."
         end
 
         branch    = module_info.required(:branch, :name)
@@ -64,8 +59,15 @@ module DTK::Client
           LoadSource.fetch_from_remote(module_info, self)
         end
 
-        OsUtil.print_info("DTK module '#{DTK::Common::PrettyPrintForm.module_ref(module_ref.module_name, opts)}' has been successfully cloned into '#{ret.required(:target_repo_dir)}'")
+        OsUtil.print_info("DTK module '#{module_ref_pretty_print}' has been successfully cloned into '#{ret.required(:target_repo_dir)}'")
       end
+
+      private
+
+      def module_ref_pretty_print
+        ModuleRef.pretty_print(module_ref.module_name, module_ref.namespace, version)
+      end
+
     end
   end
 end

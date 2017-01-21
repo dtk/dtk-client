@@ -42,9 +42,14 @@ module DTK::Client
       @client_dir_path = opts[:client_dir_path]
     end
 
-    def pretty_print
-      ::DTK::Common::PrettyPrintForm.module_ref(@module_name, :namespace => @namespace, :version => @version)
+    def self.pretty_print(module_name, namespace, version = nil)
+      # TODO: update ::DTK::Common::PrettyPrintForm to insert 'master' when version is nil 
+      ::DTK::Common::PrettyPrintForm.module_ref(module_name, :namespace => namespace, :version => version || 'master')
     end
+    def pretty_print
+      self.class.pretty_print(@module_name, @namespace, @version)
+    end
+
     # TODO: look at deprecating print_form
     def print_form
       NamespaceModuleName.print_form(@namespace, @module_name, :version => @version)
