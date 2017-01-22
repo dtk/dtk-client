@@ -25,7 +25,7 @@ module DTK::Client
           sc.switch Token.skip_prompt
 
           sc.action do |_global_options, options, args|
-            module_ref = module_ref_in_options_or_context?(:module_ref => args[0], :version => options[:version])
+            module_ref = module_ref_object_from_options_or_context?(:module_ref => args[0], :version => options[:version])
             Operation::Module.delete_from_remote(:module_ref => module_ref, :skip_prompt => options[:skip_prompt])
           end
         end

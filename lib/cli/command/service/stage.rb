@@ -30,7 +30,7 @@ module DTK::Client
           # sc.switch Token.purge, :desc => 'Overwrite any content that presently exists in the service instance directory to be created'
           #  sc.flag Token.version
           sc.action do |_global_options, options, args|
-            module_ref     = module_ref_in_options_or_context(options)
+            module_ref     = module_ref_object_from_options_or_context(options)
             assembly_name  = args[0]
             version        = options[:version] || module_ref.version
             service_name   = options[:service_name]

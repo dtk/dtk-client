@@ -22,7 +22,7 @@ module DTK::Client
         command_body c, :push, 'Push content from client module directory to server' do |sc|
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to module directory containing updates to push; not need if in the module directory'
           sc.action do |_global_options, options, _args|
-            module_ref = module_ref_in_options_or_context(options)
+            module_ref = module_ref_object_from_options_or_context(options)
             Operation::Module.push(:module_ref => module_ref, :base_dsl_file_obj => @base_dsl_file_obj)
           end
         end

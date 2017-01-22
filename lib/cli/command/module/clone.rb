@@ -25,7 +25,7 @@ module DTK::Client
           sc.flag Token.version
           sc.action do |_global_options, options, args|
             module_name = args[0]
-            module_ref  = module_ref_in_options_or_context(:module_ref => module_name, :version => options[:version])
+            module_ref  = module_ref_object_from_options_or_context(:module_ref => module_name, :version => options[:version])
             arg = {
               :module_ref       => module_ref,
               :module_name      => module_name,

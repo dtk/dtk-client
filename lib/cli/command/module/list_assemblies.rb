@@ -25,7 +25,7 @@ module DTK::Client
           sc.action do |_global_options, options, _args| 
             opts = {}
             unless options[:all]
-              if module_ref = module_ref_in_options_or_context?(options)
+              if module_ref = module_ref_object_from_options_or_context?(options)
                 opts.merge!(:module_ref => module_ref)
               end
             end

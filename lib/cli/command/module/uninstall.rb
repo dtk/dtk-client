@@ -32,9 +32,9 @@ module DTK::Client
             if options[:uninstall_name].nil?
               module_ref =
                 if module_name = args[0]
-                  module_ref_in_options_or_context?({:module_ref => module_name, :version => (version || 'master')}, module_refs_opts)
+                  module_ref_object_from_options_or_context?({:module_ref => module_name, :version => (version || 'master')}, module_refs_opts)
                 else
-                  module_ref_in_options_or_context(options, module_refs_opts)
+                  module_ref_object_from_options_or_context(options, module_refs_opts)
                 end
               else
                 module_name = options["name"]
