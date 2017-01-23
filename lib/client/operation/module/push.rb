@@ -21,6 +21,7 @@ module DTK::Client
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           module_ref = args.required(:module_ref)
+          method     = args[:method] || "pushed"
 
           unless client_dir_path = module_ref.client_dir_path
             raise Error, "Not implemented yet; need to make sure module_ref.client_dir_path is set when client_dir_path given"
@@ -54,20 +55,28 @@ module DTK::Client
           response = rest_post("#{BaseRoute}/update_from_repo", post_body)
           # TODO: DTK-2786; uncomment out to see what diffs is returning for different examples of what is deleted, added or modified before push
           # pp [:debug_diffs, response.data(:diffs)]
-          process_semantic_diffs(response.data(:diffs))
+          print = process_semantic_diffs(response.data(:diffs), method)
 
           # if diffs is nil then indicate no diffs, otherwise render diffs in yaml
-          OsUtil.print_info("No Diffs to be pushed.") if response.data(:diffs).nil?
+          OsUtil.print_info("No Diffs to be #{method}.") if response.data(:diffs).nil? || !print
           nil
         end
       end
       
-      def self.process_semantic_diffs(diffs)
+      def self.process_semantic_diffs(diffs, method)
         return if (diffs || {}).empty?
-        OsUtil.print_info("\nDiffs that were pushed:")
+        print = false
+        
+        diffs.each {|diff| return print = true unless diff[1].nil?}
 
-        diffs.each { |v| diffs.delete(v[0]) if v[1].nil? }
-        OsUtil.print(hash_to_yaml(diffs).gsub("---\n", ""))
+        if print
+          OsUtil.print_info("\nDiffs that were #{method}:")
+
+          diffs.each { |v| diffs.delete(v[0]) if v[1].nil? }
+          OsUtil.print(hash_to_yaml(diffs).gsub("---\n", ""))
+        end
+        
+        print
       end
     end
   end
