@@ -40,14 +40,15 @@ module DTK::Client
           post_body = PostBody.new(
             :task_params? => task_params
           )
-          response = rest_post("#{BaseRoute}/#{service_instance}/#{action}", post_body)
+          encoded_action =  URI.encode_www_form_component("#{action}")
+          response = rest_post("#{BaseRoute}/#{service_instance}/#{encoded_action}", post_body)
 
           if confirmation_message = response.data(:confirmation_message)
             unless Console.prompt_yes_no("Service instance has been stopped, do you want to start it?", :add_options => true)
               return Response::Ok.new(:empty_workflow => true) 
             end
 
-            response = rest_post("#{BaseRoute}/#{service_instance}/#{action}", post_body.merge!(:start_assembly => true, :skip_violations => true))
+            response = rest_post("#{BaseRoute}/#{service_instance}/#{encoded_action}", post_body.merge!(:start_assembly => true, :skip_violations => true))
           end
 
           if response.data(:empty_workflow)
