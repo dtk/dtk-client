@@ -67,7 +67,7 @@ module DTK::Client
         return if (diffs || {}).empty?
         print = false
         
-        diffs.each {|diff| return print = true unless diff[1].nil?}
+        diffs.each {|diff| print = true unless diff[1].nil?}
 
         if print
           OsUtil.print_info("\nDiffs that were #{method}:")
