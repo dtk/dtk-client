@@ -28,7 +28,6 @@ module DTK::Client
             module_ref  = module_ref_object_from_options_or_context(:module_ref => module_name, :version => options[:version])
             arg = {
               :module_ref       => module_ref,
-              :module_name      => module_name,
               :target_directory => args[1]
             }
             Operation::Module.clone_module(arg)

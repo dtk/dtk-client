@@ -50,27 +50,36 @@ module DTK::Client
       end
       def self.module_version_exists?(module_ref, opts = {})
         type = opts[:type] || :common_module
-        query_string_hash = QueryStringHash.new(module_ref_hash(module_ref).merge(:module_type => type))
+        query_string_hash = module_ref_query_string_hash(module_ref, module_type: type)
 
         if ret_remote_info = opts[:remote_info]
-          query_string_hash.merge!(:remote_info => ret_remote_info, :rsa_pub_key => opts[:rsa_pub_key])
+          query_string_hash = query_string_hash.merge(:remote_info => ret_remote_info, :rsa_pub_key => opts[:rsa_pub_key])
         end
 
         response = rest_get(BaseRoute, query_string_hash)
         response.data.empty? ? nil : response
       end
 
-      # Can be used as input hash for QueryParams and PostBody
-      def self.module_ref_hash(module_ref)
-        {
-          :namespace   => module_ref.namespace,
-          :module_name => module_ref.module_name,
-          :version?    => module_ref.version
-        }
+      def self.module_ref_post_body(module_ref)
+        PostBody.new(module_ref_hash(module_ref))
       end
 
-      def self.module_ref_query_string_hash(module_ref)
-        QueryStringHash.new(module_ref_hash(module_ref))
+      # opts can have keys:
+      #    :module_type
+      def self.module_ref_query_string_hash(module_ref, opts = {})
+        QueryStringHash.new(module_ref_hash(module_ref, opts))
+      end
+
+      # opts can have keys:
+      #    :module_type
+      # Can be used as input hash for QueryParams and PostBody
+      def self.module_ref_hash(module_ref, opts = {})
+        {
+          :namespace    => module_ref.namespace,
+          :module_name  => module_ref.module_name,
+          :version?     => module_ref.version,
+          :module_type? => opts[:module_type]
+        }
       end
 
     end

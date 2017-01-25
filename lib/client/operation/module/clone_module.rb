@@ -18,27 +18,30 @@
 module DTK::Client
   class Operation::Module
     class CloneModule < self
-      attr_reader :module_ref, :target_repo_dir, :module_name, :version
-      def initialize(module_name, module_ref, target_directory)
-        @module_name     = module_name
+      attr_reader :target_repo_dir, :module_ref
+      def initialize(module_ref, target_directory)
         @module_ref      = module_ref
         @target_repo_dir = target_directory || ClientModuleDir.ret_path_with_current_dir(module_name)
-        @version         = module_ref.version
       end
       private :initialize
 
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           module_ref       = args.required(:module_ref)
-          module_name      = args.required(:module_name)
           target_directory = args[:target_directory]
-          new(module_name, module_ref, target_directory).clone_module
+          new(module_ref, target_directory).clone_module
         end
       end
 
       def clone_module
-        unless module_info = module_version_exists?(module_ref, :type => :common_module, :remote_info => true, :rsa_pub_key => SSHUtil.rsa_pub_key_content)
-          raise Error::Usage, "DTK module '#{module_ref_pretty_print}' does not exist on the DTK Server."
+        unless module_info = module_version_exists?(@module_ref, :type => :common_module, :remote_info => true, :rsa_pub_key => SSHUtil.rsa_pub_key_content)
+          raise Error::Usage, "DTK module '#{@module_ref.pretty_print}' does not exist on the DTK Server."
+        end
+
+        # This handles state where a depenent module is just created as a component module and consequently we tell server
+        # to create the common_module tied to it
+        unless module_info.data(:repo)
+          module_info = create_module_repo_from_component_info 
         end
 
         branch    = module_info.required(:branch, :name)
@@ -49,8 +52,8 @@ module DTK::Client
           :module_type => :common_module,
           :repo_url    => module_info.required(:repo, :url),
           :branch      => module_info.required(:branch, :name),
-          :module_name => module_name,
-          :repo_dir    => target_repo_dir
+          :module_name => @module_ref.module_name,
+          :repo_dir    => @target_repo_dir
         }
 
         ret = ClientModuleDir::GitRepo.clone_module_repo(clone_args)
@@ -59,13 +62,21 @@ module DTK::Client
           LoadSource.fetch_from_remote(module_info, self)
         end
 
-        OsUtil.print_info("DTK module '#{module_ref_pretty_print}' has been successfully cloned into '#{ret.required(:target_repo_dir)}'")
+        OsUtil.print_info("DTK module '#{@module_ref.pretty_print}' has been successfully cloned into '#{ret.required(:target_repo_dir)}'")
+      end
+
+      def version
+        @module_ref.version
       end
 
       private
 
-      def module_ref_pretty_print
-        ModuleRef.pretty_print(module_ref.module_name, module_ref.namespace, version)
+      def create_module_repo_from_component_info
+        rest_post("#{BaseRoute}/create_repo_from_component_info", module_ref_post_body)
+      end
+
+      def module_ref_post_body
+        self.class.module_ref_post_body(@module_ref)
       end
 
     end

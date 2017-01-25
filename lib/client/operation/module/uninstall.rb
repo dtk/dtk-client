@@ -61,13 +61,7 @@ module DTK::Client
             return false unless Console.prompt_yes_no("Are you sure you want to uninstall module '#{module_ref.pretty_print}' from the DTK Server?", :add_options => true)
           end
 
-          post_body = PostBody.new(
-            :module_name => module_ref.module_name,
-            :namespace   => module_ref.namespace,
-            :version?    => module_ref.version
-          )
-
-          rest_post("#{BaseRoute}/delete", post_body)
+          rest_post("#{BaseRoute}/delete", module_ref_post_body(module_ref))
           OsUtil.print_info("DTK module '#{module_ref.pretty_print}' has been uninstalled successfully.")
           nil
         end
