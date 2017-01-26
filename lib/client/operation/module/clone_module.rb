@@ -21,7 +21,7 @@ module DTK::Client
       attr_reader :target_repo_dir, :module_ref
       def initialize(module_ref, target_directory)
         @module_ref      = module_ref
-        @target_repo_dir = target_directory || ClientModuleDir.ret_path_with_current_dir(module_name)
+        @target_repo_dir = target_directory || ClientModuleDir.ret_path_with_current_dir(module_ref.module_name)
       end
       private :initialize
 
