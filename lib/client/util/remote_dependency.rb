@@ -54,7 +54,7 @@ module DTK::Client
           end
         end
 
-        raise Error, errors unless errors.empty?
+        raise Error::Usage, errors unless errors.empty?
       end
 
       private
