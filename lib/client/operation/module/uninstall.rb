@@ -23,6 +23,7 @@ module DTK::Client
           module_ref  = args.required(:module_ref)
           name        = args.required(:name)
           version     = args.required(:version)
+          versions    = nil
 
           unless name.nil?
             query_string_hash = QueryStringHash.new(
@@ -61,7 +62,10 @@ module DTK::Client
             return false unless Console.prompt_yes_no("Are you sure you want to uninstall module '#{module_ref.pretty_print}' from the DTK Server?", :add_options => true)
           end
 
-          rest_post("#{BaseRoute}/delete", module_ref_post_body(module_ref))
+          post_body = module_ref_post_body(module_ref)
+          post_body.merge!(:versions => versions) if versions
+
+          rest_post("#{BaseRoute}/delete", post_body)
           OsUtil.print_info("DTK module '#{module_ref.pretty_print}' has been uninstalled successfully.")
           nil
         end
