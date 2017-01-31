@@ -53,6 +53,19 @@ module DTK::Client
           )
 
           response = rest_post("#{BaseRoute}/update_from_repo", post_body)
+
+          if missing_dependencies = response.data(:missing_dependencies)
+            unless missing_dependencies.empty?
+              dependent_modules = missing_dependencies.map { |dependency| Install::ModuleRef.new(:namespace => dependency['namespace_name'], :module_name => dependency['display_name'], :version => dependency['version_info']) }
+              begin
+                Install::DependentModules.install(module_ref, dependent_modules, :update_none => true)
+              rescue TerminateInstall
+                @print_helper.print_terminated_installation
+                return nil
+              end
+            end
+            response = rest_post("#{BaseRoute}/update_from_repo", post_body.merge(:skip_missing_check => true))
+          end
           # TODO: DTK-2786; uncomment out to see what diffs is returning for different examples of what is deleted, added or modified before push
           # pp [:debug_diffs, response.data(:diffs)]
           print = process_semantic_diffs(response.data(:diffs), method)
@@ -77,6 +90,9 @@ module DTK::Client
         end
         
         print
+      end
+
+      class TerminateInstall < ::Exception
       end
     end
   end
