@@ -66,8 +66,6 @@ module DTK::Client
             end
             response = rest_post("#{BaseRoute}/update_from_repo", post_body.merge(:skip_missing_check => true))
           end
-          # TODO: DTK-2786; uncomment out to see what diffs is returning for different examples of what is deleted, added or modified before push
-          # pp [:debug_diffs, response.data(:diffs)]
           print = process_semantic_diffs(response.data(:diffs), method)
 
           # if diffs is nil then indicate no diffs, otherwise render diffs in yaml

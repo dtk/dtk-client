@@ -59,15 +59,13 @@ module DTK::Client; class Operation::Module
           :namespace   => namespace,
           :rsa_pub_key => SSHUtil.rsa_pub_key_content,
           :version?    => version,
-          :full_module_name => full_module_name,
-          :json_diffs  => ""
+          :force       => true # TODO: hardwired
         }
-        response = rest_post "#{BaseRoute}/pull_component_module_from_remote", PostBody.new(post_body)
+        response = rest_post "#{BaseRoute}/pull_component_info_from_remote", PostBody.new(post_body)
 
-        if custom_message = response.data[:custom_message]
-          OsUtil.print(custom_message)
-        elsif (response.data[:diffs].nil? || response.data[:diffs].empty?)
-          OsUtil.print("No changes to pull from remote.", :yellow) unless response['errors']
+        if (response.data(:diffs) || {}).empty?
+#          OsUtil.print("No changes to pull from remote.", :yellow) unless response['errors']
+          OsUtil.print("No changes to pull from remote.", :yellow) 
         else
           OsUtil.print("Changes pulled from remote", :green)
         end
