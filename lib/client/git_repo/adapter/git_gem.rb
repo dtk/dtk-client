@@ -26,6 +26,25 @@ module DTK::Client
       extend ErrorHandler::Mixin
       
       attr_accessor :git_repo
+
+      # Monkey patch the git merge method
+      # to allow passing the --allow-unrelated-histories flag
+      # more info: http://stackoverflow.com/questions/37937984/git-refusing-to-merge-unrelated-histories
+      class ::Git::Base
+        def merge(branch, message = 'merge', opts = {})
+          self.lib.merge(branch, message, opts)
+        end
+      end
+
+      class ::Git::Lib
+        def merge(branch, message = nil, opts = {})
+          arr_opts = []
+          arr_opts << '--allow-unrelated-histories' if opts[:allow_unrelated_histories]
+          arr_opts << '-m' << message if message
+          arr_opts += [branch]
+          command('merge', arr_opts)
+        end
+      end
       
       # opts can have keys
       #  :branch
@@ -80,7 +99,7 @@ module DTK::Client
       end
 
       def merge(branch_to_merge_from)
-        @git_repo.merge(branch_to_merge_from)
+        @git_repo.merge(branch_to_merge_from, 'merge', :allow_unrelated_histories => true)
       end
 
       def status
