@@ -49,6 +49,7 @@ module DTK::Client
       # opts can have keys
       #  :branch
       def initialize(repo_dir, opts = {})
+        @repo_dir = repo_dir
         @git_repo = ::Git.init(repo_dir)
         # If we want to log Git interaction
         # @git_repo = ::Git.init(repo_dir, :log => Logger.new(STDOUT))
@@ -169,7 +170,9 @@ module DTK::Client
       end
 
       def add_all
-        @git_repo.add(:all => true)
+        # Cannot use '@git_repo.add(:all => true)' because this only works if pwd is base git repo
+        fully_qualified_repo_dir = (@repo_dir =~ /^\// ? @repo_dir : File.join(Dir.pwd, @repo_dir))
+        @git_repo.add(fully_qualified_repo_dir)
       end
 
       def is_there_remote?(remote_name)
