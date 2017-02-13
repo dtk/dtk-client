@@ -123,8 +123,6 @@ module DTK::Client
       def self.base_path(type)
         path =
           case type.to_sym
-          when :service_module then Config[:service_location]
-          when :component_module then Config[:module_location]
           when :service then Config[:instance_location]
           else raise Error, "Unexpected type (#{type}) when determining base path"
           end
