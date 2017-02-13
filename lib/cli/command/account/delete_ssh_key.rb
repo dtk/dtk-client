@@ -21,7 +21,6 @@ module DTK::Client
       subcommand_def 'delete-ssh-key' do |c|
         c.arg Token::Arg.keypair_name
         command_body c, 'delete-ssh-key', 'Deletes SSH key for current user' do |sc|
-          sc.flag Token.directory_path
           sc.switch Token.skip_prompt
           sc.action do |_global_options, options, args|
             skip_prompt    = options[:skip_prompt]
