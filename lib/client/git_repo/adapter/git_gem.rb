@@ -100,7 +100,7 @@ module DTK::Client
       end
 
       def merge(branch_to_merge_from)
-        @git_repo.merge(branch_to_merge_from, 'merge', :allow_unrelated_histories => true)
+        @git_repo.merge(branch_to_merge_from, 'merge', :allow_unrelated_histories => allow_unrelated_histories?)
       end
 
       def status
@@ -252,6 +252,13 @@ module DTK::Client
 
       def default_commit_message
         "DTK Commit from client"
+      end
+
+      def allow_unrelated_histories?
+        git_version_output = `git --version`
+        git_version = git_version_output.split.last
+        # --allow-unrelated_histories was introduced in git 2.9
+        Gem::Version.new(git_version) >= Gem::Version.new('2.9.0')
       end
 
     end
