@@ -21,7 +21,6 @@ module DTK::Client
       subcommand_def 'add-ssh-key' do |c|
         c.arg Token::Arg.keypair_name
         command_body c, 'add-ssh-key', 'Adds SSH key for current user' do |sc|
-          sc.flag Token.directory_path
           sc.action do |_global_options, options, args|
             directory_path = options[:directory_path]
             name           = args[0]
