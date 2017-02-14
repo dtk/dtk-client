@@ -29,7 +29,7 @@ module DTK::Client
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           module_ref  = args.required(:module_ref)
-          new('dtkn', module_ref).delete_from_remote(:skip_prompt => args[:skip_prompt])
+          new('dtkn', module_ref).delete_from_remote(:skip_prompt => args[:skip_prompt], :force => args[:force])
         end
       end
       
@@ -38,6 +38,7 @@ module DTK::Client
           :module_name => module_ref.module_name,
           :namespace   => module_ref.namespace,
           :rsa_pub_key => SSHUtil.rsa_pub_key_content,
+          :force?      => opts[:force]
         )
 
         unless version = module_ref.version
