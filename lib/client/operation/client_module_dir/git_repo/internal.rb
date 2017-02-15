@@ -61,12 +61,6 @@ module DTK::Client
           repo.head_commit_sha
         end
 
-        def self.checkout_branch__return_repo(repo_dir, local_branch, opts = {})
-          repo = create_empty_git_repo?(repo_dir, :branch => local_branch)
-          repo.checkout(local_branch)
-          repo
-        end
-
         # opts can have keys:
         #   :commit_msg
         # returns head_sha
@@ -251,7 +245,7 @@ module DTK::Client
           service_instance = args.required(:service_instance)
           path             = args.required(:path)
           content          = args.required(:content)
-          checkout_branch(service_instance, branch) do
+          checkout_branch_on_service_instance(service_instance, branch) do
             File.open(qualified_path(service_instance, path), 'w') { |f| f.write(content) }
           end
         end
@@ -261,7 +255,7 @@ module DTK::Client
           branch           = args.required(:branch)
           service_instance = args.required(:service_instance)
           path             = args.required(:path)
-          checkout_branch(service_instance, branch) do
+          checkout_branch_on_service_instance(service_instance, branch) do
             qualified_path = qualified_path(service_instance, path)
             if File.exists?(qualified_path)
               File.open(qualified_path, 'r').read
@@ -301,22 +295,42 @@ module DTK::Client
           "#{repo_dir}/#{relative_path}"
         end
 
+        def self.checkout_branch_on_service_instance(service_instance, branch, &body)
+          repo = git_repo.new(ret_base_path(:service, service_instance), :branch => branch)
+          checkout_branch_in_repo(repo, branch, &block)
+        end
+
         CHECKOUT_LOCK = Mutex.new
-        def self.checkout_branch(service_instance, branch, &body)
+        # opts can have keys
+        #   :current_branch
+        def self.checkout_branch(repo, branch_to_checkout, opts = {}, &block)
           ret = nil
           CHECKOUT_LOCK.synchronize do
-            repo = git_repo.new(ret_base_path(:service, service_instance), :branch => branch)
-            current_branch = repo.current_branch.name
-            if current_branch == branch
-              ret = yield
+            current_branch = opts[:current_branch] || repo.current_branch.name
+            if current_branch == branch_to_checkout
+              ret = reset_if_error(repo, branch_to_checkout) { yield }
             else
               begin
-                repo.checkout(branch) 
-                ret = yield
+                repo.checkout(branch_to_checkout) 
+                ret = reset_if_error(repo, branch_to_checkout) { yield }
               ensure
                 repo.checkout(current_branch)
               end
             end
+          end
+          ret
+        end
+
+        def self.reset_if_error(repo, branch, &block)
+          ret = nil
+          begin
+            sha_before_operations =  repo.revparse(branch)
+            ret = yield
+          rescue => e
+            # reset to enable checkout of another branch
+            repo.add_all
+            repo.reset_hard(sha_before_operations)
+            raise e
           end
           ret
         end

@@ -115,6 +115,7 @@ module DTK::Client
       end
 
       def self.create_file_with_content(file_path, content)
+        FileUtils.mkdir_p(File.dirname(file_path))
         File.open(file_path, 'w') { |f| f << content }
       end
     

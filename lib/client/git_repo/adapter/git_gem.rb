@@ -141,7 +141,15 @@ module DTK::Client
       def reset_soft(sha)
         @git_repo.reset(sha)
       end
-        
+
+      def reset_hard(sha)
+        @git_repo.reset_hard(sha)
+      end
+
+      def revparse(sha_or_string)
+        @git_repo.revparse(sha_or_string)
+      end
+
       def stage_changes()
         handle_git_error do
           @git_repo.add(untracked())

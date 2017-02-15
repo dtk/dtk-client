@@ -33,14 +33,14 @@ module DTK::Client; class Operation::Module
       def self.transform_and_commit(remote_module_info, parent)
         target_repo_dir      = parent.target_repo_dir
         parsed_common_module = parent.base_dsl_file_obj.parse_content(:common_module)
-        local_branch         = Operation::ClientModuleDir::GitRepo.current_branch(:path => target_repo_dir).data(:branch)
+        current_branch         = Operation::ClientModuleDir::GitRepo.current_branch(:path => target_repo_dir).data(:branch)
 
         if service_info = remote_module_info.data(:service_info)
-          transform_service_info(target_repo_dir, parent, service_info, parsed_common_module, local_branch)
+          transform_service_info(target_repo_dir, parent, service_info, parsed_common_module, current_branch)
         end
 
         if component_info = remote_module_info.data(:component_info)
-          transform_component_info(target_repo_dir, parent, component_info, parsed_common_module, local_branch)
+          transform_component_info(target_repo_dir, parent, component_info, parsed_common_module, current_branch)
         end
       end
 
@@ -48,27 +48,29 @@ module DTK::Client; class Operation::Module
         new(transform_helper, info_type, remote_repo_url, parent).transform_info
       end
 
-      def self.transform_service_info(target_repo_dir, parent, service_info, parsed_common_module, local_branch = 'master')
+      def self.transform_service_info(target_repo_dir, parent, service_info, parsed_common_module, current_branch)
         transform_helper = ServiceAndComponentInfo::TransformTo.new(target_repo_dir, parent.module_ref, parent.version, parsed_common_module)
         service_file_path__content_array = ServiceInfo.transform_info(transform_helper, service_info['remote_repo_url'], parent)
 
-        repo = checkout_branch__return_repo(target_repo_dir, "remotes/dtkn/master").data(:repo)
-        FileUtils.mkdir_p("#{target_repo_dir}/assemblies") unless File.exists?("#{target_repo_dir}/assemblies")
-
-        args = [transform_helper, ServiceInfo.info_type, service_info['remote_repo_url'], parent]
-        service_file_path__content_array.each { |file| Operation::ClientModuleDir.create_file_with_content("#{service_file_path(target_repo_dir, file, *args)}", file[:content]) }
-
-        commit_and_push_to_remote(repo, target_repo_dir, "master", "dtkn", local_branch)
+        create_and_checkout_branch?(current_branch, target_repo_dir, "remotes/dtkn/master") do |repo|
+          FileUtils.mkdir_p("#{target_repo_dir}/assemblies") unless File.exists?("#{target_repo_dir}/assemblies")
+          
+          args = [transform_helper, ServiceInfo.info_type, service_info['remote_repo_url'], parent]
+          service_file_path__content_array.each { |file| Operation::ClientModuleDir.create_file_with_content("#{service_file_path(target_repo_dir, file, *args)}", file[:content]) }
+          
+          commit_and_push_to_remote(repo, target_repo_dir, "master", "dtkn")
+        end
       end
 
-      def self.transform_component_info(target_repo_dir, parent, component_info, parsed_common_module, local_branch = 'master')
+      def self.transform_component_info(target_repo_dir, parent, component_info, parsed_common_module, current_branch)
         transform_helper = ServiceAndComponentInfo::TransformTo.new(target_repo_dir, parent.module_ref, parent.version, parsed_common_module)
         component_file_path__content_array = ComponentInfo.transform_info(transform_helper, component_info['remote_repo_url'], parent)
 
-        repo = checkout_branch__return_repo(target_repo_dir, "remotes/dtkn-component-info/master").data(:repo)
-        component_file_path__content_array.each { |file| Operation::ClientModuleDir.create_file_with_content("#{file_path(target_repo_dir, file)}", file[:content]) }
+        create_and_checkout_branch?(current_branch, target_repo_dir, "remotes/dtkn-component-info/master") do |repo|
+          component_file_path__content_array.each { |file| Operation::ClientModuleDir.create_file_with_content("#{file_path(target_repo_dir, file)}", file[:content]) }
 
-        commit_and_push_to_remote(repo, target_repo_dir, "master", "dtkn-component-info", local_branch)
+          commit_and_push_to_remote(repo, target_repo_dir, "master", "dtkn-component-info")
+        end
       end
       
       private
@@ -103,18 +105,21 @@ module DTK::Client; class Operation::Module
         "#{target_repo_dir}/assemblies/#{assembly_name}/assembly.yaml"
       end
 
-      def self.checkout_branch__return_repo(target_repo_dir, branch)
-        git_repo_args = {
-          :repo_dir     => target_repo_dir,
-          :local_branch => branch
+      def self.create_and_checkout_branch?(current_branch, target_repo_dir, branch_to_checkout, &body)
+        repo = git_repo_operation.create_empty_git_repo?(:repo_dir => target_repo_dir, :branch => branch_to_checkout).data(:repo)
+
+        checkout_branch_args = {
+          :repo => repo, 
+          :current_branch => current_branch,
+          :branch_to_checkout => branch_to_checkout
         }
-        git_repo_operation.checkout_branch__return_repo(git_repo_args)
+
+        git_repo_operation.checkout_branch(checkout_branch_args) { body.call(repo) }
       end
 
-      def self.commit_and_push_to_remote(repo, target_repo_dir, branch, remote, local_branch)
+      def self.commit_and_push_to_remote(repo, target_repo_dir, branch, remote)
         repo.stage_and_commit("Add auto-generated files from push-dtkn")
         repo.push_from_cached_branch(remote, branch, { :force => true })
-        repo.checkout(local_branch)
       end
 
       def self.stage_and_commit(target_repo_dir, commit_msg = nil)

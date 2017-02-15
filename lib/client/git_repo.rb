@@ -146,6 +146,18 @@ module DTK::Client
       @git_adapter.reset_soft(sha)
     end
 
+    def reset_hard(sha)
+      @git_adapter.reset_hard(sha)
+    end
+
+    def revparse(string)
+      @git_adapter.revparse(string)
+    end
+
+    def add_all
+      @git_adapter.add_all
+    end
+
     def all_branches
       @git_adapter.all_branches
     end

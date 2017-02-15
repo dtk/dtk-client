@@ -91,11 +91,24 @@ module DTK::Client
         end
       end
 
-      def self.checkout_branch__return_repo(args)
+      def self.create_empty_git_repo?(args)
         wrap_operation(args) do |args|
-          repo_dir     = args.required(:repo_dir)
-          local_branch = args.required(:local_branch)
-          response_data_hash(:repo => Internal.checkout_branch__return_repo(repo_dir, local_branch))
+          repo_dir = args.required(:repo_dir)
+          branch   = args.required(:branch)
+
+          response_data_hash(:repo => Internal.create_empty_git_repo?(repo_dir, :branch => branch))
+        end
+      end
+
+      # The arg repo wil have a branch. This funbctio checks that out and when finished goes back to current_branch
+      def self.checkout_branch(args, &block)
+        wrap_operation(args) do |args|
+          repo               = args.required(:repo)
+          current_branch     = args.required(:current_branch)
+          branch_to_checkout = args.required(:branch_to_checkout)
+
+          Internal.checkout_branch(repo, branch_to_checkout, :current_branch => current_branch, &block)
+          response_data_hash
         end
       end
 
