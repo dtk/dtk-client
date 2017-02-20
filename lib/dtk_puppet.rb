@@ -18,7 +18,7 @@
 module DTK
   module Puppet
     require_relative('dtk_puppet/parser')
-    require_relative('dtk_puppet/puppet_structure')
+    require_relative('dtk_puppet/parse_structure')
     require_relative('client/error')
   end
 end

@@ -50,10 +50,29 @@ module DTK
         end
 
         namespace, module_name = full_module_name.split('/')
-        content = PuppetStructure.new(all_files, module_name).parse_pp_files
-        module_hash.merge!(content)
+
+        component_defs = process_manifest_files(all_files, module_name)
+        module_hash['component_defs'] = component_defs
 
         File.open("#{current_dir}/dtk.module.yaml", 'wb') { |file| file.write(module_hash.to_yaml) }
+      end
+
+      def self.process_manifest_files(files, module_name)
+        ret    = ParseStructure::TopPS.new()
+        parser = ::Puppet::Parser::ParserFactory.parser
+
+        files.each do |file|
+          parser.file    = file
+          initial_import = parser.parse
+
+          known_resource_types = ::Puppet::Resource::TypeCollection.new('production')
+          known_resource_types.import_ast(initial_import, '')
+          krt_code = known_resource_types.hostclass('').code
+
+          ret.add_children(krt_code)
+        end
+
+        ret.render_hash_form(module_name)
       end
 
       def self.process_metadata_dependencies(dependencies)
