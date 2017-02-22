@@ -56,7 +56,7 @@ module DTK::Client
         response = rest_get("#{BaseRoute}/#{service_instance}/info")
 
         unless node_info = response.data(:nodes).find{ |node| node_name == node['display_name'] }
-          raise Error::Usage, "Cannot find info about node with id '#{node_id}'"
+          raise Error::Usage, "The node '#{node_name}' does not exist"
         end
 
         data            = {}
