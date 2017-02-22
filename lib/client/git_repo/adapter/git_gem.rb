@@ -34,6 +34,10 @@ module DTK::Client
         def merge(branch, message = 'merge', opts = {})
           self.lib.merge(branch, message, opts)
         end
+
+        def rev_list(sha)
+          self.lib.rev_list(sha)
+        end
       end
 
       class ::Git::Lib
@@ -43,6 +47,11 @@ module DTK::Client
           arr_opts << '-m' << message if message
           arr_opts += [branch]
           command('merge', arr_opts)
+        end
+
+        def rev_list(sha)
+          arr_opts = [sha]
+          command('rev-list', arr_opts)
         end
       end
       
@@ -148,6 +157,15 @@ module DTK::Client
 
       def revparse(sha_or_string)
         @git_repo.revparse(sha_or_string)
+      end
+
+      def rev_list(base_sha)
+        @git_repo.rev_list(base_sha)
+      end
+
+      def local_ahead(base_sha, remote_sha)
+        results = @git_repo.rev_list(base_sha)
+        !results.split("\n").grep(remote_sha).empty?
       end
 
       def stage_changes()
