@@ -91,6 +91,16 @@ module DTK::Client
         end
       end
 
+      def self.local_ahead?(args)
+        wrap_operation(args) do |args|
+          remote_branch = args.required(:remote_branch)
+          no_commit     = args[:no_commit]
+          repo_with_remote  = repo_with_dtkn_remote(args)
+
+          response_data_hash(:local_ahead => repo_with_remote.local_ahead?(remote_branch, :no_commit => no_commit))
+        end
+      end
+
       def self.create_empty_git_repo?(args)
         wrap_operation(args) do |args|
           repo_dir = args.required(:repo_dir)

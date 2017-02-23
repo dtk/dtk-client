@@ -51,6 +51,11 @@ module DTK::Client
           Internal.merge(@repo, merge_from_ref, :no_commit => opts[:no_commit])
         end
 
+        def local_ahead?(remote_branch, opts = {})
+          merge_from_ref = "#{remote_name}/#{remote_branch}"
+          Internal.local_ahead?(@repo, merge_from_ref, :no_commit => opts[:no_commit])
+        end
+
         private
 
         # TODO: These constants used in Internal; Deprecate GIT_REMOTE amd LOCAL_BRANCH for remote_name and local_branch

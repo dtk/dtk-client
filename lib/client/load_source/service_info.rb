@@ -20,8 +20,10 @@ module DTK::Client
     class ServiceInfo < self
       def fetch_and_cache_info
         fetch_remote
-        merge_from_remote
-        transform_from_service_info
+        unless local_ahead?.data('local_ahead')
+          merge_from_remote
+          transform_from_service_info
+        end
       end
 
       def fetch_info

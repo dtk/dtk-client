@@ -111,6 +111,11 @@ module DTK::Client
       git_repo_operation.merge_from_dtkn_remote(git_repo_args)
     end
 
+    def local_ahead?
+      git_repo_args = common_git_repo_args.merge(:remote_branch => git_repo_remote_branch, :no_commit => true)
+      git_repo_operation.local_ahead?(git_repo_args)
+    end
+
     def self.stage_and_commit(target_repo_dir, commit_msg = nil)
       git_repo_args = {
         :repo_dir          => target_repo_dir,

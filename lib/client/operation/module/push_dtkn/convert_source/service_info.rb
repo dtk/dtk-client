@@ -20,6 +20,7 @@ module DTK::Client
     class ConvertSource
       class ServiceInfo < self
         def transform_info
+          fetch_remote
           transform_to_service_info
         end
 

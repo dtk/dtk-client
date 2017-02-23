@@ -154,6 +154,14 @@ module DTK::Client
       @git_adapter.revparse(string)
     end
 
+    def rev_list(base_sha)
+      @git_adapter.rev_list(base_sha)
+    end
+
+    def local_ahead(base_sha, remote_sha)
+      @git_adapter.local_ahead(base_sha, remote_sha)
+    end
+
     def add_all
       @git_adapter.add_all
     end
