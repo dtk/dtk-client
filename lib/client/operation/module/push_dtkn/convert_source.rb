@@ -105,6 +105,18 @@ module DTK::Client; class Operation::Module
         "#{target_repo_dir}/assemblies/#{assembly_name}/assembly.yaml"
       end
 
+      def fetch_remote
+        git_repo_args = common_git_repo_args.merge(:add_remote => @remote_repo_url)
+        git_repo_operation.fetch_dtkn_remote(git_repo_args)
+      end
+
+      def common_git_repo_args
+         {
+          :info_type => @info_type,
+          :repo_dir  => @target_repo_dir
+        }
+      end
+
       def self.create_and_checkout_branch?(current_branch, target_repo_dir, branch_to_checkout, &body)
         repo = git_repo_operation.create_empty_git_repo?(:repo_dir => target_repo_dir, :branch => branch_to_checkout).data(:repo)
 
