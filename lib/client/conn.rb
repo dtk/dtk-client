@@ -67,10 +67,6 @@ module DTK::Client
       check_and_wrap_response { json_parse_if_needed(post_raw(url,post_body,{:content_type => 'avro/binary'})) }
     end
 
-    def connection_error?
-      !@connection_error.nil?
-    end
-    
     ##
     # Method will warn user that connection could not be established. User should check configuration
     # to make sure that connection is properly set.
@@ -84,13 +80,24 @@ module DTK::Client
       printf "%15s %s\n", "Password:", "#{creds[:password] ? creds[:password].gsub(/./,'*') : 'No password set'}"
       puts   "==================================================================="
       
-      if connection_error['errors'].first['errors']
-        error_code = self.connection_error['errors'].first['errors'].first['code']
+      if error_code =  error_code?
         OsUtil.print_error("Error code: #{error_code}")
       end
     end
+
+    def connection_error?
+      !connection_error.nil?
+    end
+
+    def connection_refused_error_code?
+      error_code? == 'connection_refused'
+    end
     
     private
+
+    def error_code?
+      connection_error['errors'].first['code'] rescue nil
+    end
 
     REST_VERSION = 'v1'
     REST_PREFIX = "rest/api/#{REST_VERSION}"
@@ -149,7 +156,7 @@ module DTK::Client
         @cookies = response.cookies
       end
     end
-    
+
     def logout
       response = get_raw rest_url('auth/logout')
       # TODO: see if response can be nil
