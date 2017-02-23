@@ -32,6 +32,7 @@ module DTK::Client
         @component_module_refs = component_module_refs 
         @print_helper          = PrintHelper.new(:module_ref => @base_module_ref, :source => :remote)
         @prompt_helper         = PromptHelper.new(:update_all => opts[:skip_prompt], :update_none => opts[:update_none])
+        @opts                  = opts
       end
       private :initialize
 
@@ -44,7 +45,12 @@ module DTK::Client
         @print_helper.print_getting_dependencies
         unified_module_refs = get_unified_dependent_module_refs
         unless unified_module_refs.empty?
-          @print_helper.print_installing_dependencies
+          case @opts[:mode]
+          when 'pull'
+            @print_helper.print_pulling_dependencies
+          else
+            @print_helper.print_installing_dependencies
+          end
           unified_module_refs.each do |module_ref|
             # Using unless module_ref.is_base_module? because Base component module is installed when base is installed
             ComponentModule.install_or_pull?(module_ref, @prompt_helper, @print_helper) unless module_ref.is_base_module?

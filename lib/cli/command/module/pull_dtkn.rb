@@ -21,10 +21,18 @@ module DTK::Client
       subcommand_def 'pull-dtkn' do |c|
         command_body c, 'pull-dtkn', 'Pull content from repo manager to client module directory and push to server' do |sc|
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to module directory containing content to update; not need if in the module directory'
+          sc.switch Token.skip_prompt
           sc.action do |_global_options, options, _args|
             module_ref = module_ref_object_from_options_or_context(options)
-            Operation::Module.pull_dtkn(:module_ref => module_ref, :base_dsl_file_obj => @base_dsl_file_obj)
-            Operation::Module.push(:module_ref => module_ref, :base_dsl_file_obj => @base_dsl_file_obj, :directory_path => options[:directory_path], :method => "pulled")
+            operation_args = {
+              :module_ref          => module_ref,
+              :base_dsl_file_obj   => @base_dsl_file_obj,
+              :has_directory_param => !options["d"].nil?,
+              :directory_path      => options[:directory_path],
+              :skip_prompt         => options[:skip_prompt]
+            }
+            Operation::Module.pull_dtkn(operation_args)
+            Operation::Module.push(operation_args.merge(:method => "pulled"))
           end
         end
       end

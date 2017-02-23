@@ -44,6 +44,10 @@ module DTK::Client; class Operation::Module
         print_continuation "Installing base module '#{pretty_print_module}' from #{source_term}", :color => :yellow
       end
 
+      def print_continuation_pulling_base_module
+        print_continuation "Pulling base module '#{pretty_print_module}' from #{source_term}", :color => :yellow
+      end
+
       def print_continuation_pulling_dependency_update
         print_continuation "Pulling update to dependent module '#{pretty_print_module}'"
       end
@@ -62,12 +66,20 @@ module DTK::Client; class Operation::Module
         OsUtil.print_info("Installing dependent modules from #{Term::DTKN_CATALOG} #{Term::CONTINUATION}")
       end
 
+      def print_pulling_dependencies
+        OsUtil.print_info("Pulling dependent modules from #{Term::DTKN_CATALOG} #{Term::CONTINUATION}")
+      end
+
       def print_using_installed_dependent_module
         OsUtil.print("Using installed dependent module '#{pretty_print_module}'")
       end
 
       def print_terminated_installation
         OsUtil.print_warning("Terminated installation of module '#{pretty_print_module}'")
+      end
+
+      def print_terminated_pulling
+        OsUtil.print_warning("Terminated pulling of module '#{pretty_print_module}'")
       end
 
       def print_done_message
