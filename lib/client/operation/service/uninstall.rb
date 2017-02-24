@@ -22,7 +22,9 @@ module DTK::Client
         wrap_operation(args) do |args|
           service_instance = args.required(:service_instance)
           recursive        = args.required(:recursive)
-          delete            = args.required(:delete)
+          delete           = args.required(:delete)
+          path             = args[:directory_path]
+          node             = []
 
           unless args[:skip_prompt]
             return false unless Console.prompt_yes_no("Are you sure you want to uninstall the infrastructure associated with '#{service_instance}' and delete this service instance from the server?", :add_options => true)
@@ -33,11 +35,21 @@ module DTK::Client
             :recursive? => recursive,
             :delete      => delete
           )
-          rest_post("#{BaseRoute}/uninstall", post_body)
+          response = rest_post("#{BaseRoute}/uninstall", post_body)
 
-          ClientModuleDir.rm_f(args[:directory_path]) if args[:purge]
+          if nodes = response.data
+            nodes.each {|n| node.push(n["display_name"]) }
+          end
 
-          OsUtil.print_info("DTK module '#{service_instance}' has been uninstalled successfully.")
+          if args[:purge]
+            dir = File.expand_path("..", Dir.pwd)
+            Dir.chdir(dir)
+            ClientModuleDir.rm_f(path)
+          end
+
+          info = "DTK module '#{service_instance}' has been uninstalled successfully." 
+          info = info + " Deleted nodes:#{node.join(", ")}(#{nodes.size})" if delete
+          OsUtil.print_info(info)
         end
       end
 

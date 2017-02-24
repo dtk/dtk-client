@@ -27,16 +27,12 @@ module DTK::Client; module CLI
           sc.switch Token.delete, :desc => 'Removes service instance with all nodes and modules'
           sc.switch Token.recursive, :desc => 'Delete dependent service instances'
           sc.action do |_global_options, options, args|
-            directory_path = options[:directory_path]
+            directory_path = options[:directory_path] || @base_dsl_file_obj.parent_dir
             purge          = options[:purge]
             delete         = options[:delete]
             recursive      = options[:recursive]
             name           = options[:uninstall_name]
 
-            if purge && (!directory_path || (directory_path == @base_dsl_file_obj.parent_dir?))
-              raise Error::Usage, "If use option '#{option_ref(:purge)}' then need to call from outside directory and use option '#{option_ref(:directory_path)}'"
-            end
-            
             if name.nil? 
               service_instance = service_instance_in_options_or_context(options, :ignore_parsing_errors => true) 
             else 
