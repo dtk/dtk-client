@@ -198,7 +198,7 @@ module DTK::Client
       def add_all
         # Cannot use '@git_repo.add(:all => true)' because this only works if pwd is base git repo
         fully_qualified_repo_dir = (@repo_dir =~ /^\// ? @repo_dir : File.join(Dir.pwd, @repo_dir))
-        @git_repo.add(fully_qualified_repo_dir)
+        @git_repo.add(fully_qualified_repo_dir, :all => true )
       end
 
       def is_there_remote?(remote_name)
