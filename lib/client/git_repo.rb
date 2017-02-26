@@ -28,8 +28,11 @@ module DTK::Client
     # opts can have keys
     #  :branch
     def initialize(repo_dir, opts = {})
+      @repo_dir    = repo_dir
       @git_adapter = git_adapter_class.new(repo_dir, opts)
     end
+
+    attr_reader :repo_dir
 
     def self.clone(repo_url, target_path, branch)
       git_adapter_class.clone(repo_url, target_path, branch)

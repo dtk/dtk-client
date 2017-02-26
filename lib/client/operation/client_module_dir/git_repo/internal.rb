@@ -317,6 +317,11 @@ module DTK::Client
             if current_branch == branch_to_checkout
               ret = reset_if_error(repo, branch_to_checkout) { yield }
             else
+              #TODO: DTK-2922: temporary fix until can solve problem described in note below
+              unless repo.repo_dir == Dir.pwd
+                raise Error::Usage, "This command must be invoked from the base module directory '#{repo.repo_dir}'"
+              end
+
               begin
                 repo.checkout(branch_to_checkout) 
                 ret = reset_if_error(repo, branch_to_checkout) { yield }
@@ -327,6 +332,17 @@ module DTK::Client
           end
           ret
         end
+
+        #TODO: DTK-2922: tried below for above; it worked aside from fact that dircetory is empty and have to step down and step up
+        # Dir.chdir is done to avoid case where current directory does not exist in branch checking out
+        # Dir.chdir(repo.repo_dir) do
+        #   begin
+        #     repo.checkout(branch_to_checkout) 
+        #     ret = reset_if_error(repo, branch_to_checkout) { yield }
+        #   ensure
+        #     repo.checkout(current_branch)
+        #   end
+        # end
 
         def self.reset_if_error(repo, branch, &block)
           ret = nil
