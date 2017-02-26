@@ -72,7 +72,29 @@ module DTK::Client
         end
       end
 
+      # The retries are put in to avoid race condition when the keys are not yet in repo manager gitolite
+      DEFAULT_NUM_DTKN_FETCH_RETRIES = 20
+      SLEEP_BETWEEN_RETRIES = 1
       def self.fetch_dtkn_remote(args)
+        if num_retries = ENV['NUM_DTKN_FETCH_RETRIES']
+          num_retries = num_retries.to_i rescue nil
+        end
+        num_retries ||= DEFAULT_NUM_DTKN_FETCH_RETRIES
+        ret = nil
+        while num_retries > 0
+          num_retries -= 1
+          begin
+            if ret = fetch_dtkn_remote_single_try(args)
+              return ret
+            end
+          rescue => e
+            fail e if num_retries == 0
+          end
+        end
+        ret # should not be reached
+      end
+
+      def self.fetch_dtkn_remote_single_try(args)
         wrap_operation(args) do |args|
           repo_with_remote = repo_with_dtkn_remote(args)
 
@@ -80,6 +102,7 @@ module DTK::Client
           response_data_hash
         end
       end
+      private_class_method :fetch_dtkn_remote_single_try
 
       def self.merge_from_dtkn_remote(args)
         wrap_operation(args) do |args|
