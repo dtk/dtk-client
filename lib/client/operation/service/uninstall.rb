@@ -42,13 +42,16 @@ module DTK::Client
           end
 
           if args[:purge]
-            dir = File.expand_path("..", Dir.pwd)
-            Dir.chdir(dir)
+            if path.nil?
+              dir = File.expand_path("..", Dir.pwd)
+              Dir.chdir(dir)
+              path = dir + "/" + service_instance
+            end
             ClientModuleDir.rm_f(path)
           end
 
           info = "DTK module '#{service_instance}' has been uninstalled successfully." 
-          info = info + " Deleted nodes:#{node.join(", ")}(#{nodes.size})" if delete
+          info = info + " Deleted nodes(#{nodes.size}):#{node.join(", ")}" if delete && node.size > 1
           OsUtil.print_info(info)
         end
       end

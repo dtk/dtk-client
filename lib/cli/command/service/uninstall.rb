@@ -27,7 +27,7 @@ module DTK::Client; module CLI
           sc.switch Token.delete, :desc => 'Removes service instance with all nodes and modules'
           sc.switch Token.recursive, :desc => 'Delete dependent service instances'
           sc.action do |_global_options, options, args|
-            directory_path = options[:directory_path] || @base_dsl_file_obj.parent_dir
+            directory_path = options[:directory_path]
             purge          = options[:purge]
             delete         = options[:delete]
             recursive      = options[:recursive]
@@ -35,10 +35,11 @@ module DTK::Client; module CLI
 
             if name.nil? 
               service_instance = service_instance_in_options_or_context(options, :ignore_parsing_errors => true) 
-            else 
+            else  
               service_instance = name
             end
-
+            # figure out how to check for directory_path to support when no path is given
+            
             args = {
               :service_instance => service_instance,
               :skip_prompt      => options[:skip_prompt],
