@@ -95,6 +95,14 @@ module DTK::Client; class Operation::Module
         end
 
         dependencies = convert_to_module_refs_array(response)
+
+        # to avoid cases where dependency can have itself as dependency (stack level too deep) we remove it from dependencies
+        # think we will not need this when we have unified module (instead of component and service modules)
+        if @module_ref.is_base_module?
+          matching = dependencies.find{ |dep| (dep.module_name == module_name) && (dep.namespace == namespace) && (dep.version == version) }
+          dependencies.delete(matching)
+        end
+
         @cache.add!(@module_ref, dependencies)
         dependencies
       end

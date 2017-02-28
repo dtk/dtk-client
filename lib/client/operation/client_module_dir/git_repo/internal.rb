@@ -61,6 +61,13 @@ module DTK::Client
           repo.head_commit_sha
         end
 
+        def self.local_ahead?(repo, merge_from_ref, opts = {})
+          base_sha = repo.head_commit_sha
+          remote_branch = repo.all_branches.remote.find { |r| "#{r.remote}/#{r.name}" == merge_from_ref }
+          remote_sha = remote_branch.gcommit.sha
+          repo.local_ahead(base_sha, remote_sha)
+        end
+
         # opts can have keys:
         #   :commit_msg
         # returns head_sha

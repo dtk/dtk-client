@@ -34,6 +34,10 @@ module DTK::Client
         def merge(branch, message = 'merge', opts = {})
           self.lib.merge(branch, message, opts)
         end
+
+        def rev_list(sha)
+          self.lib.rev_list(sha)
+        end
       end
 
       class ::Git::Lib
@@ -43,6 +47,11 @@ module DTK::Client
           arr_opts << '-m' << message if message
           arr_opts += [branch]
           command('merge', arr_opts)
+        end
+
+        def rev_list(sha)
+          arr_opts = [sha]
+          command('rev-list', arr_opts)
         end
       end
       
@@ -150,6 +159,15 @@ module DTK::Client
         @git_repo.revparse(sha_or_string)
       end
 
+      def rev_list(base_sha)
+        @git_repo.rev_list(base_sha)
+      end
+
+      def local_ahead(base_sha, remote_sha)
+        results = @git_repo.rev_list(base_sha)
+        !results.split("\n").grep(remote_sha).empty?
+      end
+
       def stage_changes()
         handle_git_error do
           @git_repo.add(untracked())
@@ -180,7 +198,7 @@ module DTK::Client
       def add_all
         # Cannot use '@git_repo.add(:all => true)' because this only works if pwd is base git repo
         fully_qualified_repo_dir = (@repo_dir =~ /^\// ? @repo_dir : File.join(Dir.pwd, @repo_dir))
-        @git_repo.add(fully_qualified_repo_dir)
+        @git_repo.add(fully_qualified_repo_dir, :all => true )
       end
 
       def is_there_remote?(remote_name)

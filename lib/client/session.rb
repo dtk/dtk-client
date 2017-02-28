@@ -31,7 +31,10 @@ module DTK::Client
       @conn = Conn.new
     end
     
-    def self.get_connection
+    # opts can have keys
+    #  :reset
+    def self.get_connection(opts = {})
+      instance.conn = Conn.new if opts[:reset]
       instance.conn
     end
     

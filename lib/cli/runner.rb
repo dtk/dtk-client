@@ -44,10 +44,31 @@ module DTK::Client
       end
       
       private
-      
+
+      CONNECTION_RETRIES = 20
+      SLEEP_BETWEEN_RETRIES = 1
       def self.raise_error_if_invalid_connection
-        connection = Session.get_connection
-        raise Error::InvalidConnection.new(connection) if connection.connection_error?
+        connection_retries = connection_retries()
+        count = 0
+        while count < connection_retries 
+          connection = Session.get_connection(count == 0 ? {} : { reset: true })
+          return unless connection.connection_error?
+          if connection.connection_refused_error_code?
+            sleep SLEEP_BETWEEN_RETRIES
+            count += 1
+          else
+            raise Error::InvalidConnection.new(connection)
+          end
+        end
+        raise Error::InvalidConnection.new(connection)
+      end
+
+      def self.connection_retries
+        ret = 
+          if env_val = ENV['DTK_CONNECTION_RETRIES']
+            env_val.to_i rescue nil  
+          end
+        ret || CONNECTION_RETRIES
       end
 
       def self.render_response(response_obj)

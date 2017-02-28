@@ -22,6 +22,7 @@ module DTK::Client
         # attr_reader :parsed_common_module
 
         def transform_info
+          fetch_remote
           transform_to_component_info
         end
         

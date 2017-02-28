@@ -86,7 +86,7 @@ module DTK::Client
         @bad_connection = bad_connection
       end
       def print_warning
-        @bad_connection.print_warning
+        @bad_connection.print_warning if @bad_connection
       end
     end
     
