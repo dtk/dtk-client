@@ -30,6 +30,10 @@ module DTK
         current_dir = Client::OsUtil.current_dir
         dir_content = Dir.glob("#{current_dir}/**/*")
 
+        if module_yaml_file = dir_content.find { |path| path =~ /dtk.module.yaml$/ }
+          fail DTK::Client::Error::Usage.new("Dtk module file 'dtk.module.yaml' exists already. Please delete it first and execute puppet scaffolding again.")
+        end
+
         metadata_file = dir_content.find { |path| path =~ /metadata.json$/ }
         file_content  = File.read(metadata_file)
         metadata_hash = JSON.parse(file_content)
@@ -55,6 +59,7 @@ module DTK
         module_hash['component_defs'] = component_defs
 
         File.open("#{current_dir}/dtk.module.yaml", 'wb') { |file| file.write(module_hash.to_yaml) }
+        DTK::Client::OsUtil.print_info("'dtk.module.yaml' file has been created successfully.")
       end
 
       def self.process_manifest_files(files, module_name)

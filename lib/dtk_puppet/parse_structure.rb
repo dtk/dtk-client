@@ -39,12 +39,11 @@
         attr_name = attr['name']
         attr_type = attr['type']
         attr_hash = { attr_name => { 'type' => attr_type } }
-        
-        if attr_default = attr['default']
-          attr_hash[attr_name].merge!('default' => attr_default)
+
+        if required = attr['required']
+          attr_hash[attr_name].merge!('required' => required)
         end
 
-        attr_hash[attr_name].merge!('default' => attr_default) if attr_default
         processed_atttibutes.merge!(attr_hash)
       end
 
@@ -132,7 +131,9 @@
       Puppet::Pops::Model::LiteralBoolean => 'boolean',
       Puppet::Pops::Model::LiteralString => 'string',
       Puppet::Pops::Model::LiteralInteger => 'integer',
-      Puppet::Pops::Model::LiteralList => 'array'
+      Puppet::Pops::Model::LiteralList => 'array',
+      Puppet::Pops::Model::ConcatenatedString => 'string',
+      Puppet::Pops::Model::QualifiedName => 'string'
     }
     class AttributePS < self
       def initialize(arg, opts = {})
@@ -141,18 +142,21 @@
         if arg_1 = arg[1]          
           self['type']     = type?(arg_1)
           self['required'] = opts[:required] if opts.key?(:required)
-          if default_val = def_value(arg_1)
-            self['default']  = default_val
+
+          unless def_value(arg_1)
+            self['required'] ||= true
           end
         else
+          self['type']     = 'string'
           self['required'] = true
         end
+
         super
       end
 
       def type?(arg)
         if arg_value = arg.value
-          AttrTypes[arg_value.class]
+          AttrTypes[arg_value.class] || 'string'
         else
           'string'
         end
