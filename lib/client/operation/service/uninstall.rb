@@ -36,9 +36,7 @@ module DTK::Client
             :delete      => delete
           )
           response = rest_post("#{BaseRoute}/uninstall", post_body)
-          require 'debugger'
-          Debugger.start
-          debugger
+
           message = "" 
           if nodes = response.data
             nodes.each do |n|
