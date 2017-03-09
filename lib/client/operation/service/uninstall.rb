@@ -36,9 +36,14 @@ module DTK::Client
             :delete      => delete
           )
           response = rest_post("#{BaseRoute}/uninstall", post_body)
-
+          require 'debugger'
+          Debugger.start
+          debugger
+          message = "" 
           if nodes = response.data
-            nodes.each {|n| node.push(n["display_name"]) }
+            nodes.each do |n|
+              message += "#{n["display_name"]} - #{ n["external_ref"]["dns_name"]}\n"
+            end
           end
 
           if args[:purge]
@@ -51,13 +56,13 @@ module DTK::Client
           end
 
           info = "DTK module '#{service_instance}' has been uninstalled successfully." 
-          info = info + " Deleted nodes(#{nodes.size}):#{node.join(", ")}" if delete && node.size > 1
+          #info = info + " Deleted nodes(#{nodes.size}):#{node.join(", ")}" if delete && node.size > 1
+
           OsUtil.print_info(info)
+          OsUtil.print("Nodes that will be deleted: \n" + message) if delete && nodes.size > 1
         end
       end
 
     end
   end
 end
-
-
