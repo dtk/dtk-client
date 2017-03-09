@@ -1,0 +1,19 @@
+{
+    "remotePath": "/home/dtk23-client/dtk-client",
+    "host": "dev23.r8network.com",
+    "username": "dtk23-client",
+    "password": "password",
+    "port": 22,
+    "secure": false,
+    "protocol": "sftp",
+    "uploadOnSave": true,
+    "passive": false,
+    "debug": false,
+    "privateKeyPath":"/Users/almin/Dropbox/testing_use1.pem",
+    "passphrase": null,
+    "ignore": [
+        "\\.vscode",
+        "\\.git",
+        "\\.DS_Store"
+    ]
+}
