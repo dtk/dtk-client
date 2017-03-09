@@ -36,11 +36,13 @@ module DTK::Client
             :delete      => delete
           )
           response = rest_post("#{BaseRoute}/uninstall", post_body)
-
+          require 'debugger'
+          Debugger.start
+          debugger
           message = "" 
           if nodes = response.data
             nodes.each do |n|
-              message += "#{n["display_name"]} - #{ n["external_ref"]["dns_name"]}\n"
+              message += "#{n["display_name"]} - #{ n["external_ref"]["dns_name"]}\n" unless n["display_name"].eql?("node") && n["dtk_client_type"].eql?("node_group")
             end
           end
 
