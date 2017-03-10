@@ -32,31 +32,20 @@ module DTK::Client
 
           post_body = PostBody.new(
             :service_instance => service_instance,
-            :recursive? => recursive,
+            :recursive?  => recursive,
             :delete      => delete
           )
           response = rest_post("#{BaseRoute}/uninstall", post_body)
-          require 'debugger'
-          Debugger.start
-          debugger
+
           message = "" 
           if nodes = response.data
             nodes.each do |n|
               message += "#{n["display_name"]} - #{ n["external_ref"]["dns_name"]}\n" unless n["display_name"].eql?("node") && n["dtk_client_type"].eql?("node_group")
             end
           end
-
-          if args[:purge]
-            if path.nil?
-              dir = File.expand_path("..", Dir.pwd)
-              Dir.chdir(dir)
-              path = dir + "/" + service_instance
-            end
-            ClientModuleDir.rm_f(path)
-          end
+          ClientModuleDir.rm_f(path) if args[:purge]
 
           info = "DTK module '#{service_instance}' has been uninstalled successfully." 
-          #info = info + " Deleted nodes(#{nodes.size}):#{node.join(", ")}" if delete && node.size > 1
 
           OsUtil.print_info(info)
           OsUtil.print("Nodes that will be deleted: \n" + message) if delete && nodes.size > 1

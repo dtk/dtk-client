@@ -38,9 +38,8 @@ module DTK::Client; module CLI
             else  
               service_instance = name
             end
-            # figure out how to check for directory_path to support when no path is given
             
-            args = {
+            args = {  
               :service_instance => service_instance,
               :skip_prompt      => options[:skip_prompt],
               :directory_path   => directory_path,
