@@ -30,7 +30,7 @@ module DTK::Client
             operation_args = {
               :module_ref  => module_ref,
               :skip_prompt => options[:skip_prompt],
-              :force       => options[:force]
+              :force       => options["force"]
             }
             Operation::Module.delete_from_remote(operation_args)
           end
