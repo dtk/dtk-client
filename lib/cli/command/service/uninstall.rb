@@ -33,12 +33,16 @@ module DTK::Client; module CLI
             recursive      = options[:recursive]
             name           = options[:uninstall_name]
 
+            if purge && (!directory_path || (directory_path == @base_dsl_file_obj.parent_dir?))
+              raise Error::Usage, "If use option '#{option_ref(:purge)}' then need to call from outside directory and use option '#{option_ref(:directory_path)}'"
+            end
+
             if name.nil? 
               service_instance = service_instance_in_options_or_context(options, :ignore_parsing_errors => true) 
             else  
               service_instance = name
             end
-            
+
             args = {  
               :service_instance => service_instance,
               :skip_prompt      => options[:skip_prompt],
