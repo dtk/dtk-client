@@ -24,13 +24,13 @@ module DTK::Client
           sc.flag Token.version
           sc.switch Token.skip_prompt
           sc.switch Token.force
-
+          
           sc.action do |_global_options, options, args|
             module_ref = module_ref_object_from_options_or_context?(:module_ref => args[0], :version => options[:version])
             operation_args = {
               :module_ref  => module_ref,
               :skip_prompt => options[:skip_prompt],
-              :force       => options["force"]
+              :force       => options[:f]
             }
             Operation::Module.delete_from_remote(operation_args)
           end
