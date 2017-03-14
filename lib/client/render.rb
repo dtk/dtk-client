@@ -53,6 +53,7 @@ module DTK::Client
       if render_type == Type::TABLE
         render_opts = {
           :print_error_table => opts[:print_error_table],
+          :footnote          => opts[:footnote]
         }
         get_adapter(Type::TABLE, opts).render(ruby_obj, render_opts)
       elsif ruby_obj.kind_of?(Hash)

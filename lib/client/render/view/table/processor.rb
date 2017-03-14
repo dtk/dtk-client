@@ -45,6 +45,7 @@ module DTK::Client
         @evaluated_data = []
         @error_data     = []
         @action_data    = []
+        @footnote       = nil
       end
       private :initialize
 
@@ -61,6 +62,7 @@ module DTK::Client
         data = [data] unless data.kind_of?(Array)
 
         print_error_table = opts[:print_error_table]
+        @footnote         = opts[:footnote]
 
 
         data.each do |data_element|
@@ -157,6 +159,11 @@ module DTK::Client
             printf "%15s %s\n", "INFO:".colorize(:yellow), message.colorize(:yellow) unless printed.include?(message)
             printed << message
           end
+        end
+
+        if @footnote
+          printf " \n"
+          printf "%15s %s\n", "INFO:".colorize(:yellow), @footnote.colorize(:yellow)
         end
       end
       

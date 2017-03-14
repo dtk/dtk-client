@@ -25,6 +25,7 @@ module DTK::Client
         @semantic_datatype = nil
         @skip_render       = false
         @render_type       = Render::Type::DEFAULT
+        @footnote          = nil
       end
       private :render_attributes_init!
 
@@ -36,12 +37,13 @@ module DTK::Client
         render_opts = {
           :render_type       => @render_type,
           :semantic_datatype => @semantic_datatype,
-          :print_error_table => @print_error_table
+          :print_error_table => @print_error_table,
+          :footnote          => @footnote
         }
         Render.render(data, render_opts)
       end
           
-      def set_render_as_table!(semantic_datatype = nil)
+      def set_render_as_table!(semantic_datatype = nil, footnote = nil)
         return self unless ok?
 
         unless semantic_datatype ||= semantic_datatype_in_payload
@@ -53,6 +55,7 @@ module DTK::Client
         end
         @semantic_datatype = normalize_semantic_datatype(semantic_datatype)
         @render_type = Render::Type::TABLE
+        @footnote    = footnote
         self
       end
 
