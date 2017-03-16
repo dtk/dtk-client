@@ -23,14 +23,13 @@ module DTK::Client
         command_body c, 'delete-from-remote', 'Delete module from the DTK remote catalog (DTKN)' do |sc|
           sc.flag Token.version
           sc.switch Token.skip_prompt
-          sc.switch Token.force
           
           sc.action do |_global_options, options, args|
             module_ref = module_ref_object_from_options_or_context?(:module_ref => args[0], :version => options[:version])
             operation_args = {
               :module_ref  => module_ref,
-              :skip_prompt => options[:skip_prompt],
-              :force       => options[:f]
+              :skip_prompt => options[:skip_prompt]
+              # :force     => options[:f]
             }
             Operation::Module.delete_from_remote(operation_args)
           end
