@@ -44,6 +44,8 @@ module DTK::Client
 
     def self.pretty_print(module_name, namespace, version = nil)
       # TODO: update ::DTK::Common::PrettyPrintForm to insert 'master' when version is nil 
+      version = version.join(', ')  if version.is_a?(Array)
+
       ::DTK::Common::PrettyPrintForm.module_ref(module_name, :namespace => namespace, :version => version || 'master')
     end
     def pretty_print

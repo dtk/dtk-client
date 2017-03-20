@@ -32,7 +32,27 @@ module DTK::Client
             response = rest_get("#{BaseRoute}/list", query_string_hash)
             installed_modules = response.data
 
-            name.gsub!("/", ":")
+            module_ref = process_module_ref(installed_modules, name, version) 
+          end 
+
+          raise Error::Usage, "Invalid module name." if module_ref.nil?
+
+          unless args[:skip_prompt]
+            return false unless Console.prompt_yes_no("Are you sure you want to uninstall module '#{module_ref.pretty_print}' from the DTK Server?", :add_options => true)
+          end
+         
+          post_body = module_ref_post_body(module_ref)
+          post_body.merge!(:versions => versions) if versions
+
+          rest_post("#{BaseRoute}/delete", post_body)
+          OsUtil.print_info("DTK module '#{module_ref.pretty_print}' has been uninstalled successfully.")
+          nil
+        end
+      end
+      
+        def self.process_module_ref(installed_modules, name, version)
+          name.gsub!("/", ":")
+          module_ref = nil
             installed_modules.each do |module_val| 
               if module_val["display_name"].eql? name
                 val = name.split(":")
@@ -40,7 +60,7 @@ module DTK::Client
                   versions = module_val["versions"].split(",").map(&:strip) 
                   if versions.size > 1
                     version = Console.version_prompt(versions, "Select which module version to uninstall: ", { :add_all => true})
-                    module_val["versions"] if version.eql? "all"
+                    version = versions if version.eql? "all"
                   else
                     version = module_val["versions"]
                   end
@@ -51,25 +71,12 @@ module DTK::Client
                   :namespace   => val[0],
                   :version     => version
                 }
-                module_ref = ModuleRef.new(module_opts)
+               
+                module_ref = ModuleRef.new(module_opts) 
               end
             end
-          end 
-          
-          raise Error::Usage, "Invalid module name." if module_ref.nil?
-
-          unless args[:skip_prompt]
-            return false unless Console.prompt_yes_no("Are you sure you want to uninstall module '#{module_ref.pretty_print}' from the DTK Server?", :add_options => true)
-          end
-
-          post_body = module_ref_post_body(module_ref)
-          post_body.merge!(:versions => versions) if versions
-
-          rest_post("#{BaseRoute}/delete", post_body)
-          OsUtil.print_info("DTK module '#{module_ref.pretty_print}' has been uninstalled successfully.")
-          nil
+            module_ref
         end
-      end
 
     end
   end
