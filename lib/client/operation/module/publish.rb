@@ -69,6 +69,7 @@ module DTK::Client
         # this part will fetch remote branches from repo manager after publish from server is finished
         LoadSource.fetch_from_remote(remote_module_info, self)
 
+        OsUtil.print_info("'#{module_ref.pretty_print}' has been published successfully.")
         nil
       end
     end
