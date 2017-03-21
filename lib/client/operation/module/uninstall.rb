@@ -23,7 +23,6 @@ module DTK::Client
           module_ref  = args.required(:module_ref)
           name        = args.required(:name)
           version     = args.required(:version)
-          versions    = nil
 
           unless name.nil?
             query_string_hash = QueryStringHash.new(
@@ -42,7 +41,6 @@ module DTK::Client
           end
          
           post_body = module_ref_post_body(module_ref)
-          post_body.merge!(:versions => versions) if versions
 
           rest_post("#{BaseRoute}/delete", post_body)
           OsUtil.print_info("DTK module '#{module_ref.pretty_print}' has been uninstalled successfully.")
@@ -51,31 +49,32 @@ module DTK::Client
       end
       
         def self.process_module_ref(installed_modules, name, version)
-          name.include?('/') ? val = name.gsub!('/', ':').split(':') : val = name.split(':')
+          name.gsub!('/', ':')
           module_ref = nil
-            installed_modules.each do |module_val| 
-              if module_val["display_name"].eql? name
-                if version.nil?
-                  versions = module_val["versions"].split(",").map(&:strip) 
-                  versions.each { |value| value = value.tr!('*', '') } 
+          installed_modules.each do |module_val| 
+            if module_val["display_name"].eql? name
+              val = name.split(":")
+              if version.nil?
+                versions = module_val["versions"].split(",").map(&:strip) 
+                versions.each { |value| value = value.tr!('*', '') } 
 
-                  if versions.size > 1
-                    version = Console.version_prompt(versions, "Select which module version to uninstall: ", { :add_all => true})
-                    version = versions if version.eql? "all"
-                  else
-                    version = module_val["versions"]
-                  end
+                if versions.size > 1
+                  version = Console.version_prompt(versions, "Select which module version to uninstall: ", { :add_all => true})
+                  version = versions if version.eql? "all"
+                else
+                  version = module_val["versions"]
                 end
-
-                module_opts = {
-                  :module_name => val[1],
-                  :namespace   => val[0],
-                  :version     => version
-                }
-               
-                module_ref = ModuleRef.new(module_opts) 
               end
+
+              module_opts = {
+                :module_name => val[1],
+                :namespace   => val[0],
+                :version     => version
+              }
+              
+              module_ref = ModuleRef.new(module_opts) 
             end
+          end
             module_ref
         end
 
