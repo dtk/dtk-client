@@ -51,7 +51,7 @@ module DTK::Client
       end
       
         def self.process_module_ref(installed_modules, name, version)
-          val = name.gsub!("/", ":").split(":") 
+          name.include?('/') ? val = name.gsub!('/', ':').split(':') : val = name.split(':')
           module_ref = nil
             installed_modules.each do |module_val| 
               if module_val["display_name"].eql? name
