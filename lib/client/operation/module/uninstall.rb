@@ -39,11 +39,19 @@ module DTK::Client
           unless args[:skip_prompt]
             return false unless Console.prompt_yes_no("Are you sure you want to uninstall module '#{module_ref.pretty_print}' from the DTK Server?", :add_options => true)
           end
-         
-          post_body = module_ref_post_body(module_ref)
 
+          post_body = module_ref_post_body(module_ref)
           rest_post("#{BaseRoute}/delete", post_body)
-          OsUtil.print_info("DTK module '#{module_ref.pretty_print}' has been uninstalled successfully.")
+
+          delete_versions = module_ref.version
+          error_msg =
+            if delete_versions && delete_versions.is_a?(Array) && delete_versions.size > 1
+              "All versions of dtk module '#{module_ref.namespace}/#{module_ref.module_name}' have been uninstalled."
+            else
+              "DTK module '#{module_ref.pretty_print}' has been uninstalled successfully."
+            end
+
+          OsUtil.print_info(error_msg)
           nil
         end
       end
@@ -51,12 +59,13 @@ module DTK::Client
         def self.process_module_ref(installed_modules, name, version)
           name.gsub!('/', ':')
           module_ref = nil
+
           installed_modules.each do |module_val| 
             if module_val["display_name"].eql? name
               val = name.split(":")
               if version.nil?
                 versions = module_val["versions"].split(",").map(&:strip) 
-                versions.each { |value| value = value.tr!('*', '') } 
+                versions.each { |value| value.tr!('*', '') }
 
                 if versions.size > 1
                   version = Console.version_prompt(versions, "Select which module version to uninstall: ", { :add_all => true})
@@ -75,7 +84,8 @@ module DTK::Client
               module_ref = ModuleRef.new(module_opts) 
             end
           end
-            module_ref
+
+          module_ref
         end
 
     end
