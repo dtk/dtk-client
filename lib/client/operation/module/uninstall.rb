@@ -31,9 +31,7 @@ module DTK::Client
             )
             response = rest_get("#{BaseRoute}/list", query_string_hash)
             installed_modules = response.data
-            require 'debugger'
-            Debugger.start
-            debugger
+
             module_ref = process_module_ref(installed_modules, name, version) 
           end 
 
