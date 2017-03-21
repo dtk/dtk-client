@@ -37,8 +37,8 @@ module DTK::Client
         query_string_hash = QueryStringHash.new(
           :module_name => module_ref.module_name,
           :namespace   => module_ref.namespace,
-          :rsa_pub_key => SSHUtil.rsa_pub_key_content,
-          :force?      => opts[:force]
+          :rsa_pub_key => SSHUtil.rsa_pub_key_content
+          # :force?    => opts[:force]
         )
 
         unless version = module_ref.version
