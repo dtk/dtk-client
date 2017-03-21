@@ -31,7 +31,9 @@ module DTK::Client
             )
             response = rest_get("#{BaseRoute}/list", query_string_hash)
             installed_modules = response.data
-
+            require 'debugger'
+            Debugger.start
+            debugger
             module_ref = process_module_ref(installed_modules, name, version) 
           end 
 
@@ -51,13 +53,14 @@ module DTK::Client
       end
       
         def self.process_module_ref(installed_modules, name, version)
-          name.gsub!("/", ":")
+          val = name.gsub!("/", ":").split(":") 
           module_ref = nil
             installed_modules.each do |module_val| 
               if module_val["display_name"].eql? name
-                val = name.split(":")
                 if version.nil?
                   versions = module_val["versions"].split(",").map(&:strip) 
+                  versions.each { |value| value = value.tr!('*', '') } 
+
                   if versions.size > 1
                     version = Console.version_prompt(versions, "Select which module version to uninstall: ", { :add_all => true})
                     version = versions if version.eql? "all"
