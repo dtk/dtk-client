@@ -44,3 +44,7 @@ post_body = PostBody.new(
 response = Session.rest_post('modules/stage', post_body)
 pp response
 exit 0
+=begin
+To delete a service SERVICE-NAME; issue:
+dtk service uninstall -y --delete -n SERVICE-NAME
+=end
