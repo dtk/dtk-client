@@ -17,30 +17,18 @@
 # limitations under the License.
 #
 require 'pp'
+require 'byebug'
 unless service_name = ARGV[0] 
   puts "Usage: api-test SERVICE-NAME"
   exit 1
 end
 
 require_relative '../lib/dtk_client'
+require_relative('api_test_driver')
 
-args = {
-  :module_namespace => 'scale15-lab', 
-  :module_name      => 'workshop',
-  :module_version   => '0.5.0',
-  :service_name     => service_name
-}
-include DTK::Client
+driver = DTK::ApiTestDriver.new(service_name)
 
-post_body = PostBody.new(
-  :namespace       => args[:module_namespace],
-  :module_name     => args[:module_name],
-  :version?        => args[:module_version],
-  :service_name    => args[:service_name]
-)
+unless driver.service_exists?
+  driver.stage
+end
 
-# require 'byebug'; byebug
-
-response = Session.rest_post('modules/stage', post_body)
-pp response
-exit 0
