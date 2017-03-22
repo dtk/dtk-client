@@ -23,8 +23,7 @@ module DTK::Client
           module_ref  = args.required(:module_ref)
           name        = args.required(:name)
           version     = args.required(:version)
-          versions    = nil
-
+  
           unless name.nil?
             query_string_hash = QueryStringHash.new(
               :detail_to_include => ['remotes', 'versions']
@@ -32,44 +31,69 @@ module DTK::Client
             response = rest_get("#{BaseRoute}/list", query_string_hash)
             installed_modules = response.data
 
-            name.gsub!("/", ":")
-            installed_modules.each do |module_val| 
-              if module_val["display_name"].eql? name
-                val = name.split(":")
-                if version.nil?
-                  versions = module_val["versions"].split(",").map(&:strip) 
-                  if versions.size > 1
-                    version = Console.version_prompt(versions, "Select which module version to uninstall: ", { :add_all => true})
-                    module_val["versions"] if version.eql? "all"
-                  else
-                    version = module_val["versions"]
-                  end
-                end
-
-                module_opts = {
-                  :module_name => val[1],
-                  :namespace   => val[0],
-                  :version     => version
-                }
-                module_ref = ModuleRef.new(module_opts)
-              end
-            end
+            module_ref = process_module_ref(installed_modules, name, version) 
           end 
-          
+
           raise Error::Usage, "Invalid module name." if module_ref.nil?
 
+          delete_versions = module_ref.version
+
           unless args[:skip_prompt]
-            return false unless Console.prompt_yes_no("Are you sure you want to uninstall module '#{module_ref.pretty_print}' from the DTK Server?", :add_options => true)
+            if delete_versions && delete_versions.is_a?(Array) 
+               return false unless Console.prompt_yes_no("Are you sure you want to uninstall all module versions for '#{module_ref.namespace}/#{module_ref.module_name}' from the DTK Server?", :add_options => true) 
+            else
+              return false unless Console.prompt_yes_no("Are you sure you want to uninstall module '#{module_ref.pretty_print}' from the DTK Server?", :add_options => true) 
+            end
+            
           end
 
           post_body = module_ref_post_body(module_ref)
-          post_body.merge!(:versions => versions) if versions
-
           rest_post("#{BaseRoute}/delete", post_body)
-          OsUtil.print_info("DTK module '#{module_ref.pretty_print}' has been uninstalled successfully.")
+
+          error_msg =
+            if delete_versions && delete_versions.is_a?(Array) && delete_versions.size > 1
+              "All versions of dtk module '#{module_ref.namespace}/#{module_ref.module_name}' have been uninstalled."
+            else
+              "DTK module '#{module_ref.pretty_print}' has been uninstalled successfully."
+            end
+
+          OsUtil.print_info(error_msg)
           nil
         end
       end
+      
+        def self.process_module_ref(installed_modules, name, version)
+          name.gsub!('/', ':')
+          module_ref = nil
+
+          installed_modules.each do |module_val| 
+            if module_val["display_name"].eql? name
+              val = name.split(":")
+              if version.nil?
+                versions = module_val["versions"].split(",").map(&:strip) 
+                versions.each { |value| value.tr!('*', '') }
+
+                if versions.size > 1
+                  version = Console.version_prompt(versions, "Select which module version to uninstall: ", { :add_all => true})
+                  version = versions if version.eql? "all"
+                else
+                  version = module_val["versions"]
+                  version.tr!('*', '') if version.include?('*')
+                end
+              end
+
+              module_opts = {
+                :module_name => val[1],
+                :namespace   => val[0],
+                :version     => version
+              }
+              
+              module_ref = ModuleRef.new(module_opts) 
+            end
+          end
+
+          module_ref
+        end
 
     end
   end
