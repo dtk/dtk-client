@@ -33,6 +33,8 @@ which has reponse
 {"status"=>"notok",
  "errors"=>[{"code"=>"error", "message"=>"Service 'test1' already exists"}]}
  ```
-ubuntu@ip-172-31-8-112:~/dtk-client$ dtk service uninstall -y --delete -n test1
+ Deleteing this service insatnce through command line
+ ```
+dtk service uninstall -y --delete -n test1
 [INFO] DTK module 'test1' has been uninstalled successfully.
 ```
