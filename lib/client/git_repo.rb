@@ -63,7 +63,8 @@ module DTK::Client
     def self.modified_with_diff?(dir, opts = {})
       repo_dir = {
         :path    => dir,
-        :branch  => Git.open(dir).branches.local
+        :branch  => Git.open(dir).branches.local,
+        :command => opts[:command]
       }
 
       message = DTK::Client::Operation::ClientModuleDir::GitRepo.modified_with_diff(repo_dir)

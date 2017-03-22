@@ -29,7 +29,7 @@ module DTK::Client
           )
 
           error_msg = "To allow converge to go through, invoke 'dtk push' to push the changes to server before invoking converge again"
-          GitRepo.modified_with_diff?(module_dir, { :error_msg => error_msg }) unless force
+          GitRepo.modified_with_diff?(module_dir, { :error_msg => error_msg, :command => 'converge' }) unless force
           violations = find_violations(service_instance)
           return violations if violations
 

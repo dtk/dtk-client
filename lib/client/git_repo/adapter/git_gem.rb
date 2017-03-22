@@ -233,7 +233,7 @@ module DTK::Client
         #   :with_diffs (Boolean)
       def print_status(opts = {})
         if opts[:with_diffs]
-          print_status_with_diffs
+          print_status_with_diffs(opts)
         else
           print_status_simple
         end
@@ -256,9 +256,10 @@ module DTK::Client
         puts "" 
       end
 
-      def print_status_with_diffs
+      def print_status_with_diffs(opts)
+        command = opts[:command]
         changes = [changed(), untracked(), deleted()]
-        puts "\nThere are changes that are not pushed to the server that will not be staged:\n".colorize(:green) unless changes[0].empty?
+        puts "\nThe command '#{command}' will not be triggered, there are changes not pushed to the server:\n".colorize(:green) unless changes[0].empty?
         diff = @git_repo.diff.stats[:files]
         file_changed = changes[0].size
         deletions = 0
