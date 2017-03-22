@@ -51,7 +51,6 @@ module DTK
     
     def wrap_response(operation, &body)
       response = yield
-      pp "--------------------------"
       print(operation, response)
       exit_because_error unless response.ok?
       response

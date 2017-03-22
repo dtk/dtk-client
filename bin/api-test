@@ -27,8 +27,13 @@ require_relative '../lib/dtk_client'
 require_relative('api_test_driver')
 
 driver = DTK::ApiTestDriver.new(service_name)
-
-unless driver.service_exists?
+puts "------------------------\n"
+puts "Checking if service exists"
+if service_exists = driver.service_exists?
+  puts "Service exists so not staging service\n"
+else
+  puts "------------------------\n"
+  puts "Staging service\n"
   driver.stage
 end
 
