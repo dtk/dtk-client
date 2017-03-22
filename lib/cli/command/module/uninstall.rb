@@ -32,7 +32,7 @@ module DTK::Client
             if options[:uninstall_name].nil?
               module_ref =
                 if module_name = args[0]
-                  module_ref_object_from_options_or_context?({:module_ref => module_name, :version => (version || 'master')}, module_refs_opts)
+                  module_ref_object_from_options_or_context?({:module_ref => module_name, :version => (version)}, module_refs_opts)
                 else
                   module_ref_object_from_options_or_context(options, module_refs_opts)
                 end
@@ -42,7 +42,7 @@ module DTK::Client
 
             raise Error::Usage, "You can use version only with 'namespace/name' provided" if version && module_name.nil?
 
-            Operation::Module.uninstall(:module_ref => module_ref, :skip_prompt => options[:skip_prompt], :name => options[:uninstall_name], :version => version)
+            Operation::Module.uninstall(:module_ref => module_ref, :skip_prompt => options[:skip_prompt], :name => options[:uninstall_name] || module_name, :version => version)
           end
         end
       end
