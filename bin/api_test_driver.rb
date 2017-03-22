@@ -27,8 +27,8 @@ module DTK
     
     def service_exists?
       # Since do not havce exists api detecting if service exists already by doing services/list
-      response = nil 
-      wrap_response(:list) do
+      response = nil
+      wrap_response(:list, dont_display_response: true) do
         response = Session.rest_get('services/list')      
       end
       !! response.data.find { |service_instance| service_instance['display_name'] == service_name }
@@ -58,7 +58,7 @@ module DTK
     end
 
     def set_service_attribute(attribute_path, attribute_value)
-      wrap_response(:set_service_attribute) do 
+      wrap_response(:set_service_attribute, dont_display_response: true) do
         query_string_hash = QueryStringHash.new(
           :pattern => attribute_path,
           :value?  => attribute_value
@@ -67,22 +67,66 @@ module DTK
       end
     end
 
-    def task_status_summary
+    def fail_on_violations
       response = nil
-      wrap_response(:task_status) do 
+      wrap_response(:fail_on_violations) do
+        response = Session.rest_get("services/#{service_name}/violations")
+      end
+      
+      exit_because_error if response.data and response.data.size > 0
+    end
+    
+    def converge
+      wrap_response(:converge) do
+        post_body = PostBody.new(
+          :service_instance => service_name
+        )
+        Session.rest_post("services/#{service_name}/converge", post_body)
+      end
+    end
+
+    EXECUTING_STATES = ['executing', nil]
+    def is_executing?(state)
+      EXECUTING_STATES.include?(state)
+    end
+
+    POLL_INTERVAL = 10
+    def wait_until_complete
+      try_again = true
+      while try_again
+        #        state = task_status_summary(dont_display_response: true)
+        state = task_status_summary(dont_display_response: true)
+        if is_executing?(state)
+          puts "Queried task, but still executing\n"
+          sleep POLL_INTERVAL
+        else
+          try_again = false
+        end
+      end
+      state
+    end
+
+    # opts can have keys:
+    #   :dont_display_response
+    def task_status_summary(opts = {})
+      response = nil
+      wrap_response(:task_status, dont_display_response: opts[:dont_display_response]) do 
         response = Session.rest_get("services/#{service_name}/task_status")
       end
       summary_row = response.data.find do |task_status_row|
         # this has top and nested row; below is check for summary row'
         task_status_row['index'].nil?
       end
-      summary_row && summary_row['status']
+      summary_row['status']
     end
+
     private
-    
-    def wrap_response(operation, &body)
+
+    # opts can have keys:
+    #   :dont_display_response
+    def wrap_response(operation, opts = {}, &body)
       response = yield
-      print(operation, response)
+      print(operation, response) unless opts[:dont_display_response]
       exit_because_error unless response.ok?
       response
     end

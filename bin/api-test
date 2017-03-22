@@ -24,6 +24,7 @@ unless service_name = ARGV[0]
 end
 lab_user = 'test-lab-user1'
 should_uninstall_service = false
+#should_uninstall_service = true
 
 require_relative '../lib/dtk_client'
 require_relative('api_test_driver')
@@ -44,9 +45,17 @@ puts "Setting attribute lab_user to '#{lab_user}'\n"
 driver.set_service_attribute('ubuntu/workshop::instance[ubuntu]/lab_user', lab_user)
 
 puts "------------------------\n"
-puts "checking task_status_summary"
-summary = driver.task_status_summary
-puts "task_status_summary = #{summary}\n"
+puts "check violations; fail on error"
+driver.fail_on_violations
+
+puts "------------------------\n"
+puts "converge"
+driver.converge
+
+puts "------------------------\n"
+puts "wait until complete"
+end_state = driver.wait_until_complete
+puts "Ended with state '#{end_state}'\n"
 
 if should_uninstall_service
   puts "------------------------\n"
