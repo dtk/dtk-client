@@ -3,7 +3,10 @@ Here is how to use bin/api-test
 Log into lab machine
 ```
 cd dtk-client
- bin/api-test test1
+bin/api-test test1
+```
+which has reponse
+```
 {"status"=>"ok",
  "data"=>
   {"service"=>{"name"=>"test1", "id"=>2147486175},
@@ -20,9 +23,16 @@ cd dtk-client
    "branch"=>
     {"name"=>"workspace-private-ubuntu--assembly-test1",
      "head_sha"=>"de3493dcfaa7bc38ad5185e81ac66cc0476ead50"}}}
-ubuntu@ip-172-31-8-112:~/dtk-client$ bin/api-test test1
+ ```
+ Example of an erros
+```
+bin/api-test test1
+```
+which has reponse
+```
 {"status"=>"notok",
  "errors"=>[{"code"=>"error", "message"=>"Service 'test1' already exists"}]}
+ ```
 ubuntu@ip-172-31-8-112:~/dtk-client$ dtk service uninstall -y --delete -n test1
 [INFO] DTK module 'test1' has been uninstalled successfully.
 ```
