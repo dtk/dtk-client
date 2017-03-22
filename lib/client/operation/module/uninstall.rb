@@ -23,7 +23,7 @@ module DTK::Client
           module_ref  = args.required(:module_ref)
           name        = args.required(:name)
           version     = args.required(:version)
-
+  
           unless name.nil?
             query_string_hash = QueryStringHash.new(
               :detail_to_include => ['remotes', 'versions']
@@ -36,14 +36,20 @@ module DTK::Client
 
           raise Error::Usage, "Invalid module name." if module_ref.nil?
 
+          delete_versions = module_ref.version
+
           unless args[:skip_prompt]
-            return false unless Console.prompt_yes_no("Are you sure you want to uninstall module '#{module_ref.pretty_print}' from the DTK Server?", :add_options => true)
+            if delete_versions && delete_versions.is_a?(Array) 
+               return false unless Console.prompt_yes_no("Are you sure you want to uninstall all module versions for '#{module_ref.namespace}/#{module_ref.module_name}' from the DTK Server?", :add_options => true) 
+            else
+              return false unless Console.prompt_yes_no("Are you sure you want to uninstall module '#{module_ref.pretty_print}' from the DTK Server?", :add_options => true) 
+            end
+            
           end
 
           post_body = module_ref_post_body(module_ref)
           rest_post("#{BaseRoute}/delete", post_body)
 
-          delete_versions = module_ref.version
           error_msg =
             if delete_versions && delete_versions.is_a?(Array) && delete_versions.size > 1
               "All versions of dtk module '#{module_ref.namespace}/#{module_ref.module_name}' have been uninstalled."
@@ -72,6 +78,7 @@ module DTK::Client
                   version = versions if version.eql? "all"
                 else
                   version = module_val["versions"]
+                  version.tr!('*', '') if version.include?('*')
                 end
               end
 
