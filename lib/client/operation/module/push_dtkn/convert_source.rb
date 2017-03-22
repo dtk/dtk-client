@@ -53,11 +53,13 @@ module DTK::Client; class Operation::Module
         service_file_path__content_array = ServiceInfo.transform_info(transform_helper, service_info['remote_repo_url'], parent)
 
         create_and_checkout_branch?(current_branch, target_repo_dir, "remotes/dtkn/master") do |repo|
+          # doing git reset --hard to include all added or deleted files from master branch
+          repo.reset_hard('master')
           FileUtils.mkdir_p("#{target_repo_dir}/assemblies") unless File.exists?("#{target_repo_dir}/assemblies")
-          
+
           args = [transform_helper, ServiceInfo.info_type, service_info['remote_repo_url'], parent]
           service_file_path__content_array.each { |file| Operation::ClientModuleDir.create_file_with_content("#{service_file_path(target_repo_dir, file, *args)}", file[:content]) }
-          
+
           commit_and_push_to_remote(repo, target_repo_dir, "master", "dtkn")
         end
       end
@@ -67,6 +69,8 @@ module DTK::Client; class Operation::Module
         component_file_path__content_array = ComponentInfo.transform_info(transform_helper, component_info['remote_repo_url'], parent)
 
         create_and_checkout_branch?(current_branch, target_repo_dir, "remotes/dtkn-component-info/master") do |repo|
+          # doing git reset --hard to include all added or deleted files from master branch
+          repo.reset_hard('master')
           component_file_path__content_array.each { |file| Operation::ClientModuleDir.create_file_with_content("#{file_path(target_repo_dir, file)}", file[:content]) }
 
           commit_and_push_to_remote(repo, target_repo_dir, "master", "dtkn-component-info")
