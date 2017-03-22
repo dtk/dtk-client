@@ -22,6 +22,7 @@ module DTK::Client
         command_body c, 'pull-dtkn', 'Pull content from repo manager to client module directory and push to server' do |sc|
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to module directory containing content to update; not need if in the module directory'
           sc.switch Token.skip_prompt
+          sc.switch Token.force
           sc.action do |_global_options, options, _args|
             module_ref = module_ref_object_from_options_or_context(options)
             operation_args = {
@@ -29,7 +30,8 @@ module DTK::Client
               :base_dsl_file_obj   => @base_dsl_file_obj,
               :has_directory_param => !options["d"].nil?,
               :directory_path      => options[:directory_path],
-              :skip_prompt         => options[:skip_prompt]
+              :skip_prompt         => options[:skip_prompt],
+              :force               => options[:f]
             }
             Operation::Module.pull_dtkn(operation_args)
             Operation::Module.push(operation_args.merge(:method => "pulled"))
