@@ -39,6 +39,7 @@ module DTK::Client
           directory_path      = args[:directory_path]
           has_directory_param = args[:has_directory_param]
           skip_prompt         = args[:skip_prompt]
+          force               = args[:force]
 
           if has_directory_param
             file_obj = base_dsl_file_obj.raise_error_if_no_content_flag(:module_ref)
@@ -46,7 +47,7 @@ module DTK::Client
             file_obj = base_dsl_file_obj.raise_error_if_no_content
           end
 
-          new('dtkn', module_ref, directory_path, version, file_obj).pull_dtkn(:skip_prompt => skip_prompt)
+          new('dtkn', module_ref, directory_path, version, file_obj).pull_dtkn(:skip_prompt => skip_prompt, :force => force)
         end
       end
       
@@ -87,7 +88,7 @@ module DTK::Client
         end
 
         @print_helper.print_continuation_pulling_base_module
-        LoadSource.fetch_transform_and_merge(remote_module_info, self, :stage_and_commit_steps => true)
+        LoadSource.fetch_transform_and_merge(remote_module_info, self, :stage_and_commit_steps => true, :force => opts[:force])
 
         nil
       end

@@ -56,6 +56,11 @@ module DTK::Client
           Internal.local_ahead?(@repo, merge_from_ref, :no_commit => opts[:no_commit])
         end
 
+        def reset_hard(remote_branch, opts = {})
+          merge_from_ref = opts[:branch] || "#{remote_name}/#{remote_branch}"
+          Internal.reset_hard(@repo, merge_from_ref)
+        end
+
         private
 
         # TODO: These constants used in Internal; Deprecate GIT_REMOTE amd LOCAL_BRANCH for remote_name and local_branch

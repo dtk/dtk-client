@@ -217,6 +217,14 @@ module DTK::Client
         end
       end
 
+      def self.reset_hard(args)
+        wrap_operation(args) do |args|
+          remote_branch    = args.required(:remote_branch)
+          repo_with_remote = repo_with_dtkn_remote(args)
+          branch           = args[:branch]
+          response_data_hash(:head_sha => repo_with_remote.reset_hard(remote_branch, :branch => branch))
+        end
+      end
 
       private
 
