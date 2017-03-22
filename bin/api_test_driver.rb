@@ -46,7 +46,38 @@ module DTK
         Session.rest_post('modules/stage', post_body)
       end
     end
-    
+
+    def uninstall_service
+      wrap_response(:uninstall_service) do
+        post_body = PostBody.new(
+          :service_instance => service_name,
+          :delete           => true
+        )
+        Session.rest_post("services/uninstall", post_body)
+      end
+    end
+
+    def set_service_attribute(attribute_path, attribute_value)
+      wrap_response(:set_service_attribute) do 
+        query_string_hash = QueryStringHash.new(
+          :pattern => attribute_path,
+          :value?  => attribute_value
+        )
+        Session.rest_post("services/#{service_name}/set_attribute", query_string_hash)
+      end
+    end
+
+    def task_status_summary
+      response = nil
+      wrap_response(:task_status) do 
+        response = Session.rest_get("services/#{service_name}/task_status")
+      end
+      summary_row = response.data.find do |task_status_row|
+        # this has top and nested row; below is check for summary row'
+        task_status_row['index'].nil?
+      end
+      summary_row && summary_row['status']
+    end
     private
     
     def wrap_response(operation, &body)
