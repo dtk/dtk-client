@@ -30,7 +30,7 @@ module DTK::Client
           end
 
           error_msg = "To allow delete to go through, invoke 'dtk push' to push the changes to server before invoking delete again"
-          GitRepo.modified_with_diff?(directory_path || @module_ref.client_dir_path, { :error_msg => error_msg }) unless force
+          GitRepo.modified_with_diff?(directory_path || @module_ref.client_dir_path, { :error_msg => error_msg, :command => 'delete' }) unless force
           post_body = PostBody.new(
             :service_instance => service_instance,
             :recursive? => recursive

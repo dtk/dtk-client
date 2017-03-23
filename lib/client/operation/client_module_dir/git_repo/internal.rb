@@ -144,11 +144,12 @@ module DTK::Client
           repo_url = args.required(:path)
           branch   = args.required(:branch)
           repo     = git_repo.new(repo_url, :branch => branch)
+          command  = args.required(:command)
 
           original_path = Dir.pwd
           Dir.chdir(args[:path])
           changed = repo.changed?
-          repo.print_status(:with_diffs => opts[:with_diffs]) if changed
+          repo.print_status(:with_diffs => opts[:with_diffs], :command => command) if changed
           Dir.chdir(original_path)
           changed
         end
