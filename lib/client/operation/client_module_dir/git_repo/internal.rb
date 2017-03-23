@@ -62,17 +62,8 @@ module DTK::Client
         end
 
         def self.local_ahead?(repo, merge_from_ref, opts = {})
-          require 'debugger'
-          Debugger.start
-          debugger
           base_sha = repo.head_commit_sha
-          require 'debugger'
-          Debugger.start
-          debugger
           remote_branch = repo.all_branches.remote.find { |r| "#{r.remote}/#{r.name}" == merge_from_ref }
-          require 'debugger'
-          Debugger.start
-          debugger
           remote_sha = remote_branch.gcommit.sha
           repo.local_ahead(base_sha, remote_sha)
         end
