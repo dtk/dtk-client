@@ -53,8 +53,6 @@ module DTK::Client; class Operation::Module
         service_file_path__content_array = ServiceInfo.transform_info(transform_helper, service_info['remote_repo_url'], parent)
 
         create_and_checkout_branch?(current_branch, target_repo_dir, "remotes/dtkn/master") do |repo|
-          # doing git reset --hard to include all added or deleted files from master branch
-          repo.reset_hard('master')
           FileUtils.mkdir_p("#{target_repo_dir}/assemblies") unless File.exists?("#{target_repo_dir}/assemblies")
 
           args = [transform_helper, ServiceInfo.info_type, service_info['remote_repo_url'], parent]
@@ -65,14 +63,20 @@ module DTK::Client; class Operation::Module
       end
 
       def self.transform_component_info(target_repo_dir, parent, component_info, parsed_common_module, current_branch)
-        transform_helper = ServiceAndComponentInfo::TransformTo.new(target_repo_dir, parent.module_ref, parent.version, parsed_common_module)
+        transform_helper                   = ServiceAndComponentInfo::TransformTo.new(target_repo_dir, parent.module_ref, parent.version, parsed_common_module)
         component_file_path__content_array = ComponentInfo.transform_info(transform_helper, component_info['remote_repo_url'], parent)
+        component_info_remote              = "remotes/dtkn-component-info/master"
 
-        create_and_checkout_branch?(current_branch, target_repo_dir, "remotes/dtkn-component-info/master") do |repo|
-          # doing git reset --hard to include all added or deleted files from master branch
-          repo.reset_hard('master')
+        create_and_checkout_branch?(current_branch, target_repo_dir, component_info_remote) do |repo|
+          # find deleted files from master branch and delete them in component info cached branch ("remotes/dtkn-component-info/master")
+          if delete_files = repo.diff_name_status(component_info_remote, current_branch, { :diff_filter => 'D' })
+            unless delete_files.empty?
+              to_delete = delete_files.keys.select { |key| !key.include?('dtk.model.yaml') && !key.include?('module_refs.yaml') }
+              to_delete.each { |file| Operation::ClientModuleDir.rm_f("#{target_repo_dir}/#{file}") }
+            end
+          end
+
           component_file_path__content_array.each { |file| Operation::ClientModuleDir.create_file_with_content("#{file_path(target_repo_dir, file)}", file[:content]) }
-
           commit_and_push_to_remote(repo, target_repo_dir, "master", "dtkn-component-info")
         end
       end

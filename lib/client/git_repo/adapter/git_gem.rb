@@ -38,6 +38,10 @@ module DTK::Client
         def rev_list(sha)
           self.lib.rev_list(sha)
         end
+
+        def name_status(branch1 = nil, branch2 = nil, opts = {})
+          self.lib.name_status(branch1, branch2, opts)
+        end
       end
 
       class ::Git::Lib
@@ -52,6 +56,29 @@ module DTK::Client
         def rev_list(sha)
           arr_opts = [sha]
           command('rev-list', arr_opts)
+        end
+
+        def name_status(branch1 = nil, branch2 = nil, opts = {})
+          arr_opts = []
+          arr_opts << '--name-status'
+          arr_opts << "--diff-filter=#{opts[:diff_filter]}" if opts[:diff_filter]
+          arr_opts << branch1 if branch1
+          arr_opts << branch2 if branch2
+
+          command_lines('diff', arr_opts).inject({}) do |memo, line|
+            status, path = line.split("\t")
+            memo[path] = status
+            memo
+          end
+        end
+
+        def command_lines(cmd, opts = [], chdir = true, redirect = '')
+          cmd_op = command(cmd, opts, chdir)
+          op = cmd_op.encode("UTF-8", "binary", {
+                :invalid => :replace,
+                :undef => :replace
+              })
+          op.split("\n")
         end
       end
       
@@ -223,6 +250,10 @@ module DTK::Client
 
       def diff
         @git_repo.diff
+      end
+
+      def diff_name_status(branch_or_sha_1, branch_or_sha_2, opts = {})
+        @git_repo.name_status(branch_or_sha_1, branch_or_sha_2, opts)
       end
 
       def changed?

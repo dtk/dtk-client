@@ -96,6 +96,10 @@ module DTK::Client
       @git_adapter.diff
     end
 
+    def diff_name_status(branch_or_sha_1 = nil, branch_or_sha_2 = nil, opts = {})
+      @git_adapter.diff_name_status(branch_or_sha_1, branch_or_sha_2, opts)
+    end
+
     def fetch(remote = 'origin')
       @git_adapter.fetch(remote)
     end
