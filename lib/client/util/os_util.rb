@@ -96,6 +96,31 @@ module DTK::Client
       nil
     end
 
+    def self.gem_list
+      `gem list`.split("\n")
+    end
+
+    def self.gem_names_versions_hash
+      name_version_hash = {}
+      gem_list.each do |gem|
+        if gem_match = gem.match(/(^.*)\((.*)\)/)
+          name = gem_match[1].strip
+          versions = (gem_match[2]||'').split(',')
+          name_version_hash.merge!(name => versions)
+        end
+      end
+      name_version_hash
+    end
+
+    def self.gem_installed?(gem_name, gem_version = nil)
+      gems_hash = gem_names_versions_hash
+      if gem_version
+        (gems_hash[gem_name]||[]).include?(gem_version)
+      else
+        gems_hash.keys.include?(gem_name)
+      end
+    end
+
     private
     
     def self.genv(name)

@@ -163,13 +163,13 @@
       end
 
       def def_value(default_ast_obj)
-        if arg_value = default_ast_obj.value
-          default_ast_obj.source_text unless IgnoreValues.include?(arg_value.class)
-        else
-          default_ast_obj.source_text
-        end
+        # if arg_value = default_ast_obj.value
+        #   default_ast_obj.source_text unless IgnoreValues.include?(arg_value.class)
+        # else
+        default_ast_obj.source_text
+        # end
       end
-      IgnoreValues = [Puppet::Pops::Model::VariableExpression]
+      # IgnoreValues = [Puppet::Pops::Model::VariableExpression]
 
       def self.create_name_attribute
         new(['name'], 'required' => true)

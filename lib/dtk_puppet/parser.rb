@@ -27,6 +27,10 @@ module DTK
       end
 
       def self.parse_puppet_module_directory
+        unless Client::OsUtil.gem_installed?('puppet')
+          fail DTK::Client::Error::Usage.new("Puppet gem is not installed on your system. Please install it and try again.")
+        end
+
         current_dir = Client::OsUtil.current_dir
         dir_content = Dir.glob("#{current_dir}/**/*")
 
