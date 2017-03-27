@@ -73,12 +73,12 @@ module DTK::Client
       transform_helper = ServiceAndComponentInfo::TransformFrom.new(target_repo_dir, parent.module_ref, parent.version)
 
       if service_info = remote_module_info.data(:service_info)
-        srv_info = ServiceInfo.new(transform_helper, ServiceInfo.info_type, service_info['remote_repo_url'], parent)
+        srv_info = ServiceInfo.new(transform_helper, ServiceInfo.info_type, service_info['remote_repo_url'], parent, opts[:force])
         srv_info.fetch_info
       end
 
       if component_info = remote_module_info.data(:component_info)
-        cmp_info = ComponentInfo.new(transform_helper, ComponentInfo.info_type, component_info['remote_repo_url'], parent)
+        cmp_info = ComponentInfo.new(transform_helper, ComponentInfo.info_type, component_info['remote_repo_url'], parent, opts[:force])
         cmp_info.fetch_info
       end
 
@@ -129,7 +129,11 @@ module DTK::Client
       begin
         git_repo_operation.merge_from_dtkn_remote(git_repo_args)
       rescue => e
-        raise e unless @force
+        unless @force
+          current_branch = Operation::ClientModuleDir::GitRepo.current_branch(:path => @target_repo_dir).data(:branch)
+          git_repo_operation.reset_hard(git_repo_args.merge(:branch => current_branch))
+          raise Error::Usage, "Unable to do fast-forward merge! You can use '--force' option but all local changes will be lost!"
+        end
         git_repo_operation.reset_hard(git_repo_args)
       end
     end
