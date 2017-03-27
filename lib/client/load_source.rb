@@ -45,8 +45,15 @@ module DTK::Client
       end
 
       if component_info = remote_module_info.data(:component_info)
-        ComponentInfo.fetch_and_cache_info(transform_helper, component_info['remote_repo_url'], parent, force)
-        info_types_processed << ComponentInfo.info_type
+        begin
+          ComponentInfo.fetch_and_cache_info(transform_helper, component_info['remote_repo_url'], parent, force)
+          info_types_processed << ComponentInfo.info_type
+        rescue Error::MissingDslFile => e
+          # this is special case where in some stage git can recognize that dtk.model.yaml is renamed to dtk.module.yaml
+          # which then will not be introduced on merge and we get error described in the ticket https://reactor8.atlassian.net/browse/DTK-2925
+          raise e unless opts[:use_theirs]
+          stage_and_commit(target_repo_dir, commit_msg(info_types_processed))
+        end
       end
 
       unless info_types_processed.empty?

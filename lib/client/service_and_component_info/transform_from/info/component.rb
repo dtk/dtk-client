@@ -44,7 +44,7 @@ module DTK::Client
 
       def component_dsl_path
         matches = directory_file_paths.select { |path| component_dsl_input_files_processor.match?(path) }
-        raise Error, "Unexpected that there is not a unique component dsl file" if matches.size != 1
+        raise Error::MissingDslFile, "Unexpected that there is not a unique component dsl file" if matches.size != 1
         matches.first
       end
 

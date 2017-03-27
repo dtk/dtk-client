@@ -88,7 +88,7 @@ module DTK::Client
         end
 
         @print_helper.print_continuation_pulling_base_module
-        LoadSource.fetch_transform_and_merge(remote_module_info, self, :stage_and_commit_steps => true, :force => opts[:force])
+        LoadSource.fetch_transform_and_merge(remote_module_info, self, :stage_and_commit_steps => true, :force => opts[:force], :use_theirs => true)
 
         nil
       end
