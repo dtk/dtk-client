@@ -36,9 +36,10 @@ module DTK::Client
       def transform_from_service_info
         info_processor.read_inputs_and_compute_outputs!
         
-        # delete old files
-        # Assumed that this is done before ComponentInfo.transform_from_service_info
-        Operation::ClientModuleDir.delete_directory_content(target_repo_dir)
+        # delete only service instance files, since we need component module files for merge
+        info_processor.input_file_paths.map { |path| Operation::ClientModuleDir.rm_f(path) }
+        Operation::ClientModuleDir.rm_f("#{target_repo_dir}/assemblies")
+        # Operation::ClientModuleDir.delete_directory_content(target_repo_dir)
       end
       
     end
