@@ -15,8 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'puppet'
-
 module DTK
   module Puppet
     class Parser
@@ -27,7 +25,9 @@ module DTK
       end
 
       def self.parse_puppet_module_directory
-        unless Client::OsUtil.gem_installed?('puppet')
+        begin
+          require 'puppet'
+        rescue LoadError => e
           fail DTK::Client::Error::Usage.new("Puppet gem is not installed on your system. Please install it and try again.")
         end
 
