@@ -24,8 +24,15 @@ module DTK
   end
   #dtk_dsl must be loaded after GlobalForDSL set
   require 'dtk_dsl'
-  # lib/dtk_cli must be loaded after lib/client and lib/dsl
-  require_relative '../lib/dtk_puppet'
 
-  Puppet::Parser.parse(ARGV)
+  Client::Error.top_level_trap_error do
+    begin
+      require 'puppet'
+    rescue LoadError => e
+      fail DTK::Client::Error::Usage.new("Puppet gem is not installed on your system. Please install it and try again.")
+    end
+    # lib/dtk_cli must be loaded after lib/client and lib/dsl
+    require_relative '../lib/dtk_puppet'
+    Puppet::Parser.parse(ARGV)
+  end
 end

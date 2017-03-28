@@ -19,18 +19,10 @@ module DTK
   module Puppet
     class Parser
       def self.parse(argv)
-        Client::Error.top_level_trap_error do
-          parse_puppet_module_directory
-        end
+        parse_puppet_module_directory
       end
 
       def self.parse_puppet_module_directory
-        begin
-          require 'puppet'
-        rescue LoadError => e
-          fail DTK::Client::Error::Usage.new("Puppet gem is not installed on your system. Please install it and try again.")
-        end
-
         current_dir = Client::OsUtil.current_dir
         dir_content = Dir.glob("#{current_dir}/**/*")
 
