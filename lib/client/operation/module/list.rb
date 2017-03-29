@@ -28,7 +28,7 @@ module DTK::Client
             ]
           )
           rest_get("#{BaseRoute}/list", query_string_hash)
-        end.set_render_as_table!(nil, '* denotes that dsl has been parsed and validated')
+        end.set_render_as_table!(nil, '* denotes that dsl has not been parsed and validated')
       end
     end
   end
