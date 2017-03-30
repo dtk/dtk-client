@@ -48,6 +48,11 @@ module DTK::Client
         begin
           ComponentInfo.fetch_and_cache_info(transform_helper, component_info['remote_repo_url'], parent, force)
           info_types_processed << ComponentInfo.info_type
+
+          if parent.is_a?(Operation::Module::PullDtkn)
+            stage_and_commit(target_repo_dir, commit_msg([ComponentInfo.info_type]))
+            delete_diffs(target_repo_dir)
+          end
         rescue Error::MissingDslFile => e
           # this is special case where in some stage git can recognize that dtk.model.yaml is renamed to dtk.module.yaml
           # which then will not be introduced on merge and we get error described in the ticket https://reactor8.atlassian.net/browse/DTK-2925
@@ -61,6 +66,17 @@ module DTK::Client
           Operation::ClientModuleDir.create_file_with_content("#{target_repo_dir}/#{path}", text_content)
         end
         stage_and_commit(target_repo_dir, commit_msg(info_types_processed))
+      end
+    end
+
+    def self.delete_diffs(target_repo_dir)
+      current_branch = git_repo_operation.current_branch(:path => target_repo_dir).data(:branch)
+      repo = git_repo_operation.create_empty_git_repo?(:repo_dir => target_repo_dir, :branch => current_branch).data(:repo)
+      if delete_files = repo.diff_name_status(current_branch, "remotes/dtkn-component-info/master", { :diff_filter => 'D' })
+        unless delete_files.empty?
+          to_delete = delete_files.keys.select { |key| !key.include?('dtk.model.yaml') && !key.include?('module_refs.yaml') }
+          to_delete.each { |file| Operation::ClientModuleDir.rm_f("#{target_repo_dir}/#{file}") }
+        end
       end
     end
 
