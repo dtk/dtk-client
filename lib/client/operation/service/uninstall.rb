@@ -37,18 +37,21 @@ module DTK::Client
           )
           response = rest_post("#{BaseRoute}/uninstall", post_body)
 
-          message = "" 
-          if nodes = response.data
-            nodes.each do |n|
-              message += "#{n["display_name"]} - #{ n["external_ref"]["dns_name"]}\n" unless n["display_name"].eql?("node") && n["dtk_client_type"].eql?("node_group")
-            end
-          end
           ClientModuleDir.rm_f(path) if args[:purge]
 
           info = "DTK module '#{service_instance}' has been uninstalled successfully." 
-
           OsUtil.print_info(info)
-          OsUtil.print("Nodes that will be deleted: \n" + message) if delete && nodes.size > 1
+          display_node_info(response.data) if delete
+        end
+      end
+
+      def self.display_node_info(nodes, message = '')
+        if nodes.size > 1
+          nodes.each do |node|
+            return if node['admin_op_status'] == 'pending' || node['external_ref']["instance_id"].nil?
+            message += "#{node["display_name"]} - #{ node["external_ref"]["instance_id"]}\n" unless node["display_name"].eql?("node") && node["dtk_client_type"].eql?("node_group") 
+          end
+          OsUtil.print("Nodes that will be deleted: \n" + message)
         end
       end
 
