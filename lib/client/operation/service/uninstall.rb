@@ -46,7 +46,7 @@ module DTK::Client
       end
 
       def self.display_node_info(nodes, message = '')
-        if nodes.size > 1
+        if nodes.size > 0
           nodes.each do |node|
             return if node['admin_op_status'] == 'pending' || node['external_ref']["instance_id"].nil?
             message += "#{node["display_name"]} - #{ node["external_ref"]["instance_id"]}\n" unless node["display_name"].eql?("node") && node["dtk_client_type"].eql?("node_group") 
