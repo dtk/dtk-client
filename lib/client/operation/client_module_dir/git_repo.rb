@@ -106,11 +106,12 @@ module DTK::Client
 
       def self.merge_from_dtkn_remote(args)
         wrap_operation(args) do |args|
-          remote_branch = args.required(:remote_branch)
-          no_commit     = args[:no_commit]
-          repo_with_remote  = repo_with_dtkn_remote(args)
+          remote_branch    = args.required(:remote_branch)
+          no_commit        = args[:no_commit]
+          repo_with_remote = repo_with_dtkn_remote(args)
+          use_theirs       = args[:use_theirs]
 
-          response_data_hash(:head_sha => repo_with_remote.merge_from_remote(remote_branch, :no_commit => no_commit))
+          response_data_hash(:head_sha => repo_with_remote.merge_from_remote(remote_branch, :no_commit => no_commit, :use_theirs => use_theirs))
         end
       end
 

@@ -20,13 +20,14 @@ module DTK::Client
     require_relative('load_source/service_info')
     require_relative('load_source/component_info')
 
-    def initialize(transform_helper, info_type, remote_repo_url, parent, force)
+    def initialize(transform_helper, info_type, remote_repo_url, parent, force, use_theirs = nil)
       @info_processor   = transform_helper.info_processor(info_type)
       @info_type        = info_type
       @remote_repo_url  = remote_repo_url
       @target_repo_dir  = parent.target_repo_dir
       @version          = parent.version
       @force            = force
+      @use_theirs       = use_theirs
     end
     private :initialize
 
@@ -37,16 +38,17 @@ module DTK::Client
       transform_helper     = ServiceAndComponentInfo::TransformFrom.new(target_repo_dir, parent.module_ref, parent.version)
       info_types_processed = []
       force                = opts[:force]
+      use_theirs           = opts[:use_theirs]
 
       if service_info = remote_module_info.data(:service_info)
-        ServiceInfo.fetch_and_cache_info(transform_helper, service_info['remote_repo_url'], parent, force)
+        ServiceInfo.fetch_and_cache_info(transform_helper, service_info['remote_repo_url'], parent, force, use_theirs)
         info_types_processed << ServiceInfo.info_type
         stage_and_commit(target_repo_dir, commit_msg(info_types_processed)) if opts[:stage_and_commit_steps]
       end
 
       if component_info = remote_module_info.data(:component_info)
         begin
-          ComponentInfo.fetch_and_cache_info(transform_helper, component_info['remote_repo_url'], parent, force)
+          ComponentInfo.fetch_and_cache_info(transform_helper, component_info['remote_repo_url'], parent, force, use_theirs)
           info_types_processed << ComponentInfo.info_type
 
           if parent.is_a?(Operation::Module::PullDtkn)
@@ -56,7 +58,7 @@ module DTK::Client
         rescue Error::MissingDslFile => e
           # this is special case where in some stage git can recognize that dtk.model.yaml is renamed to dtk.module.yaml
           # which then will not be introduced on merge and we get error described in the ticket https://reactor8.atlassian.net/browse/DTK-2925
-          raise e unless opts[:use_theirs]
+          raise e unless use_theirs
           stage_and_commit(target_repo_dir, commit_msg(info_types_processed))
         end
       end
@@ -80,8 +82,8 @@ module DTK::Client
       end
     end
 
-    def self.fetch_and_cache_info(transform_helper, remote_repo_url, parent, force)
-      new(transform_helper, info_type, remote_repo_url, parent, force).fetch_and_cache_info
+    def self.fetch_and_cache_info(transform_helper, remote_repo_url, parent, force, use_theirs = false)
+      new(transform_helper, info_type, remote_repo_url, parent, force, use_theirs).fetch_and_cache_info
     end
 
     def self.fetch_from_remote(remote_module_info, parent, opts = {})
@@ -133,7 +135,7 @@ module DTK::Client
 
     def merge_from_remote
       merged = true
-      git_repo_args = common_git_repo_args.merge(:remote_branch => git_repo_remote_branch, :no_commit => true)
+      git_repo_args = common_git_repo_args.merge(:remote_branch => git_repo_remote_branch, :no_commit => true, :use_theirs => @use_theirs)
 
       if local_ahead?.data('local_ahead')
         if @force

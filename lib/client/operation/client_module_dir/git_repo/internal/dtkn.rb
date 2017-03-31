@@ -48,7 +48,7 @@ module DTK::Client
         #   :no_commit
         def merge_from_remote(remote_branch, opts = {})
           merge_from_ref = "#{remote_name}/#{remote_branch}"
-          Internal.merge(@repo, merge_from_ref, :no_commit => opts[:no_commit])
+          Internal.merge(@repo, merge_from_ref, :no_commit => opts[:no_commit], :use_theirs => opts[:use_theirs])
         end
 
         def local_ahead?(remote_branch, opts = {})

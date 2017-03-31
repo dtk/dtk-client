@@ -55,7 +55,7 @@ module DTK::Client
         #   :no_commit
         def self.merge(repo, merge_from_ref, opts = {})
           base_sha = repo.head_commit_sha
-          repo.merge(merge_from_ref)
+          repo.merge(merge_from_ref, :use_theirs => opts[:use_theirs])
           # the git gem does not take no_commit as merge argument; so doing it with soft reset
           repo.reset_soft(base_sha) if opts[:no_commit]
           repo.head_commit_sha
