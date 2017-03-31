@@ -101,5 +101,12 @@ module DTK::Client
         super("No method#{method_ref} for concrete class #{klass}")
       end
     end
+
+    class MissingDslFile < self
+      def initialize(error_msg, _opts = {})
+        msg_to_pass_to_super = "[ERROR] #{error_msg}"
+        super(msg_to_pass_to_super, :backtrace => NO_BACKTRACE)
+      end
+    end
   end
 end

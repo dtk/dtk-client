@@ -69,12 +69,7 @@ module DTK::Client; class Operation::Module
 
         create_and_checkout_branch?(current_branch, target_repo_dir, component_info_remote) do |repo|
           # find deleted files from master branch and delete them in component info cached branch ("remotes/dtkn-component-info/master")
-          if delete_files = repo.diff_name_status(component_info_remote, current_branch, { :diff_filter => 'D' })
-            unless delete_files.empty?
-              to_delete = delete_files.keys.select { |key| !key.include?('dtk.model.yaml') && !key.include?('module_refs.yaml') }
-              to_delete.each { |file| Operation::ClientModuleDir.rm_f("#{target_repo_dir}/#{file}") }
-            end
-          end
+          delete_diffs(repo, component_info_remote, current_branch, target_repo_dir)
 
           component_file_path__content_array.each { |file| Operation::ClientModuleDir.create_file_with_content("#{file_path(target_repo_dir, file)}", file[:content]) }
           commit_and_push_to_remote(repo, target_repo_dir, "master", "dtkn-component-info")
@@ -84,6 +79,16 @@ module DTK::Client; class Operation::Module
       private
 
       attr_reader :info_processor, :target_repo_dir, :parent
+
+      def self.delete_diffs(repo, component_info_remote, current_branch, target_repo_dir)
+        if diffs = repo.diff_name_status(component_info_remote, current_branch)
+          deletes_and_renames = diffs.select{ |k,v| v.eql?('D') || v.start_with?('R') }
+          unless deletes_and_renames.empty?
+            to_delete = deletes_and_renames.keys.select { |key| !key.include?('dtk.model.yaml') && !key.include?('module_refs.yaml') }
+            to_delete.each { |file| Operation::ClientModuleDir.rm_f("#{target_repo_dir}/#{file}") }
+          end
+        end
+      end
 
       def self.write_output_path_text_pairs(transform_helper, target_repo_dir, info_types_processed)
       end

@@ -48,6 +48,7 @@ module DTK::Client
         def merge(branch, message = nil, opts = {})
           arr_opts = []
           arr_opts << '--allow-unrelated-histories' if opts[:allow_unrelated_histories]
+          arr_opts << '-Xtheirs' if opts[:use_theirs]
           arr_opts << '-m' << message if message
           arr_opts += [branch]
           command('merge', arr_opts)
@@ -135,8 +136,8 @@ module DTK::Client
         @git_repo.push(remote, branch_for_push, opts)
       end
 
-      def merge(branch_to_merge_from)
-        @git_repo.merge(branch_to_merge_from, 'merge', :allow_unrelated_histories => allow_unrelated_histories?)
+      def merge(branch_to_merge_from, opts = {})
+        @git_repo.merge(branch_to_merge_from, 'merge', :allow_unrelated_histories => allow_unrelated_histories?, :use_theirs => opts[:use_theirs])
       end
 
       def status

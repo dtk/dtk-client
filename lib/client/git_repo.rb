@@ -112,8 +112,8 @@ module DTK::Client
       @git_adapter.is_there_remote?(remote_name)
     end
 
-    def merge(branch_to_merge_from)
-      @git_adapter.merge(branch_to_merge_from)
+    def merge(branch_to_merge_from, opts = {})
+      @git_adapter.merge(branch_to_merge_from, opts)
     end
 
     # opts can have keys:
