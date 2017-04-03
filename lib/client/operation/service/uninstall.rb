@@ -41,19 +41,10 @@ module DTK::Client
 
           info = "DTK module '#{service_instance}' has been uninstalled successfully." 
           OsUtil.print_info(info)
-          display_node_info(response.data) if delete
+          Delete.display_node_info(response.data) if delete
         end
       end
 
-      def self.display_node_info(nodes, message = '')
-        if nodes.size > 0
-          nodes.each do |node|
-            return if node['admin_op_status'] == 'pending' || node['external_ref']["instance_id"].nil?
-            message += "#{node["display_name"]} - #{ node["external_ref"]["instance_id"]}\n" unless node["display_name"].eql?("node") && node["dtk_client_type"].eql?("node_group") 
-          end
-          OsUtil.print("Nodes that will be deleted: \n" + message)
-        end
-      end
 
     end
   end
