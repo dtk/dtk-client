@@ -33,14 +33,14 @@ module DTK
       end
       !! response.data.find { |service_instance| service_instance['display_name'] == service_name }
     end
-    
-    def stage
+
+    def stage(module_version, assembly_name)
       wrap_response(:stage) do
         post_body = PostBody.new(
           :namespace       => 'lab-manager',
           :module_name     => 'workshop',
-          :version?        => 'master',
-          :assembly_name?  => 'converge_test',
+          :version?        => module_version,
+          :assembly_name?  => assembly_name,
           :service_name    => service_name
         )
         Session.rest_post('modules/stage', post_body)

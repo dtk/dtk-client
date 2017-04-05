@@ -22,7 +22,11 @@ unless service_name = ARGV[0]
   puts "Usage: api-test SERVICE-NAME"
   exit 1
 end
-lab_user = 'test-lab-user1'
+module_version = '0.5.0'
+assembly_name  = 'lab'
+lab_user       = 'test-lab-user1'
+linux_user     = 'rich'
+
 should_uninstall_service = false
 #should_uninstall_service = true
 
@@ -37,12 +41,16 @@ if service_exists = driver.service_exists?
 else
   puts "------------------------\n"
   puts "Staging service\n"
-  driver.stage
+  driver.stage(module_version, assembly_name)
 end
 
 puts "------------------------\n"
 puts "Setting attribute lab_user to '#{lab_user}'\n"
-driver.set_service_attribute('ubuntu/workshop::instance[ubuntu]/lab_user', lab_user)
+driver.set_service_attribute('ubuntu/workshop::instance[lab]/lab_user', lab_user)
+
+puts "------------------------\n"
+puts "Setting attribute linux_user to '#{linux_user}'\n"
+driver.set_service_attribute('ubuntu/workshop::instance[lab]/linux_user', linux_user)
 
 puts "------------------------\n"
 puts "check violations; fail on error"
