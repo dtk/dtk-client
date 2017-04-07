@@ -297,8 +297,10 @@ module DTK::Client
         deletions = 0
         insertions = 0
         changes[0].each do |item|
-          deletions += diff[item][:deletions]
-          insertions += diff[item][:insertions]  
+          if diff_item = diff[item]
+            deletions  += (diff_item||{})[:deletions]
+            insertions += (diff_item||{})[:insertions]
+          end
           puts "\t#{item} | #{insertions + deletions} " + "+".colorize(:green) * insertions + "-".colorize(:red) * deletions
         end
         puts "\t#{file_changed} file changed, #{deletions} deletions(-), #{insertions} insertions(+)"
