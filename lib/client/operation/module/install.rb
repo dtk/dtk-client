@@ -68,7 +68,7 @@ module DTK::Client
             if @has_remote_repo
               DependentModules.install(@base_module_ref, dependent_modules, :skip_prompt => opts[:skip_prompt])
             else
-              DependentModules.install_new(@base_module_ref, dependent_modules, :skip_prompt => opts[:skip_prompt])
+              DependentModules.install_with_local(@base_module_ref, dependent_modules, :skip_prompt => opts[:skip_prompt])
             end
           rescue TerminateInstall
             @print_helper.print_terminated_installation
