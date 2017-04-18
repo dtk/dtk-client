@@ -31,11 +31,27 @@ module DTK::Client; class Operation::Module
       def self.install_or_pull?(module_ref, prompt_helper, print_helper)
         new(module_ref, prompt_helper, print_helper).install_or_pull?
       end
+
+      def self.install_or_pull_new?(module_ref, prompt_helper, print_helper)
+        new(module_ref, prompt_helper, print_helper).install_or_pull_new?
+      end
       
       def install_or_pull?
         if @module_ref.module_installed?(self)
           if @module_ref.is_master_version?
             pull_module_update?
+          else
+            @print_helper.print_using_installed_dependent_module
+          end
+        else
+          install_module
+        end
+      end
+
+      def install_or_pull_new?
+        if @module_ref.module_installed?(self)
+          if @module_ref.is_master_version?
+            pull_module_update_new?
           else
             @print_helper.print_using_installed_dependent_module
           end
@@ -50,6 +66,27 @@ module DTK::Client; class Operation::Module
       end
 
       private
+
+      def pull_module_update_new?
+        # return unless @prompt_helper.pull_module_update?(@print_helper)
+        @print_helper.print_continuation_pulling_dependency_update
+
+        post_body = {
+          :module_name => module_name,
+          :namespace   => namespace,
+          :rsa_pub_key => SSHUtil.rsa_pub_key_content,
+          :version?    => version,
+          :force       => true # TODO: hardwired
+        }
+        response = rest_post "#{BaseRoute}/pull_component_info_from_remote", PostBody.new(post_body)
+
+        if (response.data(:diffs) || {}).empty?
+#          OsUtil.print("No changes to pull from remote.", :yellow) unless response['errors']
+          OsUtil.print("No changes to pull from remote.", :yellow) 
+        else
+          OsUtil.print("Changes pulled from remote", :green)
+        end
+      end
 
       def pull_module_update?
         return unless @prompt_helper.pull_module_update?(@print_helper)
