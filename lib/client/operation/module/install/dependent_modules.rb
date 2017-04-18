@@ -83,11 +83,11 @@ module DTK::Client
                   new_print_helper  = PrintHelper.new(:module_ref => component_module_ref, :source => :remote)
                   if @prompt_helper.pull_module_update?(new_print_helper)
                     ComponentModule.install_or_pull_new?(component_module_ref, @prompt_helper, new_print_helper) unless component_module_ref.is_base_module?
+                    RemoteDependencies.install_or_pull?(component_module_ref, @prompt_helper, new_print_helper)
                   else
                     new_print_helper.print_using_installed_dependent_module
+                    LocalDependencies.install_or_pull?(server_response, @prompt_helper, new_print_helper)
                   end
-
-                  RemoteDependencies.install_or_pull?(component_module_ref, @prompt_helper, new_print_helper)
                 else
                   # does not have remote but exist locally
                   new_print_helper = PrintHelper.new(:module_ref => component_module_ref, :source => :remote)
