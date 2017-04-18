@@ -54,7 +54,7 @@ module DTK::Client; class Operation::Module
               req_ref = Install::DependentModules.create_module_ref(req_module)
               new_print_helper = Install::PrintHelper.new(:module_ref => req_ref, :source => :remote)
               if prompt_helper.pull_module_update?(new_print_helper)
-                ComponentModule.install_or_pull?(req_ref, prompt_helper, new_print_helper) unless req_ref.is_base_module?
+                ComponentModule.install_or_pull_new?(req_ref, prompt_helper, new_print_helper) unless req_ref.is_base_module?
               end
             end
           end
