@@ -53,28 +53,26 @@ module DTK::Client
       end
 
       def self.get_node_info_for_ssh_login(node_name, service_instance)
-        response = rest_get("#{BaseRoute}/#{service_instance}/info")
+        info_hash = {}
 
-        unless node_info = response.data(:nodes).find{ |node| node_name == node['display_name'] }
+        response = rest_get("#{BaseRoute}/#{service_instance}/nodes")
+        unless node_info = response.data.find{ |node| node_name == node['display_name'] }
           raise Error::Usage, "The node '#{node_name}' does not exist"
         end
 
-        data            = {}
-        node_properties = node_info['node_properties'] || {}
-
-        if public_dns = node_properties['ec2_public_address']
-          data.merge!(:public_dns => public_dns)
+        if dns_address = node_info['dns_address']
+          info_hash.merge!(:dns_address => dns_address)
         end
 
-        if default_login_user = default_login_user?(node_properties)
-          data.merge!(:default_login_user => default_login_user)
+        if default_login_user = default_login_user?(node_info)
+          info_hash.merge!(:default_login_user => default_login_user)
         end
-
-        data
+pp info_hash
+        info_hash
       end
 
-      def self.default_login_user?(node_properties)
-        if os_type = node_properties['os_type']
+      def self.default_login_user?(node_info)
+        if os_type = node_info['os_type']
           DefaultLoginByOSType[os_type]
         end
       end
@@ -85,7 +83,7 @@ module DTK::Client
       }
 
       def self.connect(node_info, identity_file, remote_user)
-        unless public_dns = node_info[:public_dns]
+        unless dns_address = node_info[:dns_address]
           raise Error::Usage, "Not able to resolve instance address, has instance been stopped?"
         end
 
@@ -93,13 +91,13 @@ module DTK::Client
           raise Error::Usage, "Retry command with a specfic login user (a default login user could not be computed)"
         end
 
-        connection_string = "#{remote_user}@#{public_dns}"
+        connection_string = "#{remote_user}@#{dns_address}"
 
         ssh_command =
           if identity_file
             # provided PEM key
             "ssh -o \"StrictHostKeyChecking no\" -o \"UserKnownHostsFile /dev/null\" -i #{identity_file} #{connection_string}"
-          elsif SSHUtil.ssh_reachable?(remote_user, public_dns)
+          elsif SSHUtil.ssh_reachable?(remote_user, dns_address)
             # it has PUB key access
             "ssh -o \"StrictHostKeyChecking no\" -o \"UserKnownHostsFile /dev/null\" #{connection_string}"
           end
