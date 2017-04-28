@@ -42,11 +42,12 @@ module DTK::Client
         end
       end
 
+      # TODO: DTK-2938: below need sto be upgraded to be consistent with node as a component
       def self.display_node_info(nodes, message = '')
         if nodes.size > 0
           nodes.each do |node|
-            return if node['admin_op_status'] == 'pending' || node['external_ref']["instance_id"].nil?
-            message += "#{node["display_name"]} - #{ node["external_ref"]["instance_id"]}\n" unless node["display_name"].eql?("node") && node["dtk_client_type"].eql?("node_group") 
+            return if  node['instance_id'].nil?
+            message += "#{node['display_name']} - #{node['instance_id']}\n"
           end
           OsUtil.print("Nodes that will be deleted: \n" + message)
         end
