@@ -41,6 +41,9 @@ module DTK::Client
             :task_params? => task_params
           )
           encoded_action =  URI.encode_www_form_component("#{action}")
+          require 'debugger'
+          Debugger.start
+          debugger
           response = rest_post("#{BaseRoute}/#{service_instance}/#{encoded_action}", post_body)
 
           if confirmation_message = response.data(:confirmation_message)
