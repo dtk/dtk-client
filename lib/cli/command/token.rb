@@ -48,7 +48,7 @@ module DTK::Client
         :mode                    => Flag.new(:mode, 'MODE', 'Mode'),
         :namespace               => Flag.new(:n, 'NAMESPACE', 'Namespace'),
         :uninstall_name          => Flag.new(:name, 'NAME', 'Module name to uninstall'),
-        
+        :format                  => Flag.new(:format, 'FORMAT', 'Choose in which format to display data (ex. TABLE, YAML)'),
 
         # switches
         # Switch constructor args order: key, desc, opts={}
@@ -77,7 +77,8 @@ module DTK::Client
         :target_directory => 'TARGET-DIRECTORY',
         :attribute_name   => 'ATTRIBUTE-NAME',
         :keypair_name     => 'KEYPAIR-NAME',
-        :attribute_value  => 'VALUE'
+        :attribute_value  => 'VALUE',
+        :format           => 'FORMAT'
       }
       
     end
