@@ -45,7 +45,8 @@ module DTK::Client
           'set-attribute',
           'exec',
           'exec-sync',
-          'set-default-target'
+          'set-default-target',
+          'unmanage'
           # 'create-workspace'
         ]
         command_def :desc => 'Subcommands for creating and interacting with DTK service instances'

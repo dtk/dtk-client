@@ -77,7 +77,8 @@ module DTK::Client
         :target_directory => 'TARGET-DIRECTORY',
         :attribute_name   => 'ATTRIBUTE-NAME',
         :keypair_name     => 'KEYPAIR-NAME',
-        :attribute_value  => 'VALUE'
+        :attribute_value  => 'VALUE',
+        :component_ref    => 'COMPONENT-REF'
       }
       
     end

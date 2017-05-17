@@ -42,7 +42,8 @@ module DTK::Client
         :set_required_attributes,
         :set_attribute,
         :exec,
-        :set_default_target
+        :set_default_target,
+        :unmanage
         # :create_workspace
       ]
       OPERATIONS.each { |operation| require_relative("service/#{operation}") }
