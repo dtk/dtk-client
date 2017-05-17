@@ -23,12 +23,14 @@ module DTK::Client
         command_body c, :install, 'Install a module on the server from a client directory or from the DTK remote catalog (DTKN)' do |sc|
           sc.flag Token.version
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to directory containing content to install'
-          sc.switch Token.skip_prompt
+          sc.switch Token.update_deps
+          sc.switch Token.no_update_deps
 
           sc.action do |_global_options, options, args|
             directory_path = options[:directory_path]
             version        = options[:version]
-            skip_prompt    = options[:skip_prompt]
+            update_deps    = options[:update_deps]
+            no_update_deps = options[:no_update_deps]
 
             has_remote_repo = false
             if module_name = args[0]
@@ -53,8 +55,9 @@ module DTK::Client
               :module_ref          => module_ref, 
               :base_dsl_file_obj   => @base_dsl_file_obj, 
               :has_directory_param => !options["d"].nil?,
-              :skip_prompt         => skip_prompt,
-              :has_remote_repo     => has_remote_repo
+              :has_remote_repo     => has_remote_repo,
+              :update_deps         => update_deps,
+              :no_update_deps      => no_update_deps
             }
             Operation::Module.install(operation_args)
           end

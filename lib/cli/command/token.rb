@@ -62,7 +62,9 @@ module DTK::Client
         :links        => Switch.new(:links, 'Links'),
         :dependencies => Switch.new(:deps, 'Dependencies'),
         :u            => Switch.new([:u, :unset], 'Unset attribute'),
-        :recursive    => Switch.new(:r, 'Recursive')
+        :recursive    => Switch.new(:r, 'Recursive'),
+        :update_deps  => Switch.new('update-deps', 'Skip prompt and update all dependencies (on master)'),
+        :no_update_deps => Switch.new('update-no-deps', 'Skip prompt and dont update any dependencies')
       }
 
       ARG_TOKENS = {

@@ -39,8 +39,9 @@ module DTK::Client
           module_ref             = args.required(:module_ref) 
           base_dsl_file_obj      = args.required(:base_dsl_file_obj)
           has_directory_param    = args[:has_directory_param]
-          skip_prompt            = args[:skip_prompt]
           has_remote_repo        = args[:has_remote_repo]
+          update_deps            = args[:update_deps]
+          no_update_deps         = args[:no_update_deps]
 
           if has_directory_param
             file_obj = args.required(:base_dsl_file_obj).raise_error_if_no_content_flag(:module_ref)
@@ -48,12 +49,13 @@ module DTK::Client
             file_obj = args.required(:base_dsl_file_obj).raise_error_if_no_content
           end
 
-          new(file_obj, module_ref, has_remote_repo).install(:skip_prompt => skip_prompt)
+          new(file_obj, module_ref, has_remote_repo).install(:update_deps => update_deps, :no_update_deps => no_update_deps)
         end
       end
 
       # opts can have keys:
-      #   :skip_prompt
+      #   :update_deps
+      #   :no_update_deps
       def install(opts = {})
         unless @base_module_ref
           raise Error::Usage, "No base module reference #{dsl_path_ref}"
@@ -66,9 +68,9 @@ module DTK::Client
         unless dependent_modules.empty?
           begin
             if @has_remote_repo
-              DependentModules.install(@base_module_ref, dependent_modules, :skip_prompt => opts[:skip_prompt])
+              DependentModules.install(@base_module_ref, dependent_modules, opts)
             else
-              DependentModules.install_with_local(@base_module_ref, dependent_modules, :skip_prompt => opts[:skip_prompt])
+              DependentModules.install_with_local(@base_module_ref, dependent_modules, opts)
             end
           rescue TerminateInstall
             @print_helper.print_terminated_installation
