@@ -24,15 +24,13 @@ module DTK::Client
           sc.flag Token.version
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to directory containing content to install'
           sc.switch Token.update_deps
-          sc.switch Token.no_update_deps
 
           sc.action do |_global_options, options, args|
             directory_path = options[:directory_path]
             version        = options[:version]
             update_deps    = options[:update_deps]
-            no_update_deps = options[:no_update_deps]
-
             has_remote_repo = false
+
             if module_name = args[0]
               # reached if installing from dtkn
               # installs content from dtkn (later probably from other remote catalogs) onto client machine
@@ -56,8 +54,7 @@ module DTK::Client
               :base_dsl_file_obj   => @base_dsl_file_obj, 
               :has_directory_param => !options["d"].nil?,
               :has_remote_repo     => has_remote_repo,
-              :update_deps         => update_deps,
-              :no_update_deps      => no_update_deps
+              :update_deps         => update_deps
             }
             Operation::Module.install(operation_args)
           end

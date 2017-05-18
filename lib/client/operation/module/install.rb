@@ -41,7 +41,13 @@ module DTK::Client
           has_directory_param    = args[:has_directory_param]
           has_remote_repo        = args[:has_remote_repo]
           update_deps            = args[:update_deps]
-          no_update_deps         = args[:no_update_deps]
+          
+          case update_deps
+          when "prompt"
+            update_deps          = nil
+          when false 
+            no_update_deps       = true
+          end
 
           if has_directory_param
             file_obj = args.required(:base_dsl_file_obj).raise_error_if_no_content_flag(:module_ref)
