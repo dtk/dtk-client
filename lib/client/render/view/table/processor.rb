@@ -40,12 +40,13 @@ module DTK::Client
       end
 
       def initialize(table_definition)
-        @order_definition = table_definition.order_definition
-        @table_mapping    = table_definition.mapping
-        @evaluated_data = []
-        @error_data     = []
-        @action_data    = []
-        @footnote       = nil
+        @order_definition  = table_definition.order_definition
+        @table_mapping     = table_definition.mapping
+        @evaluated_data    = []
+        @error_data        = []
+        @action_data       = []
+        @footnote          = nil
+        @failed_components = []
       end
       private :initialize
 
@@ -78,6 +79,9 @@ module DTK::Client
             begin
               if print_error_table && k.include?('error')
                 error_message = value_of(structured_element, v)
+                if failed_component = value_of(structured_element, 'failed_component')
+                  @failed_components << "- #{failed_component.gsub('__','::')}"
+                end
 
                 # due to problems with space we have special way of handling error columns
                 # in such a way that those error will be specially printed later on
@@ -164,6 +168,11 @@ module DTK::Client
         if @footnote
           printf " \n"
           printf "%15s %s\n", "INFO:".colorize(:yellow), @footnote.colorize(:yellow)
+        end
+
+        unless @failed_components.empty?
+          printf " \n"
+          printf "%15s %s\n", "INFO:".colorize(:yellow), "Following components could not be deleted:\n\t#{@failed_components.uniq.join(', ').colorize(:yellow)}\nYou can use command 'dtk service unmanage COMPONENT-REF' to delete component from service instance and try again.\nNote: If component has created any aws instances you will have to delete them manually!".colorize(:yellow)
         end
       end
       
