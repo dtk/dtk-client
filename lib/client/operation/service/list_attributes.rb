@@ -24,14 +24,29 @@ module DTK::Client
           links            = args[:links]
           node             = args[:node]
           component        = args[:component]
+          all              = args[:all]
+          format           = args[:format] || 'table'
+          format.downcase!
 
           query_string_hash = QueryStringHash.new(
             :links?           => links,
             :node_id?         => node,
-            :component_id?    => component
+            :all              => all,
+            :filter_component => component,
+            :format           => format
           )
-          rest_get("#{BaseRoute}/#{service_instance}/attributes", query_string_hash)
-        end.set_render_as_table!
+          
+          response = rest_get("#{BaseRoute}/#{service_instance}/attributes", query_string_hash)
+          
+          case format
+          when 'table'
+            response.set_render_as_table!
+          when 'yaml'
+            response
+          else
+            raise Error::Usage, "Please enter valid format: TABLE, YAML"
+          end
+        end
       end
     end
   end
