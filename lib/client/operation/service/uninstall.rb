@@ -23,6 +23,7 @@ module DTK::Client
           service_instance = args.required(:service_instance)
           recursive        = args.required(:recursive)
           delete           = args.required(:delete)
+          force            = args.required(:force)
           path             = args[:directory_path]
           node             = []
 
@@ -33,16 +34,20 @@ module DTK::Client
           post_body = PostBody.new(
             :service_instance => service_instance,
             :recursive?  => recursive,
-            :delete      => delete
+            :delete      => delete,
+            :force       => force
           )
           response = rest_post("#{BaseRoute}/uninstall", post_body)
 
           ClientModuleDir.rm_f(path) if args[:purge]
 
           # info = "DTK module '#{service_instance}' has been uninstalled successfully."
-          info = "Delete procedure started. For more information use 'dtk task-status'."
-          OsUtil.print_info(info)
-          Delete.display_node_info(response.data) if delete
+          if delete
+            OsUtil.print_info("Delete procedure started. For more information use 'dtk task-status'.")
+            Delete.display_node_info(response.data)
+          else
+            OsUtil.print_info("DTK module '#{service_instance}' has been uninstalled successfully."            )
+          end
         end
       end
 

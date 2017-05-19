@@ -26,10 +26,12 @@ module DTK::Client; module CLI
           sc.switch Token.purge, :desc => 'Delete the service instance directory on the client'
           sc.switch Token.delete, :desc => 'Removes service instance with all nodes and modules'
           sc.switch Token.recursive, :desc => 'Delete dependent service instances'
+          sc.switch Token.force, :desc => 'Ignore errors and destroy the running service instance'
           sc.action do |_global_options, options, args|
             directory_path = options[:directory_path]
             purge          = options[:purge]
             delete         = options[:delete]
+            force          = options[:f]
             recursive      = options[:recursive]
             name           = options[:uninstall_name]
 
@@ -49,7 +51,8 @@ module DTK::Client; module CLI
               :directory_path   => directory_path,
               :purge            => purge,
               :delete           => delete,
-              :recursive        => recursive
+              :recursive        => recursive,
+              :force            => force
             }
             Operation::Service.uninstall(args)
           end
