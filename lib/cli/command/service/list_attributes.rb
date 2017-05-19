@@ -24,7 +24,7 @@ module DTK::Client; module CLI
           sc.flag Token.node, :desc => 'Filter attributes by node'
           sc.flag Token.format
           sc.flag Token.component, :desc => 'Filter attributes by component'
-          sc.switch Token.all, :desc => 'Get all attributes'
+          #sc.switch Token.all, :desc => 'Get all attributes'
           sc.switch Token.links, :desc => 'Display attribute links'
 
           sc.action do |_global_options, options, _args|
@@ -35,7 +35,7 @@ module DTK::Client; module CLI
               :links            => options[:links]||nil,
               :node             => options[:node],
               :component        => options[:component],
-              :all              => options[:all],
+              #:all              => options[:all],
               :format           => options[:format]
             }
             Operation::Service.list_attributes(args)
