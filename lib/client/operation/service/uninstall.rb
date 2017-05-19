@@ -41,12 +41,12 @@ module DTK::Client
 
           ClientModuleDir.rm_f(path) if args[:purge]
 
-          # info = "DTK module '#{service_instance}' has been uninstalled successfully."
           if delete
-            OsUtil.print_info("Delete procedure started. For more information use 'dtk task-status'.")
-            Delete.display_node_info(response.data)
+            if message = response.data(:message)
+              OsUtil.print_info(message)
+            end
           else
-            OsUtil.print_info("DTK module '#{service_instance}' has been uninstalled successfully."            )
+            OsUtil.print_info("DTK module '#{service_instance}' has been uninstalled successfully.")
           end
         end
       end
