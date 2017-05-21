@@ -29,11 +29,11 @@ module DTK::Client
           format.downcase!
 
           query_string_hash = QueryStringHash.new(
-            :links?           => links,
-            :node_id?         => node,
-            :all              => all,
-            :filter_component => component,
-            :format           => format
+            :links?            => links,
+            :node_id?          => node,
+            :all               => all,
+            :filter_component? => component,
+            :format            => format
           )
           
           response = rest_get("#{BaseRoute}/#{service_instance}/attributes", query_string_hash)
