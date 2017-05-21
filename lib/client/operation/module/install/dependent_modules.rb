@@ -26,14 +26,14 @@ module DTK::Client
 
       BaseRoute  = "modules"
       # opts can have keys:
-      #   :skip_prompt
+      #   :update_deps
       def initialize(base_module_ref, component_module_refs, opts = {})
         # TODO: DTK-2766: in an later release will changes this so iterating over module_refs, which could have component and service info, 
         # not just component modules
         @base_module_ref       = base_module_ref
         @component_module_refs = component_module_refs 
         @print_helper          = PrintHelper.new(:module_ref => @base_module_ref, :source => :remote)
-        @prompt_helper         = PromptHelper.new(:update_all => opts[:skip_prompt], :update_none => opts[:update_none])
+        @prompt_helper         = PromptHelper.new(:update_all => opts[:update_deps], :update_none => opts[:update_none] || opts[:no_update_deps])
         @opts                  = opts
       end
       private :initialize

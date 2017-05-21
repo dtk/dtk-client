@@ -48,7 +48,7 @@ module DTK::Client
         :mode                    => Flag.new(:mode, 'MODE', 'Mode'),
         :namespace               => Flag.new(:n, 'NAMESPACE', 'Namespace'),
         :uninstall_name          => Flag.new(:name, 'NAME', 'Module name to uninstall'),
-        
+        :format                  => Flag.new(:format, 'FORMAT', 'Choose in which format to display data (ex. TABLE, YAML)'),
 
         # switches
         # Switch constructor args order: key, desc, opts={}
@@ -62,7 +62,8 @@ module DTK::Client
         :links        => Switch.new(:links, 'Links'),
         :dependencies => Switch.new(:deps, 'Dependencies'),
         :u            => Switch.new([:u, :unset], 'Unset attribute'),
-        :recursive    => Switch.new(:r, 'Recursive')
+        :recursive    => Switch.new(:r, 'Recursive'),
+        :update_deps  => Switch.new('update-deps', "Skip prompt and update all dependencies or skip prompt and don't update all dependencies  (on master)", :negatable => true, :default_value => 'prompt')
       }
 
       ARG_TOKENS = {
@@ -78,7 +79,8 @@ module DTK::Client
         :attribute_name   => 'ATTRIBUTE-NAME',
         :keypair_name     => 'KEYPAIR-NAME',
         :attribute_value  => 'VALUE',
-        :component_ref    => 'COMPONENT-REF'
+        :component_ref    => 'COMPONENT-REF',
+        :format           => 'FORMAT'
       }
       
     end
