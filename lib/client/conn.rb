@@ -90,13 +90,18 @@ module DTK::Client
     end
 
     def connection_refused_error_code?
-      error_code? == 'connection_refused'
+      error_code? == 'connection_refused' or
+        (original_exception? and original_exception?.kind_of?(::Errno::EPIPE))
     end
     
     private
 
     def error_code?
       connection_error['errors'].first['code'] rescue nil
+    end
+
+    def original_exception?
+      connection_error['errors'].first['original_exception'] rescue nil
     end
 
     REST_VERSION = 'v1'
