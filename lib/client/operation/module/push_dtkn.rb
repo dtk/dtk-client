@@ -26,7 +26,7 @@ module DTK::Client
         @module_ref        = module_ref
         @directory_path    = directory_path
         @target_repo_dir   = directory_path || base_dsl_file_obj.parent_dir
-        @version           = version # if nil wil be dynamically updated
+        @version           = version || 'master'
         @base_dsl_file_obj = base_dsl_file_obj
       end
       private :initialize
@@ -58,15 +58,9 @@ module DTK::Client
           :module_name => @module_ref.module_name,
           :namespace   => @module_ref.namespace,
           :rsa_pub_key => SSHUtil.rsa_pub_key_content,
-          :version?    => @version
+          :version     => @version
         )
-
         remote_module_info = rest_get "#{BaseRoute}/remote_module_info", query_string_hash
-
-        unless @version
-          @version = remote_module_info.required(:version)
-          @module_ref.version = @version
-        end
 
         ConvertSource.transform_and_commit(remote_module_info, self)
         nil
