@@ -18,9 +18,9 @@
 module DTK::Client
   module CLI::Command
     module Service
-      subcommand_def 'unmanage' do |c|
+      subcommand_def 'eject' do |c|
         c.arg Token::Arg.component_ref
-        command_body c, :unmanage, 'Unmanage component ref' do |sc|
+        command_body c, :eject, 'Unmanage component ref' do |sc|
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory; not need if in the service instance directory'
           sc.action do |_global_options, options, args|
           
@@ -35,7 +35,7 @@ module DTK::Client
               :directory_path   => directory_path
             }
             
-            Operation::Service.unmanage(args)
+            Operation::Service.eject(args)
           end
         end
       end

@@ -17,7 +17,7 @@
 #
 module DTK::Client
   class Operation::Service
-    class Unmanage < self
+    class Eject < self
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           service_instance = args.required(:service_instance)
@@ -28,7 +28,7 @@ module DTK::Client
             :service_instance => service_instance,
             :component_ref => component_ref
           )
-          response = rest_post("#{BaseRoute}/#{service_instance}/unmanage", post_body)
+          response = rest_post("#{BaseRoute}/#{service_instance}/eject", post_body)
 
           if repo_updated = response.data["repo_updated"] 
             repo_info_args = Args.new(

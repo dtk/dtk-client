@@ -43,7 +43,7 @@ module DTK::Client
         :set_attribute,
         :exec,
         :set_default_target,
-        :unmanage
+        :eject
         # :create_workspace
       ]
       OPERATIONS.each { |operation| require_relative("service/#{operation}") }
