@@ -28,6 +28,16 @@ module DTK::Client
           # parse params and return format { 'p_name1' => 'p_value1' , 'p_name2' => 'p_value2' }
           task_params = parse_params?(action_params)||{}
 
+          # this is temporary fix to handle new node as component format ec2::node[node_name]/action
+          # will transform ec2::node[node_name]/action to node_name/action
+          action_node, action_name = (action||"").split('/')
+          if action_node && action_name
+            if action_node_match = action_node.match(/^ec2::node\[(.*)\]/)
+              matched_node = $1
+              action = "#{matched_node}/#{action_name}"
+            end
+          end
+
           # match if sent node/component
           if task_action_match = action.match(/(^[\w\-\:]*)\/(.*)/)
             node, action = $1, $2
