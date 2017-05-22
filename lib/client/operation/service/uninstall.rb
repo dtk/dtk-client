@@ -46,7 +46,11 @@ module DTK::Client
               OsUtil.print_info(message)
             end
           else
-            OsUtil.print_info("DTK module '#{service_instance}' has been uninstalled successfully.")
+            msg = "DTK module '#{service_instance}' has been uninstalled successfully."
+            if force
+              msg += "\nNote: this will not terminate aws instances, you will have to do that manually!"
+            end
+            OsUtil.print_info(msg)
           end
         end
       end

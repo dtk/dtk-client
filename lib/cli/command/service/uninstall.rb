@@ -26,7 +26,7 @@ module DTK::Client; module CLI
           sc.switch Token.purge, :desc => 'Delete the service instance directory on the client'
           sc.switch Token.delete, :desc => 'Removes service instance with all nodes and modules'
           sc.switch Token.recursive, :desc => 'Delete dependent service instances'
-          sc.switch Token.force, :desc => 'Ignore errors and destroy the running service instance'
+          sc.switch Token.force, :desc => 'Ignore errors and delete service instance. This will not terminate aws instances, you will have to do that manually'
           sc.action do |_global_options, options, args|
             directory_path = options[:directory_path]
             purge          = options[:purge]
