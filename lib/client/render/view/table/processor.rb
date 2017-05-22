@@ -172,7 +172,7 @@ module DTK::Client
 
         unless @failed_components.empty?
           printf " \n"
-          printf "%15s %s\n", "INFO:".colorize(:yellow), "Following components could not be deleted:\n\t#{@failed_components.uniq.join(', ').colorize(:yellow)}\nYou can use command 'dtk service unmanage COMPONENT-REF' to delete component from service instance and try again.\nNote: If component has created any aws instances you will have to delete them manually!".colorize(:yellow)
+          printf "%15s %s\n", "INFO:".colorize(:yellow), "Following components could not be deleted:\n\t#{@failed_components.uniq.join(', ').colorize(:yellow)}\nYou can use the command 'dtk service eject COMPONENT' to remove any of these component(s) from dtk management. However, when using the eject command,  you will need to manually remove the actual resources, such as an ec2 instance.".colorize(:yellow)
         end
       end
       
