@@ -29,7 +29,7 @@ module DTK::Client
           msg              = "Are you sure you want to uninstall the infrastructure associated with '#{service_instance}' and delete this service instance from the server?"
           
           if force
-            msg.prepend("\nNote: this will not terminate aws instances, you will have to do that manually!\n")
+            msg.prepend("Note: this will not terminate aws instances, you will have to do that manually!\n")
           end
 
           unless args[:skip_prompt]
