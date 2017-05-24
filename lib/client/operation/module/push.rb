@@ -54,7 +54,10 @@ module DTK::Client
 
           response = rest_post("#{BaseRoute}/update_from_repo", post_body)
 
+          existing_diffs = nil
+          print          = nil
           if missing_dependencies = response.data(:missing_dependencies)
+            force_parse = false
             unless missing_dependencies.empty?
               dependent_modules = missing_dependencies.map { |dependency| Install::ModuleRef.new(:namespace => dependency['namespace_name'], :module_name => dependency['display_name'], :version => dependency['version_info']) }
               begin
@@ -63,10 +66,18 @@ module DTK::Client
                 @print_helper.print_terminated_installation
                 return nil
               end
+              existing_diffs = response.data(:existing_diffs)
+              force_parse = true
             end
-            response = rest_post("#{BaseRoute}/update_from_repo", post_body.merge(:skip_missing_check => true))
+            response = rest_post("#{BaseRoute}/update_from_repo", post_body.merge(:skip_missing_check => true, force_parse: force_parse))
           end
-          print = process_semantic_diffs(response.data(:diffs), method)
+
+          diffs = response.data(:diffs)
+          if diffs && !diffs.empty?
+            print = process_semantic_diffs(diffs, method)
+          else
+            print = process_semantic_diffs(existing_diffs, method)
+          end
 
           # if diffs is nil then indicate no diffs, otherwise render diffs in yaml
           OsUtil.print_info("No Diffs to be #{method}.") if response.data(:diffs).nil? || !print
