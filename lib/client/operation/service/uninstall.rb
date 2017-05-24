@@ -26,9 +26,14 @@ module DTK::Client
           force            = args.required(:force)
           path             = args[:directory_path]
           node             = []
+          msg              = "Are you sure you want to uninstall the infrastructure associated with '#{service_instance}' and delete this service instance from the server?"
+          
+          if force
+            msg.prepend("\nNote: this will not terminate aws instances, you will have to do that manually!\n")
+          end
 
           unless args[:skip_prompt]
-            return false unless Console.prompt_yes_no("Are you sure you want to uninstall the infrastructure associated with '#{service_instance}' and delete this service instance from the server?", :add_options => true)
+            return false unless Console.prompt_yes_no(msg, :add_options => true)
           end
 
           post_body = PostBody.new(
@@ -47,9 +52,6 @@ module DTK::Client
             end
           else
             msg = "DTK module '#{service_instance}' has been uninstalled successfully."
-            if force
-              msg += "\nNote: this will not terminate aws instances, you will have to do that manually!"
-            end
             OsUtil.print_info(msg)
           end
         end
