@@ -31,7 +31,7 @@ module DTK::Client
         wrap_operation(args) do |args|
           service_instance = args.required(:service_instance)
           task_status_mode = args[:mode]
-          
+
           if task_status_mode
             task_status_with_mode(task_status_mode.to_sym, service_instance)
           else

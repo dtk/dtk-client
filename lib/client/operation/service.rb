@@ -22,7 +22,6 @@ module DTK::Client
         :commit_and_push,
         :clone_service,
         :delete,
-        :debug,
         :uninstall,
         :edit,
         :pull,

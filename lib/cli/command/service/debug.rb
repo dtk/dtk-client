@@ -37,10 +37,9 @@ module DTK::Client
               :directory_path   => directory_path,
               :command          => 'exec-sync'
             }
-            # return breakpoint here true of false
+
             response = Operation::Service.exec(args)
             
-            # Handle breakpoint in response.data(:breakpoint)
             unless response.ok?
               response
             else
