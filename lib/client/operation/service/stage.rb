@@ -39,7 +39,7 @@ module DTK::Client
           service_name ||= rest_post("#{BaseRoute}/generate_service_name", post_body).data
           base_path = ClientModuleDir.ret_base_path(:service, service_name)
           
-          raise Error::Usage, "Directory '#{base_path}' is not empty; it must be deleted or removed before retrying the command" if ClientModuleDir.local_dir_exists?(:service, service_name) 
+          raise Error::Usage, "Directory '#{base_path}' is not empty; it must be deleted or moved before retrying the command" if ClientModuleDir.local_dir_exists?(:service, service_name) 
 
           post_body.merge!(:service_name => service_name)
           response = rest_post("#{BaseRoute}/create", post_body)
