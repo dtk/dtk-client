@@ -51,7 +51,7 @@ module DTK::Client
               OsUtil.print_info(message)
             end
           else
-            msg = "DTK module '#{service_instance}' has been uninstalled successfully."
+            msg = "DTK service '#{service_instance}' has been uninstalled successfully."
             OsUtil.print_info(msg)
           end
         end
