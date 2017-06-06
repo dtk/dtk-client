@@ -54,9 +54,19 @@ module DTK::Client
       end      
 
       def module_refs_path
-        matches = directory_file_paths.select { |path| module_ref_input_files_processor.match?(path) }
+        matches = dsl_file_matches { |path| module_ref_input_files_processor.match?(path) }
         raise Error, "Unexpected that multiple module ref files" if matches.size > 1
         matches.first
+      end
+
+      def dsl_file_matches(&block)
+        # TODO: maybe better to solve by restricting directory_file_paths to be least_nested_pos of 2
+        matches = directory_file_paths.select { |path| block.call(path) }
+        if matches.size > 1
+          least_nested_pos = matches.map { |match| match.split('/').size }.min
+          matches.reject! { |match| match.split('/').size != least_nested_pos }
+        end
+        matches
       end
 
       def module_ref_input_files_processor
