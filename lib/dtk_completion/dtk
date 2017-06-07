@@ -1,0 +1,37 @@
+INITIALIZED=false
+declare -A NEWMAP
+M_LIST=""
+
+__initialize()
+{
+  M_LIST=" $(~/dtk-client/bin/dtk-describe) "
+  for i in $M_LIST; do
+    var=" $(~/dtk-client/bin/dtk-describe "$i") "
+    NEWMAP["$i"]=${var}
+  done
+  INITIALIZED=true
+}
+
+_dtk()
+{
+  if [[ ${INITIALIZED} != true ]]; then
+    __initialize
+  fi
+
+  local cur prev
+  COMPREPLY=()
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    #commands=" $(~/dtk-client/bin/dtk-describe ${prev}) "
+  commands=${NEWMAP[${prev}]}
+
+  if [[ ${prev} == dtk ]] ; then
+    COMPREPLY=( $(compgen -W "${M_LIST}" -- ${cur}) )
+    return 0
+  else
+    COMPREPLY=( $(compgen -W "${commands}" -- ${cur}) )
+    return 0
+  fi
+}
+complete -F _dtk dtk
