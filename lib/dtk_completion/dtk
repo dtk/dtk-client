@@ -4,9 +4,9 @@ M_LIST=""
 
 __initialize()
 {
-  M_LIST=" $(~/dtk-client/bin/dtk-describe) "
+  M_LIST=" $(dtk-describe) "
   for i in $M_LIST; do
-    var=" $(~/dtk-client/bin/dtk-describe "$i") "
+    var=" $(dtk-describe "$i") "
     NEWMAP["$i"]=${var}
   done
   INITIALIZED=true
@@ -23,7 +23,7 @@ _dtk()
   cur="${COMP_WORDS[COMP_CWORD]}"
   prev="${COMP_WORDS[COMP_CWORD-1]}"
 
-    #commands=" $(~/dtk-client/bin/dtk-describe ${prev}) "
+    #commands=" $(dtk-describe ${prev}) "
   commands=${NEWMAP[${prev}]}
 
   if [[ ${prev} == dtk ]] ; then
