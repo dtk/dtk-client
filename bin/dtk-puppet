@@ -25,7 +25,7 @@ module DTK
   #dtk_dsl must be loaded after GlobalForDSL set
   require 'dtk_dsl'
 
-  Client::Error.top_level_trap_error do
+  return_code = Client::Error.top_level_trap_error do
     begin
       require 'puppet'
     rescue LoadError => e
@@ -35,4 +35,5 @@ module DTK
     require_relative '../lib/dtk_puppet'
     Puppet::Parser.parse(ARGV)
   end
+  exit return_code
 end
