@@ -19,7 +19,7 @@ module DTK::Client
   module CLI::Command
     module Module
       subcommand_def 'list-remotes' do |c|
-        command_body c, 'list-remotes', 'List remote modules' do |sc|
+        command_body c, 'dtkn', 'List remote modules' do |sc|
           sc.flag Token.namespace
           sc.action do |_global_options, options, args|
             arg = {}
