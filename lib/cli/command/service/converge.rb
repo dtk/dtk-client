@@ -30,7 +30,12 @@ module DTK::Client; module CLI
               :force            => force,
               :module_dir       => @base_dsl_file_obj.parent_dir
             }
-            Operation::Service.converge(args)
+            response = Operation::Service.converge(args)
+            if violation_response = Violation.process_violations?(response)
+              violation_response
+            end
+            nil
+
           end
         end
       end

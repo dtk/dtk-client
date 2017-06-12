@@ -42,14 +42,10 @@ module DTK::Client
             unless response.ok?
               response
             else
-              # TODO: break if any exceptions
-
               if response.data(:empty_workflow)
                 Response::Ok.new
-              elsif violations = response.data(:violations)
-                response.set_data(violations)
-                response.data.flatten!
-                response.set_render_as_table!
+              elsif violation_response = Violation.process_violations?(response)
+                violation_response
               else
                 Operation::Service.task_status(args.merge(:mode => 'stream'))
               end

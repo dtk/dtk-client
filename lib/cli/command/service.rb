@@ -19,6 +19,8 @@ module DTK::Client
   module CLI
     module Command
       module Service
+        require_relative('service/violation')
+
         include Command::Mixin
         ALL_SUBCOMMANDS = [
           'clone',

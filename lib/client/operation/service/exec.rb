@@ -66,11 +66,6 @@ module DTK::Client
             return Response::Ok.new('empty_workflow' => true) 
           end
 
-          if response.data(:violations)
-            OsUtil.print_error("Cannot execute an action or workflow if there are violations:")
-            return response.set_render_as_table!
-          end
-
           response
         end
       end

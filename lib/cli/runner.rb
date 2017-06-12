@@ -23,6 +23,7 @@ module DTK::Client
       
       def self.run(argv)
         return_code = Error.top_level_trap_error do
+          ret = 0
           Configurator.check_git
           Configurator.create_missing_client_dirs
           
@@ -39,7 +40,10 @@ module DTK::Client
           if response_obj = context.run_and_return_response_object(argv)
             # render_response will raise Error in case of error response
             render_response(response_obj)
+            # response_obj can have not ok stateto signal to exit with error
+            ret = Error::GENERIC_ERROR_RETURN_CODE if response_obj.notok?
           end
+          ret
         end
         exit return_code
       end
@@ -73,7 +77,7 @@ module DTK::Client
       end
 
       def self.render_response(response_obj)
-        Response::ErrorHandler.raise_if_error(response_obj)
+        Response::ErrorHandler.raise_if_error_info(response_obj)
         response_obj.render_data
       end
 

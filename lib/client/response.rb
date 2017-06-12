@@ -52,6 +52,10 @@ module DTK::Client
       end
     end
 
+    def notok?
+      kind_of?(NotOk)
+    end
+
     def index_data(*indexes)
       index_common(*indexes) { |_indexes| nil }
     end

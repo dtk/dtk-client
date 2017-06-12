@@ -41,11 +41,11 @@ module DTK::Client
             
             response = Operation::Service.exec(args)
 
-            if violations = response.data(:violations)
-              response.set_data(violations)
-              response.data.flatten!
-              response.set_render_as_table!
+            if violation_response = Violation.process_violations?(response)
+              violation_response
             end
+            nil
+
           end
         end
       end

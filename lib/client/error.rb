@@ -26,27 +26,27 @@ module DTK::Client
       @backtrace = opts[:backtrace] 
     end
 
+    GENERIC_ERROR_RETURN_CODE = 1
     # returns return code
     def self.top_level_trap_error(&body)
       begin
         yield
-        0
       rescue InvalidConnection => e
         e.print_warning
         puts "\nDTK will now exit. Please set up your connection properly and try again."
-        1
+        GENERIC_ERROR_RETURN_CODE
       rescue Error => e
         # If vanilla error treat like client error
         if e.class == Error
           e = convert_to_client_error(e)
         end
         Logger.instance.error_pp(e.message, e.backtrace?)
-        1
+        GENERIC_ERROR_RETURN_CODE
       rescue Exception => exception
         # If treat like client error
         e = convert_to_client_error(exception)
         Logger.instance.error_pp(e.message, e.backtrace?)
-        1
+        GENERIC_ERROR_RETURN_CODE
       end
     end
 
@@ -60,7 +60,7 @@ module DTK::Client
      end
     end
     
-    def self.raise_if_error(response, opts = {})
+    def self.raise_if_error_info(response, opts = {})
       # check for errors in response
       error = response.error_info?(opts)
       return unless error
