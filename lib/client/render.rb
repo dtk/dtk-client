@@ -49,25 +49,42 @@ module DTK::Client
     # 
     # value returned is Boolean indicating whether any additional print needed
     def self.render(ruby_obj, opts = {})
-      render_type = opts[:render_type]
-      if render_type == Type::TABLE
-        render_opts = {
-          :print_error_table => opts[:print_error_table],
-          :footnote          => opts[:footnote]
-        }
-        get_adapter(Type::TABLE, opts).render(ruby_obj, render_opts)
-      elsif ruby_obj.kind_of?(Hash)
-        get_adapter(render_type, opts).render(ruby_obj)
-      elsif ruby_obj.kind_of?(Array)
-        get_adapter(render_type, opts).render(ruby_obj)
-      elsif ruby_obj.kind_of?(String)
-        ruby_obj
-      else
-        raise Error.new('ruby_obj has unexpected type')
+      wrap_to_handle_warning_message(ruby_obj) do |ruby_obj|
+        render_type = opts[:render_type]
+        if render_type == Type::TABLE
+          render_opts = {
+            :print_error_table => opts[:print_error_table],
+            :footnote          => opts[:footnote]
+          }
+          get_adapter(Type::TABLE, opts).render(ruby_obj, render_opts)
+        elsif ruby_obj.kind_of?(::Hash)
+          get_adapter(render_type, opts).render(ruby_obj)
+        elsif ruby_obj.kind_of?(::Array)
+          get_adapter(render_type, opts).render(ruby_obj)
+        elsif ruby_obj.kind_of?(::String)
+          ruby_obj
+        else
+          raise Error.new('ruby_obj has unexpected type')
+        end
       end
     end
     
     private
+
+    WARNING_KEY = 'warn'
+    def self.wrap_to_handle_warning_message(ruby_obj, &body)
+      warning_message =  nil
+      passed_ruby_obj = ruby_obj
+
+      if ruby_obj.kind_of?(::Hash)
+        if warning_message = ruby_obj[WARNING_KEY]
+          # remove warning key
+          passed_ruby_obj = ruby_obj.inject({}) { |h, (k, v)| h.merge(k == WARNING_KEY ? {} : { k => v }) }
+        end
+      end
+      body.call(passed_ruby_obj)
+      OsUtil.print_warning(warning_message) if warning_message
+    end
 
     def render_text(text)
       STDOUT << text
