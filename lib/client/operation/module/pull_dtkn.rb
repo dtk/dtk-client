@@ -43,6 +43,14 @@ module DTK::Client
           has_directory_param = args[:has_directory_param]
           skip_prompt         = args[:skip_prompt]
           force               = args[:force]
+          update_deps         = args[:update_deps]
+
+          case update_deps
+          when "prompt"
+            update_deps          = nil
+          when false 
+            no_update_deps       = true
+          end
 
           if has_directory_param
             file_obj = base_dsl_file_obj.raise_error_if_no_content_flag(:module_ref)
@@ -50,7 +58,7 @@ module DTK::Client
             file_obj = base_dsl_file_obj.raise_error_if_no_content
           end
 
-          new('dtkn', module_ref, directory_path, version, file_obj).pull_dtkn(:skip_prompt => skip_prompt, :force => force)
+          new('dtkn', module_ref, directory_path, version, file_obj).pull_dtkn(:update_deps => update_deps, :no_update_deps => no_update_deps, :force => force)
         end
       end
       
@@ -78,7 +86,7 @@ module DTK::Client
 
         unless dependent_modules.empty?
           begin
-            Install::DependentModules.install(@module_ref, dependent_modules, :skip_prompt => opts[:skip_prompt], :mode => 'pull')
+            Install::DependentModules.install(@module_ref, dependent_modules, :update_deps => opts[:update_deps], :no_update_deps => opts[:no_update_deps] , :mode => 'pull')
             # Install::DependentModules.install(@module_ref, dependent_modules, :skip_prompt => false, :mode => 'pull')
           rescue Install::TerminateInstall
             @print_helper.print_terminated_pulling
