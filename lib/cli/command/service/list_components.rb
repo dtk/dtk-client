@@ -19,7 +19,7 @@ module DTK::Client; module CLI
   module Command
     module Service
       subcommand_def 'list-components' do |c|
-        command_body c, 'list-components', 'List components associated with the service instance.' do |sc|
+        command_body c, 'components', 'List components associated with the service instance.' do |sc|
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory containing updates to pull; not need if in the service instance directory'
           sc.switch Token.dependencies, :desc => 'Show dependencies'
 

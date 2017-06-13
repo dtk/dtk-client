@@ -19,7 +19,7 @@ module DTK::Client; module CLI
   module Command
     module Service
       subcommand_def 'list-violations' do |c|
-        command_body c, 'list-violations', ' Finds violations that must be corrected before converging the service instance or running the specified action.' do |sc|
+        command_body c, 'violations', ' Finds violations that must be corrected before converging the service instance or running the specified action.' do |sc|
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory containing updates to pull; not need if in the service instance directory'
 
           sc.action do |_global_options, options, _args|

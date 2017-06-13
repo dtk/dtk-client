@@ -19,7 +19,7 @@ module DTK::Client; module CLI
   module Command
     module Service
       subcommand_def 'list-actions' do |c|
-        command_body c, 'list-actions', 'List the actions defined on components in the service instance.' do |sc|
+        command_body c, 'actions', 'List the actions defined on components in the service instance.' do |sc|
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory containing updates to pull; not need if in the service instance directory'
           sc.flag Token.type, :desc => 'Filter actions based on type (service, component)'
 
