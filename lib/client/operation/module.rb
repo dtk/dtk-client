@@ -31,7 +31,8 @@ module DTK::Client
         :stage,
         :pull_dtkn,
         :publish,
-        :delete_from_remote
+        :delete_from_remote,
+        :install_on_server
       ]
       OPERATIONS.each { |operation| require_relative("module/#{operation}") }
 

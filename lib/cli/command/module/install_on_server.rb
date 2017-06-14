@@ -16,30 +16,21 @@
 # limitations under the License.
 #
 module DTK::Client
-  module CLI
-    module Command
-      module Module 
-        include Command::Mixin
-
-        ALL_SUBCOMMANDS = [
-          'install',
-          'list',
-          'list-assemblies',
-          'push',
-          'uninstall',
-          'clone',
-          'list-remotes',
-          'push-dtkn',
-          'stage',
-          'pull-dtkn',
-          'publish',
-          'delete-from-remote',
-          'install-on-server'
-        ]
-        command_def :desc => 'Subcommands for interacting with DTK modules'
-        ALL_SUBCOMMANDS.each { |subcommand| require_relative("module/#{subcommand.gsub(/-/,'_')}") } 
+  module CLI::Command
+    module Module 
+      subcommand_def 'install-on-server' do |c|
+        c.arg Token::Arg.module_name
+        command_body c, 'install-on-server', 'List assemblies from all modules or specified module' do |sc|
+          sc.flag Token.version
+          sc.action do |_global_options, options, args|
+            version     = options[:version]
+            module_name = args[0]
+            module_ref  = module_ref_object_from_options_or_context?(:module_ref => module_name, :version => version)
+            Operation::Module.install_on_server(:module_ref => module_ref, :version => version)
+          end
+        end
       end
+
     end
   end
 end
-
