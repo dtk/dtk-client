@@ -29,7 +29,7 @@ module DTK::Client; module CLI
             directory_path   = options[:directory_path]
             purge            = options[:purge]
             recursive        = options[:recursive]
-            force            = options[:force]
+            force            = options[:f]
             service_instance = service_instance_in_options_or_context(options)
 
             args = {
