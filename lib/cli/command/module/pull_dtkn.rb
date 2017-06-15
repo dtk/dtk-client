@@ -21,7 +21,6 @@ module DTK::Client
       subcommand_def 'pull-dtkn' do |c|
         command_body c, 'pull-dtkn', 'Pull content from repo manager to client module directory and push to server' do |sc|
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to module directory containing content to update; not need if in the module directory'
-          sc.switch Token.skip_prompt
           sc.switch Token.force
           sc.switch Token.update_deps
           sc.action do |_global_options, options, _args|
