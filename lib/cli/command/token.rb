@@ -60,6 +60,7 @@ module DTK::Client
         :skip_prompt  => Switch.new(:y, 'Skip prompt'),
         :target       => Switch.new(:target, 'Create target service instance'),
         :links        => Switch.new(:links, 'Links'),
+        :unlink       => Switch.new([:u, :unlink], 'unlink'),
         :dependencies => Switch.new(:deps, 'Dependencies'),
         :u            => Switch.new([:u, :unset], 'Unset attribute'),
         :recursive    => Switch.new(:r, 'Recursive'),
@@ -80,7 +81,10 @@ module DTK::Client
         :keypair_name     => 'KEYPAIR-NAME',
         :attribute_value  => 'VALUE',
         :component_ref    => 'COMPONENT-REF',
-        :format           => 'FORMAT'
+        :format           => 'FORMAT',
+        :base_cmp         => 'BASE-COMPONENT',
+        :deps_on_cmp      => 'DEPENDS-ON-COMPONENT',
+        :service          => 'SERVICE'
       }
       
     end

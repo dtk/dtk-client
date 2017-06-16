@@ -39,6 +39,7 @@ module DTK::Client
           'list-components',
           'list-nodes',
           'list-violations',
+          'link',
 #          'start',
 #          'stop',
           'cancel-task',
