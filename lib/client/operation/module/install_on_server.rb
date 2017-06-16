@@ -21,13 +21,13 @@ module DTK::Client
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           module_ref = args.required(:module_ref)
-          post_body = {
+          query_string_hash = QueryStringHash.new(
             :module_name => module_ref.module_name,
             :namespace   => module_ref.namespace,
             :rsa_pub_key => SSHUtil.rsa_pub_key_content,
-            :version    => module_ref.version
-          }
-          rest_post("#{BaseRoute}/install_on_server", post_body)
+            :version?    => module_ref.version
+          )
+          rest_post("#{BaseRoute}/install_on_server", query_string_hash)
         end
       end
 
