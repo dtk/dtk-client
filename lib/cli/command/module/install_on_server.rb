@@ -26,7 +26,7 @@ module DTK::Client
             version     = options[:version]
             module_name = args[0]
             module_ref  = module_ref_object_from_options_or_context?(:module_ref => module_name, :version => version)
-            Operation::Module.install_on_server(:module_ref => module_ref, :version => version)
+            Operation::Module.install_on_server(:module_ref => module_ref)
           end
         end
       end
