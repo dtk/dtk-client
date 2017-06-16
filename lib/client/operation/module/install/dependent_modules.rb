@@ -56,7 +56,7 @@ module DTK::Client
       end
 
       def install
-        @print_helper.print_getting_dependencies
+        @print_helper.print_getting_dependencies unless @prompt_helper.update_none
         unified_module_refs = get_unified_dependent_module_refs
         unless unified_module_refs.empty?
           case @opts[:mode]
