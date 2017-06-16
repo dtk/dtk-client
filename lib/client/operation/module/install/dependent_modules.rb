@@ -61,7 +61,7 @@ module DTK::Client
         unless unified_module_refs.empty?
           case @opts[:mode]
           when 'pull'
-            @print_helper.print_pulling_dependencies
+            @print_helper.print_pulling_dependencies unless @prompt_helper.update_none
           else
             @print_helper.print_installing_dependencies
           end
