@@ -35,6 +35,7 @@ module DTK::Client
         :list_components,
         :list_nodes,
         :list_violations,
+        :link,
         :start,
         :stop,
         :cancel_task,

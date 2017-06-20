@@ -24,15 +24,17 @@ module DTK::Client
           unlink           = args.required(:unlink)
           base_component   = args.required(:base_component)
           dependent_component = args.required(:dependent_component)
+          service          = args[:service]
 
           query_string_hash = QueryStringHash.new(
-            :unlink => unlink,
+            :unlink         => unlink,
             :base_component => base_component,
-            :dep_component => dependent_component
+            :dep_component  => dependent_component,
+            :service        => service
           )
 
           rest_post("#{BaseRoute}/#{service_instance}/link", query_string_hash)
-        end.set_render_as_table!
+        end
       end
     end
   end

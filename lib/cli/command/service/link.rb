@@ -29,13 +29,17 @@ module DTK::Client; module CLI
           sc.action do |_global_options, options, _args|
             base_component      = _args[0]
             dependent_component = _args[1]
-            service_instance    =  service_instance_in_options_or_context(options)  
+            service             = _args[2]
+            service_instance    =  service_instance_in_options_or_context(options) 
+            
+ 
 
             args = {
               :service_instance    => service_instance,
               :unlink              => options["u"],
               :base_component      => base_component,
-              :dependent_component => dependent_component
+              :dependent_component => dependent_component,
+              :service             => service
             }
 
             Operation::Service.link(args)
