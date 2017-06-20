@@ -48,6 +48,7 @@ module DTK::Client
         :mode                    => Flag.new(:mode, 'MODE', 'Mode'),
         :namespace               => Flag.new(:n, 'NAMESPACE', 'Namespace'),
         :uninstall_name          => Flag.new(:name, 'NAME', 'Module name to uninstall'),
+        :link_name               => Flag.new([:l, :link_name], 'link-name', 'Specify link name'),
         :format                  => Flag.new(:format, 'FORMAT', 'Choose in which format to display data (ex. TABLE, YAML)'),
 
         # switches

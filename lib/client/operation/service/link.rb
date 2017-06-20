@@ -25,12 +25,14 @@ module DTK::Client
           base_component   = args.required(:base_component)
           dependent_component = args.required(:dependent_component)
           service          = args[:service]
+          link_name        = args[:link_name]
 
           query_string_hash = QueryStringHash.new(
             :unlink         => unlink,
             :base_component => base_component,
             :dep_component  => dependent_component,
-            :service        => service
+            :service        => service,
+            :link_name      => link_name
           )
 
           rest_post("#{BaseRoute}/#{service_instance}/link", query_string_hash)
