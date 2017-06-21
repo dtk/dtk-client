@@ -35,7 +35,15 @@ module DTK::Client
             :link_name      => link_name
           )
 
-          rest_post("#{BaseRoute}/#{service_instance}/link", query_string_hash)
+          response = rest_post("#{BaseRoute}/#{service_instance}/link", query_string_hash)
+
+          repo_info_args = Args.new(
+            :service_instance => service_instance,
+            :branch           => response.required(:branch, :name),
+            :repo_url         => response.required(:repo, :url)
+          )
+          ClientModuleDir::GitRepo.pull_from_service_repo(repo_info_args)
+          nil
         end
       end
     end
