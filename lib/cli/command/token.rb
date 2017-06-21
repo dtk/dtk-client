@@ -48,6 +48,7 @@ module DTK::Client
         :mode                    => Flag.new(:mode, 'MODE', 'Mode'),
         :namespace               => Flag.new(:n, 'NAMESPACE', 'Namespace'),
         :uninstall_name          => Flag.new(:name, 'NAME', 'Module name to uninstall'),
+        :link_name               => Flag.new([:l, :link_name], 'link-name', 'Specify link name'),
         :format                  => Flag.new(:format, 'FORMAT', 'Choose in which format to display data (ex. TABLE, YAML)'),
 
         # switches
@@ -60,6 +61,7 @@ module DTK::Client
         :skip_prompt  => Switch.new(:y, 'Skip prompt'),
         :target       => Switch.new(:target, 'Create target service instance'),
         :links        => Switch.new(:links, 'Links'),
+        :unlink       => Switch.new([:u, :unlink], 'unlink'),
         :dependencies => Switch.new(:deps, 'Dependencies'),
         :u            => Switch.new([:u, :unset], 'Unset attribute'),
         :recursive    => Switch.new(:r, 'Recursive'),
@@ -80,7 +82,10 @@ module DTK::Client
         :keypair_name     => 'KEYPAIR-NAME',
         :attribute_value  => 'VALUE',
         :component_ref    => 'COMPONENT-REF',
-        :format           => 'FORMAT'
+        :format           => 'FORMAT',
+        :base_cmp         => 'BASE-COMPONENT',
+        :deps_on_cmp      => 'DEPENDS-ON-COMPONENT',
+        :service          => 'SERVICE'
       }
       
     end
