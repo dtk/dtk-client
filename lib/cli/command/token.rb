@@ -54,6 +54,7 @@ module DTK::Client
         # switches
         # Switch constructor args order: key, desc, opts={}
         :all          => Switch.new(:all, 'All'),
+        :base         => Switch.new(:base, 'Base'),
         :delete       => Switch.new(:delete, 'Delete'),
         :force        => Switch.new([:f, :force], 'Force'),
         :purge        => Switch.new(:purge, 'Purge'),
@@ -85,7 +86,8 @@ module DTK::Client
         :format           => 'FORMAT',
         :base_cmp         => 'BASE-COMPONENT',
         :deps_on_cmp      => 'DEPENDS-ON-COMPONENT',
-        :service          => 'SERVICE'
+        :service          => 'SERVICE',
+        :service_name     => 'SERVICE-NAME'
       }
       
     end

@@ -25,7 +25,8 @@ module DTK::Client
           sc.flag Token.service_name, :desc => 'If specified, name to use for new service instance; otherwise service instance name is auto-generated' 
           sc.flag Token.parent_service_instance
           sc.switch Token.force
-          sc.switch Token.target
+          sc.switch Token.base
+          #sc.switch Token.target
           # on useful for testing in dev mode
           # sc.switch Token.purge, :desc => 'Overwrite any content that presently exists in the service instance directory to be created'
           #  sc.flag Token.version
@@ -46,7 +47,7 @@ module DTK::Client
               :version         => version,
               :target_service  => options[:parent_service_instance],
               :remove_existing => options[:purge],
-              :is_target       => options[:target],
+              :is_target       => options[:base],
               :force           => force,
               :directory_path  => directory_path
             }
