@@ -85,7 +85,8 @@ module DTK::Client
           service_instance = args.required(:service_instance)
           commit_message   = args[:commit_message]
 
-          repo_dir = ret_base_path(:service, service_instance)
+          #repo_dir = ret_base_path(:service, service_instance)
+          repo_dir = args[:service_instance_dir] || ret_base_path(:service, service_instance)
           repo = git_repo.new(repo_dir, :branch => branch)
           repo.stage_and_commit
           # TODO: want to switch over to using Dtk_Server::GIT_REMOTE rather than 'origin'
@@ -194,7 +195,7 @@ module DTK::Client
         def self.pull_from_remote(args)
           repo_url       = args.required(:repo_url)
           remote_branch  = args.required(:branch)
-          repo_dir       = args.required(:repo_dir)
+          repo_dir       = args.required(:repo_dir) # Add check if repo_dir is the same as current_Dir 
           
           repo = git_repo.new(repo_dir, :branch => remote_branch)
           repo.pull(repo.remotes.first, remote_branch)
@@ -205,8 +206,9 @@ module DTK::Client
           repo_url         = args.required(:repo_url)
           remote_branch    = args.required(:branch)
           service_instance = args.required(:service_instance)
-          
-          repo_dir = ret_base_path(:service, service_instance)
+
+          #repo_dir = ret_base_path(:service, service_instance)
+          repo_dir = args[:service_instance_dir]
           repo = git_repo.new(repo_dir, :branch => remote_branch)
           
           repo.pull(repo.remotes.first, remote_branch)
