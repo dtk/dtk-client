@@ -195,7 +195,7 @@ module DTK::Client
         def self.pull_from_remote(args)
           repo_url       = args.required(:repo_url)
           remote_branch  = args.required(:branch)
-          repo_dir       = args.required(:repo_dir) # Add check if repo_dir is the same as current_Dir 
+          repo_dir       = args.required(:repo_dir)
           
           repo = git_repo.new(repo_dir, :branch => remote_branch)
           repo.pull(repo.remotes.first, remote_branch)
@@ -208,7 +208,7 @@ module DTK::Client
           service_instance = args.required(:service_instance)
 
           #repo_dir = ret_base_path(:service, service_instance)
-          repo_dir = args[:service_instance_dir]
+          repo_dir = args[:service_instance_dir] || ret_base_path(:service, service_instance)
           repo = git_repo.new(repo_dir, :branch => remote_branch)
           
           repo.pull(repo.remotes.first, remote_branch)
