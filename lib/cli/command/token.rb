@@ -35,6 +35,7 @@ module DTK::Client
         :commit_message          => Flag.new(:m, 'COMMIT-MSG', 'Commit message'),
         :directory_path          => Flag.new(:d, 'DIRECTORY-PATH', 'Directory path'),
         :parent_service_instance => Flag.new(:parent, 'PARENT', 'Parent service instance; if not specfied, the default target service instance serves as parent'),
+        :context_service_instance => Flag.new(:context, 'CONTEXT', 'Context service instance; if not specfied, the default service instance serves as context'),
         :module_ref              => Flag.new(:m, ModuleRef::NamespaceModuleName.legal_form, 'Module name with namespace; not needed if command is executed from within the module directory'),
         :relative_path           => Flag.new(:f, 'RELATIVE-FILE-PATH', 'Relative file path'),
         :service_instance        => Flag.new(:s, 'SERVICE-INSTANCE', 'Service instance name'),
@@ -54,7 +55,7 @@ module DTK::Client
         # switches
         # Switch constructor args order: key, desc, opts={}
         :all          => Switch.new(:all, 'All'),
-        :base         => Switch.new(:base, 'Base'),
+        :base         => Switch.new(:base, 'Create base service instance'),
         :delete       => Switch.new(:delete, 'Delete'),
         :force        => Switch.new([:f, :force], 'Force'),
         :purge        => Switch.new(:purge, 'Purge'),

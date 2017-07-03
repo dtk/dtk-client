@@ -25,7 +25,7 @@ module DTK::Client
             :include_namespaces => true
           )
           rest_get("#{BaseRoute}/list", query_string_hash)
-        end.set_render_as_table!
+        end.set_render_as_table!(nil, '* denotes that service instance is default context')
       end
     end
   end
