@@ -30,11 +30,14 @@ module DTK::Client; module CLI
 
             attribute_name = _args[0]
             options[:u] ? attribute_value = nil : attribute_value = _args[1]
-    
+
+            options[:d].nil? ? service_instance_dir = Dir.pwd : service_instance_dir = options[:d]
+
             args = {
               :attribute_name   => attribute_name,
               :service_instance => service_instance,
-              :attribute_value  => attribute_value
+              :attribute_value  => attribute_value,
+              :service_instance_dir => service_instance_dir
             }
 
             Operation::Service.set_attribute(args)
