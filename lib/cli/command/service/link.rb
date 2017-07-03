@@ -24,7 +24,6 @@ module DTK::Client; module CLI
         c.arg Token::Arg.service, :optional => true
         command_body c, 'link', 'List component links in the service instance.' do |sc|
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory containing updates to pull; not need if in the service instance directory'
-          sc.flag Token.link_name
           sc.switch Token.unlink
 
           sc.action do |_global_options, options, _args|
