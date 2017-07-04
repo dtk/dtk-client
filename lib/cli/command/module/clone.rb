@@ -25,12 +25,36 @@ module DTK::Client
           sc.flag Token.version
           sc.action do |_global_options, options, args|
             module_name = args[0]
-            module_ref  = module_ref_object_from_options_or_context(:module_ref => module_name, :version => options[:version])
+            version     = options[:version]
+            module_ref  = module_ref_object_from_options_or_context(:module_ref => module_name, :version => version)
+
             arg = {
-              :module_ref       => module_ref,
+              :module_ref => module_ref,
               :target_directory => args[1]
             }
-            Operation::Module.clone_module(arg)
+            repo_dir_info = Operation::Module.clone_module(arg).data
+            repo_dir      = repo_dir_info[:target_repo_dir]
+
+            # DTK-3088 - need this to pull service info for dependency module on clone
+            if repo_dir_info[:pull_service_info] && (version.nil? || version.eql?('master'))
+              repo_dir = repo_dir_info[:target_repo_dir]
+              module_ref = module_ref_object_from_options_or_context(:directory_path => repo_dir)
+
+              operation_args = {
+                :module_ref          => module_ref,
+                :base_dsl_file_obj   => @base_dsl_file_obj,
+                :has_directory_param => true,
+                :directory_path      => repo_dir,
+                :update_deps         => false,
+                :do_not_print        => true,
+                :force               => true
+              }
+
+              Operation::Module.pull_dtkn(operation_args)
+              Operation::Module.push(operation_args.merge(:method => "pulled"))
+            end
+
+            OsUtil.print_info("DTK module '#{module_ref.pretty_print}' has been successfully cloned into '#{repo_dir}'")
           end
         end
       end

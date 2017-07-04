@@ -136,7 +136,7 @@ module DTK::Client
       def get_unified_dependent_module_refs
         component_dependency_tree = ComponentDependencyTree.create(@base_module_ref, @component_module_refs, @print_helper)
         # returns an array of module_refs that have been unified so only one version and namespace per module name
-        component_dependency_tree.resolve_conflicts_and_versions
+        component_dependency_tree.resolve_conflicts_and_versions(@opts)
       end
 
       def get_local_modules_info
