@@ -53,10 +53,10 @@ module DTK::Client; class Operation::Module
       end
 
       # resolves conflicts and returns an array of unified module_refs
-      def resolve_conflicts_and_versions
+      def resolve_conflicts_and_versions(opts = {})
         # TODO: currently module refs al nailed as opposed to version contraints; when there are
         #       version contraints; this methdo will take care of them
-        ResolveModules.resolve_conflicts(self)
+        ResolveModules.resolve_conflicts(self, opts)
       end
 
       attr_reader :module_ref, :cache

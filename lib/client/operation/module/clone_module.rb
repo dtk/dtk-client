@@ -62,7 +62,13 @@ module DTK::Client
           LoadSource.fetch_from_remote(module_info, self)
         end
 
-        OsUtil.print_info("DTK module '#{@module_ref.pretty_print}' has been successfully cloned into '#{ret.required(:target_repo_dir)}'")
+        # OsUtil.print_info("DTK module '#{@module_ref.pretty_print}' has been successfully cloned into '#{ret.required(:target_repo_dir)}'")
+        target_repo_dir = ret.required(:target_repo_dir)
+        pull_service_info = check_if_pull_needed
+        {
+          target_repo_dir: target_repo_dir,
+          pull_service_info: pull_service_info
+        }
       end
 
       def version
@@ -77,6 +83,19 @@ module DTK::Client
 
       def module_ref_post_body
         self.class.module_ref_post_body(@module_ref)
+      end
+
+      def check_if_pull_needed
+        query_string_hash = QueryStringHash.new(
+          :module_name => @module_ref.module_name,
+          :namespace   => @module_ref.namespace,
+          :rsa_pub_key => SSHUtil.rsa_pub_key_content,
+          :version     => version||'master'
+        )
+        remote_module_info = rest_get "#{BaseRoute}/remote_module_info", query_string_hash
+        if remote_module_info.data(:service_info)
+          !module_version_exists?(@module_ref, :type => :service_module)
+        end
       end
 
     end

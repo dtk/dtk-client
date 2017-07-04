@@ -44,6 +44,7 @@ module DTK::Client
           skip_prompt         = args[:skip_prompt]
           force               = args[:force]
           update_deps         = args[:update_deps]
+          do_not_print        = args[:do_not_print]
 
           case update_deps
           when "prompt"
@@ -58,7 +59,7 @@ module DTK::Client
             file_obj = base_dsl_file_obj.raise_error_if_no_content
           end
 
-          new('dtkn', module_ref, directory_path, version, file_obj).pull_dtkn(:update_deps => update_deps, :no_update_deps => no_update_deps, :force => force)
+          new('dtkn', module_ref, directory_path, version, file_obj).pull_dtkn(:update_deps => update_deps, :no_update_deps => no_update_deps, :force => force, :do_not_print => do_not_print)
         end
       end
       
@@ -86,7 +87,7 @@ module DTK::Client
 
         unless dependent_modules.empty?
           begin
-            Install::DependentModules.install(@module_ref, dependent_modules, :update_deps => opts[:update_deps], :no_update_deps => opts[:no_update_deps] , :mode => 'pull')
+            Install::DependentModules.install(@module_ref, dependent_modules, :update_deps => opts[:update_deps], :no_update_deps => opts[:no_update_deps] , :mode => 'pull', :do_not_print => opts[:do_not_print])
             # Install::DependentModules.install(@module_ref, dependent_modules, :skip_prompt => false, :mode => 'pull')
           rescue Install::TerminateInstall
             @print_helper.print_terminated_pulling
@@ -94,7 +95,7 @@ module DTK::Client
           end
         end
 
-        @print_helper.print_continuation_pulling_base_module
+        @print_helper.print_continuation_pulling_base_module unless opts[:do_not_print]
         LoadSource.fetch_transform_and_merge(remote_module_info, self, :stage_and_commit_steps => true, :force => opts[:force], :use_theirs => true)
 
         nil
