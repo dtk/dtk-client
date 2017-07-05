@@ -25,11 +25,11 @@ module DTK::Client; module CLI
           sc.action do |_global_options, options, _args|
             service_instance = service_instance_in_options_or_context(options)
             options[:d].nil? ? service_instance_dir = Dir.pwd : service_instance_dir = options[:d]
-            
+
             args = {
               :service_instance => service_instance,
               :commit_message   => options[:commit_message],
-              :service_instance_dir => service_instance_dir
+              :service_instance_dir => @base_dsl_file_obj.parent_dir
             }
             Operation::Service.commit_and_push(args)
           end

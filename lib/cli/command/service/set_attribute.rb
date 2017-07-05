@@ -37,7 +37,7 @@ module DTK::Client; module CLI
               :attribute_name   => attribute_name,
               :service_instance => service_instance,
               :attribute_value  => attribute_value,
-              :service_instance_dir => service_instance_dir
+              :service_instance_dir => @base_dsl_file_obj.parent_dir
             }
 
             Operation::Service.set_attribute(args)
