@@ -32,7 +32,7 @@ module DTK::Client; module CLI
             service             = _args[2]
             service_instance    =  service_instance_in_options_or_context(options) 
             link_name           = options[:l] unless options[:l].nil?
-            options[:d].nil? ? service_instance_dir = Dir.pwd : service_instance_dir = options[:d]
+            options[:d].nil? ? service_instance_dir = @base_dsl_file_obj.parent_dir : service_instance_dir = options[:d]
 
             args = {
               :service_instance    => service_instance,

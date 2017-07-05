@@ -31,7 +31,7 @@ module DTK::Client; module CLI
             attribute_name = _args[0]
             options[:u] ? attribute_value = nil : attribute_value = _args[1]
 
-            options[:d].nil? ? service_instance_dir = Dir.pwd : service_instance_dir = options[:d]
+            options[:d].nil? ? service_instance_dir =  @base_dsl_file_obj.parent_dir : service_instance_dir = options[:d]
 
             args = {
               :attribute_name   => attribute_name,
