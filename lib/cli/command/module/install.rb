@@ -19,18 +19,19 @@ module DTK::Client
   module CLI::Command
     module Module 
       subcommand_def 'install' do |c|
-        c.arg Token::Arg.module_name, :optional => true
+        c.arg Token::Arg.module_name, :optional => true 
+        c.arg Token::Arg.target_directory, :optional => true
         command_body c, :install, 'Install a module on the server from a client directory or from the DTK remote catalog (DTKN)' do |sc|
           sc.flag Token.version
-          sc.flag Token.directory_path, :desc => 'Absolute or relative path to directory containing content to install'
+          #sc.flag Token.directory_path, :desc => 'Absolute or relative path to directory containing content to install'
           sc.switch Token.update_deps
 
           sc.action do |_global_options, options, args|
-            directory_path = options[:directory_path]
+            directory_path = args[1]#options[:directory_path]
             version        = options[:version]
             update_deps    = options[:update_deps]
             has_remote_repo = false
-
+          
             if module_name = args[0]
               # reached if installing from dtkn
               # installs content from dtkn (later probably from other remote catalogs) onto client machine
