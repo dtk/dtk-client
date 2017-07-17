@@ -79,7 +79,7 @@ module DTK::Client
         :workspace_name   => 'WORKSPACE-NAME',
         :target_instance  => 'TARGET-SERVICE-INSTANCE',
         :module_name      => 'NAMESPACE/MODULE-NAME',
-        :target_directory => 'CONTEXT-DIRECTORY',
+        :target_directory => 'TARGET-DIRECTORY',
         :attribute_name   => 'ATTRIBUTE-NAME',
         :keypair_name     => 'KEYPAIR-NAME',
         :attribute_value  => 'VALUE',
