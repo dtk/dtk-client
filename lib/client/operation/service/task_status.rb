@@ -40,12 +40,14 @@ module DTK::Client
             response.print_error_table!(true) 
 
             response["data"].each do |data|
-              info = data["info"] unless data["info"].nil?
+              unless data["info"].nil? 
+                info = data["info"] if data["status"].eql?("debugging")
+              end
             end
             if info.nil?
               response.set_render_as_table!
             else
-               response.set_render_as_table!(nil, info["message"]) 
+              response.set_render_as_table!(nil, info["message"]) 
             end
           end
         end
