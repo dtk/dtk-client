@@ -19,8 +19,15 @@ module DTK::Client
   class LoadSource
     class ComponentInfo < self
       def fetch_and_cache_info
+        updated = false
         fetch_remote
-        transform_from_component_info if merge_from_remote
+
+        if merge_from_remote
+          transform_from_component_info
+          updated = true
+        end
+
+        updated
       end
 
       def fetch_info
