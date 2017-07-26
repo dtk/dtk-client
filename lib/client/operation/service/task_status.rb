@@ -31,13 +31,24 @@ module DTK::Client
         wrap_operation(args) do |args|
           service_instance = args.required(:service_instance)
           task_status_mode = args[:mode]
-          
+          info             = nil
+
           if task_status_mode
             task_status_with_mode(task_status_mode.to_sym, service_instance)
           else
             response = rest_call(service_instance)
-            response.print_error_table!(true)
-            response.set_render_as_table!
+            response.print_error_table!(true) 
+
+            response["data"].each do |data|
+              unless data["info"].nil? 
+                info = data["info"] if data["status"].eql?("debugging")
+              end
+            end
+            if info.nil?
+              response.set_render_as_table!
+            else
+              response.set_render_as_table!(nil, info["message"]) 
+            end
           end
         end
       end
