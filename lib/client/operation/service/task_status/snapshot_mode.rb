@@ -21,7 +21,8 @@ module DTK::Client
       def task_status(opts = {})
         response = rest_call(opts)
         response.print_error_table!(true)
-        response.set_render_as_table!
+        add_info_if_debug_mode!(response)
+        response
       end
     end
   end
