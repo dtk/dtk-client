@@ -23,11 +23,14 @@ module DTK::Client
         c.arg Token::Arg.target_directory, :optional => true
         command_body c, :install, 'Install a module on the server from a client directory or from the DTK remote catalog (DTKN)' do |sc|
           sc.flag Token.version
-          #sc.flag Token.directory_path, :desc => 'Absolute or relative path to directory containing content to install'
+          # Add '-d' flag if development mode is active
+          if Config[:development_mode]
+            sc.flag Token.directory_path, :desc => 'Absolute or relative path to directory containing content to install'
+          end
           sc.switch Token.update_deps
 
           sc.action do |_global_options, options, args|
-            directory_path = args[1]#options[:directory_path]
+            directory_path = args[1] || options[:directory_path]
             version        = options[:version]
             update_deps    = options[:update_deps]
             has_remote_repo = false
