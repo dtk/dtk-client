@@ -73,14 +73,17 @@ module DTK::Client
           end
 
           diffs = response.data(:diffs)
-          if diffs && !diffs.empty?
-            print = process_semantic_diffs(diffs, method)
-          else
-            print = process_semantic_diffs(existing_diffs, method)
+          unless args[:do_not_print]
+            if diffs && !diffs.empty?
+              print = process_semantic_diffs(diffs, method)
+            else
+              print = process_semantic_diffs(existing_diffs, method)
+            end
+
+            # if diffs is nil then indicate no diffs, otherwise render diffs in yaml
+            OsUtil.print_info("No Diffs to be #{method}.") if response.data(:diffs).nil? || !print
           end
 
-          # if diffs is nil then indicate no diffs, otherwise render diffs in yaml
-          OsUtil.print_info("No Diffs to be #{method}.") if response.data(:diffs).nil? || !print
           nil
         end
       end

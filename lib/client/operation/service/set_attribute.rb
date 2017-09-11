@@ -23,7 +23,7 @@ module DTK::Client
           service_instance = args.required(:service_instance)
           attribute_name   = args[:attribute_name]
           attribute_value  = args[:attribute_value]
-          
+      
           query_string_hash = QueryStringHash.new(
             :pattern?  => attribute_name,
             :value?    => attribute_value
@@ -34,9 +34,10 @@ module DTK::Client
             repo_info_args = Args.new(
              :service_instance => service_instance,
              :branch           => response.required(:branch, :name),
-             :repo_url         => response.required(:repo, :url)
+             :repo_url         => response.required(:repo, :url),
+             :service_instance_dir => args[:service_instance_dir]
            )
-
+ 
            ClientModuleDir::GitRepo.pull_from_service_repo(repo_info_args)
          end
          nil

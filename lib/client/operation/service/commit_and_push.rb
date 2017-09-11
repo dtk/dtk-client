@@ -22,14 +22,15 @@ module DTK::Client
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           service_instance = args.required(:service_instance)
-
+          
           response = rest_get("#{BaseRoute}/#{service_instance}/repo_info")
 
           repo_info_args = Args.new(
             :service_instance => service_instance,
             :commit_message   => args[:commit_message] || default_commit_message(service_instance),
             :branch           => response.required(:branch, :name),
-            :repo_url         => response.required(:repo, :url)
+            :repo_url         => response.required(:repo, :url),
+            :service_instance_dir => args[:service_instance_dir]
           )
 
           response = ClientModuleDir::GitRepo.commit_and_push_to_service_repo(repo_info_args)

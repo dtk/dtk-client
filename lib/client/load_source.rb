@@ -48,10 +48,10 @@ module DTK::Client
 
       if component_info = remote_module_info.data(:component_info)
         begin
-          ComponentInfo.fetch_and_cache_info(transform_helper, component_info['remote_repo_url'], parent, force, use_theirs)
+          updated = ComponentInfo.fetch_and_cache_info(transform_helper, component_info['remote_repo_url'], parent, force, use_theirs)
           info_types_processed << ComponentInfo.info_type
 
-          if parent.is_a?(Operation::Module::PullDtkn)
+          if parent.is_a?(Operation::Module::PullDtkn) && updated
             stage_and_commit(target_repo_dir, commit_msg([ComponentInfo.info_type]))
             delete_diffs(target_repo_dir)
           end

@@ -40,7 +40,8 @@ module DTK::Client
           repo_info_args = Args.new(
             :service_instance => service_instance,
             :branch           => response.required(:branch, :name),
-            :repo_url         => response.required(:repo, :url)
+            :repo_url         => response.required(:repo, :url),
+            :service_instance_dir => args[:service_instance_dir]
           )
           ClientModuleDir::GitRepo.pull_from_service_repo(repo_info_args)
           nil

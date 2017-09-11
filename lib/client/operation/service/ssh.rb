@@ -88,7 +88,7 @@ pp info_hash
         end
 
         unless remote_user ||= node_info[:default_login_user]
-          raise Error::Usage, "Retry command with a specfic login user (a default login user could not be computed)"
+          raise Error::Usage, "A default Linux login user could not be computed. Retry the command with a specified login using the '-u LINUX-USER' option."
         end
 
         connection_string = "#{remote_user}@#{dns_address}"

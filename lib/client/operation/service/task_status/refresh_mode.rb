@@ -27,13 +27,20 @@ module DTK::Client
             response = rest_call(opts)
             return response unless response.ok?
             
-            # stop pulling when top level task succeds, fails or timeout
+            # TODO: clean this up
+            # stop polling when top level task succeeds, fails or timeout
             if response and response.data and response.data.first
+              if debug_mode?(response)
+                response.print_error_table!(true)
+                add_info_if_debug_mode!(response)
+                return response
+              end
+
               top_task_failed = response.data.first['status'].eql?('failed')
-              is_pending   = (response.data.select {|r|r["status"].nil? }).size > 0
-              is_executing = (response.data.select {|r|r["status"].eql? "executing"}).size > 0
-              is_failed    = (response.data.select {|r|r["status"].eql? "failed"}).size > 0
-              is_cancelled = response.data.first["status"].eql?("cancelled")
+              is_pending        = (response.data.select {|r|r['status'].nil? }).size > 0
+              is_executing      = (response.data.select {|r|r['status'].eql? 'executing'}).size > 0
+              is_failed         = (response.data.select {|r|r['status'].eql? 'failed'}).size > 0
+              is_cancelled      = response.data.first['status'].eql?('cancelled')
 
               is_cancelled = true if top_task_failed
               

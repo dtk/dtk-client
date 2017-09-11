@@ -18,15 +18,16 @@
 module DTK::Client; class Operation::Module
   class Install::DependentModules::ComponentDependencyTree
     class ResolveModules
-      def initialize(parent)
+      def initialize(parent, opts = {})
         @print_helper    = parent.print_helper
         @base_module_ref = parent.module_ref
         @cache           = parent.cache
+        @opts            = opts
       end
       private :initialize
 
-      def self.resolve_conflicts(parent)
-        new(parent).resolve_conflicts
+      def self.resolve_conflicts(parent, opts = {})
+        new(parent, opts).resolve_conflicts
       end
       def resolve_conflicts
         # TODO: change this simplistic method which does not take into accunt the nested structure.
@@ -46,7 +47,7 @@ module DTK::Client; class Operation::Module
 
       def process_when_base_module(module_ref)
         if @base_module_ref.exact_match?(module_ref)
-          @print_helper.print_warning("Removing dependency '#{module_ref.pretty_print}' that referred to base module")
+          @print_helper.print_warning("Removing dependency '#{module_ref.pretty_print}' that referred to base module") unless @opts[:do_not_print]
         else
           @print_helper.print_warning("Removing conflicting dependency '#{module_ref.pretty_print}' that referred to base module '#{@base_module_ref.pretty_print}'")
         end

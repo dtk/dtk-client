@@ -31,24 +31,21 @@ module DTK::Client
         wrap_operation(args) do |args|
           service_instance = args.required(:service_instance)
           task_status_mode = args[:mode]
-          
-          if task_status_mode
-            task_status_with_mode(task_status_mode.to_sym, service_instance)
-          else
-            response = rest_call(service_instance)
-            response.print_error_table!(true)
-            response.set_render_as_table!
-          end
+          info             = nil
+
+          task_status_mode ||=  DEFAULT_MODE 
+          task_status_with_mode(task_status_mode.to_sym, service_instance)
         end
       end
 
       def rest_call(opts = {})
         self.class.rest_call(@service_instance, opts)
       end
-      
+
       private
 
-      LEGAL_MODES = [:refresh, :snapshot, :stream]
+      DEFAULT_MODE = :snapshot
+      LEGAL_MODES  = [:refresh, :snapshot, :stream]
       def self.task_status_with_mode(mode, service_instance, opts = {})
         case mode
         when :refresh
@@ -74,6 +71,24 @@ module DTK::Client
         )
       end
       
+      def add_info_if_debug_mode!(response)
+        debug_info_rows = debug_mode_rows(response).select { |row| (row['info'] || {})['message'] }
+        if debug_info_rows.size > 0
+          info_message = debug_info_rows.last['info']['message']
+          response.set_render_as_table!(nil, info_message)
+        else
+          response.set_render_as_table!
+        end
+      end
+      
+      def debug_mode?(response)
+        debug_mode_rows(response).size > 0
+      end
+
+      def debug_mode_rows(response)
+        response['data'].select { |data_row| data_row['status'] == 'debugging' }
+      end
+
     end
   end
 end

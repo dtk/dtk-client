@@ -22,8 +22,10 @@ module DTK::Client; module CLI
         command_body c, :pull, 'Pulls any updates server made to service instance on to client directory' do |sc|
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory containing updates to pull; not need if in the service instance directory'
           sc.action do |_global_options, options, _args|
+            options[:d].nil? ? service_instance_dir =  @base_dsl_file_obj.parent_dir : service_instance_dir = options[:d]
+
             service_instance =  service_instance_in_options_or_context(options)
-            Operation::Service.pull(:service_instance => service_instance)
+            Operation::Service.pull(:service_instance => service_instance, :service_instance_dir => service_instance_dir)
           end
         end
       end

@@ -58,6 +58,8 @@ module DTK::Client; class Operation::Module
           args = [transform_helper, ServiceInfo.info_type, service_info['remote_repo_url'], parent]
           service_file_path__content_array.each { |file| Operation::ClientModuleDir.create_file_with_content("#{service_file_path(target_repo_dir, file, *args)}", file[:content]) }
 
+          delete_assemblies?(service_file_path__content_array, target_repo_dir)
+
           commit_and_push_to_remote(repo, target_repo_dir, "master", "dtkn")
         end
       end
@@ -171,6 +173,14 @@ module DTK::Client; class Operation::Module
         end
         msg << 'info'
         msg
+      end
+
+      def self.delete_assemblies?(service_file_path__content_array, target_repo_dir)
+        assembly_regex     = Regexp.new("\.dtk\.assembly\.(yml|yaml)$")
+        assemblies         = Dir.entries("#{target_repo_dir}/assemblies/").select { |file| file.match(assembly_regex) }
+        current_assemblies = assemblies.map { |assembly| "assemblies/#{assembly}" }
+        to_delete          = current_assemblies - service_file_path__content_array.map { |file| file[:path] }
+        to_delete.each { |file| Operation::ClientModuleDir.rm_f("#{target_repo_dir}/#{file}") }
       end
 
       def self.git_repo_operation

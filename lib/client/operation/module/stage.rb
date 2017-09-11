@@ -31,7 +31,7 @@ module DTK::Client
             :module_name     => module_ref.module_name,
             :assembly_name?  => args.required(:assembly_name),
             :version?        => args[:version],
-            :target_service? => args[:target_service],
+            :target_service? => args[:context_service],
             :is_target?      => args[:is_target]
           )
           
