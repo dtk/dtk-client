@@ -32,7 +32,7 @@ module DTK::Client
           # will transform ec2::node[node_name]/action to node_name/action
           action_node, action_name = (action||"").split('/')
           if action_node && action_name
-            if action_node_match = action_node.match(/^ec2::node\[(.*)\]/)
+            if action_node_match = action_node.match(/^ec2::node\[(.*)\]/) || action_node.match(/^ec2::node_group\[(.*)\]/)
               matched_node = $1
               action = "#{matched_node}/#{action_name}"
             end
