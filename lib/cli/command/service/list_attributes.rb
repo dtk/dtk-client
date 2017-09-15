@@ -21,10 +21,10 @@ module DTK::Client; module CLI
       subcommand_def 'list-attributes' do |c|
         command_body c, 'attributes', 'List attributes associated with service instance.' do |sc|
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory containing updates to pull; not need if in the service instance directory'
-          sc.flag Token.node, :desc => 'Filter attributes by node'
+#          sc.flag Token.node, :desc => 'Filter attributes by node'
           sc.flag Token.format
-          sc.flag Token.component, :desc => 'Filter attributes by component'
-          #sc.switch Token.all, :desc => 'Get all attributes'
+#          sc.flag Token.component, :desc => 'Filter attributes by component'
+          sc.switch Token.all, :desc => 'List component and node level attributes with top level ones'
           sc.switch Token.links, :desc => 'Display attribute links'
 
           sc.action do |_global_options, options, _args|
@@ -32,10 +32,10 @@ module DTK::Client; module CLI
 
             args = {
               :service_instance => service_instance,
-              :links            => options[:links]||nil,
-              :node             => options[:node],
-              :component        => options[:component],
-              #:all              => options[:all],
+              :links            => options[:links],
+              # :node             => options[:node],
+              # :component        => options[:component],
+              :all              => options[:all],
               :format           => options[:format]
             }
             Operation::Service.list_attributes(args)

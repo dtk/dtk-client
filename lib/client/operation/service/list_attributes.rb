@@ -22,17 +22,17 @@ module DTK::Client
         wrap_operation(args) do |args|
           service_instance = args.required(:service_instance)
           links            = args[:links]
-          node             = args[:node]
-          component        = args[:component]
+          # node             = args[:node]
+          # component        = args[:component]
           all              = args[:all]
           format           = args[:format] || 'table'
           format.downcase!
 
           query_string_hash = QueryStringHash.new(
             :links?            => links,
-            :node_id?          => node,
+            # :node_id?          => node,
             :all               => all,
-            :filter_component? => component,
+            # :filter_component? => component,
             :format            => format
           )
           
