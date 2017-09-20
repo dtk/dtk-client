@@ -26,7 +26,7 @@ module DTK::Client
         @module_ref        = module_ref
         @directory_path    = directory_path
         @target_repo_dir   = directory_path || base_dsl_file_obj.parent_dir
-        @version           = version || 'master'
+        @version           = version || module_ref.version || 'master'
         @base_dsl_file_obj = base_dsl_file_obj
 
         @module_ref.version ||= @version

@@ -31,6 +31,10 @@ module DTK::Client
             raise Error::Usage, "DTK module '#{module_ref.print_form}' does not exist."
           end
 
+          if ref_version = module_ref.version
+            raise Error::Usage, "You are not allowed to push module version '#{ref_version}'!" unless ref_version.eql?('master')
+          end
+
           branch    = module_info.required(:branch, :name)
           repo_url  = module_info.required(:repo, :url)
           repo_name = module_info.required(:repo, :name)
