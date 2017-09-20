@@ -77,7 +77,7 @@ module DTK::Client
       def clone_module(module_ref, directory_path, version)
         arg = {
           :module_ref => module_ref,
-          :target_directory => directory_path
+          :target_directory => Operation::ClientModuleDir.create_module_dir_from_path(directory_path || OsUtil.current_dir)
         }
         repo_dir_info = Operation::Module.clone_module(arg).data
         repo_dir      = repo_dir_info[:target_repo_dir]
