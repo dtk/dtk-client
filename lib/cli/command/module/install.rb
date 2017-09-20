@@ -30,10 +30,11 @@ module DTK::Client
           sc.switch Token.update_deps
 
           sc.action do |_global_options, options, args|
-            directory_path = args[1] || options[:directory_path]
-            version        = options[:version]
-            update_deps    = options[:update_deps]
+            directory_path  = args[1] || options[:directory_path]
+            version         = options[:version]
+            update_deps     = options[:update_deps]
             has_remote_repo = false
+            is_clone        = false
           
             if module_name = args[0]
               # reached if installing from dtkn
@@ -42,27 +43,65 @@ module DTK::Client
               # server (the later step Operation::Module.install does this)
               has_remote_repo = true
               module_ref = module_ref_object_from_options_or_context?(:module_ref => module_name, :version => version)
-              target_repo_dir = Operation::Module.install_from_catalog(:module_ref => module_ref, :version => options[:version], :directory_path => directory_path)
+
+              if Operation::Module.module_version_exists?(module_ref, :type => :common_module)
+                clone_module(module_ref, directory_path, version)
+                is_clone = true
+              else
+                target_repo_dir = Operation::Module.install_from_catalog(:module_ref => module_ref, :version => options[:version], :directory_path => directory_path)
+              end
             end
 
-            raise Error::Usage, "You can use version only with 'namespace/name' provided" if version && module_name.nil?
+            unless is_clone
+              raise Error::Usage, "You can use version only with 'namespace/name' provided" if version && module_name.nil?
 
-            if target_repo_dir
-              directory_path ||= target_repo_dir.data[:target_repo_dir]
+              if target_repo_dir
+                directory_path ||= target_repo_dir.data[:target_repo_dir]
+              end
+
+              install_opts = directory_path ? { :directory_path => directory_path, :version => (version || 'master') } : options
+              module_ref   = module_ref_object_from_options_or_context?(install_opts)
+              operation_args = {
+                :module_ref          => module_ref,
+                :base_dsl_file_obj   => @base_dsl_file_obj,
+                :has_directory_param => !options["d"].nil?,
+                :has_remote_repo     => has_remote_repo,
+                :update_deps         => update_deps
+              }
+              Operation::Module.install(operation_args)
             end
-
-            install_opts = directory_path ? { :directory_path => directory_path, :version => (version || 'master') } : options
-            module_ref   = module_ref_object_from_options_or_context?(install_opts)
-            operation_args = {
-              :module_ref          => module_ref, 
-              :base_dsl_file_obj   => @base_dsl_file_obj, 
-              :has_directory_param => !options["d"].nil?,
-              :has_remote_repo     => has_remote_repo,
-              :update_deps         => update_deps
-            }
-            Operation::Module.install(operation_args)
           end
         end
+      end
+
+      def clone_module(module_ref, directory_path, version)
+        arg = {
+          :module_ref => module_ref,
+          :target_directory => Operation::ClientModuleDir.create_module_dir_from_path(directory_path || OsUtil.current_dir)
+        }
+        repo_dir_info = Operation::Module.clone_module(arg).data
+        repo_dir      = repo_dir_info[:target_repo_dir]
+
+        # DTK-3088 - need this to pull service info for dependency module on clone
+        if repo_dir_info[:pull_service_info] && (version.nil? || version.eql?('master'))
+          repo_dir = repo_dir_info[:target_repo_dir]
+          module_ref = module_ref_object_from_options_or_context(:directory_path => repo_dir)
+
+          operation_args = {
+            :module_ref          => module_ref,
+            :base_dsl_file_obj   => @base_dsl_file_obj,
+            :has_directory_param => true,
+            :directory_path      => repo_dir,
+            :update_deps         => false,
+            :do_not_print        => true,
+            :force               => true
+          }
+
+          Operation::Module.pull_dtkn(operation_args)
+          Operation::Module.push(operation_args.merge(:method => "pulled"))
+        end
+
+        OsUtil.print_info("DTK module '#{module_ref.pretty_print}' has been successfully installed into '#{repo_dir}'")
       end
     end
   end

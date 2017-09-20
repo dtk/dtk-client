@@ -34,7 +34,7 @@ module DTK::Client
       end
 
       def clone_module
-        unless module_info = module_version_exists?(@module_ref, :type => :common_module, :remote_info => true, :rsa_pub_key => SSHUtil.rsa_pub_key_content)
+        unless module_info = module_version_exists?(@module_ref, :type => :common_module, :remote_info => false, :rsa_pub_key => SSHUtil.rsa_pub_key_content)
           raise Error::Usage, "DTK module '#{@module_ref.pretty_print}' does not exist on the DTK Server."
         end
 
@@ -92,8 +92,14 @@ module DTK::Client
           :rsa_pub_key => SSHUtil.rsa_pub_key_content,
           :version     => version||'master'
         )
-        remote_module_info = rest_get "#{BaseRoute}/remote_module_info", query_string_hash
-        if remote_module_info.data(:service_info)
+
+        begin
+          remote_module_info = rest_get "#{BaseRoute}/remote_module_info", query_string_hash
+        rescue DTK::Client::Error::ServerNotOkResponse => e
+          # ignore if remote does not exist
+        end
+
+        if remote_module_info && remote_module_info.data(:service_info)
           !module_version_exists?(@module_ref, :type => :service_module)
         end
       end

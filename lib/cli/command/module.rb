@@ -27,7 +27,7 @@ module DTK::Client
           'list-assemblies',
           'push',
           'uninstall',
-          'clone',
+          # 'clone',
           'list-remotes',
           'push-dtkn',
           'stage',
