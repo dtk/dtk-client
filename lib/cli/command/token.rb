@@ -56,6 +56,7 @@ module DTK::Client
         # Switch constructor args order: key, desc, opts={}
         :all          => Switch.new(:all, 'All'),
         :base         => Switch.new(:base, 'Create base service instance'),
+        :breakpoint       => Switch.new([:b, :breakpoint], 'Add breakpoint'),
         :delete       => Switch.new(:delete, 'Delete'),
         :force        => Switch.new([:f, :force], 'Force'),
         :purge        => Switch.new(:purge, 'Purge'),

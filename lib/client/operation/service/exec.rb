@@ -24,6 +24,7 @@ module DTK::Client
           action           = args.required(:action)
           action_params    = args[:action_params]
           directory_path   = args[:directory_path]
+          breakpoint       = args[:breakpoint]
 
           # parse params and return format { 'p_name1' => 'p_value1' , 'p_name2' => 'p_value2' }
           task_params = parse_params?(action_params)||{}
@@ -50,6 +51,7 @@ module DTK::Client
           post_body = PostBody.new(
             :task_params? => task_params
           )
+          post_body.merge!(:breakpoint => breakpoint) if breakpoint
           encoded_action =  URI.encode_www_form_component("#{action}")
           response = rest_post("#{BaseRoute}/#{service_instance}/#{encoded_action}", post_body)
 
