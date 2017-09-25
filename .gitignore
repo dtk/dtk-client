@@ -6,3 +6,6 @@ sftp-config*.json
 .tags1
 Gemfile.lock
 .vscode
+doc
+.yardoc
+.solargraph.yml

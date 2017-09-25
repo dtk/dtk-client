@@ -23,18 +23,20 @@ module DTK::Client
         c.arg Token::Arg.action_params, :optional => true
         command_body c, :exec, 'Execute action asynchronously' do |sc|
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory containing updates to pull; not need if in the service instance directory'
+          sc.switch Token.breakpoint
           sc.action do |_global_options, options, args|
           
             service_instance = service_instance_in_options_or_context(options)
-            
+
             action        = args[0]
             action_params = args[1]
             directory_path = options[:d] || @base_dsl_file_obj.parent_dir
-            
+
             args = {
               :service_instance => service_instance,
               :action           => action,
               :action_params    => action_params,
+              :breakpoint       => options['breakpoint'],
               :directory_path   => directory_path,
               :command          => 'exec'
             }
