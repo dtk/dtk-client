@@ -130,7 +130,7 @@ module DTK::Client; class Operation::Module
         are_there_warnings = RemoteDependency.check_permission_warnings(module_dependencies_response)
         are_there_warnings ||= RemoteDependency.print_dependency_warnings(module_dependencies_response, nil, :ignore_permission_warnings => true)
         if are_there_warnings
-          raise TerminateInstall unless Console.prompt_yes_no("Do you still want to proceed with install?", :add_options => true)
+          raise Install::TerminateInstall unless Console.prompt_yes_no("Do you still want to proceed with install?", :add_options => true)
         end
       end
 
