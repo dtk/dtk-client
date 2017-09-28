@@ -108,7 +108,7 @@ module DTK::Client
           Operation::Module.push(operation_args.merge(:method => "pulled"))
         end
 
-        OsUtil.print_info("DTK module '#{module_ref.pretty_print}' has been successfully installed into '#{repo_dir}'")
+        OsUtil.print_info("DTK module '#{module_ref.pretty_print}' has been successfully cloned from server into '#{repo_dir}'")
       end
 
       private
