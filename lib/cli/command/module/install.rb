@@ -35,20 +35,27 @@ module DTK::Client
             update_deps     = options[:update_deps]
             has_remote_repo = false
             is_clone        = false
-          
+
             if module_name = args[0]
               # reached if installing from dtkn
               # installs content from dtkn (later probably from other remote catalogs) onto client machine
               # in so doing installes depedent modules onto teh dtk server; this step though does not install main module onto
               # server (the later step Operation::Module.install does this)
-              has_remote_repo = true
-              module_ref = module_ref_object_from_options_or_context?(:module_ref => module_name, :version => version)
+              has_remote_repo    = true
+              module_ref         = module_ref_object_from_options_or_context?(:module_ref => module_name, :version => version)
+              remote_module_info = nil
+
+              unless version
+                remote_module_info = get_remote_module_info(module_ref)
+                version            = remote_module_info.required(:version)
+                module_ref.version = version
+              end
 
               if Operation::Module.module_version_exists?(module_ref, :type => :common_module)
                 clone_module(module_ref, directory_path, version)
                 is_clone = true
               else
-                target_repo_dir = Operation::Module.install_from_catalog(:module_ref => module_ref, :version => options[:version], :directory_path => directory_path)
+                target_repo_dir = Operation::Module.install_from_catalog(:module_ref => module_ref, :version => version, :directory_path => directory_path, :remote_module_info => remote_module_info)
               end
             end
 
@@ -102,6 +109,19 @@ module DTK::Client
         end
 
         OsUtil.print_info("DTK module '#{module_ref.pretty_print}' has been successfully installed into '#{repo_dir}'")
+      end
+
+      private
+
+      def get_remote_module_info(module_ref)
+        query_string_hash = QueryStringHash.new(
+          :module_name => module_ref.module_name,
+          :namespace   => module_ref.namespace,
+          :rsa_pub_key => SSHUtil.rsa_pub_key_content,
+          :version?    => nil
+        )
+
+        Operation::Module.rest_get("#{Operation::Module::BaseRoute}/remote_module_info", query_string_hash)
       end
     end
   end
