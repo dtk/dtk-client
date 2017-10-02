@@ -90,7 +90,7 @@ module DTK::Client
         repo_dir      = repo_dir_info[:target_repo_dir]
 
         # DTK-3088 - need this to pull service info for dependency module on clone
-        if repo_dir_info[:pull_service_info] && (version.nil? || version.eql?('master'))
+        if repo_dir_info[:pull_service_info]# && (version.nil? || version.eql?('master'))
           repo_dir = repo_dir_info[:target_repo_dir]
           module_ref = module_ref_object_from_options_or_context(:directory_path => repo_dir)
 
@@ -101,7 +101,8 @@ module DTK::Client
             :directory_path      => repo_dir,
             :update_deps         => false,
             :do_not_print        => true,
-            :force               => true
+            :force               => true,
+            :allow_version       => true
           }
 
           Operation::Module.pull_dtkn(operation_args)

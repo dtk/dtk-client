@@ -20,8 +20,9 @@ module DTK::Client
     class Push < self
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
-          module_ref = args.required(:module_ref)
-          method     = args[:method] || "pushed"
+          module_ref    = args.required(:module_ref)
+          method        = args[:method] || "pushed"
+          allow_version = args[:allow_version]
 
           unless client_dir_path = module_ref.client_dir_path
             raise Error, "Not implemented yet; need to make sure module_ref.client_dir_path is set when client_dir_path given"
@@ -32,7 +33,8 @@ module DTK::Client
           end
 
           if ref_version = module_ref.version
-            raise Error::Usage, "You are not allowed to push module version '#{ref_version}'!" unless ref_version.eql?('master')
+            do_not_raise = allow_version || ref_version.eql?('master')
+            raise Error::Usage, "You are not allowed to push module version '#{ref_version}'!" unless do_not_raise
           end
 
           branch    = module_info.required(:branch, :name)

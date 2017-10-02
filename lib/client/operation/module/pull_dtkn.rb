@@ -45,6 +45,7 @@ module DTK::Client
           force               = args[:force]
           update_deps         = args[:update_deps]
           do_not_print        = args[:do_not_print]
+          allow_version       = args[:allow_version]
 
           case update_deps
           when "prompt"
@@ -59,7 +60,8 @@ module DTK::Client
             file_obj = base_dsl_file_obj.raise_error_if_no_content
           end
 
-          new('dtkn', module_ref, directory_path, version, file_obj).pull_dtkn(:update_deps => update_deps, :no_update_deps => no_update_deps, :force => force, :do_not_print => do_not_print)
+          new('dtkn', module_ref, directory_path, version, file_obj).pull_dtkn(:update_deps => update_deps,
+          :no_update_deps => no_update_deps, :force => force, :do_not_print => do_not_print, :allow_version => allow_version)
         end
       end
       
@@ -70,7 +72,8 @@ module DTK::Client
         end
 
         if ref_version = @version || module_ref.version
-          raise Error::Usage, "You are not allowed to pull module version '#{ref_version}'!" unless ref_version.eql?('master')
+          do_not_raise = opts[:allow_version] || ref_version.eql?('master')
+          raise Error::Usage, "You are not allowed to pull module version '#{ref_version}'!" unless do_not_raise
         end
 
         error_msg = "To allow pull-dtkn to go through, invoke 'dtk push' to push the changes to server before invoking pull-dtkn again"
