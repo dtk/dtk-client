@@ -32,6 +32,14 @@ class DTK::Client::Operation::Service::TaskStatus::StreamMode::Element
       @formatter.formatted_duration?(field?(:duration))
     end
 
+    def current_status
+      if @response_element["status"] == 'debugging' && @response_element["type"].include?("stage_end") 
+        return true
+      else
+        return false
+      end
+    end
+
     def render_duration_line
       render_line(@formatter.duration_msg?(field?(:duration)))
     end

@@ -31,8 +31,7 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode
       def self.get_and_render_stages(task_status_handle, opts = {})
         unless wait = opts[:wait]
           raise Error, "opts[:wait] must be set"
-        end
-        
+        end        
         cursor = Cursor.new
         until cursor.task_end? do
           elements = get_single_stage(task_status_handle, cursor.stage, {:wait_for => cursor.wait_for}.merge(opts))
@@ -41,10 +40,15 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode
             next
           end
           render_elements(elements)
-          cursor.advance!(task_end?(elements))
+          # Can there be more than 1 element in elements array? 
+          if elements.first.current_status
+            cursor.advance!(true)
+          else
+            cursor.advance!(task_end?(elements))
+          end
         end
       end
-    
+
       class Cursor
         def initialize
           @stage    = 1
