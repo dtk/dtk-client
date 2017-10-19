@@ -23,6 +23,7 @@ module DTK::Client
           module_ref  = args.required(:module_ref)
           name        = args.required(:name)
           version     = args.required(:version)
+          force       = args.required(:force)
   
           unless name.nil?
             query_string_hash = QueryStringHash.new(
@@ -46,8 +47,8 @@ module DTK::Client
             end
             
           end
-
           post_body = module_ref_post_body(module_ref)
+          post_body.merge!(:force => force)
           rest_post("#{BaseRoute}/delete", post_body)
 
           error_msg =
