@@ -25,6 +25,7 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element
       def initialize(element, hash)
         super
         @errors = hash['errors'] || []
+        @info = hash['info'] || []
       end
 
       # This can be over-written
@@ -42,6 +43,7 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element
       protected 
 
       attr_reader :errors
+      attr_reader :info
 
       def render_errors(results_per_node)
         return unless results_per_node.find { |result| not result.errors.empty?}
@@ -55,12 +57,38 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element
         end
       end
 
+      def render_info(results_per_node)
+        return unless results_per_node.find do |result|
+          not result.info.empty? and result.errors.empty? 
+        end
+        # { |result| not result.errors.empty?}
+        first_time = true
+        results_per_node.each do |result|
+          if first_time
+            render_line 'INFO:'
+            first_time = false
+          end
+          result.render_node_info
+        end
+      end
+
       def render_node_errors
         return if @errors.empty?
         render_node_term
         @errors.each do |error| 
           if err_msg = error['message']
-            render_error_line err_msg  
+            render_error_line err_msg
+            render_empty_line
+          end
+        end
+      end
+
+      def render_node_info
+        return if @info.empty? || !@errors.empty?
+        @info.each do |info| 
+          if err_msg = info[1]
+            #err_msg.colorize(:yellow)
+            render_info_line err_msg
             render_empty_line
           end
         end
@@ -68,6 +96,10 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element
 
       def render_error_line(line, opts = {})
         render_line(line, ErrorRenderOpts.merge(opts))
+      end
+
+      def render_info_line(line, opts = {})
+        render_line(line)
       end
       ErrorRenderOpts = { :tabs => 1}
       

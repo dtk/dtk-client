@@ -55,7 +55,7 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode
     # opts can have
     #   :ignore_stage_level_info - Boolean
     def self.create_elements(response, opts = {})
-      response_elements = response.data
+      response_elements = response.data      
       unless response_elements.kind_of?(Array)
         raise Error.new("Unexpected that response.data no at array")
       end
@@ -82,8 +82,31 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode
       elements.find{|el|el.kind_of?(NoResults)}
     end
 
+    def self.debug_mode?(response)
+      debug_mode_rows(response).size > 0
+    end
+
+    def self.debug_mode_rows(response)
+      response['data'].select do |data_row|
+        data_row['status'] == 'debugging'
+      end
+      #{ |data_row| data_row['status'] == 'debugging' }
+    end
+
+    def self.add_info_if_debug_mode!(response)
+      debug_info_rows = debug_mode_rows(response).select { |row| (row['info'] || {}) }
+      if debug_info_rows.size > 0
+        info_message = debug_info_rows.last['info']['message']
+        #response.set_render_as_table!(nil, info_message)
+      else
+        #response.set_render_as_table!
+      end
+    end
+
     def self.render_elements(elements)
-      elements.each{ |el| el.render }
+      elements.each do |el| #{ |el| el.render }
+        el.render
+      end
     end
 
     def render_stage_steps(subtasks)
