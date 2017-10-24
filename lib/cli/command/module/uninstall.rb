@@ -25,8 +25,10 @@ module DTK::Client
           sc.flag Token.directory_path
           sc.flag Token.version
           sc.flag Token.uninstall_name
+          sc.switch Token.force
           sc.action do |_global_options, options, args|
             version = options[:version]
+            force   = options["force"]
 
             module_refs_opts = {:ignore_parsing_errors => true}
             if options[:uninstall_name].nil?
@@ -42,7 +44,7 @@ module DTK::Client
 
             raise Error::Usage, "You can use version only with 'namespace/name' provided" if version && module_name.nil?
 
-            Operation::Module.uninstall(:module_ref => module_ref, :skip_prompt => options[:skip_prompt], :name => options[:uninstall_name] || module_name, :version => version)
+            Operation::Module.uninstall(:module_ref => module_ref, :force => force, :skip_prompt => options[:skip_prompt], :name => options[:uninstall_name] || module_name, :version => version)
           end
         end
       end

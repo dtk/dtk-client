@@ -37,8 +37,8 @@ module DTK::Client
         query_string_hash = QueryStringHash.new(
           :module_name => module_ref.module_name,
           :namespace   => module_ref.namespace,
-          :rsa_pub_key => SSHUtil.rsa_pub_key_content
-          # :force?    => opts[:force]
+          :rsa_pub_key => SSHUtil.rsa_pub_key_content,
+          :force?    => opts[:force]
         )
 
         unless version = module_ref.version
@@ -67,7 +67,6 @@ module DTK::Client
           module_ref_opts.merge!(:version => version) unless version.eql?('all')
           return unless Console.prompt_yes_no("Are you sure you want to delete module '#{DTK::Common::PrettyPrintForm.module_ref(module_ref.module_name, module_ref_opts)}' from repo manager?", :add_options => true)
         end
-
         rest_post "#{BaseRoute}/delete_from_remote", query_string_hash
 
         nil
