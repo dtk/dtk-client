@@ -31,6 +31,7 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element::H
           render_empty_line
           results_per_node.each { |result| result.render }
         else
+          render_info(results_per_node)
           render_errors(results_per_node)
         end
       end
