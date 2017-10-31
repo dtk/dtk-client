@@ -23,34 +23,37 @@ module DTK::Client
 
         include Command::Mixin
         ALL_SUBCOMMANDS = [
+          'cancel-task',
           'clone',
-          'delete',
-          'uninstall',
-          'edit',
-          'push',
-          'pull',
           'converge',
-          'task-status',
+          'delete',
+          'edit',
+          'eject',
+          'exec',
+          'exec-sync',
+          'link',
           'list',
           'list-actions',
           'list-attributes',
           'list-component-links',
-          'list-dependencies',
           'list-components',
+          'list-dependencies',
           'list-nodes',
           'list-violations',
-          'link',
-#          'start',
-#          'stop',
-          'cancel-task',
-          'ssh',
-          'set-required-attributes',
+          'pull',
+          'push',
           'set-attribute',
-          'exec',
-          'exec-sync',
           'set-default-target',
-          'eject'
-         ]
+          'set-required-attributes',
+          'ssh',
+          # TODO: put back in
+          #  'start',
+          #  'stop',
+
+          'task-status',
+          'uninstall'
+        ]
+
         command_def :desc => 'Subcommands for creating and interacting with DTK service instances'
         ALL_SUBCOMMANDS.each { |subcommand| require_relative("service/#{subcommand.gsub(/-/,'_')}") } 
       end

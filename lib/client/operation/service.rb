@@ -18,34 +18,35 @@
 module DTK::Client
   class Operation
     class Service < self
+      # TODO: remove deprecated operations 
       OPERATIONS = [
-        :commit_and_push,
+        :cancel_task,
         :clone_service,
-        :delete,
-        :uninstall,
-        :edit,
-        :pull,
+        :commit_and_push,
         :converge,
-        :task_status,
+        # :create_workspace TODO: put this back in
+        :delete,
+        :edit,
+        :eject,
+        :exec,
+        :link,
         :list,
         :list_actions,
         :list_attributes,
         :list_component_links,
-        :list_dependencies,
         :list_components,
+        :list_dependencies,
         :list_nodes,
         :list_violations,
-        :link,
+        :pull,
+        :set_attribute,
+        :set_default_target,
+        :set_required_attributes,
+        :ssh,
         :start,
         :stop,
-        :cancel_task,
-        :ssh,
-        :set_required_attributes,
-        :set_attribute,
-        :exec,
-        :set_default_target,
-        :eject
-        # :create_workspace
+        :task_status,
+        :uninstall
       ]
       OPERATIONS.each { |operation| require_relative("service/#{operation}") }
 

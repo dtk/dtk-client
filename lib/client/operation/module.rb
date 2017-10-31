@@ -19,19 +19,19 @@ module DTK::Client
   class Operation
     class Module < self
       OPERATIONS = [
+        :clone_module,
+        :delete_from_remote,
         :install,
+        :install_from_catalog,
         :list,
         :list_assemblies,
         :list_remotes,
+        :publish,
+        :pull_dtkn,
         :push,
-        :uninstall,
-        :clone_module,
-        :install_from_catalog,
         :push_dtkn,
         :stage,
-        :pull_dtkn,
-        :publish,
-        :delete_from_remote
+        :uninstall
       ]
       OPERATIONS.each { |operation| require_relative("module/#{operation}") }
 
