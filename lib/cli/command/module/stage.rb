@@ -23,33 +23,30 @@ module DTK::Client
         command_body c, :stage, 'Create a new service instance to refer to staged infrastructure that then can be deployed' do |sc|
           sc.flag Token.directory_path, :desc => 'Path to module directory where assembly is being staged from; not needed if in the module directory'
           sc.flag Token.service_name, :desc => 'If specified, name to use for new service instance; otherwise service instance name is auto-generated' 
-          sc.flag Token.context_service_instance
+          sc.flag Token.comma_seperated_contexts
           sc.switch Token.force
           sc.switch Token.base
-          #sc.switch Token.target
-          # on useful for testing in dev mode
-          # sc.switch Token.purge, :desc => 'Overwrite any content that presently exists in the service instance directory to be created'
-          #  sc.flag Token.version
           sc.action do |_global_options, options, args|
-            module_ref     = module_ref_object_from_options_or_context(options)
-            assembly_name  = args[0]
-            version        = options[:version] || module_ref.version
-            service_name   = options[:service_name]
-            force          = options[:f]
-            directory_path = options[:directory_path] || @base_dsl_file_obj.parent_dir
+            module_ref               = module_ref_object_from_options_or_context(options)
+            assembly_name            = args[0]
+            service_name             = options[:service_name]
+            version                  = options[:version] || module_ref.version
+            directory_path           = options[:directory_path] || @base_dsl_file_obj.parent_dir
+            comma_seperated_contexts = options[:context]
 
+            context_service_names = comma_seperated_contexts && Validation.process_comma_seperated_contexts(comma_seperated_contexts) 
             Validation.validate_name(service_name) if service_name
 
             args = {
-              :module_ref      => module_ref,
-              :assembly_name   => assembly_name,
-              :service_name    => service_name,
-              :version         => version,
-              :context_service  => options[:context_service_instance],
-              :remove_existing => options[:purge],
-              :is_target       => options[:base],
-              :force           => force,
-              :directory_path  => directory_path
+              :module_ref            => module_ref,
+              :assembly_name         => assembly_name,
+              :service_name          => service_name,
+              :version               => version,
+              :context_service_names => context_service_names, 
+              :remove_existing       => options[:purge],
+              :is_base               => options[:base],
+              :force                 => options[:f],
+              :directory_path        => directory_path
             }
             Operation::Module.stage(args)
           end

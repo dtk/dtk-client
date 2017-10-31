@@ -17,12 +17,31 @@
 #
 module DTK::Client
   module Validation
-    ValidNameCharacters = ['letters', 'numbers', '-', '_', '.']
-
     def self.validate_name(name)
-      unless name.to_s.match(/\A[\w\-\.]+\z/)
-        raise Error::Usage, "Name '#{name}' contains invalid characters! Valid characters are: '#{ValidNameCharacters.join("', '")}'."
+      raise Error::Usage, "Name '#{name}' contains invalid characters! Valid characters are: #{valid_characters}" unless valid_name?(name)
+      name
+    end
+
+    def self.process_comma_seperated_contexts(comma_seperated_contexts)
+      if comma_seperated_contexts
+        comma_seperated_contexts.split(',').map do |service_instance_name|
+          service_instance_name.gsub!(' ', '')
+          raise Error::Usage, "Name '#{name}' in context contains invalid characters! Valid characters are: #{valid_characters}" unless valid_name?(service_instance_name)
+          service_instance_name
+        end.reject(&:empty?)
       end
     end
+
+    private
+
+    def self.valid_name?(name)
+      name.to_s.match(/\A[\w\-\.]+\z/)
+    end
+
+    VALID_NAME_CHARACTERS = ['letters', 'numbers', '-', '_', '.']
+    def self.valid_characters
+      VALID_NAME_CHARACTERS.join("', '")
+    end
+
   end
 end

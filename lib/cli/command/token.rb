@@ -34,8 +34,9 @@ module DTK::Client
         # Flag constructor args order: key, arg_name, desc, opts={}
         :commit_message          => Flag.new(:m, 'COMMIT-MSG', 'Commit message'),
         :directory_path          => Flag.new(:d, 'DIRECTORY-PATH', 'Directory path'),
+        # TODO: deprecate :parent_service_instance 
         :parent_service_instance => Flag.new(:parent, 'PARENT', 'Parent service instance; if not specified, the default context service instance serves as parent'),
-        :context_service_instance => Flag.new(:context, 'CONTEXT' ,'Context service instance; if not specified, the default service instance serves as context'),
+        :comma_seperated_contexts => Flag.new(:context, 'CONTEXT1,CONTEXT2,...' ,'Comma-seperated context service instance(s); if not specified, the default service instance serves as the context'),
         :module_ref              => Flag.new(:m, ModuleRef::NamespaceModuleName.legal_form, 'Module name with namespace; not needed if command is executed from within the module directory'),
         :relative_path           => Flag.new(:f, 'RELATIVE-FILE-PATH', 'Relative file path'),
         :service_instance        => Flag.new(:s, 'SERVICE-INSTANCE', 'Service instance name'),

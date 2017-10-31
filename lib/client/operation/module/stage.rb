@@ -27,12 +27,12 @@ module DTK::Client
           directory_path  = args[:directory_path]
 
           post_body = PostBody.new(
-            :namespace       => module_ref.namespace,
-            :module_name     => module_ref.module_name,
-            :assembly_name?  => args.required(:assembly_name),
-            :version?        => args[:version],
-            :target_service? => args[:context_service],
-            :is_target?      => args[:is_target]
+            :namespace              => module_ref.namespace,
+            :module_name            => module_ref.module_name,
+            :assembly_name?         => args.required(:assembly_name),
+            :version?               => args[:version],
+            :context_service_names? => args[:context_service_names],
+            :is_base?               => args[:is_base]
           )
           
           error_msg = "To allow stage to go through, invoke 'dtk push' to push the changes to server before invoking stage again"
