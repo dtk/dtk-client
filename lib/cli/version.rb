@@ -18,7 +18,7 @@
 module DTK
   module Client
     module CLI
-      VERSION="0.11.4"
+      VERSION="0.11.5"
     end
   end
 end
