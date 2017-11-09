@@ -53,7 +53,7 @@ module DTK::Client
 
           if parent.is_a?(Operation::Module::PullDtkn) && updated
             stage_and_commit(target_repo_dir, commit_msg([ComponentInfo.info_type]))
-            delete_diffs(target_repo_dir)
+            delete_diffs(target_repo_dir, remote_module_info.data(:version))
           end
         rescue Error::MissingDslFile => e
           # this is special case where in some stage git can recognize that dtk.model.yaml is renamed to dtk.module.yaml
@@ -71,10 +71,11 @@ module DTK::Client
       end
     end
 
-    def self.delete_diffs(target_repo_dir)
+    def self.delete_diffs(target_repo_dir, version = nil)
       current_branch = git_repo_operation.current_branch(:path => target_repo_dir).data(:branch)
-      repo = git_repo_operation.create_empty_git_repo?(:repo_dir => target_repo_dir, :branch => current_branch).data(:repo)
-      if delete_files = repo.diff_name_status(current_branch, "remotes/dtkn-component-info/master", { :diff_filter => 'D' })
+      repo           = git_repo_operation.create_empty_git_repo?(:repo_dir => target_repo_dir, :branch => current_branch).data(:repo)
+
+      if delete_files = repo.diff_name_status(current_branch, "remotes/dtkn-component-info/#{dtkn_version_ref(version)}", { :diff_filter => 'D' })
         unless delete_files.empty?
           to_delete = delete_files.keys.select { |key| !key.include?('dtk.model.yaml') && !key.include?('module_refs.yaml') }
           to_delete.each { |file| Operation::ClientModuleDir.rm_f("#{target_repo_dir}/#{file}") }
@@ -113,6 +114,16 @@ module DTK::Client
     private
 
     attr_reader :info_processor, :target_repo_dir
+
+    def self.dtkn_version_ref(version = nil)
+      if version.nil?
+        'master'
+      elsif version == 'master'
+        'master'
+      else
+        "v#{version}"
+      end
+    end
 
     def self.write_output_path_text_pairs(transform_helper, target_repo_dir, info_types_processed)
     end
