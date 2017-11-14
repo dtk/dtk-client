@@ -77,8 +77,10 @@ module DTK::Client
           # based on mapping we set key = eval(value)
           @table_mapping.each do |k, v|
             begin
-              if print_error_table && k.include?('error')
+              if print_error_table && k.include?('error') 
                 error_message = value_of(structured_element, v)
+                # Escaping error when doing dtk-cancel on debugger state service instance
+                error_message = "" if error_message.include?("EOF")
                 if failed_component = value_of(structured_element, 'failed_component')
                   @failed_components << "- #{failed_component.gsub('__','::')}"
                 end
