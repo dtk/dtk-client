@@ -202,7 +202,7 @@ module DTK::Client
 
       ERROR_MSG_MAPPING = {
         :service_instance => 'service instance',
-        :module_ref       => 'mdoule'
+        :module_ref       => 'module'
       }
       def raise_error_when_missing_context(type, options = {})
         if options["d"].nil?
