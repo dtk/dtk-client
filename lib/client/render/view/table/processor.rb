@@ -82,6 +82,10 @@ module DTK::Client
                 if failed_component = value_of(structured_element, 'failed_component')
                   @failed_components << "- #{failed_component.gsub('__','::')}"
                 end
+                
+                if  error_message.include?("Deadline Exceeded")
+                  error_message = "Byebug session timeout, please run 'dtk service converge' again."
+                end
 
                 # due to problems with space we have special way of handling error columns
                 # in such a way that those error will be specially printed later on
