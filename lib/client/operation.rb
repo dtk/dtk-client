@@ -21,6 +21,7 @@ module DTK::Client
   class Operation
 
     require_relative('operation/module_service_common')
+    require_relative('operation/dtk_network_client')
 
     TYPES = [:account, :module, :service, :client_module_dir]
     TYPES.each { |op_type| require_relative("operation/#{op_type}") }

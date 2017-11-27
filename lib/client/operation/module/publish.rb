@@ -30,12 +30,13 @@ module DTK::Client
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           module_ref        = args.required(:module_ref)
+          base_dsl_file_obj = args.required(:base_dsl_file_obj)
           directory_path    = args[:directory_path]
-          new('dtkn', module_ref, directory_path).publish
+          new('dtkn', module_ref, directory_path).publish({file_obj: base_dsl_file_obj})
         end
       end
       
-      def publish
+      def publish(opts = {})
         unless module_version_exists?(module_ref, :type => :common_module)
           raise Error::Usage, "Module #{module_ref.print_form} does not exist on server"
         end
@@ -50,26 +51,17 @@ module DTK::Client
           :rsa_pub_key => SSHUtil.rsa_pub_key_content
         )
 
-        response = rest_post "#{BaseRoute}/publish_to_remote", post_body
+        file_obj = opts[:file_obj]
+        parsed_module = file_obj.parse_content(:common_module_summary)
 
-        query_string_hash = QueryStringHash.new(
-          :module_name => module_ref.module_name,
-          :namespace   => module_ref.namespace,
-          :rsa_pub_key => SSHUtil.rsa_pub_key_content,
-          :version?    => @version
-        )
-        remote_module_info = rest_get "#{BaseRoute}/remote_module_info", query_string_hash
+        module_info = {
+          name: module_ref.module_name,
+          namespace: module_ref.namespace,
+          version: @version,
+          repo_dir: @target_repo_dir
+        }
+        DtkNetworkClient::Publish.run(module_info, parsed_module: parsed_module)
 
-        unless @version
-          @version = remote_module_info.required(:version)
-          @module_ref.version = @version
-        end
-
-        # this is temporary until we implement push-dtkn from server instead of from client
-        # this part will fetch remote branches from repo manager after publish from server is finished
-        LoadSource.fetch_from_remote(remote_module_info, self)
-
-        OsUtil.print_info("'#{module_ref.pretty_print}' has been published successfully.")
         nil
       end
     end
