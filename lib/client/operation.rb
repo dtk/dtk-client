@@ -21,7 +21,6 @@ module DTK::Client
   class Operation
 
     require_relative('operation/module_service_common')
-    require_relative('operation/dtk_network_client')
 
     TYPES = [:account, :module, :service, :client_module_dir]
     TYPES.each { |op_type| require_relative("operation/#{op_type}") }
@@ -62,6 +61,10 @@ module DTK::Client
       else
         raise Error::ServerNotOkResponse.new(response)
       end
+    end
+
+    require 'dtk_network_client'
+    class DtkNetworkClient < DTK::Network::Client::Command
     end
   end
 end
