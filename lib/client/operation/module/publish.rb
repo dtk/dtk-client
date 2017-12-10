@@ -35,15 +35,8 @@ module DTK::Client
           new('dtkn', module_ref, directory_path).publish({file_obj: base_dsl_file_obj})
         end
       end
-      
+
       def publish(opts = {})
-        # unless module_version_exists?(module_ref, :type => :common_module)
-          # raise Error::Usage, "Module #{module_ref.print_form} does not exist on server"
-        # end
-
-        # error_msg = "To allow publish to go through, invoke 'dtk push' to push the changes to server before invoking publish again"
-        # GitRepo.modified_with_diff?(target_repo_dir, { :error_msg => error_msg })
-
         file_obj = opts[:file_obj]
         parsed_module = file_obj.parse_content(:common_module_summary)
 
