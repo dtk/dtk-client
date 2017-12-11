@@ -19,8 +19,9 @@ module DTK::Client
   class Operation::Module
     class ListRemotes < self
       def self.execute(args = Args.new)
-        wrap_operation(args) do |_args|
-          response = DtkNetworkClient::List.run
+        wrap_operation(args) do |args|
+          namespace = args[:namespace]
+          response  = DtkNetworkClient::List.run(namespace)
           Response.new(response)
         end.set_render_as_table!
       end
