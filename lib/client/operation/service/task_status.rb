@@ -86,7 +86,11 @@ module DTK::Client
       end
 
       def debug_mode_rows(response)
-        response['data'].select { |data_row| data_row['status'] == 'debugging' }
+        response['data'].select do |data_row|
+           data_row["info"] unless data_row["info"].nil? || data_row["info"].empty?
+        end
+        # Almin: Add breakpoint and check if this above works better
+        #response['data'].select { |data_row| data_row['status'] == 'debugging' }
       end
 
     end
