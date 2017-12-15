@@ -26,10 +26,7 @@ module DTK::Client; module CLI
       #   :dir_path - string
       # Returns FileObj object or nil that match a file_type
       def matching_file_obj?(file_types, opts = {})
-        ret = nil
-        file_types = [file_types] unless file_types.kind_of?(Array)
-
-        file_type, file_path = matching_type_and_path?(file_types, opts)
+        file_type, file_path = matching_type_and_path?(Array(file_types), opts)
         file_obj_opts = {
           dir_path: opts[:dir_path],
           current_dir: OsUtil.current_dir,
@@ -48,50 +45,48 @@ module DTK::Client; module CLI
       # opts can have keys:
       #  :dir_path
       #  :file_path
+      #  :flag
       # returns nil or [file_type, path]
       def matching_type_and_path?(file_types, opts = {})
-        ret = nil
-        flag = opts[:flag]
-        if path = opts[:file_path]
-          file_types.each do | file_type |
-            if file_type.matches?(path)
-              return [file_type, path]
-            end
+        matches = 
+          if path = opts[:file_path]
+            file_types.map { | file_type | file_type.matches?(path) && [file_type, path] }.compact
+          else
+            base_dir = OsUtil.home_dir
+            current_dir = opts[:dir_path] || OsUtil.current_dir
+            most_nested_matching_types_and_paths(file_types, current_dir, base_dir, flag: opts[:flag])
           end
+        
+        case matches.size
+        when 0
+          nil
+        when 1
+          matches.first
         else
-          file_types.each do | file_type |
-            if path = most_nested_matching_file_path?(file_type, flag, :current_dir => opts[:dir_path])
-              return [file_type, path]
-            end
-          end
+          MultipleMatches.resolve(matches)
         end
-        ret
       end
 
-      # return either a string file path or of match to file_type working from current directory and 'outwards'
-      # until base_path in file_type (if it exists)
       # opts can have keys
-      #  :current_dir if set means start from this dir; otherwise start from computed current dir
-      def most_nested_matching_file_path?(file_type, flag, opts = {})
-        base_dir = file_type.base_dir || OsUtil.home_dir
-        current_dir = opts[:current_dir] || OsUtil.current_dir
-        check_match_recurse_on_failure?(file_type, current_dir, base_dir, flag)
+      #   :flag
+      def most_nested_matching_types_and_paths(file_types, current_dir, base_dir, opts = {})
+        # matches will be an array of [file_type, path]
+        matches = []
+        file_types.each do |file_type| 
+          matching_file_paths(current_dir, file_type).each { |path|  matches << [file_type, path] }
+        end
+
+        return matches unless matches.empty?
+
+        next_level_matches = []
+        unless current_dir == base_dir or opts[:flag]
+          if parent_path = OsUtil.parent_dir?(current_dir)
+            next_level_matches = most_nested_matching_types_and_paths(file_types, parent_path, base_dir, opts)
+          end
+        end
+        next_level_matches
       end
 
-      def check_match_recurse_on_failure?(file_type, current_dir, base_dir, flag)
-        match = matching_file_paths(current_dir, file_type)
-        if match.empty?
-          unless current_dir == base_dir
-            if parent_path = OsUtil.parent_dir?(current_dir)
-              check_match_recurse_on_failure?(file_type, parent_path, base_dir, flag) unless flag
-            end
-          end
-        elsif match.size == 1
-          match.first
-        else
-          raise Error, "Unexpected that more than one match: #{match.join(', ')}"
-        end
-      end
 
       # returns an array of strings that are file paths; except bakup files (e.g. bak.dtk.service.yaml)
       def matching_file_paths(dir_path, path_info)
@@ -102,6 +97,33 @@ module DTK::Client; module CLI
         regex = Regexp.new("\.bak\.dtk\.(service|module)\.(yml|yaml)$")
         file_path =~ regex
       end
+
+      module MultipleMatches
+        def self.resolve(matches)
+          augmented_matches = matches.map { |match| { match: match, ranking: type_ranking(match[0]) } }
+          not_treated_types = augmented_matches.select { |aug_match| aug_match[:ranking].nil? }
+          fail Error, "No ranking for types: #{not_treated_types.map { |aug_match| aug_match[:match][0] }.join(', ')}" unless not_treated_types.empty?
+
+          ndx_matches = {}
+          augmented_matches.each { |aug_match| (ndx_matches[aug_match[:ranking]] ||= []) << aug_match[:match] }
+          top_matches = ndx_matches[ndx_matches.keys.sort.first]
+          fail Error, "Cannot choice between types: #{top_matches.map{ |match| match[0] }.join(', ')}" if top_matches.size > 1
+          top_matches.first
+        end
+
+        def self.type_ranking(type)
+          ranking_for_types[type]
+        end
+        
+        # lower is preferred
+        def self.ranking_for_types
+          @ranking_for_types ||= {
+            DTK::DSL::FileType::CommonModule::DSLFile::Top => 2,
+            DTK::DSL::FileType::ServiceInstance::DSLFile::Top => 1
+          }
+        end
+      end
+
     end
   end
 end; end

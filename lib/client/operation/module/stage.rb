@@ -47,6 +47,9 @@ module DTK::Client
 
           service_instance = response.required(:service, :name)
 
+          pp [:debug, response]
+          return
+
           clone_args = {
             :module_ref       => module_ref,
             :repo_url         => response.required(:repo, :url),
