@@ -54,6 +54,10 @@ module DTK::Client
           @nested_module_base || raise(Error, "Unexpected that @nested_module_base is nil")
         end
 
+        def possible_nested_module_base_dirs
+          self.class.possible_nested_module_base_dirs
+        end
+
         private
 
         def clone_base_module
@@ -69,10 +73,9 @@ module DTK::Client
           clone_repo(module_info, nested_repo_dir)
         end
 
-        POSSIBLE_NESTED_MODULE_BASES = ['modules', 'dtk-modules']
         def make_nested_module_base
-          unless nested_module_base = find_unused_path?(POSSIBLE_NESTED_MODULE_BASES)
-            raise Error::Usage, "The module must not have files/directories that conflict with each of #{POSSIBLE_NESTED_MODULE_BASES.join(', ')}"
+          unless nested_module_base = find_unused_path?(self.possible_nested_module_base_dirs)
+            raise Error::Usage, "The module must not have files/directories that conflict with each of #{self.possible_nested_module_base_dirs.join(', ')}"
           end
           FileUtils.mkdir_p(nested_module_base)
           nested_module_base
@@ -90,6 +93,10 @@ module DTK::Client
           }
           response = ClientModuleDir::GitRepo.clone(clone_args)
           raise Error::Usage, response.data unless response.ok?
+        end
+
+        def self.possible_nested_module_base_dirs
+          @possible_nested_module_base_dirs ||= ::DTK::DSL::DirectoryType::ServiceInstance::NestedModule.possible_paths
         end
         
       end
