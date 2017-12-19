@@ -1,0 +1,44 @@
+GIT
+  remote: git://github.com/dtk/dtk-dsl.git
+  revision: 5fe9a580f03e1fadeaccb4138381e9c8720c01bd
+  specs:
+    dtk-dsl (1.1.1)
+
+PATH
+  remote: .
+  specs:
+    dtk-client (0.11.6)
+      colorize (= 0.7.7)
+      dtk-common-core (= 0.11.0)
+      dtk-dsl (~> 1.1.0)
+      git (= 1.2.9)
+      gli (= 2.13.4)
+      highline (= 1.7.8)
+      hirb (= 0.7.3)
+      mime-types (~> 2.99.3)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    byebug (9.1.0)
+    colorize (0.7.7)
+    dtk-common-core (0.11.0)
+      rest-client (= 1.6.7)
+    git (1.2.9)
+    gli (2.13.4)
+    highline (1.7.8)
+    hirb (0.7.3)
+    mime-types (2.99.3)
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  byebug
+  dtk-client!
+  dtk-dsl!
+
+BUNDLED WITH
+   1.11.2
