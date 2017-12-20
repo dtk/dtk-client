@@ -23,7 +23,7 @@ module DTK::Client
         @catalog            = catalog
         @module_ref         = module_ref
         @directory_path     = directory_path
-        @target_repo_dir    = ClientModuleDir.create_module_dir_from_path(directory_path || OsUtil.current_dir)
+        @target_repo_dir    = OsUtil.current_dir #ClientModuleDir.create_module_dir_from_path(directory_path || OsUtil.current_dir)
         @version            = version # if nil wil be dynamically updated along with version attribute of @module_ref
         @remote_module_info = remote_module_info
       end
@@ -42,31 +42,38 @@ module DTK::Client
       end
       
       def install_from_catalog
-        unless @remote_module_info
-          query_string_hash = QueryStringHash.new(
-            :module_name => @module_ref.module_name,
-            :namespace   => @module_ref.namespace,
-            :rsa_pub_key => SSHUtil.rsa_pub_key_content,
-            :version?    => @version
-          )
+        module_info = {
+          name:      module_ref.module_name,
+          namespace: module_ref.namespace,
+          version:   @version,
+          repo_dir:  @target_repo_dir
+        }
+        DtkNetworkClient::Install.run(module_info)
+        # unless @remote_module_info
+        #   query_string_hash = QueryStringHash.new(
+        #     :module_name => @module_ref.module_name,
+        #     :namespace   => @module_ref.namespace,
+        #     :rsa_pub_key => SSHUtil.rsa_pub_key_content,
+        #     :version?    => @version
+        #   )
 
-          @remote_module_info = rest_get "#{BaseRoute}/remote_module_info", query_string_hash
-        end
+        #   @remote_module_info = rest_get "#{BaseRoute}/remote_module_info", query_string_hash
+        # end
 
-        unless @version
-          @version = @remote_module_info.required(:version)
-          @module_ref.version = @version
-        end
+        # unless @version
+        #   @version = @remote_module_info.required(:version)
+        #   @module_ref.version = @version
+        # end
 
-        if module_version_exists?(@module_ref, :type => :common_module)
-          raise Error::Usage, "Module '#{@module_ref.print_form}' exists already"
-        end
+        # if module_version_exists?(@module_ref, :type => :common_module)
+        #   raise Error::Usage, "Module '#{@module_ref.print_form}' exists already"
+        # end
 
-        create_repo_opts = { :repo_dir => @target_repo_dir, :commit_msg => "DTK client initialize" }
-        Operation::ClientModuleDir::GitRepo.create_repo_with_empty_commit(create_repo_opts)
-        LoadSource.fetch_transform_and_merge(@remote_module_info, self)
+        # create_repo_opts = { :repo_dir => @target_repo_dir, :commit_msg => "DTK client initialize" }
+        # Operation::ClientModuleDir::GitRepo.create_repo_with_empty_commit(create_repo_opts)
+        # LoadSource.fetch_transform_and_merge(@remote_module_info, self)
 
-        {:target_repo_dir => @target_repo_dir}
+        # {:target_repo_dir => @target_repo_dir}
       end
 
     end

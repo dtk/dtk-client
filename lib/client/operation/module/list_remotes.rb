@@ -19,19 +19,12 @@ module DTK::Client
   class Operation::Module
     class ListRemotes < self
       def self.execute(args = Args.new)
-        wrap_operation(args) do |_args|
-
-          query_string_hash = QueryStringHash.new(
-            :detail_to_include => ['remotes', 'versions'],
-            :rsa_pub_key => SSHUtil.rsa_pub_key_content,
-            :module_namespace? => args[:module_namespace]
-          )
-          
-          rest_get("#{BaseRoute}/remote_modules", query_string_hash)
+        wrap_operation(args) do |args|
+          namespace = args[:namespace]
+          response  = DtkNetworkClient::List.run(namespace)
+          Response.new(response)
         end.set_render_as_table!
       end
     end
   end
 end
-
-

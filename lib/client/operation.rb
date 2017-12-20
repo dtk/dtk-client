@@ -62,6 +62,10 @@ module DTK::Client
         raise Error::ServerNotOkResponse.new(response)
       end
     end
+
+    require 'dtk_network_client'
+    class DtkNetworkClient < DTK::Network::Client::Command
+    end
   end
 end
 
