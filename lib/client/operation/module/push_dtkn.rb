@@ -44,27 +44,30 @@ module DTK::Client
       end
       
       def push_dtkn
-        # TODO: DTK-2765: not sure if we need module to exist on server to do push-dtkn
-        unless module_version_exists?(@module_ref, :type => :common_module)
-          raise Error::Usage, "Module #{@module_ref.print_form} does not exist on server"
-        end
-
         if ref_version = @version || module_ref.version
           raise Error::Usage, "You are not allowed to push module version '#{ref_version}'!" unless ref_version.eql?('master')
         end
 
-        error_msg = "To allow push-dtkn to go through, invoke 'dtk push' to push the changes to server before invoking push-dtkn again"
-        GitRepo.modified_with_diff?(@target_repo_dir, { :error_msg => error_msg, :command => 'push-dtkn' })
+        # error_msg = "To allow push-dtkn to go through, invoke 'dtk push' to push the changes to server before invoking push-dtkn again"
+        # GitRepo.modified_with_diff?(target_repo_dir, { :error_msg => error_msg, :command => 'push-dtkn' })
 
-        query_string_hash = QueryStringHash.new(
-          :module_name => @module_ref.module_name,
-          :namespace   => @module_ref.namespace,
-          :rsa_pub_key => SSHUtil.rsa_pub_key_content,
-          :version     => @version
-        )
-        remote_module_info = rest_get "#{BaseRoute}/remote_module_info", query_string_hash
+        module_info = {
+          name:      module_ref.module_name,
+          namespace: module_ref.namespace,
+          version:   ref_version,
+          repo_dir:  target_repo_dir
+        }
+        DtkNetworkClient::Push.run(module_info)
 
-        ConvertSource.transform_and_commit(remote_module_info, self)
+        # query_string_hash = QueryStringHash.new(
+        #   :module_name => @module_ref.module_name,
+        #   :namespace   => @module_ref.namespace,
+        #   :rsa_pub_key => SSHUtil.rsa_pub_key_content,
+        #   :version     => @version
+        # )
+        # remote_module_info = rest_get "#{BaseRoute}/remote_module_info", query_string_hash
+
+        # ConvertSource.transform_and_commit(remote_module_info, self)
         nil
       end
 

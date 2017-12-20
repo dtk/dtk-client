@@ -43,10 +43,10 @@ module DTK::Client
       
       def install_from_catalog
         module_info = {
-          name: module_ref.module_name,
+          name:      module_ref.module_name,
           namespace: module_ref.namespace,
-          version: @version,
-          repo_dir: @target_repo_dir
+          version:   @version,
+          repo_dir:  @target_repo_dir
         }
         DtkNetworkClient::Install.run(module_info)
         # unless @remote_module_info
