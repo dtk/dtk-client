@@ -71,18 +71,18 @@ module DTK::Client
           raise Error::Usage, "Module '#{@base_module_ref.print_form}' exists already"
         end
 
-        unless dependent_modules.empty?
-          begin
-            if @has_remote_repo
-              DependentModules.install(@base_module_ref, dependent_modules, opts)
-            else
-              DependentModules.install_with_local(@base_module_ref, dependent_modules, opts)
-            end
-          rescue TerminateInstall
-            @print_helper.print_terminated_installation
-            return nil
-          end
-        end
+        # unless dependent_modules.empty?
+        #   begin
+        #     if @has_remote_repo
+        #       DependentModules.install(@base_module_ref, dependent_modules, opts)
+        #     else
+        #       DependentModules.install_with_local(@base_module_ref, dependent_modules, opts)
+        #     end
+        #   rescue TerminateInstall
+        #     @print_helper.print_terminated_installation
+        #     return nil
+        #   end
+        # end
 
         @print_helper.print_continuation_installing_base_module
         CommonModule.install(@base_module_ref, @file_obj, :has_remote_repo => @has_remote_repo)

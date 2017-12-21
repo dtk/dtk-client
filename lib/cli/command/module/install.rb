@@ -35,6 +35,7 @@ module DTK::Client
             update_deps     = options[:update_deps]
             has_remote_repo = false
             is_clone        = false
+            installed_modules = []
 
             if module_name = args[0]
               # reached if installing from dtkn
@@ -56,28 +57,41 @@ module DTK::Client
                 clone_module(module_ref, directory_path, version)
                 is_clone = true
               else
-                target_repo_dir = Operation::Module.install_from_catalog(:module_ref => module_ref, :version => version, :directory_path => directory_path, :remote_module_info => remote_module_info)
+                install_response = Operation::Module.install_from_catalog(:module_ref => module_ref, :version => version, :directory_path => directory_path, :remote_module_info => remote_module_info)
               end
             end
 
-            # unless is_clone
-            #   raise Error::Usage, "You can use version only with 'namespace/name' provided" if version && module_name.nil?
+            unless is_clone
+              raise Error::Usage, "You can use version only with 'namespace/name' provided" if version && module_name.nil?
 
-            #   if target_repo_dir
-            #     directory_path ||= target_repo_dir.data[:target_repo_dir]
-            #   end
+              # if target_repo_dir
+              #   directory_path ||= target_repo_dir.data[:target_repo_dir]
+              # end
 
-            #   install_opts = directory_path ? { :directory_path => directory_path, :version => (version || 'master') } : options
-            #   module_ref   = module_ref_object_from_options_or_context?(install_opts)
-            #   operation_args = {
-            #     :module_ref          => module_ref,
-            #     :base_dsl_file_obj   => @base_dsl_file_obj,
-            #     :has_directory_param => !options["d"].nil?,
-            #     :has_remote_repo     => has_remote_repo,
-            #     :update_deps         => update_deps
-            #   }
-            #   Operation::Module.install(operation_args)
-            # end
+              if install_response
+                installed_modules = install_response.data[:installed_modules]
+              end
+
+              installed_modules.each do |installed_module|
+                location = installed_module[:location]
+                installed_version = installed_module[:version]
+                install_opts = { :directory_path => location, :version => installed_version }
+                module_ref   = module_ref_object_from_options_or_context?(install_opts)
+
+                base_dsl_file_obj = CLI::Context.base_dsl_file_obj({dir_path: location})
+
+                operation_args = {
+                  :module_ref          => module_ref,
+                  :base_dsl_file_obj   => base_dsl_file_obj,
+                  :has_directory_param => !options["d"].nil?,
+                  :has_remote_repo     => has_remote_repo,
+                  :update_deps         => update_deps
+                }
+                Operation::Module.install(operation_args)
+              end
+
+              nil
+            end
           end
         end
       end
