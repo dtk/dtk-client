@@ -61,8 +61,7 @@ module DTK::Client; class Operation::Module
       end
 
       def query_if_component_module_is_installed?
-        # TODO: :type => :component_module is for legacy; once we get past having legacy can change to :common_module
-        module_version_exists?(@module_ref, :type => :component_module)
+        module_version_exists?(@module_ref)
       end
 
       private

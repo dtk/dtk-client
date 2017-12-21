@@ -67,7 +67,7 @@ module DTK::Client
       
       def pull_dtkn(opts = {})
         # TODO: DTK-2765: not sure if we need module to exist on server to do push-dtkn
-        unless module_version_exists?(@module_ref, :type => :common_module)
+        unless module_version_exists?(@module_ref)
           raise Error::Usage, "Module #{@module_ref.print_form} does not exist on server"
         end
 
@@ -123,7 +123,7 @@ module DTK::Client
           Install::ModuleRef.new(:namespace => dep_namespace, :module_name => dep_module_name, :version => dep_version, :is_base_module => is_base_module)
         end
         unless base_component_module_found
-          if module_version_exists?(@module_ref, :type => :component_module)
+          if module_version_exists?(@module_ref)
             ret << Install::ModuleRef.new(:namespace => @module_ref.namespace, :module_name => @module_ref.module_name, :version => @module_ref.version, :is_base_module => true)
           end
         end

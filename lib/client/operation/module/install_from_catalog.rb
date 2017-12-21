@@ -58,7 +58,7 @@ module DTK::Client
           @module_ref.version = @version
         end
 
-        if module_version_exists?(@module_ref, :type => :common_module)
+        if module_version_exists?(@module_ref)
           raise Error::Usage, "Module '#{@module_ref.print_form}' exists already"
         end
 

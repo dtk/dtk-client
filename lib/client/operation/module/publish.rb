@@ -36,7 +36,7 @@ module DTK::Client
       end
       
       def publish
-        unless module_version_exists?(module_ref, :type => :common_module)
+        unless module_version_exists?(module_ref)
           raise Error::Usage, "Module #{module_ref.print_form} does not exist on server"
         end
 
