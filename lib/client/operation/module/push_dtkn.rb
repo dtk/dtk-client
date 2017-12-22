@@ -44,6 +44,11 @@ module DTK::Client
       end
       
       def push_dtkn
+        # TODO: DTK-2765: not sure if we need module to exist on server to do push-dtkn
+        unless module_version_exists?(@module_ref)
+          raise Error::Usage, "Module #{@module_ref.print_form} does not exist on server"
+        end
+
         if ref_version = @version || module_ref.version
           raise Error::Usage, "You are not allowed to push module version '#{ref_version}'!" unless ref_version.eql?('master')
         end

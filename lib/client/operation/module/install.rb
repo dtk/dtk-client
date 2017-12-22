@@ -67,7 +67,7 @@ module DTK::Client
           raise Error::Usage, "No base module reference #{dsl_path_ref}"
         end
 
-        if module_version_exists?(@base_module_ref, { :type => :common_module })
+        if module_version_exists?(@base_module_ref)
           raise Error::Usage, "Module '#{@base_module_ref.print_form}' exists already"
         end
 
@@ -112,7 +112,7 @@ module DTK::Client
           ModuleRef.new(:namespace => dep_namespace, :module_name => dep_module_name, :version => dep_version, :is_base_module => is_base_module)
         end
         unless base_component_module_found
-          if module_version_exists?(@base_module_ref, :type => :component_module)
+          if module_version_exists?(@base_module_ref)
             ret << ModuleRef.new(:namespace => namespace, :module_name => module_name, :version => version, :is_base_module => true)
           end
         end

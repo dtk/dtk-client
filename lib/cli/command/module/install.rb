@@ -53,7 +53,7 @@ module DTK::Client
                 module_ref.version = version
               end
 
-              if Operation::Module.module_version_exists?(module_ref, :type => :common_module)
+              if Operation::Module.module_version_exists?(module_ref)
                 clone_module(module_ref, directory_path, version)
                 is_clone = true
               else

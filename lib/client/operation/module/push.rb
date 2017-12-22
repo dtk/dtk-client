@@ -28,7 +28,7 @@ module DTK::Client
             raise Error, "Not implemented yet; need to make sure module_ref.client_dir_path is set when client_dir_path given"
           end
 
-          unless module_info = module_version_exists?(module_ref, :type => :common_module)
+          unless module_info = module_version_exists?(module_ref)
             raise Error::Usage, "DTK module '#{module_ref.print_form}' does not exist."
           end
 
