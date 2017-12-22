@@ -41,7 +41,7 @@ module DTK::Client; class Operation::Module
       end
 
       def print_continuation_installing_base_module
-        print_continuation "Installing base module '#{pretty_print_module}' from #{source_term}", :color => :yellow
+        print_continuation "Installing module '#{pretty_print_module}' from #{source_term}", :color => :yellow
       end
 
       def print_continuation_pulling_base_module

@@ -30,7 +30,7 @@ module DTK::Client
         @base_module_ref  = module_ref
         @parsed_module    = file_obj.parse_content(:common_module_summary)
         @has_remote_repo  = has_remote_repo
-        @print_helper     = PrintHelper.new(:module_ref => @base_module_ref, :source => has_remote_repo ? :remote : :local)
+        @print_helper     = PrintHelper.new(:module_ref => @base_module_ref, :source => :local) # ? :remote : :local)
       end
       private :initialize
 
