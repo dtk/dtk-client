@@ -58,9 +58,15 @@ module DTK::Client
         end
       end
 
+      def module_ref_object_from_options_or_context(options, module_refs_opts = {})
+        module_ref_object_from_options_or_context?(options, module_refs_opts) || raise_error_when_missing_context(:module_ref, options)
+      end
+
+      attr_reader :base_dsl_file_obj
+
       private
 
-      attr_reader :context_attributes, :base_dsl_file_obj
+      attr_reader :context_attributes
 
       def module_ref_from_base_dsl_file?
         parsed_module_hash = parse_module_content_and_create_hash
@@ -160,10 +166,6 @@ module DTK::Client
          ::DTK::DSL::FileType::CommonModule::DSLFile::Top,
          ::DTK::DSL::FileType::ServiceInstance::DSLFile::Top
         ]
-
-      def module_ref_object_from_options_or_context(options, module_refs_opts = {})
-        module_ref_object_from_options_or_context?(options, module_refs_opts) || raise_error_when_missing_context(:module_ref, options)
-      end
 
       def module_ref_object_from_options_or_context?(options, module_refs_opts = {})
         # using :ignore_parsing_errors to ret namespace, name and version from .yaml file even if there are parsing errors
