@@ -133,11 +133,18 @@ module DTK::Client
           #   :update_dep
           def install_on_server(client_installed_modules, opts = {})
             client_installed_modules.each do |installed_module|
-              directory_path    = installed_module[:location]
-              module_ref        = module_ref_object_from_options_or_context(directory_path: directory_path, version: installed_module[:version])
-              # TODO: DTK-3370: put in logic that sees if module_ref is isnatlled on server and skips Operation::Module.install if it is
+              directory_path = installed_module[:location]
+              module_ref     = module_ref_object_from_options_or_context(directory_path: directory_path, version: installed_module[:version])
+              use_or_install_on_server(module_ref, directory_path, opts)
+            end
+          end
+
+          def use_or_install_on_server(module_ref, directory_path, opts = {})
+            if Operation::Module.module_version_exists?(module_ref)
+              p_helper = Operation::Module::Install::PrintHelper.new(:module_ref => module_ref, :source => :local)
+              p_helper.print_using_installed_dependent_module
+            else
               base_dsl_file_obj = CLI::Context.base_dsl_file_obj(dir_path: directory_path)
-              
               operation_args = {
                 :module_ref          => module_ref,
                 :base_dsl_file_obj   => base_dsl_file_obj,
