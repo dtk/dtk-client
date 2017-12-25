@@ -123,8 +123,46 @@ module DTK::Client
               :has_remote_repo     => false,
               :update_deps         => self.update_deps?
             }
+            get_and_install_dependencies
             Operation::Module.install(operation_args)
             # TODO: DTK-3370: assume that right here goes the logic to recursively store the dependencies 
+          end
+
+          def get_and_install_dependencies
+            file_obj = nil
+            if self.has_directory_param?
+              file_obj = self.base_dsl_file_obj.raise_error_if_no_content_flag(:module_ref)
+            else
+              file_obj = self.base_dsl_file_obj.raise_error_if_no_content
+            end
+
+            module_info = {
+              name:      self.module_ref.module_name,
+              namespace: self.module_ref.namespace,
+              version:   self.module_ref.version,
+              repo_dir:  file_obj.parent_dir
+            }
+            parsed_module   = file_obj.parse_content(:common_module_summary)
+            dependency_tree = Operation::DtkNetworkDependencyTree.get_or_create(module_info, { format: :hash, parsed_module: parsed_module, save_to_file: true })
+
+            dependency_tree.each do |dependency|
+              dep_module_ref = module_ref_object_from_options_or_context(module_ref: "#{dependency[:namespace]}/#{dependency[:name]}", version: dependency[:version])
+              if Operation::Module.module_version_exists?(dep_module_ref)
+                p_helper = Operation::Module::Install::PrintHelper.new(:module_ref => dep_module_ref, :source => :local)
+                p_helper.print_using_installed_dependent_module
+              else
+                install_response = Operation::Module.install_from_catalog(module_ref: dep_module_ref, version: dep_module_ref.version)
+
+                if client_installed_modules = (install_response && install_response.data[:installed_modules])
+                  opts_server_install = {
+                    has_directory_param: false,
+                    has_remote_repo: true,
+                    update_deps: self.update_deps?
+                  }
+                  install_on_server(client_installed_modules, opts_server_install)
+                end
+              end
+            end
           end
           
           # opts can have keys:

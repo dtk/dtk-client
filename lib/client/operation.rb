@@ -66,6 +66,9 @@ module DTK::Client
     require 'dtk_network_client'
     class DtkNetworkClient < DTK::Network::Client::Command
     end
+
+    class DtkNetworkDependencyTree < DTK::Network::Client::DependencyTree
+    end
   end
 end
 
