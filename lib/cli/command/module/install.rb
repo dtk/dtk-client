@@ -38,7 +38,7 @@ module DTK::Client
           end
         end
 
-        # TODO: 3070: in sprint 7 should move alot of this logic into the install opration dircetoty and use commands/moduel/install just to get params
+        # TODO: 3070: in sprint 7 should move a lot of this logic into the install operation directoty and use commands/moduel/install just to get params
         class Install
           def initialize(context, opts = {})
             @context             = context
@@ -54,8 +54,6 @@ module DTK::Client
           end
           
           def execute
-            set_module_ref_and_version!
-
             if Operation::Module.module_version_exists?(self.module_ref)
               clone_module
             else
@@ -76,7 +74,7 @@ module DTK::Client
           end
 
           def version
-            @version ||= ret_version
+            @version ||= self.module_ref.version
           end
 
           def base_dsl_file_obj
@@ -90,20 +88,11 @@ module DTK::Client
 
           def install_from_catalog
             # installs content from dtkn (later probably from other remote catalogs) onto client machine
-            # in so doing installes depedent modules onto teh dtk server; this step though does not install main module onto
+            # in so doing installes dependent modules onto teh dtk server; this step though does not install main module onto
             # server (the later step Operation::Module.install does this)
             
             # TODO: 3070: handle sitution where response is not ok
-            #  TODO: 3070: removed remote_module_info becuase looke dlike alwys nil
-
             install_response = Operation::Module.install_from_catalog(module_ref: self.module_ref, version: self.version, directory_path: self.directory_path?)
-            #install_response = Operation::Module.install_from_catalog(:module_ref => self.module_ref, :version => version, :directory_path => self.directory_path?, :remote_module_info => remote_module_info)
-            
-            # raise Error::Usage, "You can use version only with 'namespace/name' provided" if version && module_name.nil?
-            
-            # if target_repo_dir
-            #   directory_path ||= target_repo_dir.data[:target_repo_dir]
-            # end
             
             if client_installed_modules = (install_response && install_response.data[:installed_modules])
               opts_server_install = {
@@ -227,14 +216,6 @@ module DTK::Client
             OsUtil.print_info("DTK module '#{module_ref.pretty_print}' has been successfully cloned from server into '#{repo_dir}'")
           end
           
-          # This is needed because once version is set need it to update module ref
-          def set_module_ref_and_version!
-            # order matters
-            self.module_ref
-            self.version
-            nil
-          end
-
           def should_install_from_catalog?
             unless @install_from_catalog.nil?
               @install_from_catalog
@@ -245,12 +226,10 @@ module DTK::Client
 
           def ret_module_ref
             if should_install_from_catalog?
-              module_ref_object_from_options_or_context(module_ref: self.module_name?, version: self.explicit_version?)
+              module_ref_version_unset = module_ref_object_from_options_or_context(module_ref: self.module_name?)
+              fill_in_version_from_remote!(module_ref_version_unset)
             else
-              # TODO: DTK-3370; if self.directory_path? is nil think we might need to pass some params to module_ref_object_from_options_or_context
-              version  = self.explicit_version? ||  version_when_from_directory
-              install_opts = self.directory_path? ? { directory_path: self.directory_path?, version: version } : {}
-              module_ref_object_from_options_or_context(install_opts)
+              module_ref_object_from_options_or_context(directory_path: self.directory_path?)
             end
           end
 
@@ -262,38 +241,34 @@ module DTK::Client
             self.context.module_ref_object_from_options_or_context(opts)
           end
 
-          DEFAULT_VERSION_WHEN_ON_DIR = 'master'
-          def ret_version 
-            version = 
-              if self.explicit_version?
-                self.explicit_version?
-              elsif should_install_from_catalog?
-                version_from_remote
-              else
-                version_when_from_directory
-              end
-            self.module_ref.version = version
-          end
+          def fill_in_version_from_remote!(module_ref_version_unset)
+            module_ref = module_ref_version_unset
 
-          def version_when_from_directory
-            DEFAULT_VERSION_WHEN_ON_DIR
-          end
-
-          def version_from_remote
-            versions = get_remote_module_info(self.module_ref, about: :versions)
-            raise Error::Usage, "Module '#{self.module_ref.namespace}/#{self.module_ref.module_name}' does not have any versions." if versions.empty?
-            versions.sort.last
-          end
-
-          # opts can have keys:
-          #   :about
-          def get_remote_module_info(module_ref, opts = {})
             module_info = {
               name: module_ref.module_name,
               namespace: module_ref.namespace,
             }
-            Operation::Module::DtkNetworkClient::Info.run(module_info, about: opts[:about])
-          end        
+            versions = Operation::Module::DtkNetworkClient::Info.run(module_info, about: :versions)
+
+            if versions.empty?
+              raise Error::Usage, "Module '#{module_term(module_ref)}' does not exist." 
+            elsif version = self.explicit_version?
+              if versions.include?(version)
+                module_ref.version = version
+              else
+                legal_versions = versions.join(', ')
+                raise Error::Usage, "Module '#{module_term(module_ref)}' does not have specified version '#{version}'; legal versions are: #{legal_versions}"
+              end
+            else
+              # use latest version
+              module_ref.version = versions.sort.last
+            end
+            module_ref
+          end
+
+          def module_term(module_ref)
+            "#{module_ref.namespace}:#{module_ref.module_name}"
+          end
         
         end
       end
