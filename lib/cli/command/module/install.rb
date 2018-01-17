@@ -46,9 +46,10 @@ module DTK::Client
               remote_module_info = nil
 
               unless version
-                remote_module_info = get_remote_module_info(module_ref)
-                version            = remote_module_info.required(:version)
-                module_ref.version = version
+                if remote_module_info = get_remote_module_info(module_ref)
+                  version            = remote_module_info.required(:version)
+                  module_ref.version = version
+                end
               end
 
               if Operation::Module.module_version_exists?(module_ref, :type => :common_module)
@@ -86,6 +87,14 @@ module DTK::Client
           :module_ref => module_ref,
           :target_directory => Operation::ClientModuleDir.create_module_dir_from_path(directory_path || OsUtil.current_dir)
         }
+
+        unless version
+          if server_version = get_last_version_from_server(module_ref)
+            version = server_version
+            module_ref.version = version
+          end
+        end
+
         repo_dir_info = Operation::Module.clone_module(arg).data
         repo_dir      = repo_dir_info[:target_repo_dir]
 
@@ -121,8 +130,28 @@ module DTK::Client
           :rsa_pub_key => SSHUtil.rsa_pub_key_content,
           :version?    => nil
         )
+        begin
+          Operation::Module.rest_get("#{Operation::Module::BaseRoute}/remote_module_info", query_string_hash)
+        rescue Error::ServerNotOkResponse => e
+          # do not raise if version not specified and module does not exist on repoman but exist on server; clone module from server instead
+          return
+        end
+      end
 
-        Operation::Module.rest_get("#{Operation::Module::BaseRoute}/remote_module_info", query_string_hash)
+      def get_last_version_from_server(module_ref)
+        query_string_hash = QueryStringHash.new(
+          :module_name => module_ref.module_name,
+          :namespace   => module_ref.namespace
+        )
+        response = Operation::Module.rest_get("#{Operation::Module::BaseRoute}/versions", query_string_hash)
+        versions = response.required(:versions)
+
+        if versions.size > 1
+          versions.delete('master')
+          versions.sort.last.strip
+        else
+          versions.first.strip
+        end
       end
     end
   end
