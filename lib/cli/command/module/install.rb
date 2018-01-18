@@ -114,7 +114,6 @@ module DTK::Client
             }
             get_and_install_dependencies
             Operation::Module.install(operation_args)
-            # TODO: DTK-3370: assume that right here goes the logic to recursively store the dependencies 
           end
 
           def get_and_install_dependencies
@@ -184,36 +183,14 @@ module DTK::Client
           end
 
           def clone_module
-            fail "DTK-3370: 'clone when module exists on server' needs to be refactored"
-            # TODO: DTK-3370: this can be defered to sprint 7; need to figure out what directory to clone to; logic below is just copied from what was essentially in curret code as opposed to be written to be right" 
+            # clone module into current directory + module name; same as when installing base module from dtk-network
+            target_directory_path = "#{self.directory_path? || OsUtil.current_dir}/#{self.module_ref.module_name}"
             arg = {
               :module_ref => self.module_ref,
-              :target_directory => Operation::ClientModuleDir.create_module_dir_from_path(self.directory_path? || OsUtil.current_dir)
+              :target_directory => Operation::ClientModuleDir.create_module_dir_from_path(target_directory_path)
             }
             repo_dir_info = Operation::Module.clone_module(arg).data
-            repo_dir      = repo_dir_info[:target_repo_dir]
-
-            # DTK-3088 - need this to pull service info for dependency module on clone
-            if repo_dir_info[:pull_service_info]# && (version.nil? || version.eql?('master'))
-              repo_dir = repo_dir_info[:target_repo_dir]
-              module_ref = module_ref_object_from_options_or_context(:directory_path => repo_dir)
-              
-              operation_args = {
-                :module_ref          => self.module_ref,
-                :base_dsl_file_obj   => self.base_dsl_file_obj,
-                :has_directory_param => true,
-                :directory_path      => repo_dir,
-                :update_deps         => false,
-                :do_not_print        => true,
-                :force               => true,
-                :allow_version       => true
-              }
-              
-              Operation::Module.pull_dtkn(operation_args)
-              Operation::Module.push(operation_args.merge(:method => "pulled"))
-            end
-            
-            OsUtil.print_info("DTK module '#{module_ref.pretty_print}' has been successfully cloned from server into '#{repo_dir}'")
+            OsUtil.print_info("DTK module '#{self.module_ref.pretty_print}' has been successfully cloned from server into '#{repo_dir_info[:target_repo_dir]}'")
           end
           
           def should_install_from_catalog?
@@ -261,13 +238,22 @@ module DTK::Client
               end
             else
               # use latest version
-              module_ref.version = versions.sort.last
+              module_ref.version = find_latest_version(versions)
             end
             module_ref
           end
 
           def module_term(module_ref)
             "#{module_ref.namespace}:#{module_ref.module_name}"
+          end
+
+          def find_latest_version(versions)
+            if versions.size > 1
+              versions.delete('master')
+              versions.sort.last
+            else
+              versions.first
+            end
           end
         
         end
