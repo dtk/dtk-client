@@ -23,24 +23,29 @@ module DTK::Client
       def task_status(opts = {})
         begin
           response = nil
+          footnote = nil
           loop do
             response = rest_call(opts)
             return response unless response.ok?
-            
+
             # TODO: clean this up
             # stop polling when top level task succeeds, fails or timeout
             if response and response.data and response.data.first
               if debug_mode?(response)
                 response.print_error_table!(true)
-                add_info_if_debug_mode!(response)
+                add_info!(response)
                 return response
               end
-
+              
               top_task_failed = response.data.first['status'].eql?('failed')
               is_pending        = (response.data.select {|r|r['status'].nil? }).size > 0
               is_executing      = (response.data.select {|r|r['status'].eql? 'executing'}).size > 0
               is_failed         = (response.data.select {|r|r['status'].eql? 'failed'}).size > 0
               is_cancelled      = response.data.first['status'].eql?('cancelled')
+              
+              response.data.each do |r|
+                footnote = r["info"] unless r["info"].nil?
+              end
 
               is_cancelled = true if top_task_failed
               
@@ -49,12 +54,12 @@ module DTK::Client
                 # response.print_error_table = true
                 # response.render_table(:task_status)
                 response.print_error_table!(true)
-                return response.set_render_as_table!
+                return response.set_render_as_table!(nil, footnote)
               end
             end
 
             system('clear')
-            response.set_render_as_table!
+            response.set_render_as_table!(nil, footnote)
             response.render_data
             
             Console.wait_animation("Watching '#{@object_type}' task status [ #{DEBUG_SLEEP_TIME} seconds refresh ] ", DEBUG_SLEEP_TIME)

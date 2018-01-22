@@ -93,8 +93,16 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode
       #{ |data_row| data_row['status'] == 'debugging' }
     end
 
-    def self.add_info_if_debug_mode!(response)
+    def self.info_mode_rows(response)
+      response['data'].select do |data_row|
+        data_row['status'] == 'executing'
+      end
+      #{ |data_row| data_row['status'] == 'debugging' }
+    end
+
+    def self.add_info!(response)
       debug_info_rows = debug_mode_rows(response).select { |row| (row['info'] || {}) }
+      info_rows = info_mode_rows(response).select { |row| (row['info'] || {}) }
       if debug_info_rows.size > 0
         info_message = debug_info_rows.last['info']['message']
         #response.set_render_as_table!(nil, info_message)

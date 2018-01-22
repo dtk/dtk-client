@@ -71,10 +71,11 @@ module DTK::Client
         )
       end
       
-      def add_info_if_debug_mode!(response)
-        debug_info_rows = debug_mode_rows(response).select { |row| (row['info'] || {})['message'] }
-        if debug_info_rows.size > 0
-          info_message = debug_info_rows.last['info']['message']
+      def add_info!(response)
+        #debug_info_rows = debug_mode_rows(response).select { |row| (row['info'] || {})['message'] }
+        info_rows = info_rows(response).select { |row| (row['info'] || {})['message'] }
+        if info_rows.size > 0
+          info_message = info_rows.last['info']['message']
           response.set_render_as_table!(nil, info_message)
         else
           response.set_render_as_table!
@@ -87,6 +88,10 @@ module DTK::Client
 
       def debug_mode_rows(response)
         response['data'].select { |data_row| data_row['status'] == 'debugging' }
+      end
+
+      def info_rows(response)
+        response['data'].select { |data_row| data_row['status'] == 'debugging' || data_row['status'] == 'executing'}
       end
 
     end
