@@ -43,10 +43,11 @@ module DTK::Client
       
       def install_from_catalog
         module_info = {
-          name:      module_ref.module_name,
-          namespace: module_ref.namespace,
-          version:   @version,
-          repo_dir:  @directory_path || @target_repo_dir
+          name:          module_ref.module_name,
+          namespace:     module_ref.namespace,
+          version:       @version,
+          explicit_path: @directory_path,
+          repo_dir:      @directory_path || @target_repo_dir
         }
         installed_modules = DtkNetworkClient::Install.run(module_info)
 
