@@ -50,6 +50,8 @@ module DTK::Client
         :uninstall_name            => Flag.new(:name, 'NAME', 'Module name to uninstall'),
         :link_name                 => Flag.new([:l, :link_name], 'link-name', 'Specify link name'),
         :format                    => Flag.new(:format, 'FORMAT', 'Choose in which format to display data (ex. TABLE, YAML)'),
+        :sleep                     => Flag.new(:sleep, '', ''),
+        :attempts                  => Flag.new(:attempts, '', ''),
 
         # switches
         # Switch constructor args order: key, desc, opts={}

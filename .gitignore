@@ -9,3 +9,4 @@ Gemfile.lock
 doc
 .yardoc
 .solargraph.yml
+dtk-dsl
