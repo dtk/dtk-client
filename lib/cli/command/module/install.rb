@@ -184,7 +184,7 @@ module DTK::Client
 
           def clone_module
             # clone module into current directory + module name; same as when installing base module from dtk-network
-            target_directory_path = "#{self.directory_path? || OsUtil.current_dir}/#{self.module_ref.module_name}"
+            target_directory_path = self.directory_path? || "#{OsUtil.current_dir}/#{self.module_ref.module_name}"
             arg = {
               :module_ref => self.module_ref,
               :target_directory => Operation::ClientModuleDir.create_module_dir_from_path(target_directory_path)
