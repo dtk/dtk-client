@@ -139,9 +139,16 @@ module DTK::Client
                 p_helper = Operation::Module::Install::PrintHelper.new(:module_ref => dep_module_ref, :source => :local)
                 p_helper.print_using_installed_dependent_module
               else
-                install_response = Operation::Module.install_from_catalog(module_ref: dep_module_ref, version: dep_module_ref.version)
+                client_installed_modules = nil
 
-                if client_installed_modules = (install_response && install_response.data[:installed_modules])
+                if dependency[:source]
+                  client_installed_modules = [dependency]
+                else
+                  install_response = Operation::Module.install_from_catalog(module_ref: dep_module_ref, version: dep_module_ref.version, type: :dependency)
+                  client_installed_modules = (install_response && install_response.data[:installed_modules])
+                end
+
+                if client_installed_modules# = (install_response && install_response.data[:installed_modules])
                   opts_server_install = {
                     has_directory_param: false,
                     has_remote_repo: true,
@@ -159,7 +166,7 @@ module DTK::Client
           #   :update_dep
           def install_on_server(client_installed_modules, opts = {})
             client_installed_modules.each do |installed_module|
-              directory_path = installed_module[:location]
+              directory_path = installed_module[:location] || installed_module[:source]
               module_ref     = module_ref_object_from_options_or_context(directory_path: directory_path, version: installed_module[:version])
               use_or_install_on_server(module_ref, directory_path, opts)
             end
