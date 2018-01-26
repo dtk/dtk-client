@@ -98,7 +98,8 @@ module DTK::Client
               opts_server_install = {
                 has_directory_param: self.has_directory_param?,
                 has_remote_repo: true,
-                update_deps: self.update_deps?
+                update_deps: self.update_deps?,
+                install_from: :remote
               }
               install_on_server(client_installed_modules, opts_server_install)
             end
@@ -149,10 +150,12 @@ module DTK::Client
                 end
 
                 if client_installed_modules# = (install_response && install_response.data[:installed_modules])
+                  install_from = dependency[:source] ? :local : :remote
                   opts_server_install = {
                     has_directory_param: false,
                     has_remote_repo: true,
-                    update_deps: self.update_deps?
+                    update_deps: self.update_deps?,
+                    install_from: install_from
                   }
                   install_on_server(client_installed_modules, opts_server_install)
                 end
@@ -183,7 +186,8 @@ module DTK::Client
                 :base_dsl_file_obj   => base_dsl_file_obj,
                 :has_directory_param => opts[:has_directory_param],
                 :has_remote_repo     => opts[:has_remote_repo],
-                :update_deps         => opts[:update_dep]
+                :update_deps         => opts[:update_dep],
+                :install_from        => opts[:install_from]
               }
               Operation::Module.install(operation_args)
             end

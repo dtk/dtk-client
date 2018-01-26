@@ -25,12 +25,12 @@ module DTK::Client
       require_relative('install/dependent_modules')
       require_relative('install/common_module')
 
-      def initialize(file_obj, module_ref, has_remote_repo)
+      def initialize(file_obj, module_ref, has_remote_repo, install_from)
         @file_obj         = file_obj
         @base_module_ref  = module_ref
         @parsed_module    = file_obj.parse_content(:common_module_summary)
         @has_remote_repo  = has_remote_repo
-        @print_helper     = PrintHelper.new(:module_ref => @base_module_ref, :source => :local) # ? :remote : :local)
+        @print_helper     = PrintHelper.new(:module_ref => @base_module_ref, :source => install_from || :local) # ? :remote : :local)
       end
       private :initialize
 
@@ -41,7 +41,8 @@ module DTK::Client
           has_directory_param    = args[:has_directory_param]
           has_remote_repo        = args[:has_remote_repo]
           update_deps            = args[:update_deps]
-          
+          install_from           = args[:install_from]
+
           case update_deps
           when "prompt"
             update_deps          = nil
@@ -55,7 +56,7 @@ module DTK::Client
             file_obj = args.required(:base_dsl_file_obj).raise_error_if_no_content
           end
 
-          new(file_obj, module_ref, has_remote_repo).install(:update_deps => update_deps, :no_update_deps => no_update_deps)
+          new(file_obj, module_ref, has_remote_repo, install_from).install(:update_deps => update_deps, :no_update_deps => no_update_deps)
         end
       end
 
