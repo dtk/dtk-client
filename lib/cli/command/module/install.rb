@@ -210,8 +210,9 @@ module DTK::Client
 
           def ret_module_ref
             if should_install_from_catalog?
-              module_ref_version_unset = module_ref_object_from_options_or_context(module_ref: self.module_name?)
-              fill_in_version_from_server_or_remote!(module_ref_version_unset)
+              module_ref_version_unset = module_ref_object_from_options_or_context(module_ref: self.module_name?, version: @explicit_version)
+              fill_in_version_from_server_or_remote!(module_ref_version_unset) unless @explicit_version
+              module_ref_version_unset
             else
               module_ref_object_from_options_or_context(directory_path: self.directory_path?)
             end
