@@ -211,7 +211,7 @@ module DTK::Client
           def ret_module_ref
             if should_install_from_catalog?
               module_ref_version_unset = module_ref_object_from_options_or_context(module_ref: self.module_name?)
-              fill_in_version_from_remote!(module_ref_version_unset)
+              fill_in_version_from_server_or_remote!(module_ref_version_unset)
             else
               module_ref_object_from_options_or_context(directory_path: self.directory_path?)
             end
@@ -225,14 +225,20 @@ module DTK::Client
             self.context.module_ref_object_from_options_or_context(opts)
           end
 
-          def fill_in_version_from_remote!(module_ref_version_unset)
+          def fill_in_version_from_server_or_remote!(module_ref_version_unset)
             module_ref = module_ref_version_unset
 
             module_info = {
               name: module_ref.module_name,
               namespace: module_ref.namespace,
             }
-            versions = Operation::Module::DtkNetworkClient::Info.run(module_info, about: :versions)
+
+            begin
+              versions = Operation::Module::DtkNetworkClient::Info.run(module_info, about: :versions)
+            rescue Exception => e
+              # if does not exist on repoman try getting version from server
+              versions = get_versions_from_server(module_ref)
+            end
 
             if versions.empty?
               raise Error::Usage, "Module '#{module_term(module_ref)}' does not exist." 
@@ -262,7 +268,17 @@ module DTK::Client
               versions.first
             end
           end
-        
+
+          def get_versions_from_server(module_ref)
+            query_string_hash = QueryStringHash.new(
+              :module_name => module_ref.module_name,
+              :namespace   => module_ref.namespace
+            )
+            response = Operation::Module.rest_get("#{Operation::Module::BaseRoute}/versions", query_string_hash)
+            versions = response.data(:versions) || []
+
+            versions
+          end
         end
       end
     end
