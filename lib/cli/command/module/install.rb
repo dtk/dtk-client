@@ -32,7 +32,7 @@ module DTK::Client
           sc.action do |_global_options, options, args|
             module_name         = args[0]
             directory_path      = args[1] || options[:directory_path]
-            has_directory_param = !options['d'].nil?,
+            has_directory_param = !options['d'].nil?
             Install.execute(self,  module_name: module_name, directory_path: directory_path, version: options[:version], update_deps: options[:update_deps], has_directory_param: has_directory_param)
             nil
           end
