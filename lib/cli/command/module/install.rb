@@ -28,12 +28,22 @@ module DTK::Client
             sc.flag Token.directory_path, :desc => 'Absolute or relative path to directory containing content to install'
           end
           sc.switch Token.update_deps
+          sc.switch Token.update_lock
           
           sc.action do |_global_options, options, args|
             module_name         = args[0]
             directory_path      = args[1] || options[:directory_path]
             has_directory_param = !options['d'].nil?
-            Install.execute(self,  module_name: module_name, directory_path: directory_path, version: options[:version], update_deps: options[:update_deps], has_directory_param: has_directory_param)
+
+            opts_hash = {
+              module_name: module_name,
+              directory_path: directory_path,
+              version: options[:version],
+              update_deps: options[:update_deps],
+              has_directory_param: has_directory_param,
+              update_lock_file: options['update-lock']
+            }
+            Install.execute(self, opts_hash)
             nil
           end
         end
@@ -47,6 +57,7 @@ module DTK::Client
             @update_deps         = opts[:update_deps]
             @directory_path      = opts[:directory_path]
             @has_directory_param = opts[:has_directory_param]
+            @update_lock_file    = opts[:update_lock_file]
           end
           
           def self.execute(context, opts = {})
@@ -132,7 +143,7 @@ module DTK::Client
               repo_dir:  file_obj.parent_dir
             }
             parsed_module   = file_obj.parse_content(:common_module_summary)
-            dependency_tree = Operation::DtkNetworkDependencyTree.get_or_create(module_info, { format: :hash, parsed_module: parsed_module, save_to_file: true })
+            dependency_tree = Operation::DtkNetworkDependencyTree.get_or_create(module_info, { format: :hash, parsed_module: parsed_module, save_to_file: true, update_lock_file: @update_lock_file })
 
             dependency_tree.each do |dependency|
               dep_module_ref = module_ref_object_from_options_or_context(module_ref: "#{dependency[:namespace]}/#{dependency[:name]}", version: dependency[:version])
