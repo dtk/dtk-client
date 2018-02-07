@@ -86,7 +86,12 @@ module DTK::Client
         # end
 
         @print_helper.print_continuation_installing_base_module
-        CommonModule.install(@base_module_ref, @file_obj, :has_remote_repo => @has_remote_repo)
+
+        base_path = @base_module_ref.client_dir_path || @file_obj.parent_dir?
+        self.class.handle_error base_path do
+          CommonModule.install(@base_module_ref, @file_obj, :has_remote_repo => @has_remote_repo)
+        end
+
         @print_helper.print_done_message
         nil
       end

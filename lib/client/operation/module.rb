@@ -35,7 +35,8 @@ module DTK::Client
       ]
       OPERATIONS.each { |operation| require_relative("module/#{operation}") }
 
-      BaseRoute = 'modules'
+      BaseRoute   = 'modules'
+      MODULE_LOCK = 'dtk.module.lock'
 
       extend ModuleServiceCommon::ClassMixin
         
@@ -76,6 +77,21 @@ module DTK::Client
           :version?     => module_ref.version,
           :module_type? => opts[:module_type]
         }
+      end
+
+      def self.handle_error(base_path, &block)
+        begin
+          block.call
+        rescue Error::ServerNotOkResponse => ex
+          if response = ex.response
+            unless response.ok?
+              # If install fails, delete dtk.module.lock file
+              FileUtils.rm_rf("#{base_path}/#{MODULE_LOCK}")
+            end
+          end
+
+          raise ex
+        end
       end
 
     end

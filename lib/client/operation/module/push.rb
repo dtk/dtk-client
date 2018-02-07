@@ -20,9 +20,11 @@ module DTK::Client
     class Push < self
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
-          module_ref    = args.required(:module_ref)
-          method        = args[:method] || "pushed"
-          allow_version = args[:allow_version]
+          module_ref        = args.required(:module_ref)
+          method            = args[:method] || "pushed"
+          allow_version     = args[:allow_version]
+          base_dsl_file_obj = args.required(:base_dsl_file_obj)
+          update_lock_file  = args[:update_lock_file]
 
           unless client_dir_path = module_ref.client_dir_path
             raise Error, "Not implemented yet; need to make sure module_ref.client_dir_path is set when client_dir_path given"
@@ -41,6 +43,16 @@ module DTK::Client
           repo_url  = module_info.required(:repo, :url)
           repo_name = module_info.required(:repo, :name)
 
+          @file_obj        = base_dsl_file_obj.raise_error_if_no_content
+          parsed_module   = @file_obj.parse_content(:common_module_summary)
+          repoman_client_module_info = {
+            name:      module_ref.module_name,
+            namespace: module_ref.namespace,
+            version:   module_ref.version,
+            repo_dir:  @file_obj.parent_dir
+          }
+          dependency_tree = DtkNetworkDependencyTree.get_or_create(repoman_client_module_info, { format: :hash, parsed_module: parsed_module, save_to_file: true, update_lock_file: update_lock_file })
+
           git_repo_args = {
             :repo_dir      => module_ref.client_dir_path,
             :repo_url      => repo_url,
@@ -58,7 +70,9 @@ module DTK::Client
             :commit_sha  => git_repo_response.data(:head_sha)
           )
 
-          response = rest_post("#{BaseRoute}/update_from_repo", post_body)
+          response = handle_error @file_obj.parent_dir do
+            rest_post("#{BaseRoute}/update_from_repo", post_body)
+          end
 
           existing_diffs = nil
           print          = nil
