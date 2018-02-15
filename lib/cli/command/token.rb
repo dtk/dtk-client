@@ -89,7 +89,9 @@ module DTK::Client
         :base_cmp         => 'BASE-COMPONENT',
         :deps_on_cmp      => 'DEPENDS-ON-COMPONENT',
         :service          => 'SERVICE',
-        :service_name     => 'SERVICE-NAME'
+        :service_name     => 'SERVICE-NAME',
+        :namespace        => 'NAMESPACE',
+        :user             => 'USER'
       }
       
     end
