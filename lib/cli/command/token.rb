@@ -57,7 +57,7 @@ module DTK::Client
         # Switch constructor args order: key, desc, opts={}
         :all          => Switch.new(:all, 'All'),
         :base         => Switch.new(:base, 'Create base service instance'),
-        :breakpoint       => Switch.new([:b, :breakpoint], 'Add breakpoint'),
+        :breakpoint   => Switch.new([:b, :breakpoint], 'Add breakpoint'),
         :delete       => Switch.new(:delete, 'Delete'),
         :force        => Switch.new([:f, :force], 'Force'),
         :purge        => Switch.new(:purge, 'Purge'),
@@ -69,7 +69,8 @@ module DTK::Client
         :dependencies => Switch.new(:deps, 'Dependencies'),
         :u            => Switch.new([:u, :unset], 'Unset attribute'),
         :recursive    => Switch.new(:r, 'Recursive'),
-        :update_deps  => Switch.new('update-deps', "Skip prompt and update all dependencies or skip prompt and don't update all dependencies  (on master)", :negatable => true, :default_value => 'prompt')
+        :update_deps  => Switch.new('update-deps', "Skip prompt and update all dependencies or skip prompt and don't update all dependencies  (on master)", :negatable => true, :default_value => 'prompt'),
+        :skip_server  => Switch.new('skip-server', 'Do not install module on server')
       }
 
       ARG_TOKENS = {

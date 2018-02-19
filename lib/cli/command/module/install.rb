@@ -26,6 +26,7 @@ module DTK::Client
           # Add '-d' flag if development mode is active
           if Config[:development_mode]
             sc.flag Token.directory_path, :desc => 'Absolute or relative path to directory containing content to install'
+            sc.switch Token.skip_server
           end
           sc.switch Token.update_deps
 
@@ -35,6 +36,7 @@ module DTK::Client
             update_deps     = options[:update_deps]
             has_remote_repo = false
             is_clone        = false
+            skip_server     = options['skip-server']
 
             if module_name = args[0]
               # reached if installing from dtkn
@@ -60,7 +62,7 @@ module DTK::Client
               end
             end
 
-            unless is_clone
+            if !is_clone && !skip_server
               raise Error::Usage, "You can use version only with 'namespace/name' provided" if version && module_name.nil?
 
               if target_repo_dir
