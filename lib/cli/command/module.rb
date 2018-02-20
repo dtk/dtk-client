@@ -32,7 +32,8 @@ module DTK::Client
           'push',
           'push-dtkn',
           'stage',
-          'uninstall'
+          'uninstall',
+          'unpublish'
         ]
 
         command_def :desc => 'Subcommands for interacting with DTK modules'
