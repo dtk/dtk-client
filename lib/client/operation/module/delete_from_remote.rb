@@ -38,49 +38,12 @@ module DTK::Client
           module_ref_opts = { :namespace => module_ref.namespace }
           return unless Console.prompt_yes_no("Are you sure you want to delete module '#{DTK::Common::PrettyPrintForm.module_ref(module_ref.module_name, module_ref_opts)}' from repo manager?", :add_options => true)
         end
-        # query_string_hash = QueryStringHash.new(
-        #   :module_name => module_ref.module_name,
-        #   :namespace   => module_ref.namespace,
-        #   # :rsa_pub_key => SSHUtil.rsa_pub_key_content,
-        #   :force?    => opts[:force]
-        # )
 
-        # unless version = module_ref.version
-        #   raise Error::Usage, "Version is required"
-        #   remotes = Operation::Module.list_remotes({})
-
-        #   selected_module = remotes.data.find{ |vr| vr['display_name'].eql?("#{module_ref.namespace}/#{module_ref.module_name}") }
-        #   raise Error::Usage, "Module '#{module_ref.namespace}/#{module_ref.module_name}' does not exist on repo manager!" unless selected_module
-
-        #   versions = selected_module['versions']
-        #   versions.map! { |v| v == 'base' ? 'master' : v }
-
-        #   if versions.size > 1
-        #     ret_version = Console.version_prompt(versions, "Select which module version to delete: ", { :add_all => true })
-        #     return unless ret_version
-        #     version = ret_version
-        #   else
-        #     version = versions.first
-        #   end
-        # end
-
-        # query_string_hash.merge!(:version => module_ref.version)
-        # query_string_hash.merge!(:versions => versions) if version.eql?('all')
         module_info = {
-          name:          module_ref.module_name,
-          namespace:     module_ref.namespace
-          # version:       module_ref.version,
-          # explicit_path: @directory_path,
-          # repo_dir:      @directory_path || @target_repo_dir
+          name:      module_ref.module_name,
+          namespace: module_ref.namespace
         }
-        installed_modules = DtkNetworkClient::Delete.run(module_info)
-
-        # unless opts[:skip_prompt]
-          # module_ref_opts = { :namespace => module_ref.namespace }
-          # module_ref_opts.merge!(:version => version) unless version.eql?('all')
-          # return unless Console.prompt_yes_no("Are you sure you want to delete module '#{DTK::Common::PrettyPrintForm.module_ref(module_ref.module_name, module_ref_opts)}' from repo manager?", :add_options => true)
-        # end
-        # rest_post "#{BaseRoute}/delete_from_remote", query_string_hash
+        DtkNetworkClient::Delete.run(module_info)
 
         nil
       end
