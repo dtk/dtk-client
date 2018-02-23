@@ -65,14 +65,14 @@ module DTK::Client
           end
           
           def execute
-            if Operation::Module.module_version_exists?(self.module_ref)
-              clone_module
-            else
-              if should_install_from_catalog?
-                install_from_catalog
+            if @module_name
+              if Operation::Module.module_version_exists?(self.module_ref)
+                clone_module
               else
-                install_from_directory
+                install_from_catalog
               end
+            else
+              install_from_directory
             end
           end
           
