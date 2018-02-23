@@ -216,11 +216,7 @@ module DTK::Client
           end
           
           def should_install_from_catalog?
-            unless @install_from_catalog.nil?
-              @install_from_catalog
-            else
-              @install_from_catalog = !!self.module_name?
-            end
+            !!@module_name
           end
 
           def ret_module_ref
