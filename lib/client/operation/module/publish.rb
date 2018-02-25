@@ -46,7 +46,14 @@ module DTK::Client
           version: @version,
           repo_dir: @target_repo_dir
         }
-        DtkNetworkClient::Publish.run(module_info, parsed_module: parsed_module)
+
+        response = DtkNetworkClient::Publish.run(module_info, parsed_module: parsed_module)
+        OsUtil.print_info("Module '#{module_ref.pretty_print}' has been published successfully.")
+
+        if Config[:development_mode]
+          ret_response = { namespace_id: response['namespace_short_id'], module_version_id: response['short_id'] }
+          return ret_response
+        end
 
         nil
       end
