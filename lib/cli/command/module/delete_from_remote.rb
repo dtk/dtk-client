@@ -21,7 +21,8 @@ module DTK::Client
       subcommand_def 'delete-from-remote' do |c|
         c.arg Token::Arg.module_name
         command_body c, 'delete-from-dtkn', 'Delete module from the DTK remote catalog (DTKN)' do |sc|
-          sc.flag Token.version
+          # sc.flag Token.version
+
           sc.switch Token.skip_prompt
           sc.switch Token.force, :desc => 'Force delete'
           
