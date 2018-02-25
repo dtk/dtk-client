@@ -40,7 +40,7 @@ module DTK::Client
         unless opts[:skip_prompt]
           module_ref_opts = { :namespace => module_ref.namespace }
           module_ref_opts.merge!(:version => version)
-          return unless Console.prompt_yes_no("Are you sure you want to unpublish module '#{DTK::Common::PrettyPrintForm.module_ref(module_ref.module_name, module_ref_opts)}' from repo manager?", :add_options => true)
+          return unless Console.prompt_yes_no("Are you sure you want to unpublish module '#{DTK::Common::PrettyPrintForm.module_ref(module_ref.module_name, module_ref_opts)}' from dtk network?", :add_options => true)
         end
 
         module_info = {

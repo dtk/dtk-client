@@ -20,7 +20,7 @@ module DTK::Client
     module Account
       subcommand_def 'create-namespace' do |c|
         c.arg Token::Arg.namespace
-        command_body c, 'create-namespace', 'Create new namesapce on repo manager' do |sc|
+        command_body c, 'create-namespace', 'Create new namesapce on dtk network' do |sc|
           sc.action do |_global_options, options, args|
             Operation::Account.create_namespace(:namespace => args[0])
           end

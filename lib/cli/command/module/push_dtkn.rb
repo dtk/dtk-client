@@ -19,7 +19,7 @@ module DTK::Client
   module CLI::Command
     module Module 
       subcommand_def 'push-dtkn' do |c|
-        command_body c, 'push-dtkn', 'Push content from client module directory to repo manager' do |sc|
+        command_body c, 'push-dtkn', 'Push content from client module directory to dtk network' do |sc|
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to module directory containing updates to push; not need if in the module directory'
           sc.action do |_global_options, options, _args|
             module_ref = module_ref_object_from_options_or_context(options)

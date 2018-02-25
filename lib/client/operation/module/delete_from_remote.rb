@@ -36,7 +36,7 @@ module DTK::Client
       def delete_from_remote(opts = {})
         unless opts[:skip_prompt]
           module_ref_opts = { :namespace => module_ref.namespace }
-          return unless Console.prompt_yes_no("Are you sure you want to delete module '#{DTK::Common::PrettyPrintForm.module_ref(module_ref.module_name, module_ref_opts)}' from repo manager?", :add_options => true)
+          return unless Console.prompt_yes_no("Are you sure you want to delete module '#{DTK::Common::PrettyPrintForm.module_ref(module_ref.module_name, module_ref_opts)}' from dtk network?", :add_options => true)
         end
 
         module_info = {
