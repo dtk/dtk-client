@@ -16,31 +16,18 @@
 # limitations under the License.
 #
 module DTK::Client
-  module CLI
-    module Command
-      module Module 
-        include Command::Mixin
-
-        ALL_SUBCOMMANDS = [
-          'delete-from-remote',
-          'install',
-          'list',
-          'list-assemblies',
-          'list-remotes',
-          'publish',
-          # 'pull-dtkn',
-          'push',
-          # 'push-dtkn',
-          'stage',
-          'uninstall',
-          'unpublish',
-          'update'
-        ]
-
-        command_def :desc => 'Subcommands for interacting with DTK modules'
-        ALL_SUBCOMMANDS.each { |subcommand| require_relative("module/#{subcommand.gsub(/-/,'_')}") } 
+  module CLI::Command
+    module Module 
+      subcommand_def 'update' do |c|
+        command_body c, 'update', 'Update module dependencies to the latest available on dtk network' do |sc|
+          sc.flag Token.directory_path, :desc => 'Absolute or relative path to module directory containing updates to publish; not need if in the module directory'
+          sc.action do |_global_options, options, _args|
+            module_ref = module_ref_object_from_options_or_context(options)
+            Operation::Module.update(:module_ref => module_ref, :directory_path => options[:directory_path], :base_dsl_file_obj => @base_dsl_file_obj)
+          end
+        end
       end
+
     end
   end
 end
-

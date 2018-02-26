@@ -32,7 +32,8 @@ module DTK::Client
         :push_dtkn,
         :stage,
         :uninstall,
-        :unpublish
+        :unpublish,
+        :update
       ]
       OPERATIONS.each { |operation| require_relative("module/#{operation}") }
 
