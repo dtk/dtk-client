@@ -47,7 +47,7 @@ module DTK::Client
           repo_dir: @target_repo_dir
         }
 
-        response = DtkNetworkClient::Publish.run(module_info, parsed_module: parsed_module)
+        response = DtkNetworkClient::Publish.run(module_info, parsed_module: parsed_module, development_mode: Config[:development_mode])
         OsUtil.print_info("Module '#{module_ref.pretty_print}' has been published successfully.")
 
         if Config[:development_mode]
