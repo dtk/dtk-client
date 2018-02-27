@@ -22,7 +22,7 @@ module DTK::Client
         c.arg Token::Arg.module_name
         command_body c, 'delete-from-dtkn', 'Delete module from the DTK remote catalog (DTKN)' do |sc|
           # sc.flag Token.version
-          raise Error::Usage, "Version option is not supported for this command" if ARGV.include?('-v')
+          raise Error::Usage, "Version option is not supported for this command" if ARGV.include?('delete-from-dtkn') && ARGV.include?('-v')
 
           sc.switch Token.skip_prompt
           sc.switch Token.force, :desc => 'Force delete'
