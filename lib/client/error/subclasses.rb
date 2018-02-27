@@ -108,5 +108,17 @@ module DTK::Client
         super(msg_to_pass_to_super, :backtrace => NO_BACKTRACE)
       end
     end
+
+    class DtkNetwork < self
+      # opts can have keys
+      #  :backtrace
+      def initialize(error_msg, opts = {})
+        msg_to_pass_to_super = "[DTK NETWORK ERROR] #{error_msg}"
+        super(msg_to_pass_to_super, opts.merge(:where => :dtk_network))
+      end
+      def self.label(*_args)
+        super(:dtk_network)
+      end
+    end
   end
 end

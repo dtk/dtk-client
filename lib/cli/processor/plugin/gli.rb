@@ -46,6 +46,8 @@ module DTK::Client; module CLI
               nil
             elsif err.kind_of?(Error)
               raise err
+            elsif err.kind_of?(DTK::Network::Client::Error)
+              raise Error::DtkNetwork.new(err.message, :backtrace => err.backtrace)
             else
               raise Error::Client.new(err.message, :backtrace => err.backtrace)
             end
