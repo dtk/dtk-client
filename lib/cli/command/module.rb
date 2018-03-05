@@ -28,13 +28,13 @@ module DTK::Client
           'list-assemblies',
           'list-remotes',
           'publish',
-          # 'pull-dtkn',
+          'pull-dtkn',
           'push',
-          # 'push-dtkn',
+          'push-dtkn',
           'stage',
           'uninstall',
-          'unpublish',
-          'update'
+          'unpublish'
+          # 'update'
         ]
 
         command_def :desc => 'Subcommands for interacting with DTK modules'
