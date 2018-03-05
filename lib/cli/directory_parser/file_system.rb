@@ -100,6 +100,12 @@ module DTK::Client; module CLI
 
       module MultipleMatches
         def self.resolve(matches)
+          # first try to make decission based on user's input e.g. 'dtk module ...' or 'dtk service ...'
+          if input_rank = rank_based_on_input
+            top_match = matches.select { |match| match.first == input_rank }
+            return top_match.first if top_match && !top_match.empty?
+          end
+
           augmented_matches = matches.map { |match| { match: match, ranking: type_ranking(match[0]) } }
           not_treated_types = augmented_matches.select { |aug_match| aug_match[:ranking].nil? }
           fail Error, "No ranking for types: #{not_treated_types.map { |aug_match| aug_match[:match][0] }.join(', ')}" unless not_treated_types.empty?
@@ -120,6 +126,17 @@ module DTK::Client; module CLI
           @ranking_for_types ||= {
             DTK::DSL::FileType::CommonModule::DSLFile::Top => 2,
             DTK::DSL::FileType::ServiceInstance::DSLFile::Top => 1
+          }
+        end
+
+        def self.rank_based_on_input
+          input_types[ARGV.first]
+        end
+
+        def self.input_types
+          {
+            'module' => DTK::DSL::FileType::CommonModule::DSLFile::Top,
+            'service' => DTK::DSL::FileType::ServiceInstance::DSLFile::Top
           }
         end
       end
