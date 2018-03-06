@@ -32,7 +32,8 @@ module DTK::Client
           module_ref        = args.required(:module_ref)
           base_dsl_file_obj = args.required(:base_dsl_file_obj)
           directory_path    = args[:directory_path]
-          new('dtkn', module_ref, directory_path).publish({file_obj: base_dsl_file_obj})
+          update_lock_file  = args[:update_lock_file]
+          new('dtkn', module_ref, directory_path).publish({file_obj: base_dsl_file_obj, update_lock_file: update_lock_file})
         end
       end
 
@@ -47,7 +48,7 @@ module DTK::Client
           repo_dir: @target_repo_dir
         }
 
-        response = DtkNetworkClient::Publish.run(module_info, parsed_module: parsed_module, development_mode: Config[:development_mode])
+        response = DtkNetworkClient::Publish.run(module_info, parsed_module: parsed_module, development_mode: Config[:development_mode], update_lock_file: opts[:update_lock_file])
         OsUtil.print_info("Module '#{module_ref.pretty_print}' has been published successfully.")
 
         if Config[:development_mode]
