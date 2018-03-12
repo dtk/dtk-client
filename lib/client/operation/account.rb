@@ -29,7 +29,8 @@ module DTK::Client
         :grant_access,
         :revoke_access,
         :create_namespace,
-        :chmod
+        :chmod,
+        :delete_namespace
       ]
       OPERATIONS.each { |operation| require_relative("#{RoutePrefix}/#{operation}") }
 
