@@ -26,8 +26,8 @@ module DTK::Client
         :set_password,
         :set_catalog_credentials,
         :register_catalog_user,
-        :grant_access,
-        :revoke_access,
+        :add_to_group,
+        :remove_from_group,
         :create_namespace,
         :chmod,
         :delete_namespace

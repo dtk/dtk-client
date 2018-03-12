@@ -92,7 +92,8 @@ module DTK::Client
         :service_name     => 'SERVICE-NAME',
         :namespace        => 'NAMESPACE',
         :user             => 'USER',
-        :permissions      => 'PERMISSIONS'
+        :permissions      => 'PERMISSIONS',
+        :group            => 'GROUP',
       }
       
     end

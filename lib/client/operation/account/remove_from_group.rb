@@ -17,10 +17,10 @@
 #
 module DTK::Client
   class Operation::Account
-    class RevokeAccess < self
+    class RemoveFromGroup < self
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
-          DtkNetworkClient::RevokeAccess.run(args.required(:namespace), args.required(:user))
+          DtkNetworkClient::RemoveFromGroup.run(args.required(:group), args.required(:user))
           nil
         end
       end

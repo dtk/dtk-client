@@ -17,10 +17,10 @@
 #
 module DTK::Client
   class Operation::Account
-    class GrantAccess < self
+    class AddToGroup < self
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
-          DtkNetworkClient::GrantAccess.run(args.required(:namespace), args.required(:user))
+          DtkNetworkClient::AddToGroup.run(args.required(:group), args.required(:user))
           nil
         end
       end

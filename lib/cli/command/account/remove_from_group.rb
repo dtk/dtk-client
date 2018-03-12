@@ -18,12 +18,12 @@
 module DTK::Client
   module CLI::Command
     module Account
-      subcommand_def 'revoke-access' do |c|
-        c.arg Token::Arg.namespace
+      subcommand_def 'remove-from-group' do |c|
+        c.arg Token::Arg.group
         c.arg Token::Arg.user
-        command_body c, 'revoke-access', 'Revoke access to specific namespace' do |sc|
+        command_body c, 'remove-from-group', 'Remove user from specific group' do |sc|
           sc.action do |_global_options, options, args|
-            Operation::Account.revoke_access(:namespace => args[0], :user => args[1])
+            Operation::Account.remove_from_group(:group => args[0], :user => args[1])
           end
         end
       end

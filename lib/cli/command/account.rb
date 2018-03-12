@@ -28,8 +28,8 @@ module DTK::Client
           'set-password',
           'set-catalog-credentials',
           'register-catalog-user',
-          'grant-access',
-          'revoke-access',
+          'add-to-group',
+          'remove-from-group',
           'create-namespace',
           'chmod',
           'delete-namespace'

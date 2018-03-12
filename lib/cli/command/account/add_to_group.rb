@@ -18,12 +18,12 @@
 module DTK::Client
   module CLI::Command
     module Account
-      subcommand_def 'grant-access' do |c|
-        c.arg Token::Arg.namespace
+      subcommand_def 'add-to-group' do |c|
+        c.arg Token::Arg.group
         c.arg Token::Arg.user
-        command_body c, 'grant-access', 'Grant access to specific namespace' do |sc|
+        command_body c, 'add-to-group', 'Add user to specific group' do |sc|
           sc.action do |_global_options, options, args|
-            Operation::Account.grant_access(:namespace => args[0], :user => args[1])
+            Operation::Account.add_to_group(:group => args[0], :user => args[1])
           end
         end
       end
