@@ -16,29 +16,15 @@
 # limitations under the License.
 #
 module DTK::Client
-  module CLI
-    module Command
-      module Account 
-        include Command::Mixin
-
-        ALL_SUBCOMMANDS = [
-          'list-ssh-keys',
-          'delete-ssh-key',
-          'add-ssh-key',
-          'set-password',
-          'set-catalog-credentials',
-          'register-catalog-user',
-          'add-to-group',
-          'remove-from-group',
-          'create-namespace',
-          'chmod',
-          'delete-namespace',
-          'list-namespaces'
-        ]
-        command_def :desc => 'Subcommands for interacting with current Account'
-        ALL_SUBCOMMANDS.each { |subcommand| require_relative("account/#{subcommand.gsub(/-/,'_')}") } 
+  module CLI::Command
+    module Account
+      subcommand_def 'list-namespaces' do |c|
+        command_body c, 'list-namespaces', 'List namespaces' do |sc|
+          sc.action do |_global_options, options, args|
+            Operation::Account.list_namespaces
+          end
+        end
       end
     end
   end
 end
-

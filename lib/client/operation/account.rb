@@ -30,7 +30,8 @@ module DTK::Client
         :remove_from_group,
         :create_namespace,
         :chmod,
-        :delete_namespace
+        :delete_namespace,
+        :list_namespaces
       ]
       OPERATIONS.each { |operation| require_relative("#{RoutePrefix}/#{operation}") }
 
