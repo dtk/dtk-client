@@ -8,3 +8,4 @@ sftp-config*.json
 doc
 .yardoc
 .solargraph.yml
+Gemfile.lock
