@@ -90,6 +90,7 @@ module DTK::Client; module CLI
 
       # returns an array of strings that are file paths; except bakup files (e.g. bak.dtk.service.yaml)
       def matching_file_paths(dir_path, path_info)
+        return [] if File.exist?("#{dir_path}/.nested_module")
         Dir.glob("#{dir_path}/*").select { |file_path| File.file?(file_path) and !is_backup_file?(file_path) and path_info.matches?(file_path) }
       end
 
