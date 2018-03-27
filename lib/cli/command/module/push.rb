@@ -24,7 +24,7 @@ module DTK::Client
           sc.switch Token.update_lock
           sc.action do |_global_options, options, _args|
             module_ref = module_ref_object_from_options_or_context(options)
-            Operation::Module.push(:module_ref => module_ref, update_lock_file: options['update-lock'], :base_dsl_file_obj => @base_dsl_file_obj)
+            Operation::Module.push(module_ref: module_ref, update_lock_file: options['update-lock'], base_dsl_file_obj: @base_dsl_file_obj, context: self)
           end
         end
       end

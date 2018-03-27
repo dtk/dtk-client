@@ -25,6 +25,7 @@ module DTK::Client
           allow_version     = args[:allow_version]
           base_dsl_file_obj = args.required(:base_dsl_file_obj)
           update_lock_file  = args[:update_lock_file]
+          context           = args[:context]
 
           unless client_dir_path = module_ref.client_dir_path
             raise Error, "Not implemented yet; need to make sure module_ref.client_dir_path is set when client_dir_path given"
@@ -52,6 +53,55 @@ module DTK::Client
             repo_dir:  @file_obj.parent_dir
           }
           dependency_tree = DtkNetworkDependencyTree.get_or_create(repoman_client_module_info, { format: :hash, parsed_module: parsed_module, save_to_file: true, update_lock_file: update_lock_file })
+
+          # TODO: need to refactor to use the same code for push and install
+          dependency_tree.each do |dependency|
+            dep_module_ref = context.module_ref_object_from_options_or_context(module_ref: "#{dependency[:namespace]}/#{dependency[:name]}", version: dependency[:version])
+            if Operation::Module.module_version_exists?(dep_module_ref)
+              p_helper = Operation::Module::Install::PrintHelper.new(:module_ref => dep_module_ref, :source => :local)
+              p_helper.print_using_installed_dependent_module
+            else
+              client_installed_modules = nil
+
+              if dependency[:source]
+                client_installed_modules = [dependency]
+              else
+                install_response = Operation::Module.install_from_catalog(module_ref: dep_module_ref, version: dep_module_ref.version, type: :dependency)
+                client_installed_modules = (install_response && install_response.data[:installed_modules])
+              end
+
+              if client_installed_modules# = (install_response && install_response.data[:installed_modules])
+                install_from = dependency[:source] ? :local : :remote
+                opts_server_install = {
+                  has_directory_param: false,
+                  has_remote_repo: true,
+                  # update_deps: self.update_deps?,
+                  install_from: install_from
+                }
+                client_installed_modules.each do |installed_module|
+                  directory_path = installed_module[:location] || installed_module[:source]
+                  temp_module_ref     = context.module_ref_object_from_options_or_context(directory_path: directory_path, version: installed_module[:version])
+                  # use_or_install_on_server(module_ref, directory_path, opts)
+                  if Operation::Module.module_version_exists?(temp_module_ref)
+                    p_helper = Operation::Module::Install::PrintHelper.new(:module_ref => temp_module_ref, :source => :local)
+                    p_helper.print_using_installed_dependent_module
+                  else
+                    temp_base_dsl_file_obj = CLI::Context.base_dsl_file_obj(dir_path: directory_path)
+                    operation_args = {
+                      :module_ref          => temp_module_ref,
+                      :base_dsl_file_obj   => temp_base_dsl_file_obj,
+                      :has_directory_param => opts_server_install[:has_directory_param],
+                      :has_remote_repo     => opts_server_install[:has_remote_repo],
+                      :update_deps         => opts_server_install[:update_dep],
+                      :install_from        => opts_server_install[:install_from]
+                    }
+                    Operation::Module.install(operation_args)
+                  end
+                end
+                # install_on_server(client_installed_modules, opts_server_install)
+              end
+            end
+          end
 
           git_repo_args = {
             :repo_dir      => module_ref.client_dir_path,

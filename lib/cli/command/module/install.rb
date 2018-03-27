@@ -104,7 +104,7 @@ module DTK::Client
             
             # TODO: 3070: handle sitution where response is not ok
             install_response = Operation::Module.install_from_catalog(module_ref: self.module_ref, version: self.version, directory_path: self.directory_path?)
-            
+
             if client_installed_modules = (install_response && install_response.data[:installed_modules])
               opts_server_install = {
                 has_directory_param: self.has_directory_param?,
