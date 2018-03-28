@@ -25,5 +25,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'hirb', '0.7.3'
   spec.add_dependency 'mime-types', '~> 2.99.3'
   spec.add_dependency 'dtk-dsl', '~> 1.1.0'
-  
+  spec.add_dependency 'dtk-network-client', '~> 1.0.0'
 end
