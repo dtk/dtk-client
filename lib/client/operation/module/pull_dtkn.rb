@@ -67,7 +67,7 @@ module DTK::Client
       
       def pull_dtkn(opts = {})
         # TODO: DTK-2765: not sure if we need module to exist on server to do push-dtkn
-        unless module_version_exists?(@module_ref, :type => :common_module)
+        unless module_version_exists?(@module_ref)
           raise Error::Usage, "Module #{@module_ref.print_form} does not exist on server"
         end
 
@@ -76,32 +76,41 @@ module DTK::Client
           raise Error::Usage, "You are not allowed to pull module version '#{ref_version}'!" unless do_not_raise
         end
 
-        error_msg = "To allow pull-dtkn to go through, invoke 'dtk push' to push the changes to server before invoking pull-dtkn again"
-        GitRepo.modified_with_diff?(@target_repo_dir, { :error_msg => error_msg, :command => 'pull-dtkn' })
+        # error_msg = "To allow pull-dtkn to go through, invoke 'dtk push' to push the changes to server before invoking pull-dtkn again"
+        # GitRepo.modified_with_diff?(@target_repo_dir, { :error_msg => error_msg, :command => 'pull-dtkn' })
 
-        query_string_hash = QueryStringHash.new(
-          :module_name => @module_ref.module_name,
-          :namespace   => @module_ref.namespace,
-          :rsa_pub_key => SSHUtil.rsa_pub_key_content,
-          :version     => @version
-        )
-        remote_module_info = rest_get "#{BaseRoute}/remote_module_info", query_string_hash
+        module_info = {
+          name:      module_ref.module_name,
+          namespace: module_ref.namespace,
+          version:   ref_version,
+          repo_dir:  target_repo_dir
+        }
+        DtkNetworkClient::Pull.run(module_info)
 
 
-        unless dependent_modules.empty?
-          begin
-            Install::DependentModules.install(@module_ref, dependent_modules, :update_deps => opts[:update_deps], :no_update_deps => opts[:no_update_deps] , :mode => 'pull', :do_not_print => opts[:do_not_print])
-            # Install::DependentModules.install(@module_ref, dependent_modules, :skip_prompt => false, :mode => 'pull')
-          rescue Install::TerminateInstall
-            @print_helper.print_terminated_pulling
-            return nil
-          end
-        end
+        # query_string_hash = QueryStringHash.new(
+        #   :module_name => @module_ref.module_name,
+        #   :namespace   => @module_ref.namespace,
+        #   :rsa_pub_key => SSHUtil.rsa_pub_key_content,
+        #   :version     => @version
+        # )
+        # remote_module_info = rest_get "#{BaseRoute}/remote_module_info", query_string_hash
 
-        @print_helper.print_continuation_pulling_base_module unless opts[:do_not_print]
-        LoadSource.fetch_transform_and_merge(remote_module_info, self, :stage_and_commit_steps => true, :force => opts[:force], :use_theirs => true)
 
-        nil
+        # unless dependent_modules.empty?
+        #   begin
+        #     Install::DependentModules.install(@module_ref, dependent_modules, :update_deps => opts[:update_deps], :no_update_deps => opts[:no_update_deps] , :mode => 'pull', :do_not_print => opts[:do_not_print])
+        #     # Install::DependentModules.install(@module_ref, dependent_modules, :skip_prompt => false, :mode => 'pull')
+        #   rescue Install::TerminateInstall
+        #     @print_helper.print_terminated_pulling
+        #     return nil
+        #   end
+        # end
+
+        # @print_helper.print_continuation_pulling_base_module unless opts[:do_not_print]
+        # LoadSource.fetch_transform_and_merge(remote_module_info, self, :stage_and_commit_steps => true, :force => opts[:force], :use_theirs => true)
+
+        # nil
       end
 
       private
@@ -123,7 +132,7 @@ module DTK::Client
           Install::ModuleRef.new(:namespace => dep_namespace, :module_name => dep_module_name, :version => dep_version, :is_base_module => is_base_module)
         end
         unless base_component_module_found
-          if module_version_exists?(@module_ref, :type => :component_module)
+          if module_version_exists?(@module_ref)
             ret << Install::ModuleRef.new(:namespace => @module_ref.namespace, :module_name => @module_ref.module_name, :version => @module_ref.version, :is_base_module => true)
           end
         end

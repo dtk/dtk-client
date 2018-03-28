@@ -34,9 +34,12 @@ module DTK::Client
         end
       end
 
-      def self.clone_service_repo(args)
+      def self.clone(args)
         wrap_operation(args) do |args|
-          response_data_hash(:target_repo_dir => Internal.clone_service_repo(args))
+          repo_url        = args.required(:repo_url)
+          target_repo_dir = args.required(:target_repo_dir)
+          branch          = args.required(:branch)
+          response_data_hash(:target_repo_dir => Internal.clone(repo_url, target_repo_dir, branch))
         end
       end
 
@@ -233,10 +236,6 @@ module DTK::Client
         info_type = args.required(:info_type)
         repo_dir  = args.required(:repo_dir)
         Internal::Dtkn.repo_with_remote(info_type, repo_dir, add_remote: args[:add_remote])
-      end
-
-      def self.response_data_hash(hash = {})
-        hash.inject({}) { |h, (k, v)| h.merge(k.to_s => v) }
       end
 
     end

@@ -4,9 +4,9 @@ sftp-config*.json
 .remote-sync.json.bak
 .tags
 .tags1
-Gemfile.lock
 .vscode
 doc
 .yardoc
 .solargraph.yml
-dtk-dsl
+Gemfile.lock
+sftp.json

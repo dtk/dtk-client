@@ -18,13 +18,12 @@
 module DTK::Client
   module CLI::Command
     module Module 
-      subcommand_def 'publish' do |c|
-        command_body c, 'publish', 'Publish module installed on server to the dtk network' do |sc|
+      subcommand_def 'update' do |c|
+        command_body c, 'update', 'Update module dependencies to the latest available on dtk network' do |sc|
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to module directory containing updates to publish; not need if in the module directory'
-          sc.switch Token.update_lock
           sc.action do |_global_options, options, _args|
             module_ref = module_ref_object_from_options_or_context(options)
-            Operation::Module.publish(:module_ref => module_ref, update_lock_file: options['update-lock'], :directory_path => options[:directory_path], :base_dsl_file_obj => @base_dsl_file_obj)
+            Operation::Module.update(:module_ref => module_ref, :directory_path => options[:directory_path], :base_dsl_file_obj => @base_dsl_file_obj)
           end
         end
       end
@@ -32,4 +31,3 @@ module DTK::Client
     end
   end
 end
-

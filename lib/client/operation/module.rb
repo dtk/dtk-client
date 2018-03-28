@@ -31,11 +31,14 @@ module DTK::Client
         :push,
         :push_dtkn,
         :stage,
-        :uninstall
+        :uninstall,
+        :unpublish
+        # :update
       ]
       OPERATIONS.each { |operation| require_relative("module/#{operation}") }
 
-      BaseRoute = 'modules'
+      BaseRoute   = 'modules'
+      MODULE_LOCK = 'dtk.module.lock'
 
       extend ModuleServiceCommon::ClassMixin
         
@@ -43,14 +46,12 @@ module DTK::Client
 
       # opts can have keys
       #   :remote_info - Boolean
-      #   :type
       #   :rsa_pub_key
       def module_version_exists?(module_ref, opts = {})
         self.class.module_version_exists?(module_ref, opts)
       end
       def self.module_version_exists?(module_ref, opts = {})
-        type = opts[:type] || :common_module
-        query_string_hash = module_ref_query_string_hash(module_ref, module_type: type)
+        query_string_hash = module_ref_query_string_hash(module_ref)
 
         if ret_remote_info = opts[:remote_info]
           query_string_hash = query_string_hash.merge(:remote_info => ret_remote_info, :rsa_pub_key => opts[:rsa_pub_key])
@@ -64,10 +65,8 @@ module DTK::Client
         PostBody.new(module_ref_hash(module_ref))
       end
 
-      # opts can have keys:
-      #    :module_type
-      def self.module_ref_query_string_hash(module_ref, opts = {})
-        QueryStringHash.new(module_ref_hash(module_ref, opts))
+      def self.module_ref_query_string_hash(module_ref)
+        QueryStringHash.new(module_ref_hash(module_ref))
       end
 
       # opts can have keys:
@@ -80,6 +79,21 @@ module DTK::Client
           :version?     => module_ref.version,
           :module_type? => opts[:module_type]
         }
+      end
+
+      def self.handle_error(base_path, &block)
+        begin
+          block.call
+        rescue Error::ServerNotOkResponse => ex
+          if response = ex.response
+            unless response.ok?
+              # If install fails, delete dtk.module.lock file
+              FileUtils.rm_rf("#{base_path}/#{MODULE_LOCK}")
+            end
+          end
+
+          raise ex
+        end
       end
 
     end

@@ -18,23 +18,21 @@
 module DTK::Client
   module CLI::Command
     module Module 
-      subcommand_def 'delete-from-remote' do |c|
+      subcommand_def 'unpublish' do |c|
         c.arg Token::Arg.module_name
-        command_body c, 'delete-from-dtkn', 'Delete module from the DTK remote catalog (DTKN)' do |sc|
-          # sc.flag Token.version
-          raise Error::Usage, "Version option is not supported for this command" if ARGV.include?('delete-from-dtkn') && ARGV.include?('-v')
-
+        command_body c, 'unpublish', 'Unpublish module version from the DTK remote catalog (DTKN)' do |sc|
+          sc.flag Token.version
           sc.switch Token.skip_prompt
           sc.switch Token.force, :desc => 'Force delete'
-
+          
           sc.action do |_global_options, options, args|
-            module_ref = module_ref_object_from_options_or_context?(:module_ref => args[0])
+            module_ref = module_ref_object_from_options_or_context?(:module_ref => args[0], :version => options[:version])
             operation_args = {
               :module_ref  => module_ref,
               :skip_prompt => options[:skip_prompt],
-              :force     => options[:f]
+              :force       => options[:f]
             }
-            Operation::Module.delete_from_remote(operation_args)
+            Operation::Module.unpublish(operation_args)
           end
         end
       end

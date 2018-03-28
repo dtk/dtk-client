@@ -16,31 +16,14 @@
 # limitations under the License.
 #
 module DTK::Client
-  module CLI
-    module Command
-      module Module 
-        include Command::Mixin
-
-        ALL_SUBCOMMANDS = [
-          'delete-from-remote',
-          'install',
-          'list',
-          'list-assemblies',
-          'list-remotes',
-          'publish',
-          'pull-dtkn',
-          'push',
-          'push-dtkn',
-          'stage',
-          'uninstall',
-          'unpublish'
-          # 'update'
-        ]
-
-        command_def :desc => 'Subcommands for interacting with DTK modules'
-        ALL_SUBCOMMANDS.each { |subcommand| require_relative("module/#{subcommand.gsub(/-/,'_')}") } 
+  class Operation::Account
+    class ListNamespaces < self
+      def self.execute(args = Args.new)
+        wrap_operation(args) do |args|
+          response = DtkNetworkClient::ListNamespaces.run
+          Response.new(response)
+        end.set_render_as_table!
       end
     end
   end
 end
-

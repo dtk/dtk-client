@@ -71,6 +71,7 @@ module DTK::Client
         :recursive    => Switch.new(:r, 'Recursive'),
         :update_deps  => Switch.new('update-deps', "Skip prompt and update all dependencies or skip prompt and don't update all dependencies  (on master)", :negatable => true, :default_value => 'prompt'),
         :skip_server  => Switch.new('skip-server', 'Do not install module on server')
+        :update_lock  => Switch.new([:u, 'update-lock'], 'Update lock file with new dependencies')
       }
 
       ARG_TOKENS = {
@@ -91,7 +92,11 @@ module DTK::Client
         :base_cmp         => 'BASE-COMPONENT',
         :deps_on_cmp      => 'DEPENDS-ON-COMPONENT',
         :service          => 'SERVICE',
-        :service_name     => 'SERVICE-NAME'
+        :service_name     => 'SERVICE-NAME',
+        :namespace        => 'NAMESPACE',
+        :user             => 'USER',
+        :permissions      => 'PERMISSIONS',
+        :group            => 'GROUP',
       }
       
     end

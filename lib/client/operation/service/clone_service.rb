@@ -27,6 +27,9 @@ module DTK::Client
             raise Error::Usage, "DTK service '#{service_ref}' does not exist on server."
           end
 
+          pp service_info
+          fail "TODO: DTK-3366: update to use ClientModuleDir::ServiceInstance.clone"
+
           branch    = service_info.required(:branch, :name)
           repo_url  = service_info.required(:repo, :url)
           repo_name = service_info.required(:repo, :name)

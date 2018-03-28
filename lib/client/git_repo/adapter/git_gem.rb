@@ -149,7 +149,9 @@ module DTK::Client
       end
 
       def untracked
-        status.is_a?(Hash) ? status.untracked().keys : status.untracked().collect { |file| file.first }
+        @git_repo.lib.command_lines('ls-files', ['--others', '--exclude-standard'])
+        # Replaced below with above because did not take into account what was in .gitignore
+        # status.is_a?(Hash) ? status.untracked().keys : status.untracked().collect { |file| file.first }
       end
 
       def deleted

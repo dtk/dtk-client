@@ -95,26 +95,16 @@ module DTK::Client
           repo.head_commit_sha
         end
 
-        def self.clone_service_repo(args)
-          repo_url         = args.required(:repo_url)
-          branch           = args.required(:branch)
-          service_instance = args.required(:service_instance)
-          remove_existing  = args[:remove_existing]
-          repo_dir         = args[:repo_dir]
-
-          target_repo_dir = create_service_dir(service_instance, :remove_existing => remove_existing, :path => repo_dir)
+        def self.clone(repo_url, target_repo_dir,  branch)
           begin
             git_repo.clone(repo_url, target_repo_dir,  branch)
           rescue => e
-            #cleanup by deleting directory
-            
             FileUtils.rm_rf(target_repo_dir) if File.directory?(target_repo_dir)
-            # Log error details
             Logger.instance.error_pp(e.message, e.backtrace)
-            
-            # User-friendly error
+
             raise Error::Usage, "Clone to directory '#{target_repo_dir}' failed"
           end
+
           target_repo_dir
         end
 
@@ -127,15 +117,7 @@ module DTK::Client
           repo_dir        = args[:repo_dir]
 
           target_repo_dir = create_module_dir(module_type, module_name, :remove_existing => remove_existing, :path => repo_dir)
-          begin
-            git_repo.clone(repo_url, target_repo_dir,  branch)
-          rescue => e
-            FileUtils.rm_rf(target_repo_dir) if File.directory?(target_repo_dir)
-            Logger.instance.error_pp(e.message, e.backtrace)
-
-            raise Error::Usage, "Clone to directory '#{target_repo_dir}' failed"
-          end
-
+          clone(repo_url, target_repo_dir, branch)
           target_repo_dir
         end
 

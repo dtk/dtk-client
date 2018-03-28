@@ -17,7 +17,7 @@
 #
 module DTK::Client
   class Operation::Module
-    class Publish < self
+    class Update < self
       attr_reader :module_ref, :target_repo_dir, :version
       def initialize(catalog, module_ref, directory_path)
         @catalog         = catalog
@@ -32,12 +32,11 @@ module DTK::Client
           module_ref        = args.required(:module_ref)
           base_dsl_file_obj = args.required(:base_dsl_file_obj)
           directory_path    = args[:directory_path]
-          update_lock_file  = args[:update_lock_file]
-          new('dtkn', module_ref, directory_path).publish({file_obj: base_dsl_file_obj, update_lock_file: update_lock_file})
+          new('dtkn', module_ref, directory_path).update({file_obj: base_dsl_file_obj})
         end
       end
 
-      def publish(opts = {})
+      def update(opts = {})
         file_obj = opts[:file_obj]
         parsed_module = file_obj.parse_content(:common_module_summary)
 
@@ -48,13 +47,8 @@ module DTK::Client
           repo_dir: @target_repo_dir
         }
 
-        response = DtkNetworkClient::Publish.run(module_info, parsed_module: parsed_module, development_mode: Config[:development_mode], update_lock_file: opts[:update_lock_file])
-        OsUtil.print_info("Module '#{module_ref.pretty_print}' has been published successfully.")
-
-        if Config[:development_mode]
-          ret_response = { namespace_id: response['namespace_short_id'], module_version_id: response['short_id'] }
-          return ret_response
-        end
+        response = DtkNetworkClient::Update.run(module_info, parsed_module: parsed_module)
+        OsUtil.print_info("Dependencies updated successfully")
 
         nil
       end

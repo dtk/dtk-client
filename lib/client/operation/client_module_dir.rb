@@ -22,6 +22,7 @@ module DTK::Client
     # Operations for managing module folders
     class ClientModuleDir < self
       require_relative('client_module_dir/git_repo')
+      require_relative('client_module_dir/service_instance')
       
       NAMESPACE_SEPERATOR = ':'
       # opts can have keys
@@ -120,6 +121,10 @@ module DTK::Client
       end
     
       private
+
+      def self.response_data_hash(hash = {})
+        hash.inject({}) { |h, (k, v)| h.merge(k.to_s => v) }
+      end
 
       def self.base_path(type)
         path =

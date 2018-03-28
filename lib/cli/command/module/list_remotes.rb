@@ -25,7 +25,7 @@ module DTK::Client
             arg = {}
             unless options[:n].nil?
               arg = {
-                :module_namespace => options[:n]
+                :namespace => options[:n]
               }
             end
             

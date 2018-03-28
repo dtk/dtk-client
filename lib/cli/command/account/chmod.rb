@@ -17,14 +17,13 @@
 #
 module DTK::Client
   module CLI::Command
-    module Module 
-      subcommand_def 'publish' do |c|
-        command_body c, 'publish', 'Publish module installed on server to the dtk network' do |sc|
-          sc.flag Token.directory_path, :desc => 'Absolute or relative path to module directory containing updates to publish; not need if in the module directory'
-          sc.switch Token.update_lock
-          sc.action do |_global_options, options, _args|
-            module_ref = module_ref_object_from_options_or_context(options)
-            Operation::Module.publish(:module_ref => module_ref, update_lock_file: options['update-lock'], :directory_path => options[:directory_path], :base_dsl_file_obj => @base_dsl_file_obj)
+    module Account
+      subcommand_def 'chmod' do |c|
+        c.arg Token::Arg.namespace
+        c.arg Token::Arg.permissions
+        command_body c, 'chmod', 'Change permissions for specific namespace e.g. ug+rw , user and group get RW permissions' do |sc|
+          sc.action do |_global_options, options, args|
+            Operation::Account.chmod(:namespace => args[0], :permissions => args[1])
           end
         end
       end
@@ -32,4 +31,3 @@ module DTK::Client
     end
   end
 end
-

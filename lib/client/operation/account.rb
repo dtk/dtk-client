@@ -19,7 +19,20 @@ module DTK::Client
   class Operation
     class Account < self
       RoutePrefix = 'account'
-      OPERATIONS = [:list_ssh_keys, :delete_ssh_key, :add_ssh_key, :set_password, :set_catalog_credentials, :register_catalog_user]
+      OPERATIONS = [
+        :list_ssh_keys,
+        :delete_ssh_key,
+        :add_ssh_key,
+        :set_password,
+        :set_catalog_credentials,
+        :register_catalog_user,
+        :add_to_group,
+        :remove_from_group,
+        :create_namespace,
+        :chmod,
+        :delete_namespace,
+        :list_namespaces
+      ]
       OPERATIONS.each { |operation| require_relative("#{RoutePrefix}/#{operation}") }
 
 

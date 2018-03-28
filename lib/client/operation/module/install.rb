@@ -25,12 +25,12 @@ module DTK::Client
       require_relative('install/dependent_modules')
       require_relative('install/common_module')
 
-      def initialize(file_obj, module_ref, has_remote_repo)
+      def initialize(file_obj, module_ref, has_remote_repo, install_from)
         @file_obj         = file_obj
         @base_module_ref  = module_ref
         @parsed_module    = file_obj.parse_content(:common_module_summary)
         @has_remote_repo  = has_remote_repo
-        @print_helper     = PrintHelper.new(:module_ref => @base_module_ref, :source => has_remote_repo ? :remote : :local)
+        @print_helper     = PrintHelper.new(:module_ref => @base_module_ref, :source => install_from || :local) # ? :remote : :local)
       end
       private :initialize
 
@@ -41,7 +41,8 @@ module DTK::Client
           has_directory_param    = args[:has_directory_param]
           has_remote_repo        = args[:has_remote_repo]
           update_deps            = args[:update_deps]
-          
+          install_from           = args[:install_from]
+
           case update_deps
           when "prompt"
             update_deps          = nil
@@ -55,7 +56,7 @@ module DTK::Client
             file_obj = args.required(:base_dsl_file_obj).raise_error_if_no_content
           end
 
-          new(file_obj, module_ref, has_remote_repo).install(:update_deps => update_deps, :no_update_deps => no_update_deps)
+          new(file_obj, module_ref, has_remote_repo, install_from).install(:update_deps => update_deps, :no_update_deps => no_update_deps)
         end
       end
 
@@ -67,25 +68,30 @@ module DTK::Client
           raise Error::Usage, "No base module reference #{dsl_path_ref}"
         end
 
-        if module_version_exists?(@base_module_ref, { :type => :common_module })
+        if module_version_exists?(@base_module_ref)
           raise Error::Usage, "Module '#{@base_module_ref.print_form}' exists already"
         end
 
-        unless dependent_modules.empty?
-          begin
-            if @has_remote_repo
-              DependentModules.install(@base_module_ref, dependent_modules, opts)
-            else
-              DependentModules.install_with_local(@base_module_ref, dependent_modules, opts)
-            end
-          rescue TerminateInstall
-            @print_helper.print_terminated_installation
-            return nil
-          end
-        end
+        # unless dependent_modules.empty?
+        #   begin
+        #     if @has_remote_repo
+        #       DependentModules.install(@base_module_ref, dependent_modules, opts)
+        #     else
+        #       DependentModules.install_with_local(@base_module_ref, dependent_modules, opts)
+        #     end
+        #   rescue TerminateInstall
+        #     @print_helper.print_terminated_installation
+        #     return nil
+        #   end
+        # end
 
         @print_helper.print_continuation_installing_base_module
-        CommonModule.install(@base_module_ref, @file_obj, :has_remote_repo => @has_remote_repo)
+
+        base_path = @base_module_ref.client_dir_path || @file_obj.parent_dir?
+        self.class.handle_error base_path do
+          CommonModule.install(@base_module_ref, @file_obj, :has_remote_repo => @has_remote_repo)
+        end
+
         @print_helper.print_done_message
         nil
       end
@@ -112,7 +118,7 @@ module DTK::Client
           ModuleRef.new(:namespace => dep_namespace, :module_name => dep_module_name, :version => dep_version, :is_base_module => is_base_module)
         end
         unless base_component_module_found
-          if module_version_exists?(@base_module_ref, :type => :component_module)
+          if module_version_exists?(@base_module_ref)
             ret << ModuleRef.new(:namespace => namespace, :module_name => module_name, :version => version, :is_base_module => true)
           end
         end

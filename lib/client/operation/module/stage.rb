@@ -49,12 +49,12 @@ module DTK::Client
 
           clone_args = {
             :module_ref       => module_ref,
-            :repo_url         => response.required(:repo, :url),
-            :branch           => response.required(:branch, :name),
+            :base_module      => response.required(:base_module),
+            :nested_modules   => response.required(:nested_modules),
             :service_instance => service_instance,
             :remove_existing  => remove_existing
           }
-          message = ClientModuleDir::GitRepo.clone_service_repo(clone_args)
+          message = ClientModuleDir::ServiceInstance.clone(clone_args)
           target_dir = message.data(:target_repo_dir)
 
           OsUtil.print_info("Service instance '#{service_instance}' has been created. In order to work with service instance, please navigate to: #{target_dir}") 
