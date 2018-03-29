@@ -51,10 +51,16 @@ module DTK::Client
     def self.render(ruby_obj, opts = {})
       wrap_to_handle_warning_message(ruby_obj) do |ruby_obj|
         render_type = opts[:render_type]
+        if opts[:footnote].is_a?(Array)
+          # maybe fix this so it removes the info from the array
+          footnote = opts[:footnote].join(", ") 
+        else
+          footnote = opts[:footnote]
+        end
         if render_type == Type::TABLE
           render_opts = {
             :print_error_table => opts[:print_error_table],
-            :footnote          => opts[:footnote]
+            :footnote          => footnote
           }
           get_adapter(Type::TABLE, opts).render(ruby_obj, render_opts)
         elsif ruby_obj.kind_of?(::Hash)
