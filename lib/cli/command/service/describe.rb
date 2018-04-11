@@ -20,12 +20,11 @@ module DTK::Client; module CLI
     module Service
       subcommand_def 'describe' do |c|
         command_body c, 'describe', 'Describe service instance content' do |sc|
-          # sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory containing updates to pull; not need if in the service instance directory'
-          #sc.switch Token.dependencies, :desc => 'Show dependencies'
+          sc.flag Token.path
           sc.action do |_global_options, options, _args|
             args = {
               service_instance: service_instance_in_options_or_context(options),
-              dependencies:     options[:dependencies] || nil
+              path: options[:path]
             }
             Operation::Service.describe(args)
           end
