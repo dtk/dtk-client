@@ -20,8 +20,12 @@ module DTK::Client
     class Describe < self
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
-          service_instance = args.required(:service_instance)
-          rest_get "#{BaseRoute}/#{service_instance}/describe"
+          service_instance  = args.required(:service_instance)
+          path              = args[:path]
+          query_string_hash = QueryStringHash.new
+
+          query_string_hash.merge!(path: path) if path
+          rest_get "#{BaseRoute}/#{service_instance}/describe", query_string_hash
         end
       end
     end

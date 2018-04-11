@@ -91,7 +91,7 @@ module DTK::Client; module CLI
       # returns an array of strings that are file paths; except bakup files (e.g. bak.dtk.service.yaml)
       def matching_file_paths(dir_path, path_info)
         return [] if File.exist?("#{dir_path}/.nested_module")
-        Dir.glob("#{dir_path}/*").select { |file_path| File.file?(file_path) and !is_backup_file?(file_path) and path_info.matches?(file_path) }
+        Dir.glob("#{dir_path}/*", File::FNM_DOTMATCH).select { |file_path| File.file?(file_path) and !is_backup_file?(file_path) and path_info.matches?(file_path) }
       end
 
       def is_backup_file?(file_path)
@@ -126,7 +126,8 @@ module DTK::Client; module CLI
         def self.ranking_for_types
           @ranking_for_types ||= {
             DTK::DSL::FileType::CommonModule::DSLFile::Top => 2,
-            DTK::DSL::FileType::ServiceInstance::DSLFile::Top => 1
+            DTK::DSL::FileType::ServiceInstance::DSLFile::Top => 1,
+            DTK::DSL::FileType::ServiceInstance::DSLFile::Top::Hidden => 0
           }
         end
 
@@ -137,7 +138,8 @@ module DTK::Client; module CLI
         def self.input_types
           {
             'module' => DTK::DSL::FileType::CommonModule::DSLFile::Top,
-            'service' => DTK::DSL::FileType::ServiceInstance::DSLFile::Top
+            'service' => DTK::DSL::FileType::ServiceInstance::DSLFile::Top::Hidden
+            # 'service' => DTK::DSL::FileType::ServiceInstance::DSLFile::Top
           }
         end
       end

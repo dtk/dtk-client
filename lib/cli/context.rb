@@ -124,7 +124,8 @@ module DTK::Client
 
       def service_instance_from_base_dsl_file?
         #raise_error_when_missing_context(:service_instance) unless base_dsl_file_obj.file_type == DTK::DSL::FileType::ServiceInstance::DSLFile::Top
-        base_dsl_file_obj.file_type == DTK::DSL::FileType::ServiceInstance::DSLFile::Top
+        # base_dsl_file_obj.file_type == DTK::DSL::FileType::ServiceInstance::DSLFile::Top
+        base_dsl_file_obj.file_type == DTK::DSL::FileType::ServiceInstance::DSLFile::Top::Hidden
         parse_conent_and_ret_service_name
       end
 
@@ -164,7 +165,8 @@ module DTK::Client
       FILE_TYPES = 
         [
          ::DTK::DSL::FileType::CommonModule::DSLFile::Top,
-         ::DTK::DSL::FileType::ServiceInstance::DSLFile::Top
+         ::DTK::DSL::FileType::ServiceInstance::DSLFile::Top,
+         ::DTK::DSL::FileType::ServiceInstance::DSLFile::Top::Hidden
         ]
 
       def module_ref_object_from_options_or_context?(options, module_refs_opts = {})

@@ -52,6 +52,7 @@ module DTK::Client
         :format                    => Flag.new(:format, 'FORMAT', 'Choose in which format to display data (ex. TABLE, YAML)'),
         :sleep                     => Flag.new(:sleep, '', ''),
         :attempts                  => Flag.new(:attempts, '', ''),
+        :path                      => Flag.new(:path, 'PATH', 'Path'),
 
         # switches
         # Switch constructor args order: key, desc, opts={}
