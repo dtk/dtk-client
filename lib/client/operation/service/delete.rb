@@ -20,25 +20,29 @@ module DTK::Client
     class Delete < self
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
-          service_instance = args.required(:service_instance)
+          @service_instance = args.required(:service_instance)
           recursive        = args.required(:recursive)
           force            = args[:force]
           directory_path   = args[:directory_path]
 
-          unless args[:skip_prompt]
-            return false unless Console.prompt_yes_no("Are you sure you want to delete the content of service instance '#{service_instance}' ?", :add_options => true)
+          if path = args[:path]
+            delete_service_path(path)
+          else
+            unless args[:skip_prompt]
+              return false unless Console.prompt_yes_no("Are you sure you want to delete the content of service instance '#{@service_instance}' ?", :add_options => true)
+            end
+
+            error_msg = "To allow delete to go through, invoke 'dtk push' to push the changes to server before invoking delete again"
+            GitRepo.modified_with_diff?(directory_path || @module_ref.client_dir_path, { :error_msg => error_msg, :command => 'delete' }) unless force
+            post_body = PostBody.new(
+              :service_instance => @service_instance,
+              :recursive? => recursive
+            )
+            response = rest_post("#{BaseRoute}/delete", post_body)
+
+            OsUtil.print_info("Delete procedure started. For more information use 'dtk task-status'.")
+            display_node_info(response.data)
           end
-
-          error_msg = "To allow delete to go through, invoke 'dtk push' to push the changes to server before invoking delete again"
-          GitRepo.modified_with_diff?(directory_path || @module_ref.client_dir_path, { :error_msg => error_msg, :command => 'delete' }) unless force
-          post_body = PostBody.new(
-            :service_instance => service_instance,
-            :recursive? => recursive
-          )
-          response = rest_post("#{BaseRoute}/delete", post_body)
-
-          OsUtil.print_info("Delete procedure started. For more information use 'dtk task-status'.")
-          display_node_info(response.data)
         end
       end
 
@@ -53,8 +57,16 @@ module DTK::Client
         end
       end
 
+      def self.delete_service_path(path)
+        return false unless Console.prompt_yes_no("Are you sure you want to delete '#{path}' ?", :add_options => true)
+
+        post_body = PostBody.new(
+          :service_instance => @service_instance,
+          :path => path
+        )
+        rest_post("#{BaseRoute}/delete_by_path", post_body)
+      end
+
     end
   end
 end
-
-

@@ -20,14 +20,15 @@ module DTK::Client; module CLI
     module Service
       subcommand_def 'delete' do |c|
         command_body c, :delete, 'Destroys the running infrastructure associated with the service instance' do |sc|
-        sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory associated; not needed if executed in service instance directory'
+          sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory associated; not needed if executed in service instance directory'
+          sc.flag Token.path, :desc => "Delete specific part of service instance. Supported paths are 'dependencies/[name]', 'components/[name]', 'actions/[name]'"
+
           sc.switch Token.skip_prompt, :desc => 'Skip prompt that checks if user wants to delete the service instance'
           sc.switch Token.recursive, :desc => 'Delete all service instances staged into specified target'
           sc.switch Token.force, :desc => 'Ignore changes and destroy the running service instance'
-          # sc.switch Token.purge, :desc => 'Delete the service instance directory on the client'
+
           sc.action do |_global_options, options, args|
             directory_path   = options[:directory_path]
-            purge            = options[:purge]
             recursive        = options[:recursive]
             force            = options[:f]
             service_instance = service_instance_in_options_or_context(options)
@@ -37,7 +38,8 @@ module DTK::Client; module CLI
               :skip_prompt      => options[:skip_prompt],
               :directory_path   => directory_path || base_dsl_file_obj.parent_dir,
               :recursive        => recursive,
-              :force            => force
+              :force            => force,
+              :path             => options[:path]
             }
             Operation::Service.delete(args)
           end

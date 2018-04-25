@@ -20,7 +20,7 @@ module DTK::Client; module CLI
     module Service
       subcommand_def 'describe' do |c|
         command_body c, 'describe', 'Describe service instance content' do |sc|
-          sc.flag Token.path
+          sc.flag Token.path, :desc => "supported paths are 'dependencies', 'components/[name]', 'actions/[name]' "
           sc.action do |_global_options, options, _args|
             args = {
               service_instance: service_instance_in_options_or_context(options),
