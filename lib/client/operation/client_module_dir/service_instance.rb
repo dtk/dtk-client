@@ -25,6 +25,12 @@ module DTK::Client
           response_data_hash(:target_repo_dir => Internal.clone(args))
         end
       end
+
+      def self.commit_and_push_nested_modules(args)
+        wrap_operation(args) do |args|
+          response_data_hash(:nested_modules => Internal.commit_and_push_nested_modules(args))
+        end
+      end
     end
   end
 end

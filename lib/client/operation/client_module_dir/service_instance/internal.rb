@@ -41,7 +41,26 @@ module DTK::Client
           self.nested_modules.each { |nested_module| clone_nested_module(nested_module) }
           self.target_repo_dir
         end
-          
+
+        def self.commit_and_push_nested_modules(args)
+          service_instance     = args[:service_instance]
+          service_instance_dir = args[:service_instance_dir] || ret_base_path(:service, service_instance)
+
+          nested_modules_dir = find_nested_modules_dir(service_instance_dir)
+          nested_modules     = Dir.glob("#{nested_modules_dir}/*")
+
+          nested_modules_with_sha = []
+          nested_modules.each do |nested_module|
+            nested_module_name = nested_module.split('/').last
+            response = ClientModuleDir::GitRepo.commit_and_push_to_nested_module_repo({target_repo_dir: nested_module})
+            if head_sha = response.data(:head_sha)
+              nested_modules_with_sha << { nested_module_name => head_sha }
+            end
+          end
+
+          nested_modules_with_sha
+        end
+
         protected
 
         attr_reader :base_module, :nested_modules, :service_instance, :remove_existing, :repo_dir
@@ -83,6 +102,10 @@ module DTK::Client
 
         def find_unused_path?(dirs)
           dirs.map { |dir| "#{self.target_repo_dir}/#{dir}" }.find { |full_path| ! File.exists?(full_path) }
+        end
+
+        def self.find_nested_modules_dir(service_instance_dir)
+          self.possible_nested_module_base_dirs.map { |dir| "#{service_instance_dir}/#{dir}" }.find { |full_path| File.exists?(full_path) }
         end
 
         def clone_repo(module_info, target_repo_dir)

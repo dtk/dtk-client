@@ -25,18 +25,39 @@ module DTK::Client
           
           response = rest_get("#{BaseRoute}/#{service_instance}/repo_info")
 
-          repo_info_args = Args.new(
-            :service_instance => service_instance,
-            :commit_message   => args[:commit_message] || default_commit_message(service_instance),
-            :branch           => response.required(:branch, :name),
-            :repo_url         => response.required(:repo, :url),
+          nested_module_args = Args.new(
+            :service_instance     => service_instance,
+            :base_module          => nil,
+            :nested_modules       => nil,
             :service_instance_dir => args[:service_instance_dir]
           )
+          nested_modules_response = ClientModuleDir::ServiceInstance.commit_and_push_nested_modules(nested_module_args)
+          updated_nested_modules  = nested_modules_response.data(:nested_modules)
 
+          unless updated_nested_modules.empty?
+            repo_dir = (args[:service_instance_dir] || ClientModuleDir.ret_base_path(:service, service_instance))
+            empty_commit_args = Args.new(
+              :repo_dir   => repo_dir,
+              :commit_msg => "Nested modules changed"
+            )
+            ClientModuleDir::GitRepo.create_repo_with_empty_commit(empty_commit_args)
+
+            # this is used to pick up changes made in nested modules
+            Dir.glob("#{repo_dir}/.nested_modules_changed_*").each { |file| File.delete(file)}
+            Operation::ClientModuleDir.create_file_with_content("#{repo_dir}/.nested_modules_changed_#{Time.now.to_i}", Time.now.to_i)
+          end
+
+          repo_info_args = Args.new(
+            :service_instance     => service_instance,
+            :commit_message       => args[:commit_message] || default_commit_message(service_instance),
+            :branch               => response.required(:branch, :name),
+            :repo_url             => response.required(:repo, :url),
+            :service_instance_dir => args[:service_instance_dir]
+          )
           response = ClientModuleDir::GitRepo.commit_and_push_to_service_repo(repo_info_args)
           commit_sha = response.required(:head_sha)
 
-          response = rest_post("#{BaseRoute}/#{service_instance}/update_from_repo", :commit_sha => commit_sha)
+          response = rest_post("#{BaseRoute}/#{service_instance}/update_from_repo", { :commit_sha => commit_sha, :updated_nested_modules => updated_nested_modules })
           print_msgs_of_type(:error_msgs, response)
           print_msgs_of_type(:warning_msgs, response)
           print_msgs_of_type(:info_msgs, response)

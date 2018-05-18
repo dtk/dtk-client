@@ -27,6 +27,12 @@ module DTK::Client
         end
       end
 
+      def self.commit_and_push_to_nested_module_repo(args)
+        wrap_operation(args) do |args|
+          response_data_hash(:head_sha => Internal.commit_and_push_to_nested_module_repo(args))
+        end
+      end
+
       def self.clone_exists?(args)
         wrap_operation(args) do |args|
           type = args.required(:type)
