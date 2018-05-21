@@ -23,27 +23,22 @@ module DTK::Client
           service_ref       = args.required(:service_ref)
           service_name      = args.required(:service_name)
           target_directory = args[:target_directory]
+
           unless service_info = service_exists?(service_ref)
             raise Error::Usage, "DTK service '#{service_ref}' does not exist on server."
           end
 
-          pp service_info
-          fail "TODO: DTK-3366: update to use ClientModuleDir::ServiceInstance.clone"
-
-          branch    = service_info.required(:branch, :name)
-          repo_url  = service_info.required(:repo, :url)
-          repo_name = service_info.required(:repo, :name)
-
+          service_instance = service_info.required(:service, :name)
           clone_args = {
-            :repo_url    => service_info.required(:repo, :url),
-            :branch      => service_info.required(:branch, :name),
-            :service_instance => service_name,
-            #:service_name => service_name,
-            :repo_dir    => target_directory || ClientModuleDir.ret_path_with_current_dir(service_name)
+            :base_module      => service_info.required(:base_module),
+            :nested_modules   => service_info.required(:nested_modules),
+            :service_instance => service_instance,
+            :repo_dir         => target_directory
           }
+          message = ClientModuleDir::ServiceInstance.clone(clone_args)
+          target_dir = message.data(:target_repo_dir)
 
-          ret = ClientModuleDir::GitRepo.clone_service_repo(clone_args)
-          OsUtil.print_info("DTK service '#{service_ref}' has been successfully cloned into '#{ret.required(:target_repo_dir)}'")
+          OsUtil.print_info("DTK service '#{service_instance}' has been successfully cloned into '#{target_dir}'")
         end
       end
     end

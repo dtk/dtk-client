@@ -57,7 +57,7 @@ module DTK::Client
       private
 
       def self.service_exists?(service_ref, opts = {})
-        response = rest_get("#{BaseRoute}/#{service_ref}/repo_info")
+        response = rest_get("#{BaseRoute}/#{service_ref}/base_and_nested_repo_info")
         response.data.empty? ? nil : response
       end
     end
