@@ -251,6 +251,7 @@ module DTK::Client
             rescue Exception => e
               # if does not exist on repoman try getting version from server
               versions = get_versions_from_server(module_ref)
+              raise e if versions.empty?
             end
 
             if versions.empty?
