@@ -31,4 +31,5 @@ module DTK
   require_relative('util/query_string_hash')
   require_relative('util/interactive_wizard')
   require_relative('util/validation')
+  require_relative('util/file_helper')
 end

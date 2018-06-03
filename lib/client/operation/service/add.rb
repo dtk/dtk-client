@@ -15,24 +15,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'yaml'
-
 module DTK::Client
-  module Auxiliary
-    def snake_to_camel_case(snake_form)
-      snake_form.to_s.gsub('-','_').to_s.split('_').map{|t|t.capitalize}.join('')
-    end
-    
-    def snake_form(command_class, seperator='_')
-      command_class.to_s.gsub(/^.*::/, '').gsub(/Command$/,'').scan(/[A-Z][a-z]+/).map{|w|w.downcase}.join(seperator)
-    end
+  class Operation::Service
+    class Add < self
+      def self.execute(args = Args.new)
+        wrap_operation(args) do |args|
+          service_instance = args.required(:service_instance)
+          path             = args.required(:path)
+          relative_path    = args.required(:relative_path)
 
-    def hash_to_yaml(hash_content)
-      YAML.dump(hash_content)
-    end
+          content = yaml_to_hash(FileHelper.get_content?(relative_path))
 
-    def yaml_to_hash(yaml_content)
-      YAML.load(yaml_content)
+          query_string_hash = QueryStringHash.new(:service_instance => service_instance, path: path, content: content)
+          rest_post "#{BaseRoute}/add_by_path", query_string_hash
+        end
+      end
     end
   end
 end
