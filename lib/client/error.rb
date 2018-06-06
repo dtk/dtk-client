@@ -53,13 +53,13 @@ module DTK::Client
     NO_BACKTRACE = :no_backtarce
 
     def backtrace?
-     if @backtrace
-       @backtrace unless @backtrace == NO_BACKTRACE
-     else
-       backtrace
-     end
+      if @backtrace
+        @backtrace unless @backtrace == NO_BACKTRACE
+      else
+        backtrace
+      end
     end
-    
+
     def self.raise_if_error_info(response, opts = {})
       # check for errors in response
       error = response.error_info?(opts)

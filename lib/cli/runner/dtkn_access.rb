@@ -26,26 +26,27 @@ module DTK::Client; module CLI
         
         OsUtil.print_info('Processing ...') if config_existed
         # check to see if catalog credentials are set
-        conn = Session.get_connection
-        response = conn.post 'account/check_catalog_credentials'
+        # conn = Session.get_connection
+        # response = conn.post 'account/check_catalog_credentials'
         
-        # set catalog credentails
-        if response.ok? && !response.data(:catalog_credentials_set)
-          # setting up catalog credentials
-          catalog_creds = Configurator.ask_catalog_credentials
-          unless catalog_creds.empty?
-            post_body = {
-              :username => catalog_creds[:username], 
-              :password => catalog_creds[:password], 
-              :validate => true
-            }
-            response = conn.post 'account/set_catalog_credentials', post_body 
-            unless response.ok?
-              error_message = response.error_message.gsub(/\.[ ]*$/,'')
-              OsUtil.print_error("#{error_message}. You will have to set catalog credentials manually ('dtk account set-catalog-credentials').")
-            end
-          end
-        end
+        # # set catalog credentails
+        # if response.ok? && !response.data(:catalog_credentials_set)
+        #   # setting up catalog credentials
+        #   catalog_creds = Configurator.ask_catalog_credentials
+        #   unless catalog_creds.empty?
+        #     post_body = {
+        #       :username => catalog_creds[:username],
+        #       :password => catalog_creds[:password],
+        #       :validate => true
+        #     }
+        #     response = conn.post 'account/set_catalog_credentials', post_body
+        #     unless response.ok?
+        #       error_message = response.error_message.gsub(/\.[ ]*$/,'')
+        #       OsUtil.print_error("#{error_message}. You will have to set catalog credentials manually ('dtk account set-catalog-credentials').")
+        #     end
+        #   end
+        # end
+
         add_key_opts = {
           :first_registration => true, 
           :name => "#{Session.connection_username}-client"

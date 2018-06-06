@@ -59,7 +59,12 @@ module DTK::Client
       if response.ok?
         response
       else
-        raise Error::ServerNotOkResponse.new(response)
+        if errors = response['errors']
+          error_message = errors.first['message']
+          raise Error::Server.new(error_message)
+        else
+          raise Error::ServerNotOkResponse.new(response)
+        end
       end
     end
 
