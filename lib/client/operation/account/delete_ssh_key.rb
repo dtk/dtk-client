@@ -34,6 +34,8 @@ module DTK::Client
           OsUtil.print("Warning: We were not able to unregister your key with remote catalog! #{response.data(:repoman_registration_error)}", :yellow)
         end
 
+        Configurator.remove_current_user_from_direct_access
+
         OsUtil.print("SSH key '#{name}' removed successfully!", :yellow)
       end
     end

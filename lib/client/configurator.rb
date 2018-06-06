@@ -110,6 +110,21 @@ module DTK::Client
       
       true
     end
+
+    def self.remove_current_user_from_direct_access
+      remove_user_from_direct_access(client_username)
+    end
+
+    def self.remove_user_from_direct_access(username)
+      File.open('.temp_direct_access', 'w') do |output_file|
+        File.foreach(DIRECT_ACCESS) do |line|
+          output_file.puts line unless line.strip.eql?(username)
+        end
+      end
+
+      FileUtils.mv('.temp_direct_access', DIRECT_ACCESS)
+      true
+    end
     
     def self.client_username
       parse_key_value_file(CRED_FILE)[:username]
