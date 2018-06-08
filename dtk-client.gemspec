@@ -21,9 +21,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'gli', '2.13.4'
   spec.add_dependency 'highline', '1.7.8'
   spec.add_dependency 'colorize', '0.7.7'
-  spec.add_dependency 'git', '1.2.9'
+  spec.add_dependency 'git', '~> 1.4.0'
   spec.add_dependency 'hirb', '0.7.3'
   spec.add_dependency 'mime-types', '~> 2.99.3'
   spec.add_dependency 'dtk-dsl', '1.1.4'
-  spec.add_dependency 'dtk-network-client', '1.0.2'
+  spec.add_dependency 'dtk-network-client', '1.0.2.1'
 end
