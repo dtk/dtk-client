@@ -21,7 +21,7 @@ module DTK::Client
       require_relative('push_dtkn/convert_source')
 
       attr_reader :version, :module_ref, :target_repo_dir, :base_dsl_file_obj
-      def initialize(catalog, module_ref, directory_path, version, base_dsl_file_obj, update_lock_file)
+      def initialize(catalog, module_ref, directory_path, version, base_dsl_file_obj, update_lock_file, force)
         @catalog           = catalog
         @module_ref        = module_ref
         @directory_path    = directory_path
@@ -29,7 +29,7 @@ module DTK::Client
         @version           = version || module_ref.version || 'master'
         @base_dsl_file_obj = base_dsl_file_obj
         @update_lock_file  = update_lock_file
-
+        @force             = force
         @module_ref.version ||= @version
       end
       private :initialize
@@ -41,10 +41,11 @@ module DTK::Client
           directory_path    = args[:directory_path]
           base_dsl_file_obj = args[:base_dsl_file_obj]
           update_lock_file  = args[:update_lock_file]
-          new('dtkn', module_ref, directory_path, version, base_dsl_file_obj, update_lock_file).push_dtkn
+          force             = args[:force]
+          new('dtkn', module_ref, directory_path, version, base_dsl_file_obj, update_lock_file, force).push_dtkn
         end
       end
-      
+
       def push_dtkn
         # TODO: DTK-2765: not sure if we need module to exist on server to do push-dtkn
         unless module_version_exists?(@module_ref)
@@ -57,8 +58,6 @@ module DTK::Client
 
         @file_obj     = @base_dsl_file_obj.raise_error_if_no_content
         parsed_module = @file_obj.parse_content(:common_module_summary)
-        # error_msg = "To allow push-dtkn to go through, invoke 'dtk push' to push the changes to server before invoking push-dtkn again"
-        # GitRepo.modified_with_diff?(target_repo_dir, { :error_msg => error_msg, :command => 'push-dtkn' })
 
         module_info = {
           name:      module_ref.module_name,
@@ -66,17 +65,8 @@ module DTK::Client
           version:   ref_version,
           repo_dir:  target_repo_dir
         }
-        DtkNetworkClient::Push.run(module_info, parsed_module: parsed_module, update_lock_file: @update_lock_file)
+        DtkNetworkClient::Push.run(module_info, parsed_module: parsed_module, update_lock_file: @update_lock_file, force: @force)
 
-        # query_string_hash = QueryStringHash.new(
-        #   :module_name => @module_ref.module_name,
-        #   :namespace   => @module_ref.namespace,
-        #   :rsa_pub_key => SSHUtil.rsa_pub_key_content,
-        #   :version     => @version
-        # )
-        # remote_module_info = rest_get "#{BaseRoute}/remote_module_info", query_string_hash
-
-        # ConvertSource.transform_and_commit(remote_module_info, self)
         nil
       end
 
