@@ -35,7 +35,7 @@ module DTK::Client
               :update_deps         => options[:update_deps]
             }
             Operation::Module.pull_dtkn(operation_args)
-            # Operation::Module.push(operation_args.merge(:method => "pulled"))
+            Operation::Module.push(operation_args.merge(:method => "pulled", context: self))
           end
         end
       end
