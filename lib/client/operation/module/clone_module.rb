@@ -64,10 +64,10 @@ module DTK::Client
 
         # OsUtil.print_info("DTK module '#{@module_ref.pretty_print}' has been successfully cloned into '#{ret.required(:target_repo_dir)}'")
         target_repo_dir = ret.required(:target_repo_dir)
-        pull_service_info = check_if_pull_needed
+        # pull_service_info = check_if_pull_needed
         {
-          target_repo_dir: target_repo_dir,
-          pull_service_info: pull_service_info
+          target_repo_dir: target_repo_dir
+          # pull_service_info: pull_service_info
         }
       end
 
@@ -96,6 +96,8 @@ module DTK::Client
         begin
           remote_module_info = rest_get "#{BaseRoute}/remote_module_info", query_string_hash
         rescue DTK::Client::Error::ServerNotOkResponse => e
+          # ignore if remote does not exist
+        rescue DTK::Client::Error::Server => error
           # ignore if remote does not exist
         end
 

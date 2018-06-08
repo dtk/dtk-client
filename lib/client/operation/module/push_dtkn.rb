@@ -57,8 +57,9 @@ module DTK::Client
 
         @file_obj     = @base_dsl_file_obj.raise_error_if_no_content
         parsed_module = @file_obj.parse_content(:common_module_summary)
-        # error_msg = "To allow push-dtkn to go through, invoke 'dtk push' to push the changes to server before invoking push-dtkn again"
-        # GitRepo.modified_with_diff?(target_repo_dir, { :error_msg => error_msg, :command => 'push-dtkn' })
+
+        error_msg = "To allow push-dtkn to go through, invoke 'dtk push' to push the changes to server before invoking push-dtkn again"
+        GitRepo.modified_with_diff?(target_repo_dir, { :error_msg => error_msg, :command => 'push-dtkn' })
 
         module_info = {
           name:      module_ref.module_name,

@@ -52,7 +52,14 @@ module DTK::Client
             version:   module_ref.version,
             repo_dir:  @file_obj.parent_dir
           }
-          dependency_tree = DtkNetworkDependencyTree.get_or_create(repoman_client_module_info, { format: :hash, parsed_module: parsed_module, save_to_file: true, update_lock_file: update_lock_file })
+
+          repoman_client_opts = {
+            format: :hash,
+            save_to_file: true,
+            update_lock_file: update_lock_file
+          }
+          repoman_client_opts.merge!(parsed_module: parsed_module) unless method.eql?('pulled')
+          dependency_tree = DtkNetworkDependencyTree.get_or_create(repoman_client_module_info, repoman_client_opts)
 
           # TODO: need to refactor to use the same code for push and install
           dependency_tree.each do |dependency|
