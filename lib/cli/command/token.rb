@@ -72,7 +72,11 @@ module DTK::Client
         :recursive    => Switch.new(:r, 'Recursive'),
         :update_deps  => Switch.new('update-deps', "Skip prompt and update all dependencies or skip prompt and don't update all dependencies  (on master)", :negatable => true, :default_value => 'prompt'),
         :skip_server  => Switch.new('skip-server', 'Do not install module on server'),
-        :update_lock  => Switch.new([:u, 'update-lock'], 'Update lock file with new dependencies')
+        :update_lock  => Switch.new([:u, 'update-lock'], 'Update lock file with new dependencies'),
+
+        # nem2 flags and switches
+        :nem2_public_key => Flag.new([:p, 'public-key'], 'PUBLIC-KEY', 'Nem2 public key'),
+        :nem2_profile_address => Flag.new(:address, 'ADDRESS', 'Nem2 profile address'),
       }
 
       ARG_TOKENS = {
@@ -98,6 +102,9 @@ module DTK::Client
         :user             => 'USER',
         :permissions      => 'PERMISSIONS',
         :group            => 'GROUP',
+      }
+
+      NEM2_ARG_TOKENS = {
       }
       
     end

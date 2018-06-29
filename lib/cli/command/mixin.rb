@@ -92,7 +92,7 @@ module DTK::Client::CLI
         end
 
         def command_name
-          self.to_s.split('::').last.downcase.to_sym
+          (self.to_s.split('::').last.split /(?=[A-Z])/).map(&:downcase).join('-').to_sym
         end
       end
 

@@ -24,7 +24,10 @@ module DTK::Client
 
     TYPES = [:account, :module, :service, :client_module_dir]
     TYPES.each { |op_type| require_relative("operation/#{op_type}") }
-      
+
+    NEM2_TYPES = [:account]
+    NEM2_TYPES.each { |op_type| require_relative("operation/nem2/#{op_type}") }
+
     private
     
     # delegate rest calls to Session

@@ -23,15 +23,21 @@ module DTK::Client
       require_relative('command/subcommand')
       require_relative('command/options')
       # above must be included before below
-      ALL_COMMANDS = [:service, :module, :account]
-      ALL_COMMANDS.each { |command_name| require_relative("command/#{command_name}") }
-      
+      ALL_COMMANDS  = [:service, :module, :account]
+      NEM2_COMMANDS = ['nem2-account']
+      ALL_COMMANDS.each { |command_name| require_relative("command/#{command_name.to_s.gsub('-','_')}") }
+      NEM2_COMMANDS.each { |command_name| require_relative("command/nem2/#{command_name.to_s.gsub('-','_')}") }
+
       def self.command_module(command_name)
-        const_get command_name.to_s.capitalize
+        if command_name.to_s.include?('-')
+          const_get command_name.to_s.split('-').map(&:capitalize).join('')
+        else
+          const_get command_name.to_s.capitalize
+        end
       end
-      
+
       def self.all_command_names
-        ALL_COMMANDS
+        ALL_COMMANDS + NEM2_COMMANDS
       end
       
       def self.all_command_modules
