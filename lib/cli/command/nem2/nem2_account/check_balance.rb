@@ -22,7 +22,7 @@ module DTK::Client
         command_body c, 'check-balance', 'Check balance of nem2 account' do |sc|
           sc.flag Token.nem2_profile_address
           sc.action do |_global_options, options, args|
-            Operation::Nem2::Account.check_balance
+            Operation::Nem2::Account.check_balance(address: options[:address])
           end
         end
       end

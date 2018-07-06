@@ -22,7 +22,7 @@ module DTK::Client
         command_body c, 'info', 'Show nem2 account information' do |sc|
           sc.flag Token.nem2_profile_address
           sc.action do |_global_options, options, args|
-            Operation::Nem2::Account.info
+            Operation::Nem2::Account.info(address: options[:address])
           end
         end
       end

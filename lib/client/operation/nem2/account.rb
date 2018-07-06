@@ -21,7 +21,11 @@ module DTK::Client
       class Account < Operation
         RoutePrefix = 'account'
         OPERATIONS = [
-          :info
+          :info,
+          :check_balance,
+          :create,
+          :list_transactions,
+          :open
         ]
         OPERATIONS.each { |operation| require_relative("#{RoutePrefix}/#{operation}") }
         extend ModuleServiceCommon::ClassMixin

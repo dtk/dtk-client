@@ -19,8 +19,8 @@ module DTK::Client
   module CLI::Command
     module Nem2Account
       subcommand_def 'open' do |c|
-        command_body c, 'open', 'Open nem2 account if you already have private key' do |sc|
-          sc.flag Token.nem2_public_key
+        command_body c, 'open', 'Open nem2 account if you already have private key set as environment variable' do |sc|
+          # sc.flag Token.nem2_public_key
           sc.action do |_global_options, options, args|
             Operation::Nem2::Account.open
           end

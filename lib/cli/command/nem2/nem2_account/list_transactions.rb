@@ -22,7 +22,7 @@ module DTK::Client
         command_body c, 'list-transactions', 'List all transactions for specific nem2 account' do |sc|
           sc.flag Token.nem2_public_key
           sc.action do |_global_options, options, args|
-            Operation::Nem2::Account.list_transactions
+            Operation::Nem2::Account.list_transactions(public_key: options[:p])
           end
         end
       end
