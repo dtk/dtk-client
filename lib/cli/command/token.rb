@@ -77,6 +77,9 @@ module DTK::Client
         # nem2 flags and switches
         :nem2_public_key => Flag.new([:p, 'public-key'], 'PUBLIC-KEY', 'Nem2 public key'),
         :nem2_profile_address => Flag.new(:address, 'ADDRESS', 'Nem2 profile address'),
+        :nem2_recipient_address => Flag.new(:recipient, 'RECIPIENT-ADDRESS', 'Nem2 recipient address'),
+        :nem2_amount => Flag.new(:amount, 'XEM-AMOUNT', 'Amount of XEM coins you want to send'),
+        :nem2_transaction_hash => Flag.new([:hash, 'transaction-hash'], 'HASH', 'Transaction hash')
       }
 
       ARG_TOKENS = {

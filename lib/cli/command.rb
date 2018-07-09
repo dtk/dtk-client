@@ -24,7 +24,7 @@ module DTK::Client
       require_relative('command/options')
       # above must be included before below
       ALL_COMMANDS  = [:service, :module, :account]
-      NEM2_COMMANDS = ['nem2-account']
+      NEM2_COMMANDS = ['nem2-account', 'nem2-transaction']
       ALL_COMMANDS.each { |command_name| require_relative("command/#{command_name.to_s.gsub('-','_')}") }
       NEM2_COMMANDS.each { |command_name| require_relative("command/nem2/#{command_name.to_s.gsub('-','_')}") }
 
