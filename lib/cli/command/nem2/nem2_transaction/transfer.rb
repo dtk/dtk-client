@@ -30,29 +30,3 @@ module DTK::Client
     end
   end
 end
-
-# const recipientAddress = 'SD5DT3-CH4BLA-BL5HIM-EKP2TA-PUKF4N-Y3L5HR-IR54';
-
-# const transferTransaction = TransferTransaction.create(
-#     Deadline.create(),
-#     Address.createFromRawAddress(recipientAddress),
-#     [XEM.createRelative(10)],
-#     PlainMessage.create('Welcome To NEM'),
-#     NetworkType.MIJIN_TEST,
-# );
-
-# // Signing  the transaction
-
-# // Replace with private key
-# const privateKey = process.env.PRIVATE_KEY as string;
-
-# const account = Account.createFromPrivateKey(privateKey,NetworkType.MIJIN_TEST);
-
-# const signedTransaction = account.sign(transferTransaction);
-
-# // Announcing the transaction
-
-# const transactionHttp = new TransactionHttp('http://localhost:3000');
-
-# transactionHttp.announce(signedTransaction).subscribe(x => console.log(x),
-#     err => console.error(err));

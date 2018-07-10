@@ -20,13 +20,7 @@ module DTK::Client
     class ListTransactions < self
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
-          raise_error_if_notok_response do
-            url = "http://localhost:3003/account/list_transactions/#{args[:public_key]}"
-            response = Response::RestClientWrapper.get_raw(url)
-            response = Response::RestClientWrapper.json_parse_if_needed(response)
-            response_obj = Response.new(response)
-            response_obj
-          end
+          Nem2Client.rest_get("account/list_transactions/#{args[:public_key]}")
         end
       end
     end

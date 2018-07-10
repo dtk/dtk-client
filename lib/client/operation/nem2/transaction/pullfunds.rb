@@ -20,13 +20,7 @@ module DTK::Client
     class Pullfunds < self
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
-          raise_error_if_notok_response do
-            url = "http://localhost:3003/transaction/pullfunds"
-            response = Response::RestClientWrapper.post_raw(url, { recipient: args.required(:recipient), amount: args.required(:amount) })
-            response = Response::RestClientWrapper.json_parse_if_needed(response)
-            response_obj = Response.new(response)
-            response_obj
-          end
+          Nem2Client.rest_post("transaction/pullfunds", { recipient: args.required(:recipient), amount: args.required(:amount) })
         end
       end
     end

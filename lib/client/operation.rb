@@ -71,6 +71,36 @@ module DTK::Client
       end
     end
 
+    # def self.wrap_nem2_operation(&block)
+    #   raise_error_if_notok_response do
+    #     Response.new(Response::RestClientWrapper.json_parse_if_needed(block.call))
+    #   end
+    # end
+
+    # def self.nem2_rest_get(url)
+    #   wrap_nem2_operation do
+    #     Response::RestClientWrapper.get_raw(nem2_rest_url(url))
+    #   end
+    # end
+
+    # def self.nem2_rest_post(url, post_body)
+    #   wrap_nem2_operation do
+    #     Response::RestClientWrapper.post_raw(nem2_rest_url(url), post_body)
+    #   end
+    # end
+
+    # def self.nem2_rest_url(route = nil)
+    #   "#{nem2_rest_url_base}/#{route}"
+    # end
+
+    # def self.nem2_rest_url_base
+    #   @@nem2_rest_url_base ||= get_nem2_rest_url_base
+    # end
+
+    # def self.get_nem2_rest_url_base
+    #   Config[:nem2_client_url] || 'http://localhost:3003'
+    # end
+
     require 'dtk_network_client'
     class DtkNetworkClient < DTK::Network::Client::Command
     end
