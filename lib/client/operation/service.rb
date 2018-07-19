@@ -48,7 +48,8 @@ module DTK::Client
         :task_status,
         :uninstall,
         :describe,
-        :add
+        :add,
+        :add_component
       ]
       OPERATIONS.each { |operation| require_relative("service/#{operation}") }
 

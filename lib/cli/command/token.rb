@@ -53,6 +53,7 @@ module DTK::Client
         :sleep                     => Flag.new(:sleep, '', ''),
         :attempts                  => Flag.new(:attempts, '', ''),
         :path                      => Flag.new(:path, 'PATH', 'Path'),
+        :parent                    => Flag.new([:p, :parent], 'PARENT', ''),
 
         # switches
         # Switch constructor args order: key, desc, opts={}

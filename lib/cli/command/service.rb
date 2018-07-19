@@ -52,8 +52,9 @@ module DTK::Client
 
           'task-status',
           'uninstall',
-          'describe'
-          # 'add'
+          'describe',
+          # 'add',
+          'add-component'
         ]
 
         command_def :desc => 'Subcommands for creating and interacting with DTK service instances'
