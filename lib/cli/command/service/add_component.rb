@@ -27,12 +27,14 @@ module DTK::Client; module CLI
           sc.flag Token.parent
           sc.action do |_global_options, options, args|
             args = {
+              service_instance: service_instance_in_options_or_context(options),
               component_ref: args[0],
               version: options[:v],
               namespace: options[:n],
-              parent_node: options[:p]
+              parent_node: options[:p],
+              service_instance_dir: @base_dsl_file_obj.parent_dir
             }
-            Operation::Service.add(args)
+            Operation::Service.add_component(args)
           end
         end
       end
