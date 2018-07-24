@@ -35,6 +35,16 @@ module DTK::Client
           new(args).clone
         end
 
+        def self.clone_nested_modules(args)
+          new(args).clone_nested_modules
+        end
+
+        def clone_nested_modules
+          @target_repo_dir = self.repo_dir
+          @nested_module_base = self.class.find_nested_modules_dir(self.repo_dir)
+          self.nested_modules.each { |nested_module| clone_nested_module(nested_module) }
+        end
+
         def clone
           @target_repo_dir = clone_base_module
           @nested_module_base = make_nested_module_base

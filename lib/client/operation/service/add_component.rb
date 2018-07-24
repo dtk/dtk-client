@@ -29,14 +29,20 @@ module DTK::Client
           query_string_hash = QueryStringHash.new(service_instance: service_instance, component_ref: component_ref, version: version, namespace: namespace, parent_node: parent_node)
           response = rest_post "#{BaseRoute}/add_component", query_string_hash
 
-          # repo_info_args = Args.new(
-          #   :service_instance     => service_instance,
-          #   :commit_message       => "Updating changes to service instance '#{service_instance}'",
-          #   :branch               => response.required(:branch, :name),
-          #   :repo_url             => response.required(:repo, :url),
-          #   :service_instance_dir => args[:service_instance_dir]
-          # )
-          # ClientModuleDir::GitRepo.pull_from_service_repo(repo_info_args)
+          nested_modules = response.required(:nested_modules)
+
+          if nested_modules && !nested_modules.empty?
+            clone_args = {
+              :base_module      => response.required(:base_module),
+              :nested_modules   => nested_modules,
+              :service_instance => service_instance,
+              :remove_existing  => true,
+              :repo_dir         => args[:service_instance_dir]
+            }
+            ClientModuleDir::ServiceInstance.clone_nested_modules(clone_args)
+          end
+
+          OsUtil.print_info("Component '#{component_ref}' has been successfully added to service instance '#{service_instance}'")
         end
       end
     end

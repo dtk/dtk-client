@@ -18,7 +18,6 @@
 module DTK::Client; module CLI
   module Command
     module Service
-      # dtk service component add [-v VERSION -n NAMESPACE] [-p PARENT] [--workflows LIST-OF-WORKFLOWS-to_ADD-IT-TO] COMPONENT-INSTANCE-REF
       subcommand_def 'add-component' do |c|
         c.arg Token::Arg.component_ref
         command_body c, 'add-component', 'Add component to service instance' do |sc|
