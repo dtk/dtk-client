@@ -71,6 +71,23 @@ module DTK::Client
           nested_modules_with_sha
         end
 
+        def self.modified_service_instance_or_nested_modules?(args)
+          service_instance_dir = args.required(:dir)
+          command   = args.required(:command)
+          error_msg = args.required(:error_msg)
+
+          is_modified?(service_instance_dir, command, error_msg)
+
+          nested_modules_dir = find_nested_modules_dir(service_instance_dir)
+          nested_modules     = Dir.glob("#{nested_modules_dir}/*")
+
+          nested_modules.each do |nested_module|
+            nested_module_name = nested_module.split('/').last
+            nested_error_msg = "There are uncommitted changes in nested module '#{nested_module_name}'! #{error_msg}"
+            is_modified?(nested_module, command, nested_error_msg)
+          end
+        end
+
         protected
 
         attr_reader :base_module, :nested_modules, :service_instance, :remove_existing, :repo_dir
@@ -130,6 +147,16 @@ module DTK::Client
 
         def self.possible_nested_module_base_dirs
           @possible_nested_module_base_dirs ||= ::DTK::DSL::DirectoryType::ServiceInstance::NestedModule.possible_paths
+        end
+
+        def self.is_modified?(path, command, error_msg)
+          repo_dir = {
+            :path    => path,
+            :branch  => Git.open(path).branches.local,
+            :command => command
+          }
+          message = ClientModuleDir::GitRepo.modified_with_diff(repo_dir)
+          raise Error::Usage, error_msg if message.data(:modified)
         end
         
       end

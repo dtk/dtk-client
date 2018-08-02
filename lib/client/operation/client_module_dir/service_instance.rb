@@ -37,6 +37,12 @@ module DTK::Client
           response_data_hash(:target_repo_dir => Internal.clone_nested_modules(args))
         end
       end
+
+      def self.modified_service_instance_or_nested_modules?(args)
+        wrap_operation(args) do |args|
+          response_data_hash(:modified => Internal.modified_service_instance_or_nested_modules?(args))
+        end
+      end
     end
   end
 end

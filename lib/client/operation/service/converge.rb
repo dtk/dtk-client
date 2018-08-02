@@ -28,8 +28,14 @@ module DTK::Client
             :service_instance => service_instance
           )
 
-          error_msg = "To allow converge to go through, invoke 'dtk push' to push the changes to server before invoking converge again"
-          GitRepo.modified_with_diff?(module_dir, { :error_msg => error_msg, :command => 'converge' }) unless force
+          unless force
+            modified_args = Args.new(
+              :dir => module_dir,
+              :error_msg => "To allow converge to go through, invoke 'dtk push' to push the changes to server before invoking converge again",
+              :command => 'converge'
+            )
+            ClientModuleDir::ServiceInstance.modified_service_instance_or_nested_modules?(modified_args)
+          end
 
           rest_post("#{BaseRoute}/#{service_instance}/converge", post_body)
         end
