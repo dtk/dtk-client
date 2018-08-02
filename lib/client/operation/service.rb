@@ -49,7 +49,8 @@ module DTK::Client
         :uninstall,
         :describe,
         :add,
-        :add_component
+        :add_component,
+        :promote_module_updates
       ]
       OPERATIONS.each { |operation| require_relative("service/#{operation}") }
 

@@ -54,7 +54,8 @@ module DTK::Client
           'uninstall',
           'describe',
           # 'add',
-          'add-component'
+          'add-component',
+          'promote-module-updates'
         ]
 
         command_def :desc => 'Subcommands for creating and interacting with DTK service instances'
