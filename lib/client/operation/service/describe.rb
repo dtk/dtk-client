@@ -22,10 +22,15 @@ module DTK::Client
         wrap_operation(args) do |args|
           service_instance  = args.required(:service_instance)
           path              = args[:path]
+          show_steps        = args[:show_steps]
           query_string_hash = QueryStringHash.new
 
           query_string_hash.merge!(path: path) if path
-          rest_get "#{BaseRoute}/#{service_instance}/describe", query_string_hash
+          query_string_hash.merge!(show_steps: show_steps) if show_steps
+          response = rest_get "#{BaseRoute}/#{service_instance}/describe", query_string_hash
+
+          response.set_render_as_table! if show_steps
+          response
         end
       end
     end

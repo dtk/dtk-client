@@ -21,10 +21,12 @@ module DTK::Client; module CLI
       subcommand_def 'describe' do |c|
         command_body c, 'describe', 'Describe service instance content' do |sc|
           sc.flag Token.path, :desc => "supported paths are 'dependencies', 'components/[name]', 'actions/[name]' "
+          sc.switch Token.show_steps, :desc => 'Show steps that will be executed when action is executed'
           sc.action do |_global_options, options, _args|
             args = {
               service_instance: service_instance_in_options_or_context(options),
-              path: options[:path]
+              path: options[:path],
+              show_steps: options['show-steps']
             }
             Operation::Service.describe(args)
           end
