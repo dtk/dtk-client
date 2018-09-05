@@ -21,10 +21,10 @@ module DTK::Client; module CLI
       subcommand_def 'list-dependencies' do |c|
         command_body c, 'dependencies', 'List dependent modules associated with service instance.' do |sc|
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory containing updates to pull; not need if in the service instance directory'
-
+          sc.switch Token.diffs
           sc.action do |_global_options, options, _args|
             service_instance =  service_instance_in_options_or_context(options)
-            Operation::Service.list_dependencies(:service_instance => service_instance)
+            Operation::Service.list_dependencies(:service_instance => service_instance, diffs: options['diffs'])
           end
         end
       end

@@ -20,8 +20,10 @@ module DTK::Client
     class ListDependencies < self
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
-          service_instance = args.required(:service_instance)
-          rest_get("#{BaseRoute}/#{service_instance}/dependent_modules")
+          query_hash = QueryStringHash.new
+          query_hash.merge!(diffs: args[:diffs]) if args[:diffs]
+
+          rest_get "#{BaseRoute}/#{args.required(:service_instance)}/dependent_modules", query_hash
         end.set_render_as_table!
       end
     end
