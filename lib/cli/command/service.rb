@@ -53,7 +53,7 @@ module DTK::Client
           'task-status',
           'uninstall',
           'describe',
-          # 'add',
+          'add',
           'add-component'
         ]
 
