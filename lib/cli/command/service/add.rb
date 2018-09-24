@@ -26,7 +26,8 @@ module DTK::Client; module CLI
             args = {
               service_instance: service_instance_in_options_or_context(options),
               path: options[:path],
-              relative_path: options[:relative_path]
+              relative_path: options[:relative_path],
+              service_instance_dir: @base_dsl_file_obj.parent_dir
             }
             Operation::Service.add(args)
           end

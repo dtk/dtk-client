@@ -20,14 +20,27 @@ module DTK::Client
     class Add < self
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
-          service_instance = args.required(:service_instance)
-          path             = args.required(:path)
-          relative_path    = args.required(:relative_path)
-
-          content = yaml_to_hash(FileHelper.get_content?(relative_path))
+          service_instance     = args.required(:service_instance)
+          path                 = args.required(:path)
+          relative_path        = args.required(:relative_path)
+          service_instance_dir = args[:service_instance_dir]
+          content              = FileHelper.get_content?(relative_path)
 
           query_string_hash = QueryStringHash.new(:service_instance => service_instance, path: path, content: content)
-          rest_post "#{BaseRoute}/add_by_path", query_string_hash
+          response = rest_post "#{BaseRoute}/add_by_path", query_string_hash
+
+          if path.include?('actions/')
+            repo_info_args = Args.new(
+              :service_instance     => service_instance,
+              :commit_message       => "Updating changes to service instance '#{service_instance}'",
+              :branch               => response.required(:base_module, :branch, :name),
+              :repo_url             => response.required(:base_module, :repo, :url),
+              :service_instance_dir => service_instance_dir
+            )
+            ClientModuleDir::GitRepo.pull_from_service_repo(repo_info_args)
+          end
+
+          response
         end
       end
     end
