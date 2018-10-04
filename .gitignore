@@ -10,3 +10,4 @@ doc
 .solargraph.yml
 Gemfile.lock
 sftp.json
+.byebug_history
