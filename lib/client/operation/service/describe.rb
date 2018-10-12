@@ -25,6 +25,8 @@ module DTK::Client
           show_steps        = args[:show_steps]
           query_string_hash = QueryStringHash.new
 
+          raise Error, 'Option --show-steps can only be used with actions path' if show_steps && !actions_path_valid?(path)
+
           query_string_hash.merge!(path: path) if path
           query_string_hash.merge!(show_steps: show_steps) if show_steps
           response = rest_get "#{BaseRoute}/#{service_instance}/describe", query_string_hash
@@ -33,6 +35,12 @@ module DTK::Client
           response
         end
       end
+
+      def self.actions_path_valid?(path)
+        prefix, suffix = (path||'').split('/')
+        prefix.eql? 'actions'
+      end
+
     end
   end
 end
