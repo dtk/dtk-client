@@ -313,7 +313,7 @@ module DTK::Client
 
         def self.checkout_branch_on_service_instance(service_instance, branch, &body)
           repo = git_repo.new(ret_base_path(:service, service_instance), :branch => branch)
-          checkout_branch_in_repo(repo, branch, &block)
+          checkout_branch(repo, branch, {}, &body)
         end
 
         CHECKOUT_LOCK = Mutex.new
