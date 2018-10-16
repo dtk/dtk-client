@@ -68,11 +68,55 @@ module DTK::Client
           version:   ref_version,
           repo_dir:  target_repo_dir
         }
-        DtkNetworkClient::Push.run(module_info, parsed_module: parsed_module, update_lock_file: @update_lock_file, force: @force)
 
+        diffs = DtkNetworkClient::Push.run(module_info, parsed_module: parsed_module, update_lock_file: @update_lock_file, force: @force)
+        output_diffs diffs
         nil
       end
 
+      def output_diffs(diffs)
+
+        file_states = [:added, :deleted, :modified, :renamed, :changed]
+        file_state_arrays = [added = [], deleted = [], modified = [], renamed = [], changed = []]
+        
+        diffs.each do |k, val|
+          case val
+          when "A"
+            file_state_arrays[0].push(k)
+          when "D"
+            file_state_arrays[1].push(k)
+          when "M"
+            file_state_arrays[2].push(k)
+          when "R100"
+            file_state_arrays[3].push(k)
+          else
+            file_state_arrays[4].push(k)
+          end
+        end
+
+        return OsUtil.print_info("No Diffs to be pushed.") if state_arrays_empty?(file_state_arrays)
+
+        OsUtil.print_info("\nDiffs that were pushed:")
+        file_state_arrays.each do | state_array |
+          unless state_array.empty?
+            file_state = file_states[file_state_arrays.index(state_array)].to_s
+            print_diff_array state_array, file_state
+          end
+        end
+      
+      end
+
+      def state_arrays_empty?(file_state_arrays)
+        file_state_arrays.each do | state_array |
+          return false unless state_array.empty?
+        end
+        return true
+      end
+
+      def print_diff_array(diff_array, file_state)
+        print "files_#{file_state}:\n"
+        diff_array.each { |d| print "- path: #{d}\n" }
+      end
     end
   end
 end
