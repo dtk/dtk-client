@@ -19,17 +19,22 @@ module DTK::Client
   module CLI::Command
     module Service
       subcommand_def 'ssh' do |c|
-        c.arg Token::Arg.node_name
+        c.arg Token::Arg.node_name, :optional => true
         command_body c, :ssh, 'SSH into service instance node.' do |sc|
           sc.flag Token.remote_user
           sc.flag Token.identity_file, :desc => 'Identity file used for connection, if not provided default is used'
 
           sc.action do |_global_options, options, args|
-            service_instance = service_instance_in_options_or_context(options)
+            node_name = args[0]
+            if args[0] && args[0].include?('/')
+              service_name, node_name = args[0].split('/')
+            end
+
+            service_name ||= service_instance_in_options_or_context(options)
 
             args = {
-              :service_instance => service_instance,
-              :node_name        => args[0],
+              :service_instance => service_name,
+              :node_name        => node_name,
               :remote_user      => options[:remote_user],
               :identity_file    => options[:identity_file]
             }

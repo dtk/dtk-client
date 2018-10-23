@@ -56,8 +56,22 @@ module DTK::Client
         info_hash = {}
 
         response = rest_get("#{BaseRoute}/#{service_instance}/nodes")
-        unless node_info = response.data.find{ |node| node_name == node['display_name'] }
-          raise Error::Usage, "The node '#{node_name}' does not exist"
+
+        if node_name.nil?
+          if response.data.nil?
+            raise Error::Usage, "Service instance does not contain any nodes"
+          end
+
+          if response.data.size == 1
+            node_info = response.data.first
+          else
+            node_names = response.data.map { |node| node['display_name'] }
+            raise Error::Usage, "The service instance '#{service_instance}' has more than one node. Please use 'dtk service ssh' command with a node name. Legal names are: #{node_names.join(', ')}"
+          end
+        else
+          unless node_info = response.data.find{ |node| node_name == node['display_name'] }
+            raise Error::Usage, "The node '#{node_name}' does not exist"
+          end
         end
 
         if dns_address = node_info['dns_address']

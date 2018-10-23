@@ -80,7 +80,7 @@ module DTK::Client
       ARG_TOKENS = {
         :assembly_name    => 'ASSEMBLY-NAME',
         :service_instance => flag_token(:service_instance).arg_name,
-        :node_name        => 'NODE',
+        :node_name        => '[[REMOTE_SERVICE-NAME/]NODE]',
         :action           => '[NODE/NODE-GROUP/]ACTION',
         :action_params    => 'ACTION-PARAMS',
         :workspace_name   => 'WORKSPACE-NAME',
