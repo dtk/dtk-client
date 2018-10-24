@@ -43,6 +43,13 @@ module DTK::Client
           response_data_hash(:modified => Internal.modified_service_instance_or_nested_modules?(args))
         end
       end
+
+      def self.remove_nested_module_dirs(args)
+        wrap_operation(args) do |args|
+          response_data_hash(:deleted_nested_modules => Internal.remove_nested_module_dirs(args))
+        end
+      end
+
     end
   end
 end

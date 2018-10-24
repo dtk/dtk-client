@@ -88,6 +88,20 @@ module DTK::Client
           end
         end
 
+        def self.remove_nested_module_dirs(args)
+          service_instance     = args[:service_instance]
+          service_instance_dir = args[:service_instance_dir] || ret_base_path(:service, service_instance)
+
+          nested_modules_dir = find_nested_modules_dir(service_instance_dir)
+          nested_modules     = Dir.glob("#{nested_modules_dir}/*")
+
+          args[:nested_modules_to_delete].each do |nested_module|
+            module_to_delete_path = "#{nested_modules_dir}/#{nested_module['display_name']}"
+            FileUtils.remove_dir(module_to_delete_path) if nested_modules.include? module_to_delete_path
+          end
+          args[:nested_modules_to_delete]
+        end
+
         protected
 
         attr_reader :base_module, :nested_modules, :service_instance, :remove_existing, :repo_dir

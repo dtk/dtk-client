@@ -63,6 +63,9 @@ module DTK::Client
           print_msgs_of_type(:info_msgs, response)
 
           ClientModuleDir::GitRepo.pull_from_service_repo(repo_info_args) if response.data(:repo_updated)
+          if nested_module_args[:nested_modules_to_delete] = response.data['module_refs_to_delete']
+            ClientModuleDir::ServiceInstance.remove_nested_module_dirs(nested_module_args)
+          end
           process_backup_files(repo_info_args, response.data(:backup_files))
           process_semantic_diffs(response.data(:semantic_diffs))
           nil
