@@ -35,10 +35,10 @@ module DTK::Client
     private
 
     def self.valid_name?(name)
-      name.to_s.match(/\A[\w\-\.]+\z/)
+      name.to_s.match(/\A[[a-z]\-\.\_\d]+\z/)
     end
 
-    VALID_NAME_CHARACTERS = ['letters', 'numbers', '-', '_', '.']
+    VALID_NAME_CHARACTERS = ['lowercase letters', 'numbers', '-', '_', '.']
     def self.valid_characters
       VALID_NAME_CHARACTERS.join("', '")
     end
