@@ -127,9 +127,11 @@ module DTK::Client
             :commit_sha  => git_repo_response.data(:head_sha)
           )
 
-          response = handle_error @file_obj.parent_dir do
-            rest_post("#{BaseRoute}/update_from_repo", post_body)
-          end
+          # response = handle_error @file_obj.parent_dir do
+          #   rest_post("#{BaseRoute}/update_from_repo", post_body)
+          # end
+
+          response = rest_post("#{BaseRoute}/update_from_repo", post_body)
 
           existing_diffs = nil
           print          = nil
