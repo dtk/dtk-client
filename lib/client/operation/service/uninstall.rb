@@ -46,6 +46,10 @@ module DTK::Client
           ClientModuleDir.rm_f(path) if args[:purge]
 
           if message = response.data(:message) || "DTK service '#{service_instance}' has been uninstalled successfully."
+            Dir.glob("*", File::FNM_DOTMATCH).each do |f|
+              ClientModuleDir.rm_f(f) if f.include? '.task_id_'
+            end
+            ClientModuleDir.create_file_with_content(".task_id_#{response.data(:task_id)}", '') if response.data(:task_id)
             OsUtil.print_info(message)
           end
         end

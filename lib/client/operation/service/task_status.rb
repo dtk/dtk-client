@@ -47,6 +47,12 @@ module DTK::Client
       DEFAULT_MODE = :snapshot
       LEGAL_MODES  = [:refresh, :snapshot, :stream]
       def self.task_status_with_mode(mode, service_instance, opts = {})
+        Dir.glob("*", File::FNM_DOTMATCH).each do |f|
+          if match = /^(.task_id_)(\d*)/.match(f)
+            opts[:task_id] = match[2] if match[2]
+            break
+          end
+        end
         case mode
         when :refresh
           RefreshMode.new(mode, service_instance).task_status(opts)
@@ -67,7 +73,8 @@ module DTK::Client
         QueryStringHash.new( 
           :form?                  => opts[:form],
           :wait_for?              => opts[:wait_for],
-          :summarize_node_groups? => opts[:summarize]
+          :summarize_node_groups? => opts[:summarize],
+          :task_id?               => opts[:task_id]
         )
       end
       
