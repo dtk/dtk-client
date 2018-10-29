@@ -31,7 +31,7 @@ module DTK::Client
           'eject',
           'exec',
           'exec-sync',
-          'link',
+          'add-link',
           'list',
           'list-actions',
           'list-attributes',

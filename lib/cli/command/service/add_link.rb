@@ -18,11 +18,11 @@
 module DTK::Client; module CLI
   module Command
     module Service
-      subcommand_def 'link' do |c|
+      subcommand_def 'add-link' do |c|
         c.arg Token::Arg.base_cmp
         c.arg Token::Arg.deps_on_cmp
         c.arg Token::Arg.service, :optional => true
-        command_body c, 'link', 'List component links in the service instance.' do |sc|
+        command_body c, 'add-link', 'List component links in the service instance.' do |sc|
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory containing updates to pull; not need if in the service instance directory'
           sc.switch Token.unlink
 

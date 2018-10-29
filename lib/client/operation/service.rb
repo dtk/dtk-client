@@ -29,7 +29,7 @@ module DTK::Client
         :edit,
         :eject,
         :exec,
-        :link,
+        :add_link,
         :list,
         :list_actions,
         :list_attributes,
