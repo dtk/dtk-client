@@ -79,7 +79,9 @@ module DTK::Client
         :nem2_profile_address => Flag.new(:address, 'ADDRESS', 'Nem2 profile address'),
         :nem2_recipient_address => Flag.new(:recipient, 'RECIPIENT-ADDRESS', 'Nem2 recipient address'),
         :nem2_amount => Flag.new(:amount, 'XEM-AMOUNT', 'Amount of XEM coins you want to send'),
-        :nem2_transaction_hash => Flag.new([:hash, 'transaction-hash'], 'HASH', 'Transaction hash')
+        :nem2_transaction_hash => Flag.new([:hash, 'transaction-hash'], 'HASH', 'Transaction hash'),
+        :nem2_namespace => Flag.new([:n, 'namespace'], 'NAMESPACE-NAME', 'Nem2 namespace name'),
+        :nem2_duration => Flag.new([:d, 'duration'], 'DURATION', 'Nem2 duration')
       }
 
       ARG_TOKENS = {

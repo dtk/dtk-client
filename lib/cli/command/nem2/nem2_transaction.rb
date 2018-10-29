@@ -23,10 +23,10 @@ module DTK::Client
 
         ALL_SUBCOMMANDS = [
           'info',
-          'transfer'
+          'transfer',
           # 'pullfunds',
           # 'mosaic',
-          # 'namespace'
+          'namespace'
         ]
         command_def :desc => 'Subcommands for interacting with nem2 transactions'
         ALL_SUBCOMMANDS.each { |subcommand| require_relative("nem2_transaction/#{subcommand.gsub(/-/,'_')}") } 

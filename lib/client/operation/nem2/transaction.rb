@@ -22,10 +22,10 @@ module DTK::Client
         RoutePrefix = 'transaction'
         OPERATIONS = [
           :info,
-          :transfer
+          :transfer,
           # :pullfunds
           # :mosaic,
-          # :namespace
+          :namespace
         ]
         OPERATIONS.each { |operation| require_relative("#{RoutePrefix}/#{operation}") }
         extend ModuleServiceCommon::ClassMixin

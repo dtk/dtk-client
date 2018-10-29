@@ -16,15 +16,16 @@
 # limitations under the License.
 #
 module DTK::Client
-  module CLI::Command
-    module Nem2Transaction
-      subcommand_def 'namespace' do |c|
-        command_body c, 'namespace', 'Create root namespace' do |sc|
-          sc.flag Token.nem2_namespace
-          sc.flag Token.nem2_duration
-          sc.action do |_global_options, options, args|
-            Operation::Nem2::Transaction.namespace(namespace: options[:namespace], duration: options[:duration])
-          end
+  class Operation::Nem2::Transaction
+    class Namespace < self
+      def self.execute(args = Args.new)
+        wrap_operation(args) do |args|
+          require 'byebug'
+          byebug
+          response = Nem2Client.rest_post("transaction/namespace", { namespace: args.required(:namespace), duration: args[:duration] })
+          require 'byebug'
+          byebug
+          response
         end
       end
     end
