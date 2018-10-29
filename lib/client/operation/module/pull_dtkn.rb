@@ -85,7 +85,7 @@ module DTK::Client
           version:   ref_version,
           repo_dir:  target_repo_dir
         }
-        DtkNetworkClient::Pull.run(module_info)
+        DtkNetworkClient::Pull.run(module_info, opts)
 
 
         # query_string_hash = QueryStringHash.new(

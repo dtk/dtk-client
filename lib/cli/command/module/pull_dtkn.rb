@@ -34,7 +34,12 @@ module DTK::Client
               :force               => options[:f],
               :update_deps         => options[:update_deps]
             }
-            Operation::Module.pull_dtkn(operation_args)
+            begin
+              Operation::Module.pull_dtkn(operation_args)
+            rescue Git::GitExecuteError => e
+              exc = e.to_s << "\nUse '--force' flag to overwrite your changes"
+              raise (e.to_s.include? 'merge') ? exc : e.to_s
+            end
             Operation::Module.push(operation_args.merge(:method => "pulled", context: self))
           end
         end
