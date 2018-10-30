@@ -85,8 +85,12 @@ module DTK::Client
           version:   ref_version,
           repo_dir:  target_repo_dir
         }
-        DtkNetworkClient::Pull.run(module_info, opts)
-
+        begin
+          DtkNetworkClient::Pull.run(module_info, opts)
+        rescue Git::GitExecuteError => e
+          exc = e.to_s << "\nUse '--force' flag to overwrite your changes"
+          raise (e.to_s.include? 'merge') ? exc : e.to_s
+        end
 
         # query_string_hash = QueryStringHash.new(
         #   :module_name => @module_ref.module_name,
