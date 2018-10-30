@@ -19,14 +19,16 @@ module DTK::Client; module CLI
   module Command
     module Service
       subcommand_def 'promote-module-updates' do |c|
-        c.arg Token::Arg.module_name
+        c.arg Token::Arg.module_name, optional: true
         command_body c, 'promote-module-updates', 'Promote updates from nested to base module' do |sc|
+          sc.switch Token.force
           sc.action do |_global_options, options, args|
             args = {
               service_instance: service_instance_in_options_or_context(options),
               module_name: args[0],
               directory_path: @base_dsl_file_obj.parent_dir,
-              command: 'promote-module-updates'
+              command: 'promote-module-updates',
+              force: options[:f]
             }
             Operation::Service.promote_module_updates(args)
           end

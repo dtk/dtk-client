@@ -21,7 +21,8 @@ module DTK::Client
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           service_instance = args.required(:service_instance)
-          module_name      = args.required(:module_name)
+          module_name      = args[:module_name]
+          force            = args[:force]
 
           modified_args = Args.new(
             :dir => args[:directory_path],
@@ -32,10 +33,13 @@ module DTK::Client
 
           query_string_hash = QueryStringHash.new(
             service_instance: service_instance,
-            module_name: module_name
           )
+          query_string_hash.merge!(module_name: module_name) if module_name
+          query_string_hash.merge!(force: force) if force
           rest_post "#{BaseRoute}/promote_module_updates", query_string_hash
-          OsUtil.print("Base module '#{module_name}' has been updated successfully!", :yellow)
+
+          module_name = module_name ? "\'#{module_name}\' " : nil
+          OsUtil.print("Base module #{module_name}has been updated successfully!", :yellow)
         end
       end
     end
