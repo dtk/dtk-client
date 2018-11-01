@@ -27,6 +27,15 @@ module DTK::Client
           node             = []
           msg              = "Are you sure you want to uninstall the infrastructure associated with '#{service_instance}' and delete this service instance from the server?"
           
+          if !force && path
+            modified_args = Args.new(
+              :dir => path || @module_ref.client_dir_path,
+              :error_msg => "To allow uninstall to go through, invoke 'dtk push' to push the changes to server before invoking uninstall again",
+              :command => 'uninstall'
+            )
+            ClientModuleDir::ServiceInstance.modified_service_instance_or_nested_modules?(modified_args)
+          end
+
           if force
             msg.prepend("Note: this will not terminate aws instances, you will have to do that manually!\n")
           end

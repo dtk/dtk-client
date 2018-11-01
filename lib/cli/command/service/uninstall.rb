@@ -21,7 +21,7 @@ module DTK::Client; module CLI
       subcommand_def 'uninstall' do |c|
         command_body c, :uninstall, 'Uninstalls the service instance from the server' do |sc|
         sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory associated; not needed if executed in service instance directory'
-          sc.flag Token.uninstall_name
+          sc.flag Token.uninstall_service_name
           sc.switch Token.skip_prompt, :desc => 'Skip prompt that checks if user wants to delete the service instance'
           sc.switch Token.purge, :desc => 'Delete the service instance directory on the client'
           sc.switch Token.recursive, :desc => 'Delete dependent service instances'
@@ -31,7 +31,7 @@ module DTK::Client; module CLI
             purge          = options[:purge]
             force          = options[:f]
             recursive      = options[:recursive]
-            name           = options[:uninstall_name]
+            name           = options[:uninstall_service_name]
 
             if purge && (!directory_path || (directory_path == @base_dsl_file_obj.parent_dir?))
               raise Error::Usage, "If use option '#{option_ref(:purge)}' then need to call from outside directory and use option '#{option_ref(:directory_path)}'"
@@ -46,11 +46,11 @@ module DTK::Client; module CLI
             args = {
               :service_instance => service_instance,
               :skip_prompt      => options[:skip_prompt],
-              :directory_path   => directory_path,
               :purge            => purge,
               :recursive        => recursive,
               :force            => force
             }
+            args[:directory_path] = directory_path || base_dsl_file_obj.parent_dir unless name
             Operation::Service.uninstall(args)
           end
         end

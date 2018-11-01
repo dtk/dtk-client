@@ -32,9 +32,9 @@ module DTK::Client
               return false unless Console.prompt_yes_no("Are you sure you want to delete the content of service instance '#{@service_instance}' ?", :add_options => true)
             end
 
-            unless force
+            if !force && directory_path
               modified_args = Args.new(
-                :dir => directory_path || @module_ref.client_dir_path,
+                :dir => directory_path,
                 :error_msg => "To allow delete to go through, invoke 'dtk push' to push the changes to server before invoking delete again",
                 :command => 'delete'
               )
