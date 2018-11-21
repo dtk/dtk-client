@@ -19,10 +19,13 @@ module DTK::Client
   module CLI::Command
     module Service
       subcommand_def 'set-default-target' do |c|
-        c.arg Token::Arg.service_name
+       c.arg Token::Arg.service_name, optional: true
         command_body c, 'set-default-context', 'Create a new service instance to refer to staged infrastructure that then can be deployed' do |sc|
-          sc.action do |_global_options, options, args|
-            Operation::Service.set_default_target(:service_instance => args[0])
+          sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory containing updates to pull; not need if in the service instance directory'
+           sc.action do |_global_options, options, args|
+            service_instance = args[0]
+            service_instance ||= service_instance_in_options_or_context(options)
+            Operation::Service.set_default_target(:service_instance => service_instance)
           end
         end
       end
