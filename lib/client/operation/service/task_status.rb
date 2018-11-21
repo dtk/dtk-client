@@ -47,6 +47,7 @@ module DTK::Client
       DEFAULT_MODE = :snapshot
       LEGAL_MODES  = [:refresh, :snapshot, :stream]
       def self.task_status_with_mode(mode, service_instance, opts = {})
+    
         Dir.glob("*", File::FNM_DOTMATCH).each do |f|
           if match = /^(.task_id_)(\d*)/.match(f)
             opts[:task_id] = match[2] if match[2]
@@ -59,7 +60,11 @@ module DTK::Client
         when :snapshot 
           SnapshotMode.new(mode, service_instance).task_status(opts)
         when :stream
+          begin
           StreamMode.new(mode, service_instance).get_and_render(opts)
+          rescue Interrupt => e
+            puts "Exiting ..."
+          end
         else
           raise Error::Usage.new("Illegal mode '#{mode}'; legal modes are: #{LEGAL_MODES.join(', ')}")
         end
