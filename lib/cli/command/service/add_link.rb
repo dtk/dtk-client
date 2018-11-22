@@ -44,7 +44,7 @@ module DTK::Client; module CLI
               :service_instance_dir => service_instance_dir
             }
 
-            Operation::Service.link(args)
+            Operation::Service.add_link(args)
           end
         end
       end
