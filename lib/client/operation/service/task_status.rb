@@ -59,7 +59,11 @@ module DTK::Client
         when :snapshot 
           SnapshotMode.new(mode, service_instance).task_status(opts)
         when :stream
+          begin
           StreamMode.new(mode, service_instance).get_and_render(opts)
+          rescue Interrupt => e
+            puts "Exiting ..."
+          end
         else
           raise Error::Usage.new("Illegal mode '#{mode}'; legal modes are: #{LEGAL_MODES.join(', ')}")
         end
