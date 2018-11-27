@@ -19,13 +19,15 @@ module DTK::Client; module CLI
   module Command
     module Service
       subcommand_def 'describe' do |c|
+       c.arg Token::Arg.path
         command_body c, 'describe', 'Describe service instance content' do |sc|
-          sc.flag Token.path, :desc => "supported paths are 'dependencies', 'components/[name]', 'actions/[name]' "
           sc.switch Token.show_steps, :desc => 'Show steps that will be executed when action is executed'
           sc.action do |_global_options, options, _args|
+            set_base_dsl_file_obj!(:dir_path => _args[0])
+            service_instance=context_attributes[:service_instance]
             args = {
-              service_instance: service_instance_in_options_or_context(options),
-              path: options[:path],
+              service_instance: service_instance,
+              path: _args[0],
               show_steps: options['show-steps']
             }
             Operation::Service.describe(args)

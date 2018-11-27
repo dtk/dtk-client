@@ -102,6 +102,7 @@ module DTK::Client
         :user             => 'USER',
         :permissions      => 'PERMISSIONS',
         :group            => 'GROUP',
+        :path             => 'PATH',
       }
       
     end
