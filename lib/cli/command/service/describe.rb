@@ -23,10 +23,8 @@ module DTK::Client; module CLI
         command_body c, 'describe', 'Describe service instance content' do |sc|
           sc.switch Token.show_steps, :desc => 'Show steps that will be executed when action is executed'
           sc.action do |_global_options, options, _args|
-            set_base_dsl_file_obj!(:dir_path => _args[0])
-            service_instance=context_attributes[:service_instance]
             args = {
-              service_instance: service_instance,
+              service_instance: service_instance_in_options_or_context(options),
               path: _args[0],
               show_steps: options['show-steps']
             }

@@ -37,7 +37,7 @@ module DTK::Client
       end
       def self.actions_path_valid?(path)
         prefix, suffix = (path||'').split('/')
-        prefix.eql?('actions') && suffix!=nil && !suffix.empty?
+        prefix.eql?('actions') && suffix && !suffix.empty?
       end
 
     end
