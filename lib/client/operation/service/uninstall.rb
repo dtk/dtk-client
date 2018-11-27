@@ -59,7 +59,7 @@ module DTK::Client
             Dir.glob("*", File::FNM_DOTMATCH).each do |f|
               ClientModuleDir.rm_f(f) if f.include? '.task_id_'
             end
-            ClientModuleDir.create_file_with_content((path+".task_id_#{response.data(:task_id)}", '') if response.data(:task_id)
+            ClientModuleDir.create_file_with_content(path+".task_id_#{response.data(:task_id)}", '') if response.data(:task_id)
             OsUtil.print_info(message)
           end
         end
