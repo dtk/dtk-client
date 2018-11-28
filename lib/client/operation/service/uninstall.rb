@@ -58,8 +58,6 @@ module DTK::Client
               Dir.entries(path).each do |f|
                 ClientModuleDir.rm_f("#{path}/#{f}") if f.include? '.task_id_'
               end
-              require('byebug')
-              byebug
               ClientModuleDir.create_file_with_content("#{path}/.task_id_#{response.data(:task_id)}", '') if response.data(:task_id)
             end
             OsUtil.print_info(message)
