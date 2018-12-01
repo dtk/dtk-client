@@ -72,6 +72,10 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element::H
           render_line 'STDERR:'
           render_action_output stderr
         end
+        if dynamic_attrs = action_result['dynamic_attributes']
+          render_line 'OUTPUT:'
+          render_dynamic_attrs(dynamic_attrs)
+        end
       end
       
       def render_action_output(line)

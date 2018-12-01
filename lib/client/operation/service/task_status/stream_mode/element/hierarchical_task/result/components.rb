@@ -21,6 +21,7 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element::H
       def render_results(results_per_node)
         render_errors(results_per_node)
         render_info(results_per_node)
+        render_output(results_per_node)
       end
     end
   end

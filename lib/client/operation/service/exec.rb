@@ -26,9 +26,10 @@ module DTK::Client
           directory_path   = args[:directory_path]
           breakpoint       = args[:breakpoint]
           attempts         = args[:attempts] || ""
-          sleep            = args[:sleep] || ""
-          # parse params and return format { 'p_name1' => 'p_value1' , 'p_name2' => 'p_value2' }
-          task_params = parse_params?(action_params)||{}
+          sleep            = args[:sleep] || ""    
+
+          task_params = {}
+          process_action_params(action_params, task_params) unless action_params.eql? nil
 
           # this is temporary fix to handle new node as component format ec2::node[node_name]/action
           # will transform ec2::node[node_name]/action to node_name/action
@@ -80,16 +81,41 @@ module DTK::Client
 
       private
 
-      def self.parse_params?(params_string)
-        if params_string
-          params_string.split(',').inject(Hash.new) do |h,av|
-            av_split = av.split('=')
-            unless av_split.size == 2
-              raise Error::Usage, "The parameter string (#{params_string}) is ill-formed"
-            end
-            h.merge(av_split[0] => av_split[1])
+      def self.process_action_params(action_params, params)
+        if match = action_params.match(/([^=]+)=(.+)/)
+          extracted_value, new_params = extract_action_value(match[2])
+          params.merge!(match[1] => extracted_value)
+          process_action_params(new_params, params) unless new_params.empty?
+        end
+      end
+
+      def self.extract_action_value(ac_params)
+        if ac_params.start_with?('[')
+          match_and_return(ac_params, :array)
+        elsif ac_params.start_with?('{')
+          match_and_return(ac_params, :hash)
+        else
+          if match = ac_params.match(/([^,]+),(.*)/)
+            return [match[1], match[2]]
+          else
+            return [ac_params, ""]
           end
         end
+      end
+
+      def self.match_and_return(ac_params, type)
+        match = ac_params.match(RegexTypes[type])
+        return [match[1], prettify(match[2])]
+      end
+
+      RegexTypes = {
+        array: Regexp.new(/([^\]]+\])(.*)/),
+        hash: Regexp.new(/([^\}]+\})(.*)/)
+      }
+
+      def self.prettify(remaining)
+        remaining.sub!(",", "") unless remaining.empty?
+        remaining
       end
     end
   end
