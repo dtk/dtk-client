@@ -26,6 +26,7 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element
         super
         @errors = hash['errors'] || []
         @info = hash['info'] || []
+        @action_results = hash['action_results'] || []
       end
 
       # This can be over-written
@@ -44,9 +45,12 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element
 
       attr_reader :errors
       attr_reader :info
+      attr_reader :action_results
 
       def render_errors(results_per_node)
-        return unless results_per_node.find { |result| not result.errors.empty?}
+        return unless results_per_node.find do |result|  
+          not result.errors.empty?
+        end
         first_time = true
         results_per_node.each do |result| 
           if first_time
@@ -72,6 +76,20 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element
         end
       end
 
+      def render_output(results_per_node)
+        return unless results_per_node.find do |result|
+          not result.action_results.empty?
+        end
+        first_time = true
+        results_per_node.each do |result|
+          if first_time
+            render_line 'OUTPUT:'
+            first_time = false
+          end
+          result.render_node_output
+        end
+      end
+
       def render_node_errors
         return if @errors.empty?
         render_node_term
@@ -94,6 +112,34 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element
         end
       end
 
+      def render_node_output
+        return if @action_results.empty?
+        @action_results.each do |output|
+          if dynamic_attrs = output['dynamic_attributes']
+            render_dynamic_attrs(dynamic_attrs)
+          end
+        end
+      end
+
+      def render_dynamic_attrs(dynamic_attrs)
+        dynamic_attrs.each do |name, opts|
+          next unless opts['value'] 
+          out = opts['value']
+
+          if disp_form = opts['display_format']
+            out = 
+              case disp_form
+              when 'yaml'
+                out.to_yaml
+              when 'json'
+                out.to_json
+              end
+          end
+          render_output_line(name + ':', out)
+          render_empty_line
+        end
+      end
+
       def render_error_line(line, opts = {})
         render_line(line, ErrorRenderOpts.merge(opts))
       end
@@ -101,8 +147,15 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element
       def render_info_line(line, opts = {})
         render_line(line)
       end
-      ErrorRenderOpts = { :tabs => 1}
-      
+
+      def render_output_line(attr_name, attr_value)
+        render_line attr_name, RenderAttrNameOpts
+        render_line attr_value, RenderAttrValOpts
+      end
+      ErrorRenderOpts = { :tabs => 1 }
+      RenderAttrNameOpts = { :tabs => 1 }
+      RenderAttrValOpts = { :tabs => 2 }
+
     end
   end
 end; end

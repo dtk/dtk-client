@@ -21,7 +21,7 @@ module DTK::Client; module CLI
       subcommand_def 'set-attribute' do |c|
         c.arg Token::Arg.attribute_name
         c.arg Token::Arg.attribute_value, :optional => true
-        command_body c, 'set-attribute',  'Edit specific attribute.' do |sc|
+        command_body c, 'set-attribute',  'Edit specific attribute. Hash example: "{key: val}"' do |sc|
           sc.switch Token.u
           sc.flag Token.directory_path
           sc.action do |_global_options, options, _args|

@@ -21,7 +21,7 @@ module DTK::Client
       subcommand_def 'exec' do |c|
         c.arg Token::Arg.action
         c.arg Token::Arg.action_params, :optional => true
-        command_body c, :exec, 'Execute action asynchronously' do |sc|
+        command_body c, :exec, 'Execute action asynchronously. Parameters need to be within quotes (\'\' or "").' do |sc|
           sc.flag Token.directory_path, :desc => 'Absolute or relative path to service instance directory containing updates to pull; not need if in the service instance directory'
           sc.flag Token.attempts,  :desc => "Number of attempts"
           sc.flag Token.sleep, :desc => "Number of sleep in seconds"

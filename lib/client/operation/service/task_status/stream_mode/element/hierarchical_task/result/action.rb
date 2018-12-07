@@ -26,12 +26,12 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element::H
       attr_reader :action_results
       
       def render_results(results_per_node)
+        render_info(results_per_node)
         if any_results?(results_per_node)
           render_line 'RESULTS:'
           render_empty_line
           results_per_node.each { |result| result.render }
         else
-          render_info(results_per_node)
           render_errors(results_per_node)
         end
       end
@@ -71,6 +71,10 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element::H
         if stderr && !stderr.empty?        
           render_line 'STDERR:'
           render_action_output stderr
+        end
+        if dynamic_attrs = action_result['dynamic_attributes']
+          render_line 'OUTPUT:'
+          render_dynamic_attrs(dynamic_attrs)
         end
       end
       
