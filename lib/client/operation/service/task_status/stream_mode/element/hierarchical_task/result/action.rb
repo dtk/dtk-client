@@ -26,12 +26,12 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element::H
       attr_reader :action_results
       
       def render_results(results_per_node)
+        render_info(results_per_node)
         if any_results?(results_per_node)
           render_line 'RESULTS:'
           render_empty_line
           results_per_node.each { |result| result.render }
         else
-          render_info(results_per_node)
           render_errors(results_per_node)
         end
       end

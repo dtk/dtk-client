@@ -26,7 +26,7 @@ module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element
         super
         @errors = hash['errors'] || []
         @info = hash['info'] || []
-        @action_results = hash['action_results'] || []
+        @dynamic_attr_results = hash['action_results'] || []
       end
 
       # This can be over-written
