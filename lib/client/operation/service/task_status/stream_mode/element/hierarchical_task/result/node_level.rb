@@ -18,6 +18,16 @@
 module DTK::Client; class Operation::Service::TaskStatus::StreamMode::Element::HierarchicalTask
   class Results
     class NodeLevel < self
+      def render
+        not_first_time = nil
+        render_node_term
+        @action_results.each do |action_result| 
+          render_action_result_lines(action_result, :first_time => not_first_time.nil?) 
+          not_first_time ||= true
+        end
+        render_empty_line
+      end
+
       def render_results(results_per_node)
         render_errors(results_per_node)
       end
