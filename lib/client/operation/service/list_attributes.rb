@@ -18,6 +18,7 @@
 module DTK::Client
   class Operation::Service
     class ListAttributes < self
+      LEGAL_FORMAT_VALUES = [:table, :yaml, :json]
       def self.execute(args = Args.new)
         wrap_operation(args) do |args|
           service_instance = args.required(:service_instance)
@@ -25,8 +26,7 @@ module DTK::Client
           # node             = args[:node]
           # component        = args[:component]
           all              = args[:all]
-          format           = args[:format] || 'table'
-          format.downcase!
+          format           = check_and_ret_format(args)
 
           query_string_hash = QueryStringHash.new(
             :links?            => links,
@@ -39,14 +39,29 @@ module DTK::Client
           response = rest_get("#{BaseRoute}/#{service_instance}/attributes", query_string_hash)
           
           case format
-          when 'table'
+          when :table
             response.set_render_as_table!
-          when 'yaml'
+          when :yaml
+            require 'byebug'; byebug
             response
+          when :json
+            # TODO: stub to treat json
+            legal_formats = LEGAL_FORMAT_VALUES - [:json]
+            raise Error::Usage, "Illegal option -f [--format]; legal values are: #{legal_formats.join(', ')}"
           else
-            raise Error::Usage, "Please enter valid format: TABLE, YAML"
+            raise Error, "Should not reach here since format checked already"
           end
         end
+      end
+
+      private
+
+      def self.check_and_ret_format(args = {})
+        format = (args[:format] || 'table').downcase.to_sym
+        unless LEGAL_FORMAT_VALUES.include?(format)
+          raise Error::Usage, "Illegal option -f [--format]; legal values are: #{LEGAL_FORMAT_VALUES.join(', ')}"
+        end
+        format
       end
     end
   end
