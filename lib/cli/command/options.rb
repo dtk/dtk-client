@@ -27,8 +27,20 @@ module DTK::Client
         
         def [](canonical_name_or_opt)
           key = Token.opt?(canonical_name_or_opt) || canonical_name_or_opt
-          @opts_hash[key]
+          # TODO: check why this switch to below was needed was needed
+          #@opts_hash[key]
+          case key
+          when ::String, ::Symbol
+            @opts_hash[key]
+          when ::Array
+            if matching_key = key.find { |k| @opts_hash.has_key?(k) }
+              @opts_hash[matching_key]
+            end
+          else
+            raise Eroor, "Unexpected value of key.class: #{key.class}"
+          end
         end
+
       end
     end
   end

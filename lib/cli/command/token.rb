@@ -37,6 +37,7 @@ module DTK::Client
         :comma_seperated_contexts  => Flag.new(:context, 'CONTEXT1,CONTEXT2,...' ,'Comma-seperated context service instance(s); if not specified, the default service instance serves as the context'),
         :module_ref                => Flag.new(:m, ModuleRef::NamespaceModuleName.legal_form, 'Module name with namespace; not needed if command is executed from within the module directory'),
         :relative_path             => Flag.new(:f, 'RELATIVE-FILE-PATH', 'Relative file path'),
+        :param_file                => Flag.new(:f, 'PARAM-FILE', 'YAML file with command argument value'),
         :service_instance          => Flag.new(:s, 'SERVICE-INSTANCE', 'Service instance name'),
         :service_name              => Flag.new(:n, 'SERVICE-NAME', 'Service name'),
         :version                   => Flag.new(:v, 'VERSION', 'Version'),
