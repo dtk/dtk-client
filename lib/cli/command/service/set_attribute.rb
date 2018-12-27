@@ -36,7 +36,6 @@ module DTK::Client; module CLI
             unless attribute_name
               name_value_pairs = helper.get_name_value_pairs_from_yaml_file(options)
               # TODO: should extend the server-side to take list of attributes to set; hack to return a value ret
-              ret = nil
               name_value_pairs.each_pair do |attribute_name, attribute_value|
                 begin
                   helper.set_single_attribute(attribute_name, attribute_value)
@@ -44,7 +43,7 @@ module DTK::Client; module CLI
                   raise Error::Usage, "Error trying to set attribute '#{attribute_name}' from YAML file"
                 end
               end
-              ret
+              nil
             else
               attribute_value = 
                 unless options[:u]
