@@ -51,14 +51,15 @@ module DTK::Client
             :force       => force
           )
           response = rest_post("#{BaseRoute}/uninstall", post_body)
-
+          path = ClientModuleDir.ret_base_path(:service, service_instance) unless path
           ClientModuleDir.rm_f(path) if args[:purge]
-
           if message = response.data(:message) || "DTK service '#{service_instance}' has been uninstalled successfully."
-            Dir.glob("*", File::FNM_DOTMATCH).each do |f|
-              ClientModuleDir.rm_f(f) if f.include? '.task_id_'
+            if Dir.exists?(path) && !args[:purge]
+              Dir.entries(path).each do |f|
+                ClientModuleDir.rm_f("#{path}/#{f}") if f.include? '.task_id_'
+              end
+              ClientModuleDir.create_file_with_content("#{path}/.task_id_#{response.data(:task_id)}", '') if response.data(:task_id)
             end
-            ClientModuleDir.create_file_with_content(".task_id_#{response.data(:task_id)}", '') if response.data(:task_id)
             OsUtil.print_info(message)
           end
         end
