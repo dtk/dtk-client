@@ -97,7 +97,16 @@ module DTK::Client; module CLI
           unless name_value_pairs.kind_of?(::Hash)
             raise Error::Usage, "If NAME argument is not given, the parameter file content must be YAML hash with name/attribute values"
           end
-          name_value_pairs.inject({}) { |h, (k, v)| h.merge(k => ::JSON.generate(v)) }
+          name_value_pairs.inject({}) do |h, (k, v)| 
+            value = 
+              case v
+              when ::Hash, ::Array
+                :JSON.generate(v)
+              else
+                v
+              end
+            h.merge(k => value)
+          end
         end
 
         private
