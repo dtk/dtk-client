@@ -73,6 +73,7 @@ module DTK::Client
         :unlink       => Switch.new([:u, :unlink], 'unlink'),
         :dependencies => Switch.new(:deps, 'Dependencies'),
         :u            => Switch.new([:u, :unset], 'Unset attribute'),
+        :encrypt      => Switch.new(:encrypt, 'Encrypt attribute value'),
         :recursive    => Switch.new(:r, 'Recursive'),
         :update_deps  => Switch.new('update-deps', "Skip prompt and update all dependencies or skip prompt and don't update all dependencies  (on master)", :negatable => true, :default_value => 'prompt'),
         :skip_server  => Switch.new('skip-server', 'Do not install module on server'),

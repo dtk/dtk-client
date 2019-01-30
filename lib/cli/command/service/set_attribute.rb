@@ -23,6 +23,7 @@ module DTK::Client; module CLI
         c.arg Token::Arg.attribute_value, :optional => true
         command_body c, 'set-attribute',  'Set attribute value(s).' do |sc|
           sc.switch Token.u
+          sc.switch Token.encrypt
           sc.flag Token.directory_path
           sc.flag Token.param_file
           sc.action do |_global_options, options, args|
@@ -70,7 +71,8 @@ module DTK::Client; module CLI
             :attribute_name   => attribute_name,
             :attribute_value  => attribute_value,
             :service_instance => self.service_instance,
-            :service_instance_dir => self.service_instance_dir
+            :service_instance_dir => self.service_instance_dir,
+            :encrypt => options[:encrypt]
           )
         end
 
