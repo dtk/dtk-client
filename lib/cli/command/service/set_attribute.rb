@@ -101,7 +101,7 @@ module DTK::Client; module CLI
             value = 
               case v
               when ::Hash, ::Array
-                :JSON.generate(v)
+                ::JSON.generate(v)
               else
                 v
               end
