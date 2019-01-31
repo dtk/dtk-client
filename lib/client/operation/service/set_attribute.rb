@@ -28,7 +28,6 @@ module DTK::Client
             hash = {
               :name => "encryption_public_key"
             }
-
             response = rest_get "#{BaseRoute}/#{service_instance}/get_attribute", QueryStringHash.new(hash)
             public_key = response.data
             attribute_value = DTK::Client::SecurityUtil.encrypt(public_key, attribute_value) 
