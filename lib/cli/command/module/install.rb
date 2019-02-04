@@ -111,19 +111,16 @@ module DTK::Client
             # server (the later step Operation::Module.install does this)
             
             # TODO: 3070: handle sitution where response is not ok
-            begin
-              install_response = Operation::Module.install_from_catalog(module_ref: self.module_ref, version: self.version, directory_path: self.directory_path?, download_if_fail: self.download_if_fail)
-            rescue => ex
-              OsUtil.print_error(ex)
-            end
+            install_response = Operation::Module.install_from_catalog(module_ref: self.module_ref, version: self.version, directory_path: self.directory_path?, download_if_fail: self.download_if_fail)
+
             if client_installed_modules = (install_response && install_response.data[:installed_modules])
-                opts_server_install = {
-                  has_directory_param: self.has_directory_param?,
-                  has_remote_repo: true,
-                  update_deps: self.update_deps?,
-                  install_from: :remote
-                }
-                install_on_server(client_installed_modules, opts_server_install)
+              opts_server_install = {
+                has_directory_param: self.has_directory_param?,
+                has_remote_repo: true,
+                update_deps: self.update_deps?,
+                install_from: :remote
+              }
+              install_on_server(client_installed_modules, opts_server_install)
             end
           end
         
@@ -154,8 +151,8 @@ module DTK::Client
               repo_dir:  file_obj.parent_dir
             }
             parsed_module   = file_obj.parse_content(:common_module_summary)
-            dependency_tree = 
-                Operation::DtkNetworkDependencyTree.get_or_create(module_info, { format: :hash, parsed_module: parsed_module, save_to_file: true, update_lock_file: @update_lock_file })
+            dependency_tree = Operation::DtkNetworkDependencyTree.get_or_create(module_info, { format: :hash, parsed_module: parsed_module, save_to_file: true, update_lock_file: @update_lock_file })
+
             dependency_tree.each do |dependency|
               dep_module_ref = module_ref_object_from_options_or_context(module_ref: "#{dependency[:namespace]}/#{dependency[:name]}", version: dependency[:version])
               if Operation::Module.module_version_exists?(dep_module_ref)
