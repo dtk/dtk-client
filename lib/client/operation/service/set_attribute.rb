@@ -29,6 +29,7 @@ module DTK::Client
               :name => "encryption_public_key"
             }
             response = rest_get "#{BaseRoute}/#{service_instance}/get_attribute", QueryStringHash.new(hash)
+            raise Error::Usage, "There is no encryption_public_key attribute in this component, or its' value is not set." if response.data.empty?
             public_key = response.data
             attribute_value = DTK::Client::SecurityUtil.encrypt(public_key, attribute_value) 
           end
