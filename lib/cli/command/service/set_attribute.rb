@@ -54,7 +54,7 @@ module DTK::Client; module CLI
                     args[1] || raise(Error::Usage, "Either argument VALUE or -f option must be given to specify a value")
                   end
                 end
-              helper.set_single_attribute(attribute_name, attribute_value, options[:encrypt])
+              helper.set_single_attribute(attribute_name, attribute_value, encrypt: options[:encrypt])
             end
           end
         end
@@ -66,14 +66,15 @@ module DTK::Client; module CLI
           @service_instance_dir = service_instance_dir
         end
 
-        def set_single_attribute(attribute_name, attribute_value, encrypt=false)
+        # opts can haev keys
+        #  :encrypt
+        def set_single_attribute(attribute_name, attribute_value, opts = {})
           Operation::Service.set_attribute(
             :attribute_name   => attribute_name,
             :attribute_value  => attribute_value,
-            :encrypt          => encrypt,
+            :encrypt          => opts[:encrypt],
             :service_instance => self.service_instance,
-            :service_instance_dir => self.service_instance_dir,
-            :encrypt => options[:encrypt]
+            :service_instance_dir => self.service_instance_dir
           )
         end
 
