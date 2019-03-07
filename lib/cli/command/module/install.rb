@@ -152,15 +152,14 @@ module DTK::Client
             }
             parsed_module   = file_obj.parse_content(:common_module_summary)
 
-            response = Operation::Module.rest_get "modules/get_modules_versions_with_dependencies"
-            server_dependencies = response.data || []
+            # response = Operation::Module.rest_get "modules/get_modules_versions_with_dependencies"
+            # server_dependencies = response.data || []
 
             dependency_tree = Operation::DtkNetworkDependencyTree.get_or_create(module_info, {
               format: :hash,
               parsed_module: parsed_module,
               save_to_file: true,
-              update_lock_file: @update_lock_file,
-              server_dependencies: server_dependencies
+              update_lock_file: @update_lock_file
             })
 
             dependency_tree.each do |dependency|

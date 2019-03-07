@@ -53,10 +53,10 @@ module DTK::Client
           repo_dir:      @directory_path || @target_repo_dir
         }
 
-        response = rest_get "modules/get_modules_versions_with_dependencies"
-        server_dependencies = response.data || []
+        # response = rest_get "modules/get_modules_versions_with_dependencies"
+        # server_dependencies = response.data || []
 
-        installed_modules = DtkNetworkClient::Install.run(module_info, type: @type, download_if_fail: @download_if_fail, server_dependencies: server_dependencies )
+        installed_modules = DtkNetworkClient::Install.run(module_info, type: @type, download_if_fail: @download_if_fail )
 
         { :installed_modules => installed_modules }
       end
