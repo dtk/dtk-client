@@ -53,13 +53,14 @@ module DTK::Client
             repo_dir:  @file_obj.parent_dir
           }
 
-          # response = Operation::Module.rest_get "modules/get_modules_versions_with_dependencies"
-          # server_dependencies = response.data || []
+          response = Operation::Module.rest_get "modules/get_modules_versions_with_dependencies"
+          server_dependencies = response.data || []
 
           repoman_client_opts = {
             format: :hash,
             save_to_file: true,
-            update_lock_file: update_lock_file
+            update_lock_file: update_lock_file,
+            server_dependencies: server_dependencies
           }
           repoman_client_opts.merge!(parsed_module: parsed_module) unless method.eql?('pulled')
           dependency_tree = DtkNetworkDependencyTree.get_or_create(repoman_client_module_info, repoman_client_opts)
