@@ -26,18 +26,21 @@ module DTK::Client
           encrypt = args[:encrypt]
           if encrypt
             hash = {
-              :name                => attribute_name.split('/').last 
+              :name                => attribute_name.split('/').last,
+              :component           => attribute_name.split('/').first
             }
-            set_attribute = rest_get "#{BaseRoute}/#{service_instance}/get_attribute", QueryStringHash.new(hash)
+            attribute_to_set = rest_get "#{BaseRoute}/#{service_instance}/get_attribute", QueryStringHash.new(hash)
 
             hash = {
-              :name                => "encryption_public_key"  
+              :name                => "encryption_public_key",
+              :component           => attribute_to_set.data["nested_component"]["display_name"]
             }
             public_key_attribute = rest_get "#{BaseRoute}/#{service_instance}/get_attribute", QueryStringHash.new(hash)
 
-            if public_key_attribute.data.empty? || set_attribute.data["component_component_id"] != public_key_attribute.data["component_component_id"]
-              raise Error::Usage, "There is no encryption_public_key attribute in this component, or its' value is not set."
+            if public_key_attribute.data.empty? 
+              raise Error::Usage, "There is no encryption_public_key attribute in component '#{attribute_to_set.data["nested_component"]["display_name"]}', or its' value is not set."
             end
+
             public_key = public_key_attribute.data["value_asserted"] || public_key_attribute.data["value_derived"]
             attribute_value = DTK::Client::SecurityUtil.encrypt(public_key, attribute_value) 
           end
