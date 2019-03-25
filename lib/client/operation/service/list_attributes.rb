@@ -23,15 +23,21 @@ module DTK::Client
           service_instance = args.required(:service_instance)
           links            = args[:links]
           # node             = args[:node]
+          name             = args[:attribute_name]
           component        = args[:component]
           format           = args[:format] || 'table'
           format.downcase!
+
+          if component && name 
+            raise Error::Usage, "Command options ATTRIBUTE NAME and --component cannot be used at the same time."
+          end
 
           query_string_hash = QueryStringHash.new(
             :links?            => links,
             # :node_id?          => node,
             :filter_component? => component,
-            :format            => format
+            :format            => format,
+            :attribute_name    => name
           )
           
           response = rest_get("#{BaseRoute}/#{service_instance}/attributes", query_string_hash)

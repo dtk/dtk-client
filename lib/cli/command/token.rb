@@ -43,7 +43,7 @@ module DTK::Client
         :version                   => Flag.new(:v, 'VERSION', 'Version'),
         :type                      => Flag.new(:type, 'TYPE', 'Type'),
         :node                      => Flag.new(:n, 'NODE', 'Node'),
-        :component                 => Flag.new(:c, 'COMPONENT', 'Component'),
+        :component                 => Flag.new([:c, :component], 'COMPONENT', 'Component'),
         :remote_user               => Flag.new(:u, 'REMOTE-USER', 'Remote user'),
         :identity_file             => Flag.new(:i, 'PATH-TO-PEM', 'Path to pem file'),
         :mode                      => Flag.new(:mode, 'MODE', 'Mode'),
