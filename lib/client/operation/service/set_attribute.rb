@@ -31,13 +31,17 @@ module DTK::Client
             }
             attribute_to_set = rest_get "#{BaseRoute}/#{service_instance}/get_attribute", QueryStringHash.new(hash)
 
+            if attribute_to_set.data.empty? 
+              raise Error::Usage, "There is no attribute named #{attribute_name}."
+            end
+
             hash = {
               :name                => "encryption_public_key",
               :component           => attribute_to_set.data["nested_component"]["display_name"]
             }
             public_key_attribute = rest_get "#{BaseRoute}/#{service_instance}/get_attribute", QueryStringHash.new(hash)
 
-            if public_key_attribute.data.empty? 
+            if public_key_attribute.data.empty? || !(public_key_attribute.data["value_asserted"] || public_key_attribute.data["value_derived"])
               raise Error::Usage, "There is no encryption_public_key attribute in component '#{attribute_to_set.data["nested_component"]["display_name"]}', or its' value is not set."
             end
 
