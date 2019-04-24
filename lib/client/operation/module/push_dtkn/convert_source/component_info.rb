@@ -25,13 +25,13 @@ module DTK::Client
           fetch_remote
           transform_to_component_info
         end
-        
+
         private
-        
+
         def self.info_type
           :component_info
         end
-        
+
         def transform_to_component_info
           info_processor.read_inputs_and_compute_outputs!
           info_processor.file_path__content_array

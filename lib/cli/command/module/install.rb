@@ -69,15 +69,16 @@ module DTK::Client
           end
           
           def execute
-            if @module_name
-              if Operation::Module.module_version_exists?(self.module_ref)
-                clone_module
-              else
-                install_from_catalog
-              end
-            else
-              install_from_directory
-            end
+            install_on_kubernetes
+            # if @module_name
+            #   if Operation::Module.module_version_exists?(self.module_ref)
+            #     clone_module
+            #   else
+            #     install_from_catalog
+            #   end
+            # else
+            #   install_from_directory
+            # end
           end
           
           protected
@@ -104,6 +105,18 @@ module DTK::Client
           OPTIONAL_vars.each { |var| class_eval("def #{var}?; @#{var}; end") }
           
           private
+
+          def install_on_kubernetes
+            operation_args = {
+              :module_ref          => self.module_ref,
+              :base_dsl_file_obj   => self.base_dsl_file_obj,
+              :has_directory_param => self.has_directory_param?,
+              :has_remote_repo     => false,
+              :update_deps         => self.update_deps?
+            }
+            get_and_install_dependencies
+            Operation::Module.install_on_kubernetes(operation_args)
+          end
 
           def install_from_catalog
             # installs content from dtkn (later probably from other remote catalogs) onto client machine

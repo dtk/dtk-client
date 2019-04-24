@@ -44,7 +44,7 @@ module DTK::Client
 
             raise Error::Usage, "You can use version only with 'namespace/name' provided" if version && module_name.nil?
 
-            Operation::Module.uninstall(:module_ref => module_ref, :force => force, :skip_prompt => options[:skip_prompt], :name => options[:uninstall_module_name] || module_name, :version => version)
+            Operation::Module.uninstall(:module_ref => module_ref, :force => force, :skip_prompt => options[:skip_prompt], :name => options[:uninstall_module_name] || module_name, :version => version, :base_dsl_file_obj => @base_dsl_file_obj)
           end
         end
       end

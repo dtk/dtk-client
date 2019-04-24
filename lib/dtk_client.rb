@@ -34,5 +34,6 @@ module DTK
     require_relative('client/render')
     require_relative('client/service_and_component_info')
     require_relative('client/load_source')
+    require_relative('client/custom_resource')
   end
 end

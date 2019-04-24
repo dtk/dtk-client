@@ -40,6 +40,19 @@ module DTK::Client
         commit_sha     = git_response.data(:head_sha)
         rest_post("#{BaseRoute}/update_from_repo", common_post_body.merge(:commit_sha => commit_sha, :initial_update => true))
       end
+
+      def self.install_on_kubernetes(module_ref, file_obj, opts = {})
+        common_post_body = {
+          :module_ref  => module_ref,
+          :module_name => module_ref.module_name,
+          :namespace   => module_ref.namespace,
+          :version     => module_ref.version,
+          :target_repo_dir => file_obj.parent_dir,
+          :base_dsl_file_obj => file_obj
+        }
+
+        CustomResource.transform_and_apply(:kubernetes_crd, common_post_body)
+      end
     end
   end
 end

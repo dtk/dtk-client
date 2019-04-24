@@ -24,6 +24,7 @@ module DTK::Client
           name        = args.required(:name)
           version     = args.required(:version)
           force       = args.required(:force)
+          file_obj    = args.required(:base_dsl_file_obj)
   
           unless name.nil?
             query_string_hash = QueryStringHash.new(
@@ -47,19 +48,25 @@ module DTK::Client
             end
             
           end
-          post_body = module_ref_post_body(module_ref)
-          post_body.merge!(:force => force)
-          rest_post("#{BaseRoute}/delete", post_body)
 
-          error_msg =
-            if delete_versions && delete_versions.is_a?(Array) && delete_versions.size > 1
-              "All versions of dtk module '#{module_ref.namespace}/#{module_ref.module_name}' have been uninstalled."
-            else
-              "DTK module '#{module_ref.pretty_print}' has been uninstalled successfully."
-            end
+          require 'active_support/inflector'
+          parsed_common_module = file_obj.parse_content(:common_module)
+          cmp_name = parsed_common_module.val(:ComponentDefs).keys.first
+          cmp_name = cmp_name.pluralize
+          CustomResource.delete("#{cmp_name}.component.dtk.io")
+          # post_body = module_ref_post_body(module_ref)
+          # post_body.merge!(:force => force)
+          # rest_post("#{BaseRoute}/delete", post_body)
 
-          OsUtil.print_info(error_msg)
-          nil
+          # error_msg =
+          #   if delete_versions && delete_versions.is_a?(Array) && delete_versions.size > 1
+          #     "All versions of dtk module '#{module_ref.namespace}/#{module_ref.module_name}' have been uninstalled."
+          #   else
+          #     "DTK module '#{module_ref.pretty_print}' has been uninstalled successfully."
+          #   end
+
+          # OsUtil.print_info(error_msg)
+          # nil
         end
       end
       

@@ -26,4 +26,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'mime-types', '~> 2.99.3'
   spec.add_dependency 'dtk-dsl', '~> 1.1.4'
   spec.add_dependency 'dtk-network-client', '1.0.5'
+  spec.add_dependency 'kubeclient', '~> 2.5.2'
 end
