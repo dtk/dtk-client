@@ -47,7 +47,7 @@ module DTK::Client
       end
 
       def self.delete(resource_name)
-        config = Kubeclient::Config.read('/Users/aldinmilanovic/.kube/config')
+        config = Kubeclient::Config.read("#{File.expand_path('~')}/.kube/config")
         context = config.context
 
         client = Kubeclient::Client.new(
@@ -64,7 +64,7 @@ module DTK::Client
       attr_reader :info_processor, :target_repo_dir, :parent
 
       def self.apply_to_kubernetes(component_file_path__content_array)
-        config = Kubeclient::Config.read('/Users/aldinmilanovic/.kube/config')
+        config = Kubeclient::Config.read("#{File.expand_path('~')}/.kube/config")
         context = config.context
 
         client = Kubeclient::Client.new(
