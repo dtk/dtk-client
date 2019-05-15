@@ -51,7 +51,7 @@ module DTK::Client
           :base_dsl_file_obj => file_obj
         }
 
-        CustomResource.transform_and_apply(:kubernetes_crd, common_post_body)
+        CustomResource.transform_and_apply(:crd_instance, common_post_body)
       end
     end
   end

@@ -17,7 +17,7 @@
 #
 module DTK::Client
   class ServiceAndComponentInfo::TransformTo::Info
-    class KubernetesCrd < self
+    class KubernetesCrdInstance < self
       def read_inputs_and_compute_outputs!
         # Input component dsl file and module_ref filedslpdslp
         if component_dsl_path = component_dsl_path()
@@ -31,7 +31,7 @@ module DTK::Client
       private
 
       def info_type
-        :crd
+        :crd_instance
       end
 
       def dtk_dsl_component_info_processor

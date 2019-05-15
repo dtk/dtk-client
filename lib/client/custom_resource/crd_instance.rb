@@ -1,6 +1,6 @@
 module DTK::Client
   class CustomResource
-    class Crd < self
+    class CrdInstance < self
       # attr_reader :parsed_common_module
 
       def transform_info
@@ -10,7 +10,7 @@ module DTK::Client
       private
 
       def self.info_type
-        :crd
+        :crd_instance
       end
 
       def transform_to_component_info

@@ -22,6 +22,7 @@ module DTK::Client
       require_relative('info/service')
       require_relative('info/component')
       require_relative('info/kubernetes_crd')
+      require_relative('info/kubernetes_crd_instance')
 
       def initialize(content_dir, dtk_dsl_parse_helper, parsed_common_module)
         @content_dir            = content_dir
@@ -37,7 +38,8 @@ module DTK::Client
         case info_type
         when :service_info then Service.new(content_dir, dtk_dsl_parse_helper, parsed_common_module)
         when :component_info then Component.new(content_dir, dtk_dsl_parse_helper, parsed_common_module)
-        when :kubernetes_crd then KubernetesCrd.new(content_dir, dtk_dsl_parse_helper, parsed_common_module)
+        when :crd then KubernetesCrd.new(content_dir, dtk_dsl_parse_helper, parsed_common_module)
+        when :crd_instance then KubernetesCrdInstance.new(content_dir, dtk_dsl_parse_helper, parsed_common_module)
         else
           fail Error, "Unexpected info_type '#{info_type}'"
         end
